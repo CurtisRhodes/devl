@@ -2,31 +2,50 @@
 .blogSection {
     display: none;
 }
-.blogSectionTitleRow {
 
+.blogItemContainer {
+    margin: 8px;
+    border: solid 0.5px #cbd0c5;
+}
+
+.blogSectionTitleRow {
+    margin-top: 8px;
 }
 .blogListAreaTitle {
+    font-weight: bold;
     margin-left: 33px;
 }
 .blogTypeDDcontainer {
     margin-left: 45px;
 }
 .blogListRefDropDown {
-    background-color: var(--oggleContainerBackgroundColor);
     font-size: var(--normalFont);
     border-radius: 8px;
 }
 
 .blogArticleItem {
+    display: flex;
     border: solid 0.5px #cbd0c5;
-    padding: 3px;
+    margin-bottom: 13px;
 }
-    .blogArticleItem div {
-        float: left;
-        border: solid 0.5px #ff6a00;
-    }
+.blogCommentTitle {
+    font-size: 18px;
+    color: #477e9d;
+    text-align:center;
+    font-style: italic;
+}
+.blogSummary {
+    font-family: 'Times New Roman';
+    width: 200px;
+}
+
+
 .blogEditButton {
     margin-left: 44px;
+    vertical-align: bottom;
+    cursor: pointer;
+    text-decoration: underline;
+    color: blue;
 }
 .articleJogImage {
     height: 88px;

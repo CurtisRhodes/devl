@@ -15,19 +15,19 @@ function displayBlogList(commentType) {
                     if (jData.length == 0)
                         alert("no entries found for commentType: " + commentType);
                     else {
-
                         $.each(jData, function (idx, blogComment) {
                             $('#blogArticleJogArea').append(`
-                            <div class="blogArticleItem flexContainer">
-                                <div><img class="articleJogImage" src="` + blogComment.JogImage + `"</div>
+                            <div class="blogArticleItem">
+                                <div><img class="articleJogImage" src="` + blogComment.JogImage + `"/></div>
                                 <div>
-                                    <div>` + blogComment.CommentTitle + `</div>
-                                    <div class="blogEditButton roundedButton" onclick="editArticle('` + blogComment.Id + `');">edit</div>
-                                <div>
+                                    <div class="blogCommentTitle">` + blogComment.CommentTitle + `</div>
+                                    <div class="blogSummary">` + blogComment.Summary + `</div>
+                                </div>
+                                <div class="blogEditButton" onclick="editBlogEntry('`+ blogComment.Id + `')">edit</div>
                             </div>`);
                         });
 
-                        loadCommentTypesDD();
+                        loadCommentTypesDD($('#ddCommentType'));
                         resizeBlogPage();
                     }
                 }
@@ -44,7 +44,7 @@ function displayBlogList(commentType) {
     }
 }
 
-function loadCommentTypesDD() {
+function loadCommentTypesDD(ddObject) {
     $.ajax({
         type: "GET",
         url: "/php/getRefs.php?refType=BLG",
@@ -54,18 +54,19 @@ function loadCommentTypesDD() {
             }
             else {
                 let jData = JSON.parse(data);
-                $('#ddCommentType').html("");
+                ddObject.html("");
+                //$('#ddCommentType').html("");
                 $.each(jData, function (idx, obj) {
                     //$('#ddBlogRefs').append("<option value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
                     if (obj.RefCode == blogObject.CommentType) {
                         $('#blogTitle').html(obj.RefDescription);
-                        $('#ddCommentType').append("<option selected='selected' value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
+                        ddObject.append("<option selected='selected' value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
                     }
                     else
-                        $('#ddCommentType').append("<option value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
+                        ddObject.append("<option value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
                 });
 
-                $('#ddCommentType').change(function () {
+                ddObject.change(function () {
                     blogObject.CommentType = $('#ddCommentType').val()
                     displayBlogList($('#ddCommentType').val());
                 });
@@ -93,21 +94,50 @@ function newEntry() {
     $("#txtPosted").datepicker();
 }
 
-function editBlogEntry(blogItemId) {
-    if (isNullorUndefined(blogItemId))
-        blogItemId = blogObject.Id;
-    else
-        blogObject.Id = blogItemId;
+function editBlogEntry(blogId) {
+    $('#blogListArea').hide();
+    $('#blogEditArea').show();
 
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/php/getBlogItem.php?blogId=" + blogId,
+            success: function (data) {
+                if (data.substring(5, 20).indexOf("error") > 0) {
+                    $('#blogListArea').html(data);
+                }
+                else {
+                    let blogComment = JSON.parse(data)[0];
+
+                    $('#txtCommentTitle').val(blogComment.CommentTitle);
+                    loadCommentTypesDD($('#selBlogEditCommentType'));
+                    $('#txtPosted').val(blogComment.Created);
+                    $('#summernoteContainer').val(blogComment.CommentText);
+                    $('#txtLink').val(blogComment.JogImage);
+                    $('#imgBlogLink').css("src", blogComment.JogImage);
+                    
+                }
+            },
+            error: function (jqXHR) {
+                $('#albumPageLoadingGif').hide();
+                let errMsg = getXHRErrorDetails(jqXHR);
+                alert("displayBlogList: " + errMsg);
+                // logError("XHR", folderId, errMsg, "get albumImages");
+            }
+        });
+    } catch (e) {
+        logCatch("loadImages", e);
+    }
+
+    //
     $('#leftColumnNew').show();
     $('#leftColumnShow').show();
     $('#leftColumnEdit').hide();
     $('#btnAddEdit').html("Update");
     //$('#btnNewCancel').hide();
-    displayBlogEditHtml();
-    loadCommentTypesDD();
-    $('#blogCrudBox').css("width", $(window).width() * .66);
-    loadSingleBlogEntry(blogItemId, "edit");
+    //loadCommentTypesDD();
+    //$('#blogCrudBox').css("width", $(window).width() * .66);
+    //loadSingleBlogEntry(blogItemId, "edit");
 }
 
 function viewBlogEntry(blogItemId) {
@@ -119,9 +149,6 @@ function viewBlogEntry(blogItemId) {
     $('.blogEditButton').hide();
     $('#leftColumnShow').show();
     $('#leftColumnEdit').show();
-}
-
-function loadSingleBlogEntry(blogItemId, view) {
 }
 
 function loadSingleBlogEntry(blogItemId, editMode) {

@@ -23,8 +23,8 @@
                 <div id='leftColumnNew' class='blogEditButton' onclick='newEntry()'>New Entry</div>
                 <div id='leftColumnEdit' class='blogEditButton' onclick='editBlogEntry()'>Edit</div>
                 <div id='leftColumnShowPage' class='blogEditButton' onclick='viewBlogEntry()'>Show Page</div>
-                <div id="promoMessagesContainer" class="promoBox"></div>
             </div>
+            <div id="promoMessagesContainer" class="promoBox"></div>
         </div>
         <div class="middleColumn">
             <div id="divStatusMessage"></div>
@@ -38,7 +38,7 @@
                             <div class='rightBlogEditPane'>
                                 <div class='crudRow'>
                                     <div class='crudLabel inline'>Title</div>
-                                    <input id='txtCommentTitle' class='oggleInput'></input>
+                                    <input id='txtCommentTitle' class='oggleInput'/>
                                 </div>
                                 <div class='crudRow'>
                                     <div class='crudLabel inline'>Type</div>
@@ -46,11 +46,11 @@
                                 </div>
                                 <div class='crudRow'>
                                     <div class='crudLabel inline'>Link</div>
-                                    <input id='txtLink' class='oggleInput' onBlur='loadImage()'></input>
+                                    <input id='txtLink' class='oggleInput' onBlur='loadImage()'/>
                                 </div>
                                 <div class='crudRow'>
                                     <div class='crudLabel inline'>Date</div>
-                                    <input id='txtPosted' class='oggleInput'></input>
+                                    <input id='txtPosted' class='oggleInput'/>
                                 </div>
                             </div>
                         </div>
@@ -62,7 +62,7 @@
                     <div class='oggleBlogFooterArea'>
                         <div id='btnAddEdit' class='roundendButton' onclick='saveBlogEntry()'>Add</div>
                         <div id='btnNewCancel' class='roundendButton' onclick='btnNewCancelAction()'>New</div>
-                        <div style='display:inline;'><input id='txtBlogId'></input></div>
+                        <div style='display:inline;'><input id='txtBlogId'/></div>
                     </div>
                 </div>
             </div>
@@ -70,7 +70,7 @@
             <div Id="blogListArea" class="blogSection">
                 <div class='blogSectionTitleRow flexContainer'>
                     <div id="blogTitle" class='blogListAreaTitle'>blog title</div>
-                    <div class="blogTypeDDcontainer">blog comment types <select class="blogListRefDropDown" id="ddCommentType" title="blog comment types"></select></div>
+                    <div class="blogTypeDDcontainer">comment type <select class="blogListRefDropDown" id="ddCommentType" title="blog comment types"></select></div>
                 </div>
                 <div class="flexContainer">
                     <div id='blogArticleJogArea' class='blogItemContainer'></div>
