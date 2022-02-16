@@ -3,7 +3,7 @@ function displayBlogList(commentType) {
     try {
         $.ajax({
             type: "GET",
-            url: "/php/getBlogItems.php?commentType=" + commentType,
+            url: "php/getBlogItems.php?commentType=" + commentType,
             success: function (data) {
                 if (data.substring(5, 20).indexOf("error") > 0) {
                     $('#blogListArea').html(data);
@@ -47,7 +47,7 @@ function displayBlogList(commentType) {
 function loadCommentTypesDD(ddObject) {
     $.ajax({
         type: "GET",
-        url: "/php/getRefs.php?refType=BLG",
+        url: "php/getRefs.php?refType=BLG",
         success: function (data) {
             if (data.substring(5, 20).indexOf("error") > 0) {
                 $('#blogListArea').html(data);
@@ -101,7 +101,7 @@ function editBlogEntry(blogId) {
     try {
         $.ajax({
             type: "GET",
-            url: "/php/getBlogItem.php?blogId=" + blogId,
+            url: "php/getBlogItem.php?blogId=" + blogId,
             success: function (data) {
                 if (data.substring(5, 20).indexOf("error") > 0) {
                     $('#blogListArea').html(data);

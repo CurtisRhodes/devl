@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="utf-8" />
+    <title>CurtisRhodes.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.75">
+    <link rel='shortcut icon' href='Images/Brucheum.ico' type='image/x-icon' />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script src="Scripts/Common.js"></script>
+    <script src="Scripts/Footer.js"></script>
+    <script src="Scripts/Headers.js"></script>
+    <script src="Scripts/Flitter.js"></script>
+
+    <link href="Styles/Common.css" rel="stylesheet">
+    <link href="Styles/Header.css" rel="stylesheet">
+    <link href="Styles/Footer.css" rel="stylesheet">
+    <link href="Styles/Flitter.css" rel="stylesheet">
+
+</head>
+<body>
+    <header></header>
+    <div id="flitterVisableArea" class="threeColumnLayout">
+        <div id="leftColumn">
+            <div class="vertMenu">
+                <div class='vertMenuTab' onclick='loadDashboardDirTree(true)'>ReBuild Dir Tree</div>
+                <div class='vertMenuTab' onclick='showSortTool()'>Sort Tool</div>
+                <div class='vertMenuTab' onclick="showCreateNewFolderDialog">Create New Folder</div>
+                <div class='vertMenuTab' onclick='showMoveFolderDialog()'>Move Folder</div>
+                <div class='vertMenuTab' onclick='showAddStepChildFolderDialog()'>Copy Folder</div>
+                <div class='vertMenuTab' onclick="showRenameFolderDialog()">Rename Folder</div>
+            </div>
+        </div>
+        <div id="middleColumn">
+            <img id='dashBoardLoadingGif' alt="spinner" title="loading" class='loadingGif' src='Images/loader.gif' />
+            <div id='dashboardContainer' class='fullScreenContainer'>
+                <div id='addImageLinkDialog'>
+                    <div id='addLinkCrudArea' class='addLinkCrudArea'>
+                        <div class='flexbox'>
+                            <label>link</label><input id='txtImageLink' tabindex='1' class='roundedInput' onblur='previewLinkImage()' />
+                        </div>
+                        <div class='flexbox'>
+                            <label>path</label><input class='roundedInput txtLinkPath' readonly='readonly' />
+                        </div>
+                        <div class='roundendButton' tabindex='2' onclick='addImageLink()'>Insert</div>
+                    </div>
+                    <img id='imgLinkPreview' class='linkImage' />
+                </div>
+                <div id='moveManySection' class='fullScreenSection displayHidden'>
+                    <div id='moveManyHeader' class='workAreaHeader'>
+                        <div class='workAreaHeaderArea'>
+                            <div id='moveManyTitle' class='workAreaHeaderTitle'>Move Many</div>
+                            <div class='workAreaHeaderDetailRow'>
+                                <div class='moveManyHeaderLabel'>source</div><input id='txtMoveManySource' class='roundedInput' style='width:65%' readonly='readonly' /><br />" +
+                                <div class='moveManyHeaderLabel'>destination</div>
+                                <input id='txtMoveManyDestination' class='roundedInput' style='width:65%' readonly='readonly' />" +
+                                <img class='dialogDirTreeButton' src='/Images/caretDown.png' onclick='$(\"#mmDirTreeContainer\").toggle()' />
+                                <div class='floatRight'><input type='checkbox' id='mmCkSelectAll' onclick='mmSelectAll()'>  Select All</div>
+                            </div>
+                        </div>
+                        <div class='workAreaCloseButton'><img style='height:25px' src='/images/poweroffRed01.png' onclick='showDefaultWorkArea()'></div>
+                    </div>
+                    <div id='mmDirTreeContainer' class='floatingDirTreeContainer'></div>
+                    <div id='moveManyImageArea' class='workAreaDisplayContainer'></div>
+                    <div id='moveManyFooter' class='workareaFooter'>
+                        <button id='moveManyButton' onclick='moveCheckedImages(" + mmSourceFolderId + ")'>Move</button>
+                        <div id='moveManyCountContainer' class='floatRight'></div>" +
+                    </div>
+                </div>
+                <div id='sortToolSection' class='fullScreenSection displayHidden'>
+                    <div id='sortToolHeader' class='workAreaHeader'>
+                        <div id='sortTableHeader' class='workAreaHeaderTitle'></div>
+                        <div class='workAreaCloseButton'>
+                            <img style='height:25px' src='/images/poweroffRed01.png' onclick='showDefaultWorkArea()'>
+                        </div>
+                    </div>
+                    <div>
+                        <div id='sortToolImageArea' class='workAreaDisplayContainer'></div>
+                        <div id='sortToolFooter' class='workareaFooter'>
+                            <button onclick='updateSortOrder()'>ReSort</button>
+                            <button onclick='autoIncrimentSortOrder()'>AutoIncriment</button>
+                        </div>
+                    </div>
+                </div>
+                <div id='reportsSection' class='fullScreenSection displayHidden flexbox'>
+                    <div id='reportsLeftColumn' class='dashboardContainerColumn'>
+                        <div id='reportsLeftMenu' class='oggleVerticalMenu'></div>
+                    </div>
+                    <div id='reportsMiddleColumn' class='dashboardContainerColumn'>
+                        <div class='workAreaContainer'>
+                            <div id='reportsHeader' class='workAreaHeader'>
+                                <div class='workAreaHeaderArea'>
+                                    <div id='reportsHeaderTitle' class='workAreaHeaderTitle'>Reports</div>
+                                    <div class='reportsHeaderDetailRow'></div>
+                                </div>
+                                <div class='workAreaCloseButton'><img style='height:25px' src='/images/poweroffRed01.png' onclick='showDefaultWorkArea()'></div>
+                            </div>
+                            <div id='reportsContentArea' class='workAreaDisplayContainer'></div>
+                            <div id='reportsFooter' class='workareaFooter'></div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div id='dashboardDialog' class='oggleDialogContainer displayHidden'>
+                    <div class='oggleDialogHeader'>
+                        <div id='dashboardDialogTitle' class='oggleDialogTitle'></div>
+                        <div class='oggleDialogCloseButton'><img src='/images/poweroffRed01.png' onclick="$('#dashboardDialog').hide()" /></div>
+                    </div>
+                    <div id='dashboardDialogContents' class='oggleDialogContents'></div>
+                </div>
+
+
+
+            </div>
+        </div>
+        <div id="rightColumn">
+
+
+        </div>
+    </div>
+    <footer></footer>
+    <script>
+        $(document).ready(function () {
+            loadHeader();
+            //$('#leftColumn').html(BrucheumMenu());
+            setMenuBar("chr");
+            displayFooter("welcome");
+            resizePage();
+            $(window).resize(function () {
+                resizePage();
+            });
+        });
+        function resizePage() {
+            $('#flitterVisableArea').css('min-height', $(window).height());
+        }
+    </script>
+</body>
+</html>

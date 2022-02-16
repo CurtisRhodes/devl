@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="utf-8" />
+    <title>CurtisRhodes.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.75">
+    <link rel='shortcut icon' href='https://common.ogglefiles.com/img/Brucheum.ico' type='image/x-icon' />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=.07">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+    <script src="https://common.ogglefiles.com/js/Common.js"></script>
+
+    <link href="https://common.ogglefiles.com/css/Common.css" rel="stylesheet" />
+    <link href="css/chr.css" rel="stylesheet" />
+
+    <!--https://ogglefiles.com/node/-->
+</head>
+<body>
+    <header id="oggleHeader" class="stickyHeader">
+        <h1>CHR.BRUCHEUM.COM</h1>
+    </header>
+    <div id="visableArea" class="threeColumnLayout">
+        <div id="leftColumnArea" class="leftColumn">
+            <div id="promoMessagesContainer" class="promoBox"></div>
+        </div>
+        <div class="middleColumn">
+            <div id="divStatusMessage"></div>
+            <div id="dots"></div>
+            <img id="indexPageLoadingGif" class="loadingGif" title='loading gif' alt='' src="img/loader.gif" />
+
+            <div class="linkBlocksContainer">
+                <div class="linkBlock" onclick="window.location.href='https://ogglefiles.com/admin'"><div>Admin</div></div>
+                <div class="linkBlock"><div>The Brucheum</div></div>
+                <div class="linkBlock" onclick="window.location.href='https://ogglefiles.com/blog'"><div>Blog</div></div>
+                <div class="linkBlock"><div>Intel Design</div></div>
+                <div class="linkBlock"><div>Write a Book</div></div>
+                <div class="linkBlock"><div>Get a Job</div></div>
+                <div class="linkBlock"><div>Flitter</div></div>
+                <div class="linkBlock"><div>2aT</div></div>
+                <div class="linkBlock"><div>Lodge Secratary</div></div>
+                <div class="linkBlock"><div>The Library</div></div>
+            </div>
+
+        </div>
+        <div id="rightColumnArea" class="rightColumn"></div>
+    </div>
+    <footer></footer>
+    <script>
+        $(document).ready(function () {
+            //displayHeader(pageContext);
+            //testConnection();
+            displayFooter("welcome");
+
+            resizePage();
+            $(window).resize(function () {
+                resizePage();
+            });
+        });
+        function resizePage() {
+            $('#visableArea').css('min-height', $(window).height());
+        }
+    </script>
+</body>
+</html>
