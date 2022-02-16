@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Blog : </title>
+    <link rel='shortcut icon' href='https://common.ogglefiles.com/img/Brucheum.ico' type='image/x-icon' />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=.07">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+    <script src="https://common.ogglefiles.com/js/Common.js"></script>
+    <script src="js/Blog.js"></script>
+
+    <link href="https://common.ogglefiles.com/css/Common.css" rel="stylesheet" />
+    <link href="css/blog.css" rel="stylesheet" />
+
+</head>
+<body>
+    <header id="oggleHeader" class="stickyHeader"></header>
+    <div id="visableArea" class="threeColumnLayout">
+        <div id="leftColumnArea" class="leftColumn">
+            <div class="vertMenu">
+                <div id='leftColumnShow' class='blogEditButton' onclick='displayBlogList()'>Show Blog List</div>
+                <div id='leftColumnNew' class='blogEditButton' onclick='newEntry()'>New Entry</div>
+                <div id='leftColumnEdit' class='blogEditButton' onclick='editBlogEntry()'>Edit</div>
+                <div id='leftColumnShowPage' class='blogEditButton' onclick='viewBlogEntry()'>Show Page</div>
+                <div id="promoMessagesContainer" class="promoBox"></div>
+            </div>
+        </div>
+        <div class="middleColumn">
+            <div id="divStatusMessage"></div>
+            <img id="blogLoadingGif" class="loadingGif" title='loading gif' alt='' src="https://common.ogglefiles.com/img/loader.gif" />
+
+            <div id="blogEditArea" class='blogSection'>
+                <div id='blogPageTitle' class='blogPageSubHeader'></div>
+                <div class='blogEditAreaColumn1'>
+                    <div class='flexContainer'>
+                        <div id='blogCrudBox' class='maxWidth'>
+                            <div class='rightBlogEditPane'>
+                                <div class='crudRow'>
+                                    <div class='crudLabel inline'>Title</div>
+                                    <input id='txtCommentTitle' class='oggleInput'></input>
+                                </div>
+                                <div class='crudRow'>
+                                    <div class='crudLabel inline'>Type</div>
+                                    <select id='selBlogEditCommentType' class='oggleInput'></select>
+                                </div>
+                                <div class='crudRow'>
+                                    <div class='crudLabel inline'>Link</div>
+                                    <input id='txtLink' class='oggleInput' onBlur='loadImage()'></input>
+                                </div>
+                                <div class='crudRow'>
+                                    <div class='crudLabel inline'>Date</div>
+                                    <input id='txtPosted' class='oggleInput'></input>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='floatRight'>
+                            <img id='imgBlogLink' class='leftImage' />
+                        </div>
+                    </div>
+                    <textarea id='summernoteContainer'></textarea>
+                    <div class='oggleBlogFooterArea'>
+                        <div id='btnAddEdit' class='roundendButton' onclick='saveBlogEntry()'>Add</div>
+                        <div id='btnNewCancel' class='roundendButton' onclick='btnNewCancelAction()'>New</div>
+                        <div style='display:inline;'><input id='txtBlogId'></input></div>
+                    </div>
+                </div>
+            </div>
+
+            <div Id="blogListArea" class="blogSection">
+                <div class='blogSectionTitleRow flexContainer'>
+                    <div id="blogTitle" class='blogListAreaTitle'>blog title</div>
+                    <div class="blogTypeDDcontainer">blog comment types <select class="blogListRefDropDown" id="ddCommentType" title="blog comment types"></select></div>
+                </div>
+                <div class="flexContainer">
+                    <div id='blogArticleJogArea' class='blogItemContainer'></div>
+                    <div id='blogCategoryListArea' class='blogItemContainer'></div>
+                </div>
+            </div>
+
+            <div id="blogViewArea" class="blogSection">
+                <img id='blogPageImage' class='largeCenteredImage' />
+                <div id='blogPageBody' class='blogPageBodyText'></div>
+                <div id='btnPublish' class='roundendButton' onclick='publishBlogArticle()'> Publish</div>
+            </div>
+        </div>
+        <div id="rightColumnArea" class="rightColumn"></div>
+    </div>
+    <footer></footer>
+    <script>
+        $(document).ready(function () {
+
+            displayHeader("blog");
+            $('#leftColumnNew').show();
+            $('#leftColumnShow').hide();
+            $('#leftColumnEdit').hide();
+            $('#leftColumnShowPage').hide();
+
+            $('#blogListArea').show();
+
+            displayBlogList("PBE");
+
+            displayFooter("welcome");
+
+            resizeBlogPage();
+            window.addEventListener("resize", resizeBlogPage);
+
+        });
+
+        function resizeBlogPage() {
+            $('#visableArea').css('min-height', $(window).height());
+            $('footer').css('width', $(window).width());
+            //$('#hdrBtmRowSec3').html("resizeBlogPage visableArea: " + $('#visableArea').height());
+        }
+    </script>
+</body>
+</html>

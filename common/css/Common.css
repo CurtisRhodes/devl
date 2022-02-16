@@ -1,0 +1,454 @@
+﻿:root {
+    --brucheumBlue: #74bac3;
+    --oggleBackgroundColor: #c1bad1; /*#fef;  #f7eef7  #b081b1 #f8e8e8 */
+    --oggleContainerBackgroundColor: #93b798; /* #bc61e4; #d1f5f3; #f8e8e8 */
+    --oggleDialogBackgroundColor: #c4c6ae;
+    --oggleBorderColor: #b200ff; /* #f1cff7;*/
+    --ogglePurple: #79078f;
+    --normalFont: 15px;
+    --ogglgeTextColor: #000;
+    --oggleTitleColor: #7f2c8f;
+    --ogglgeSubTitleColor: #490157;
+    --thumbnailBorderColor: #74bac3; /* hot pink #ff00dc   */
+    --ogglgeHeaderBarColor: #decd6f; /*#c79bbe*/
+    --oggleHeaderBoarderTop: #40767d 3px solid;
+    --oggleHeaderBackgroundColor: #74bac3;
+    --oggleHeaderBoarderBottom: #decd6f 11px solid;
+    --oggleHeaderSelectBackgroundColor: #74bac3;
+    --oggleContainerFooterColor: #d1f5f3;
+    --flitterYellow: #fbf0b4;
+    --opaqueImageLabel: rgba(178, 0, 255, 0.46);
+    --oggleLabelColor: #b200ff;
+}
+
+body {
+    background-color: var(--oggleBackgroundColor);
+    font-family: Verdana;
+    font-size: var(--normalFont);
+}
+
+.threeColumnLayout {
+    width: 100%;
+    background-color: var(--oggleBackgroundColor);
+    display: flex;
+}
+
+    .threeColumnLayout .leftColumn {
+        float: left;
+    }
+
+    .threeColumnLayout .middleColumn {
+        float: left;
+        width: 100%;
+        height: inherit;
+        max-height: inherit;
+    }
+
+    .threeColumnLayout .rightColumn {
+        float: left;
+    }
+
+.dataArea {
+    border:solid thin #40767d;
+    min-height: 100px;
+}
+.displayHidden {
+    display: none;
+}
+
+.loadingGif {
+    position: absolute;
+    left: 150px;
+    top: 140px;
+    height: 110px;
+    z-index: 31;
+    display: none;
+}
+
+.tinyloadingGif {
+    height: 40px;
+    margin: 3px;
+}
+    
+.roundendButton {
+    padding: 11px;
+    display: inline-block;
+    text-align: center;
+    background-color: #acdde4;
+    color: #000;
+    border-radius: 6px;
+    padding: 8px;
+    cursor: pointer;
+}
+
+
+.pornBodyColors {
+    background-color: #ffcccc;
+}
+.hoverTab {
+    float: left;
+    display: inline-block;
+    margin-top: 1px;
+    border-radius: 5px;
+}
+    .hoverTab a {
+        cursor: pointer;
+        color: black;
+        padding: 8px;
+        text-decoration: none;
+        padding: 5px 5px;
+        border-radius: 1px;
+    }
+        .hoverTab a:hover {
+            text-decoration: underline;
+            background-color: #fef;
+        }
+
+.centeringOuterShell {
+    position: absolute;
+    left: 50%;
+    margin: 0;
+}
+
+.centeringInnerShell {
+    position: relative;
+    left: -50%;
+    margin: 0;
+}
+.clickable {
+    cursor: pointer;
+}
+
+.inline {
+    display: inline-block;
+}
+
+.floatLeft {
+    float: left;
+}
+
+.floatRight {
+    float: right;
+}
+
+.align-right {
+    text-align: right;
+}
+
+.displayHidden {
+    display: none;
+}
+
+.flexContainer {
+    display: flex;
+}
+
+/*-- Header -----------------------------------*/
+.stickyHeader {
+    position: sticky;
+    top: 0;
+    margin: 0;
+    width: 100%;
+    display: flex;
+    z-index: 10;
+    border-top: #40767d 3px solid;
+    border-bottom: #decd6f 3px solid;
+    background: var(--brucheumBlue);
+}
+
+
+.siteLogoContainer {
+    float: left;
+    padding-top: 2px;
+    padding-left: 2px;
+}
+
+.siteLogo {
+    height: 50px;
+    cursor: pointer;
+}
+
+.calligraphyTitle {
+    font-size: 28px;
+    padding-right: 6px;
+    padding-top: 1px;
+    margin-right: 11px;
+    margin-bottom: -10px;
+    font-family: 'Lucida Calligraphy';
+}
+
+.headerBodyContainer {
+    float: left;
+    width: 100%;
+}
+
+.headerTopRow {
+    display: flex;
+    width: 100%;
+}
+
+.headerBottomRow {
+    width: 100%;
+    display: inline-block;
+    padding-top: 3px;
+}
+.bottomRowSection1 {
+    float: left;
+    display: flex;
+}
+.bottomLeftHeaderArea {
+    padding: 8px;
+    float: left;
+}
+.badgesSection {
+    display: flex;
+    float: left;
+}
+
+.hdrTopRowMenu {
+    font-size: 20px;
+    display: inline-block;
+    font-family: Comic Sans MS;
+    color: var(--oggleTitleColor);
+    vertical-align: top;
+    padding-left: 28px;
+    margin-right: 8px;
+    margin-top: 1px;
+    padding: 0;
+    cursor: pointer;
+}
+
+/*-- vert menu -----------------------------------*/
+
+.vertMenu {
+    margin-top: 88px;
+
+
+}
+
+.vertMenu div {
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    margin: 14px 6px;
+    padding: 8px 20px;
+    border-radius: 4px;
+    white-space: nowrap;
+    color: #000;
+    background-color: #74bac3;
+}
+
+/*-- breadcrumbs -----------------------------------*/
+
+.breadCrumbArea {
+    float: left;
+    display: inline-block;
+    margin-right: 7px;
+    margin-top: 5px;
+    cursor: pointer;
+}
+    .breadCrumbArea div {
+        display: inline-block;
+        font-size: 14px;
+        padding-left: 11px;
+        color: var(--oggleTitleColor);
+    }
+
+.activeBreadCrumb {
+    margin-left: 10px;
+    cursor: pointer;
+    text-decoration: underline;
+    float: left;
+}
+
+.inactiveBreadCrumb {
+    margin-left: 20px;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    float: left;
+}
+
+/*-- Login -----------------------------------*/
+.loginArea {
+    font-family: Arial;
+    margin-right: 25px;
+    margin-top: 4px;
+    float: right;
+}
+
+/*-------------------------------------*/
+.linkBlocksContainer {
+    border: solid 4px #448927;
+    border-radius: 8px;
+    min-height: 300px;
+}
+
+.linkBlock {
+    display: inline-block;
+    border: solid 4px #448927;
+    border-radius: 8px;
+    margin: 6px;
+}
+
+    .linkBlock div {
+        padding: 44px;
+        cursor: pointer;
+        background-color: #84d8d8;
+    }
+
+/*-- Search -----------------------------------*/
+.oggleSearchBox {
+    position: absolute;
+    right: 5px;
+    margin-top: 8px;
+    /*border: solid thin black;*/
+}
+
+.oggleSearchBoxText {
+    border-radius: 10px;
+}
+
+.searchResultsDropdown {
+    display: none;
+    background-color: #fff;
+    border: solid thin black;
+    padding: 2px;
+    z-index: 200;
+    max-height: 555px;
+    overflow-y: auto;
+}
+
+    .searchResultsDropdown li {
+        list-style-type: none;
+        padding: 3px;
+        cursor: pointer;
+    }
+
+        .searchResultsDropdown li:hover {
+            color: red;
+            cursor: pointer;
+        }
+/*-- Dialog box -----------------------------------*/
+
+.floatingDialogContainer {
+    position: absolute;
+    z-index: 25;
+    border: solid 2px var(--oggleBorderColor);
+    background-color: var(--oggleBackgroundColor);
+    display: none;
+}
+
+.floatingDialogContents {
+    padding: 15px;
+    height: 100%;
+    color: #000;
+    min-width: 100px;
+    min-height: 1000px;
+}
+
+.floatingDialogHeader {
+    border: none;
+    background-color: var(--brucheumBlue);
+    color: #fff;
+    display: inline-flex;
+    width: 100%;
+    cursor: grabbing;
+}
+
+.floatingDialogTitle {
+    float: left;
+    padding: 2px 8px;
+    width: 100%;
+    white-space: nowrap;
+    font-size: 16px;
+    text-align: center;
+}
+
+.dialogCloseButton {
+    float: right;
+    padding-top: 5px;
+    padding-right: 15px;
+    cursor: pointer;
+}
+
+    .dialogCloseButton img {
+        height: 25px;
+    }
+
+
+.siteLogoContainer {
+    float: left;
+    padding-top: 2px;
+    padding-left: 2px;
+}
+
+/*-- dir tree -----------------------------------*/
+
+.floatingDirTreeImage {
+    position: absolute;
+    display: none;
+    z-index: 102;
+}
+
+    .floatingDirTreeImage img {
+        /*border: solid thin ;*/
+        border: solid 2px var(--oggleBorderColor);
+        height: 100px;
+        width: 100px;
+    }
+
+.floatingDirTreeContainer {
+    position: absolute;
+    border: solid 2px var(--oggleBorderColor);
+    background-color: var(--oggleBackgroundColor);
+    display: none;
+    max-height: 450px;
+    overflow-y: auto;
+    right: 50px;
+    top: 130px;
+    z-index: 5;
+}
+
+/*-- footer -----------------------------------*/
+footer {
+    margin-top: 4px;
+    border-top: solid 4px #feb236;
+    font-family: Arial;
+    background-color: #000;
+    color: #eee;
+}
+
+    footer .footerCol {
+        padding-top: 8px;
+        float: left;
+        min-width: 200px;
+    }
+
+        footer .footerCol div {
+            padding: 8px;
+            text-align: center;
+        }
+
+            footer .footerCol div a {
+                text-decoration: none;
+                color: #fff;
+            }
+
+    footer .footerFooter {
+        display: flex;
+        width: 100%;
+        background-color: #212121;
+        padding-bottom: 2px;
+    }
+
+    footer .footerFooterMessage {
+        padding-left: 12px;
+    }
+
+    footer .copyrightPush {
+        margin-left: 65%;
+    }
+        footer .copyrightPush a:visited {
+            color: #eee;
+        }

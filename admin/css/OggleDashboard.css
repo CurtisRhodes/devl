@@ -1,0 +1,454 @@
+﻿
+.expadoContainer {
+    /*  border: solid 0.75px red; */
+    margin: 0.25px;
+    display: block;
+}
+
+.dirTreeArea {
+    background-color: #dcd7be;
+    overflow: auto;
+    margin-right: 33px;
+    border-left: #decd6f 3px solid;
+    padding: 4px;
+}
+
+.dirTreeNode {
+    display: flex;
+    white-space: nowrap;
+}
+
+.dirTreeItemName {
+    color: #9419f5;
+    text-indent: 5px;
+}
+
+.stepchildTreeLabel {
+    display: inline !important;
+    color: #878080;
+}
+
+.treeLabelDiv {
+    display: inline;
+}
+
+
+.dashboardLeftColumn {
+    border-right: #decd6f 3px solid;
+}
+
+.flitterVisableArea {
+    background-color: var(--oggleBackgroundColor);
+}
+
+#dashboardRightColumn {
+    border-left: solid 4px black;
+}
+
+.errorInfobox {
+    display: none;
+    max-height: 300px;
+    border: solid 2px #000;
+    overflow-y: auto;
+}
+flexbox {
+    width: 100%;
+    display: -webkit-flex;
+}
+
+.flexbox input {
+
+    width: 88%;
+}
+
+.noWrap td {
+    white-space: nowrap;
+    padding-right: 4px;
+}
+
+.fullScreenContainer {
+}
+
+.fullScreenSection {
+    background-color: rgba(151, 112, 112, 0.85);
+    border: solid 4px var(--oggleBorderColor); /*#cd49d3;*/
+    width: 100%;
+    height: 100%;
+}
+
+.dashboardContainerColumn {
+    float: left;
+    overflow: auto;
+    display: inline-block;
+    background-color: var(--oggleBackgroundColor);
+}
+
+.xxdashboardRightContainerColumn {
+    float: right;
+    border: solid thin #111;
+    background-color: var(--oggleBackgroundColor);
+    /*max-width: 30%;*/
+}
+
+.dashboardTreeContainer {
+    /*
+    float: right;
+    display: inline-block;
+    min-width: 400px;
+    width: 15%;
+    background-color: #eae9ae;
+        */
+    overflow: auto;
+    margin-bottom: 4px;
+    border-bottom: solid 4px #999;
+    border-left: solid .5px #555;
+    min-height: 106px;
+}
+
+.linkContainer {
+    display: inline;
+    margin-bottom: 4px;
+    font-size: 12px;
+}
+
+    .linkContainer div {
+        display: inline;
+        color: #585a38;
+        margin-right: 22px;
+    }
+
+.adminLevelOption {
+    display: none;
+}
+
+.collapsable {
+    display: block;
+}
+
+.fileCount {
+    display: inline;
+    text-indent: 0;
+}
+
+.smallLoadingGif {
+    position: relative;
+    top: 100px;
+    left: -210px;
+    height: 100px;
+    display: none;
+}
+
+.addLinkCrudArea {
+    font-size: 16px;
+    border: solid .5px #555;
+    padding: 6px;
+}
+
+.linkImage {
+    /*
+            float:right;
+        height: 430px;
+        min-width: 520px;
+
+        */
+    max-width: 80%;
+    border: solid .5px #555;
+}
+
+.inlineInput {
+    display: inline-block;
+    width: 95%;
+    margin-right: 6px;
+}
+
+.roundendButton {
+    margin-top: 6px;
+    display: inline-block;
+}
+
+
+.infoLine {
+    position: absolute;
+    bottom: 22px;
+    display: none;
+    padding: 4px;
+    margin-left: 3px;
+    border: solid .5px #555;
+    height: 32px;
+    min-width: 610px;
+    cursor: pointer;
+    background-color: #f8e8e8;
+    /*vertical-align: bottom;*/
+}
+
+*.dashboardToggle {
+    display: none;
+}
+
+.myH2 {
+    font-family: Verdana;
+    margin-top: 1px;
+    font-size: 22px;
+}
+
+.dirTreeContainer {
+    /*background-color: #f7e1ab;*/
+    padding-right: 5px;
+    text-align: left;
+    overflow-y: auto;
+}
+
+
+.moveDirTreeContainer {
+    background-color: #f8e8e8;
+    padding-right: 5px;
+    text-align: left;
+    overflow-y: auto;
+}
+
+.toggleButton {
+    display: inline-block;
+    font-size: 24px;
+    background-color: #07C;
+    color: #fff;
+    margin: 2px 4px;
+    border-radius: 8px;
+    padding: 4px;
+    cursor: pointer;
+}
+
+.repairReport {
+    padding: 4px;
+    line-height: 22px;
+    max-height: 412px;
+    overflow-y: auto;
+    background-color: #faf8e3;
+}
+
+.dashboardProgessBar {
+    color: aqua;
+    background-color: bisque;
+}
+
+.workAreaHeader {
+    border: none;
+    background-color: var(--brucheumBlue);
+    color: #fff;
+    display: flex;
+    width: 100%;
+}
+
+.workAreaHeaderContainer {
+    display: flex;
+}
+
+.workAreaHeaderTitle {
+    width: 100%;
+    font-size: 22px;
+    text-align: center;
+}
+
+.workAreaHeaderArea {
+    float: left;
+    width: 100%;
+}
+
+workAreaHeaderDetailRow {
+}
+
+.workAreaContainer {
+    height: inherit;
+    /*border-left: solid 3px var(--oggleBorderColor);
+    border-right: solid 3px var(--oggleBorderColor);
+    border-bottom: solid 0.75px var(--oggleBorderColor);*/
+    /*background-color: var(--oggleContainerBackgroundColor);*/
+}
+
+.workAreaDisplayContainer {
+    padding: 4px;
+    margin-left: 5px;
+    overflow-y: auto;
+}
+
+.workareaFooter {
+    border-top: solid 5px var(--brucheumBlue);
+    padding-top: 3px;
+}
+
+.moveManyHeaderLabel {
+    display: inline-block;
+    color: #000;
+    min-width: 85px;
+    padding-right: 3px;
+    text-align: right;
+}
+
+.moveManyDestination {
+    background-color: var(--brucheumBlue);
+    display: inline-block;
+    color: #fff;
+    width: 100%;
+}
+
+    .moveManyDestination input {
+        width: 77%;
+        border-radius: 4px;
+        display: inline-block;
+    }
+
+
+.workAreaRow {
+    margin-top: 1px;
+    padding: 10px;
+    border-bottom: solid 5px var(--brucheumBlue);
+}
+
+.workAreaCloseButton {
+    float: right;
+    padding-top: 4px;
+    padding-right: 8px;
+    cursor: pointer;
+}
+
+.loadManyCheckbox {
+    transform: scale(1.2);
+}
+
+.zzloadManyCheckbox {
+    -ms-transform: scale(2); /* IE */
+    -moz-transform: scale(2); /* FF */
+    -webkit-transform: scale(2); /* Safari and Chrome */
+    -o-transform: scale(2); /* Opera */
+    transform: scale(2);
+}
+
+.sortBox {
+    border: solid thin #808080;
+    text-align: center;
+    display: inline-block;
+    background-color: #e5dfc1;
+    padding: 1px;
+    margin: 2px;
+}
+
+.sortBoxInput {
+    width: 100px;
+    border: none;
+    text-align: center;
+    background-color: #e5dfc1;
+}
+
+.sortBoxImage {
+    height: 125px;
+}
+
+
+/*//////// REPORTS ///////////////////////////////////////////*/
+
+.mostPopularPagesReport {
+    padding: 5px;
+}
+
+.mostAvtiveUsersTable td {
+    padding-left: 16px;
+}
+
+.mostAvtiveUsersTable th {
+    text-align: center;
+}
+
+.imageUpload {
+    height: 32px;
+    width: 100%;
+}
+
+.smallColumn {
+    font-size: 14px;
+}
+
+.detailRow {
+    font-size: 14px;
+    background-color: #c1c5ef;
+    padding-left: 33px;
+}
+
+.errorLogTable td {
+    border-top: solid thin #000;
+    white-space: nowrap;
+    font-size: 14px;
+    padding: 2px;
+    padding-left: 8px;
+}
+
+.errorLogTable th {
+    text-align: center;
+}
+
+.stdReportTable table td {
+    border: solid thin #606060;
+    padding: 1px 5px;
+}
+
+.tightReport {
+    font-size: 14px;
+}
+
+    .tightReport table th {
+        text-align: center;
+    }
+
+    .tightReport table td {
+        border: solid thin #606060;
+        padding: 1px 5px;
+    }
+
+.subreportContainer {
+    margin-top: 5px;
+    float: left;
+    border: solid thin red;
+    overflow: auto;
+    margin-right: 30px;
+    margin-left: 10px;
+}
+
+    .subreportContainer div {
+        padding-left: 12px;
+    }
+
+        .subreportContainer div a {
+            margin-right: 22px;
+        }
+
+.pbDecade {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.pbYear {
+    margin-left: 20px;
+    font-family: Constantia;
+    font-size: 17px;
+}
+
+.pbMonth {
+    margin-left: 40px;
+    font-size: 14px;
+}
+
+.pbRow {
+    display: inline-block;
+    margin-left: 60px;
+}
+
+.pbSrc {
+    height: 45px;
+}
+
+.visitorsReport {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.mmDate {
+    text-align: center;
+    padding-right: 11px;
+}

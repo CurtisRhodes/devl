@@ -1,0 +1,34 @@
+﻿
+.blogSection {
+    display: none;
+}
+.blogSectionTitleRow {
+
+}
+.blogListAreaTitle {
+    margin-left: 33px;
+}
+.blogTypeDDcontainer {
+    margin-left: 45px;
+}
+.blogListRefDropDown {
+    background-color: var(--oggleContainerBackgroundColor);
+    font-size: var(--normalFont);
+    border-radius: 8px;
+}
+
+.blogArticleItem {
+    border: solid 0.5px #cbd0c5;
+    padding: 3px;
+}
+    .blogArticleItem div {
+        float: left;
+        border: solid 0.5px #ff6a00;
+    }
+.blogEditButton {
+    margin-left: 44px;
+}
+.articleJogImage {
+    height: 88px;
+    cursor: pointer;
+}

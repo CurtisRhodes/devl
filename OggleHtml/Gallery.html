@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>OggleBooble</title>
+    <link rel='shortcut icon' href='img/favicon.png' type='image/x-icon' />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=.07">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
+    <script src="https://common.brucheum.com/js/Common.js"></script>
+    <script src="js/OggleBooble.js"></script>
+
+    <link href="https://common.brucheum.com/css/Common.css" rel="stylesheet" />
+    <link href="css/GalleryPage.css" rel="stylesheet" />
+    <link href="css/OggleBooble.css" rel="stylesheet" />
+</head>
+    <body>
+        <header id="oggleHeader" class="stickyHeader"></header>
+        <div id="visableArea" class="threeColumnLayout">
+            <div id="leftColumnArea" class="leftColumn">
+                <div id="promoMessagesContainer" class="promoBox"></div>
+                <img id='folderCommentButton' class='folderCommentButton' title='folder comment' src='/img/comment.png' />
+                <div id="folderCommentContainer"></div>
+            </div>
+            <div class="middleColumn">
+                <div id="divStatusMessage"></div>
+                <img id="galleryPageLoadingGif" style="height:11px;" alt='loading' src="/img/loader.gif" />
+                <div id="galleryTopRow" class="aboveImageContainerDiv">
+                    <div id='seoPageName' class="albumPageMetaTitle"></div>
+                    <div id="aboveImageContainerMessageArea" class="flexboxMiddleSection"></div>
+                    <div id="largeLoadButton" class='albumMsgLink'
+                            title='slideshow includes all child folders'
+                            onclick='launchLargeLoad();'>load all folders</div>
+                    <div id="deepSlideshowButton" class='albumMsgLink'
+                            title='album page with all child folder images'
+                            onclick='launchDeepSlideShow();'>gallery slideshow</div>
+                </div>
+                <div id="imageContainer" class="galleryContainer"></div>
+                <div id="slideShowContainer" class="fullScreenViewer"></div>
+                <div id="galleryBottomfileCount" class="countContainer"></div>
+                <div id="trackbackContainer" class="trackbackLinkContainer">
+                    <div>trackback links</div>
+                    <div id="trackbackLinkArea" class="trackbackArea"></div>
+                </div>
+            </div>
+            <div id="rightColumnArea" class="rightColumn"></div>
+        </div>
+        <footer class="ogglefooter"></footer>
+
+        <script>
+            $(document).ready(function () {
+                let params = getParams();
+                let albumParamFolderId;
+                let islargeLoad = false;
+                if (!isNullorUndefined(params.parentfolder)) {
+                    //alert("params.parentfolder: " + params.parentfolder);
+                    albumParamFolderId = params.parentfolder;
+                    islargeLoad = true;
+                }
+                else {
+                    if (isNullorUndefined(params.album)) {
+                        window.location.href = "Index.html";
+                    }
+                    else {
+                        albumParamFolderId = params.album;
+                    }
+                }
+
+                displayHeader("oggleGallery");
+                displayFooter("oggleGallery");
+
+                loadAlbumPage(albumParamFolderId, islargeLoad);
+
+                $('#topRowRightContainer').append(bannerLink("every playboy centerfold", albumParamFolderId));
+                $('#hdrBtmRowSec3').append(bannerLink("Oggle Porn", albumParamFolderId));
+                $('#hdrBtmRowSec3').append(bannerLink("softcore", albumParamFolderId));
+                $('#hdrBtmRowSec3').append(bannerLink("Gent Archive", albumParamFolderId));
+                $('#hdrBtmRowSec3').append(bannerLink("Bond Girls", albumParamFolderId));
+
+                window.addEventListener("resize", resizeGalleryPage);
+                resizeGalleryPage();
+            });
+
+            function resizeGalleryPage() {
+                $('#visableArea').css('height', $(window).height() - $('header').height());
+                $('#imageContainer').css('max-height', $('#visableArea').height() - 52);
+                $('footer').css('width', $(window).width());
+            }
+        </script>
+    </body>
+</html>
