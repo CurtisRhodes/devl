@@ -391,7 +391,7 @@ function displayHeader(headerContext) {
         case "OggleDashboard":
             $('#fancyHeaderTitle').html("OggleBooble.com");
             $('#topHeaderRow').html("admin");
-            $('#divSiteLogo').attr("src","/img/adminPanel01.png");
+            $('#divSiteLogo').attr("src","https://admin.ogglefiles.com/img/adminPanel01.png");
             $('#fancyHeaderTitle').html("Oggle Dashboard");
             break;
         case "admin":

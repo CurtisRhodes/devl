@@ -2,52 +2,51 @@
 <html>
 <head lang="en">
     <meta charset="utf-8" />
-    <title>Admin - OggleBooble.com</title>
+    <title>CurtisRhodes.com</title>
     <meta name="viewport" content="width=device-width, initial-scale=0.75">
-    <link rel='shortcut icon' href='img/favicon.png' type='image/x-icon' />
+    <link rel='shortcut icon' href='Images/Brucheum.ico' type='image/x-icon' />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script src="https://common.ogglefiles.com/js/Common.js"></script>
-    <script src="js/OggleDashboard.js"></script>
-    <script src="js/DirTree.js"></script>
 
-    <link href="https://common.ogglefiles.com/css/Common.css" rel="stylesheet" />
-    <link href="css/OggleDashboard.css" rel="stylesheet">
+    <script src="Scripts/Common.js"></script>
+    <script src="Scripts/Footer.js"></script>
+    <script src="Scripts/Headers.js"></script>
+    <script src="Scripts/Flitter.js"></script>
+
+    <link href="Styles/Common.css" rel="stylesheet">
+    <link href="Styles/Header.css" rel="stylesheet">
+    <link href="Styles/Footer.css" rel="stylesheet">
+    <link href="Styles/Flitter.css" rel="stylesheet">
+
 </head>
 <body>
-    <header class="stickyHeader"></header>
-    <div id="visableArea" class="threeColumnLayout">
-        <div class="leftColumn dashboardLeftColumn">
+    <header></header>
+    <div id="flitterVisableArea" class="threeColumnLayout">
+        <div id="leftColumn">
             <div class="vertMenu">
-                <div onclick='getDashboardStartRoot()'>Build Dir Tree</div>
-                <div onclick='testConnection()'>Import</div>
-                <div onclick='testConnection()'>test Connection</div>
-                <div onclick='strincattest()'>sql sandbox</div>
-                <div onclick='showSortTool()'>Sort Folder</div>
-                <div onclick="showCreateNewFolderDialog">Create New Folder</div>
-                <div onclick='showMoveFolderDialog()'>Move Folder</div>
-                <div onclick='showAddStepChildFolderDialog()'>Copy Folder</div>
-                <div onclick="showRenameFolderDialog()">Rename Folder</div>
+                <div class='vertMenuTab' onclick='loadDashboardDirTree(true)'>ReBuild Dir Tree</div>
+                <div class='vertMenuTab' onclick='showSortTool()'>Sort Tool</div>
+                <div class='vertMenuTab' onclick="showCreateNewFolderDialog">Create New Folder</div>
+                <div class='vertMenuTab' onclick='showMoveFolderDialog()'>Move Folder</div>
+                <div class='vertMenuTab' onclick='showAddStepChildFolderDialog()'>Copy Folder</div>
+                <div class='vertMenuTab' onclick="showRenameFolderDialog()">Rename Folder</div>
             </div>
         </div>
-        <div class="middleColumn">
-            <img id='dashBoardLoadingGif' alt="spinner" title="loading" class='loadingGif' src='https://common.ogglefiles.com/img/loader.gif' />
+        <div id="middleColumn">
+            <img id='dashBoardLoadingGif' alt="spinner" title="loading" class='loadingGif' src='Images/loader.gif' />
             <div id='dashboardContainer' class='fullScreenContainer'>
-
-                <div id='addImageLinkDialog' class='fullScreenSection displayHidden'>
+                <div id='addImageLinkDialog'>
                     <div id='addLinkCrudArea' class='addLinkCrudArea'>
                         <div class='flexbox'>
-                            <label>link  </label><input id='txtImageLink' tabindex='1' class='roundedInput' onblur='previewLinkImage()' />
+                            <label>link</label><input id='txtImageLink' tabindex='1' class='roundedInput' onblur='previewLinkImage()' />
                         </div>
                         <div class='flexbox'>
-                            <label>path </label><input class='roundedInput txtLinkPath' readonly='readonly' />
+                            <label>path</label><input class='roundedInput txtLinkPath' readonly='readonly' />
                         </div>
                         <div class='roundendButton' tabindex='2' onclick='addImageLink()'>Insert</div>
                     </div>
-                    <div id="outputArea" class="dataArea"></div>
-                    <img id='imgLinkPreview' class='linkImage' alt="preview image " />
+                    <img id='imgLinkPreview' class='linkImage' />
                 </div>
-
                 <div id='moveManySection' class='fullScreenSection displayHidden'>
                     <div id='moveManyHeader' class='workAreaHeader'>
                         <div class='workAreaHeaderArea'>
@@ -56,13 +55,11 @@
                                 <div class='moveManyHeaderLabel'>source</div><input id='txtMoveManySource' class='roundedInput' style='width:65%' readonly='readonly' /><br />" +
                                 <div class='moveManyHeaderLabel'>destination</div>
                                 <input id='txtMoveManyDestination' class='roundedInput' style='width:65%' readonly='readonly' />" +
-                                <img class='dialogDirTreeButton' src='https://common.ogglefiles.com/img/caretDown.png' onclick='$("\#mmDirTreeContainer\").toggle()' />
+                                <img class='dialogDirTreeButton' src='/Images/caretDown.png' onclick='$(\"#mmDirTreeContainer\").toggle()' />
                                 <div class='floatRight'><input type='checkbox' id='mmCkSelectAll' onclick='mmSelectAll()'>  Select All</div>
                             </div>
                         </div>
-                        <!--<div class='workAreaCloseButton'>
-                            <img style='height:25px' src='https://common.ogglefiles.com/img/powerOffRed01.png' onclick='showDefaultWorkArea()'>
-                        </div>-->
+                        <div class='workAreaCloseButton'><img style='height:25px' src='/images/poweroffRed01.png' onclick='showDefaultWorkArea()'></div>
                     </div>
                     <div id='mmDirTreeContainer' class='floatingDirTreeContainer'></div>
                     <div id='moveManyImageArea' class='workAreaDisplayContainer'></div>
@@ -71,12 +68,11 @@
                         <div id='moveManyCountContainer' class='floatRight'></div>" +
                     </div>
                 </div>
-
                 <div id='sortToolSection' class='fullScreenSection displayHidden'>
                     <div id='sortToolHeader' class='workAreaHeader'>
                         <div id='sortTableHeader' class='workAreaHeaderTitle'></div>
                         <div class='workAreaCloseButton'>
-                            <img style='height:25px' src='https://common.ogglefiles.com/img/powerOffRed01.png' onclick='showDefaultWorkArea()'>
+                            <img style='height:25px' src='/images/poweroffRed01.png' onclick='showDefaultWorkArea()'>
                         </div>
                     </div>
                     <div>
@@ -87,7 +83,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div id='reportsSection' class='fullScreenSection displayHidden flexbox'>
                     <div id='reportsLeftColumn' class='dashboardContainerColumn'>
                         <div id='reportsLeftMenu' class='oggleVerticalMenu'></div>
@@ -99,7 +94,7 @@
                                     <div id='reportsHeaderTitle' class='workAreaHeaderTitle'>Reports</div>
                                     <div class='reportsHeaderDetailRow'></div>
                                 </div>
-                                <div class='workAreaCloseButton'><img style='height:25px' src='https://common.ogglefiles.com/img/powerOffRed01.png' onclick='showDefaultWorkArea()'></div>
+                                <div class='workAreaCloseButton'><img style='height:25px' src='/images/poweroffRed01.png' onclick='showDefaultWorkArea()'></div>
                             </div>
                             <div id='reportsContentArea' class='workAreaDisplayContainer'></div>
                             <div id='reportsFooter' class='workareaFooter'></div>
@@ -107,33 +102,38 @@
                     </div>
                 </div>
 
+
+                <div id='dashboardDialog' class='oggleDialogContainer displayHidden'>
+                    <div class='oggleDialogHeader'>
+                        <div id='dashboardDialogTitle' class='oggleDialogTitle'></div>
+                        <div class='oggleDialogCloseButton'><img src='/images/poweroffRed01.png' onclick="$('#dashboardDialog').hide()" /></div>
+                    </div>
+                    <div id='dashboardDialogContents' class='oggleDialogContents'></div>
+                </div>
+
+
+
             </div>
         </div>
-        <div class="rightColumn">
-            <div id="dirTreeContainer" class="dirTreeArea"></div>
+        <div id="rightColumn">
+
+
         </div>
     </div>
     <footer></footer>
-
     <script>
         $(document).ready(function () {
-            displayHeader("OggleDashboard");
+            loadHeader();
+            //$('#leftColumn').html(BrucheumMenu());
+            setMenuBar("chr");
             displayFooter("welcome");
-
-            //loadDirTree();
-
             resizePage();
             $(window).resize(function () {
                 resizePage();
             });
         });
         function resizePage() {
-            $('#visableArea').css('height', $(window).height() - $('header').height());
-            $('#visableArea').css('width', $(window).width());
-            $('#dirTreeContainer').css('height', $('#visableArea').height());
-
-            $('footer').css('width', $(window).width());
-            //$('#hdrBtmRowSec3').html("$(window).height(): " + $(window).height() + " $('header').height(): " + $('header').height());
+            $('#flitterVisableArea').css('min-height', $(window).height());
         }
     </script>
 </body>

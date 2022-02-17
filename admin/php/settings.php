@@ -2,14 +2,10 @@
 
 
 function pdoConn() {
-      $host_name = 'db5006287599.hosting-data.io';
-      $database = 'dbs5250893';
-      $user_name = 'dbu50024';
-      $password = 'Larimore_311d496b-6e28-4231-a1f8-09c3941a6c8f.jpg';
-
-      //$dbh = new PDO('mysql:host=localhost;dbname=test', $user, $pass);
-      //$db = new mysqli($host_name, $user_name, $password, $database);
-
+      $host_name = '64.20.55.234';
+      $database = 'st21569_yagdrassel';
+      $user_name = 'st21569_webVisitor';
+      $password = 'Terry_ecac8432-304a-44be-ac2b-76559b4b0e85';
 
     try {
     	return new PDO('mysql:host=' . $host_name . ';dbname=' . $database . ';charset=utf8', $user_name, $password);

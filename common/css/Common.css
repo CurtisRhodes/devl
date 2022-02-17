@@ -351,10 +351,6 @@ body {
 
 .floatingDialogContents {
     padding: 15px;
-    height: 100%;
-    color: #000;
-    min-width: 100px;
-    min-height: 1000px;
 }
 
 .floatingDialogHeader {
