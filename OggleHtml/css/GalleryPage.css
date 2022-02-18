@@ -175,13 +175,8 @@
 }
 
 .thumbImage {
-    height: 200px;
-    cursor: zoom-in;
-    /*
-        border: dashed thin black;
-        margin-bottom: -3px;
-        width: 100%;
-    */
+    height: 180px;
+    cursor: pointer;
 }
 
 :after {

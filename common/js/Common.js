@@ -157,7 +157,7 @@ function sendEmail(to, from, subject, message) {
             }
         });
     } catch (e) {
-        logError("CAT", 3992, e, "sendEmail");
+        logCatch("send email", e);
     }
 }
 
@@ -172,7 +172,9 @@ function mailMe() {
 // -------- Event Handlers -----------
 
 function logCatch(calledFrom, errorMessage) {
+    console.log("catch error in: " + calledFrom + "\n\n" + errorMessage);
     alert("catch error in: " + calledFrom + "\n\n" + errorMessage);
+
 }
 
 function logError(errorCode, folderId, errorMessage, calledFrom) {
@@ -187,55 +189,10 @@ function logError(errorCode, folderId, errorMessage, calledFrom) {
     }
 }
 
-function logError2(visitorId, errorCode, folderId, errorMessage, calledFrom) {
-    alert("logError2:" + errorCode + "," + folderId + ", " + errorMessage + " calledFrom: " + calledFrom);
-    // if (isNullorUndefined(calledFrom))
-    //     calledFrom = "unknown";
-
-    // if (document.domain === 'localhost') {
-    //     //console.log(errorCode + " " + folderId + " " + errorMessage + " " + calledFrom);
-    //     alert("Error " + errorCode + " calledFrom: " + calledFrom + "\nerrorMessage : " + errorMessage);
-    // }
-    // else {
-    //     try {
-
-    //         $.ajax({
-    //             type: "POST",
-    //             url: settingsArray.ApiServer + "api/Common/LogError",
-    //             data: {
-    //                 VisitorId: visitorId,
-    //                 ErrorCode: errorCode,
-    //                 FolderId: folderId,
-    //                 ErrorMessage: errorMessage,
-    //                 CalledFrom: calledFrom
-    //             },
-    //             success: function (success) {
-    //                 if (success === "ok") {
-    //                     //displayStatusMessage("ok", "error message logged");
-    //                     console.log("error message logged.  Called from: " + calledFrom + " message: " + errorMessage);
-    //                 }
-    //                 else {
-    //                     console.error("ajx error in logError!!: " + success + " called from: " + calledFrom + "\nerrorMessage: " + errorMessage);
-    //                 }
-    //             },
-    //             error: function (jqXHR) {
-    //                 let errMsg = getXHRErrorDetails(jqXHR);
-    //                 alert("logError2: " + errMsg);
-    //             //    if (!checkFor404(errMsg, folderId, "logError")) {
-    //             //        //logError("XHR", folderId, errMsg, functionName);
-    //             //        if (document.domain === 'localhost') alert("XHR error in logError!!: " + "logError");
-    //             //    }
-    //             }
-    //         });
-    //     }
-    //     catch (e) {
-    //         if (document.domain === 'localhost') alert("Catch error in logError!!: " + e);
-    //         console.error("Catch error in logError!!: " + e);
-    //     }
-    // }
-}
-
-function logActivity(changeLogModel) {
+function logActivity(eventCode, calledFrom) {
+    try {
+        visitorId = getCookieValue("VisitorId", "logActivity");
+        console.log("logActivity  visitorId: " + visitorId + "  eventCode: " + eventCode + "  calledFrom: " + calledFrom);
     //        if (success === "ok")
     //            displayStatusMessage("ok", "add image logged");
     //        else
@@ -245,20 +202,45 @@ function logActivity(changeLogModel) {
     //        alert("ChangeLog xhr error: " + getXHRErrorDetails(xhr));
     //    }
     //    let visitorId = getCookieValue("VisitorId", calledFrom + "log Event/" + eventCode);
-    //    try {
     //        $.getJSON('php/logEvent.php?eventCode=' + EventCode + '&folderId=' + folderId + '&details=' + details + '&calledFrom=' + calledFrom + '&visitorId=' + visitorId,
     //            function (data) {
     //                console.log(data);
     //            });
-    //    } catch (e) {
-    //        alert(e);
-    //    }
+    } catch (e) {
+        logCatch("log activity", e);
+    }
 }
 
-function logActivity2(visitorId, eventCode, calledFrom) {
-
-    alert("logActivity2  visitorId: " + visitorId + "  eventCode: " + eventCode + "  calledFrom: " + calledFrom);
-
+function rtpe(labelText, calledFromFolderId) {
+    try {
+        let eventCode;
+        switch (labelText) {
+            case "every playboy centerfold":
+                eventCode = "EPC";
+                window.location.href = "/playboy.html";
+                break;
+            case "Gent Archive":
+                eventCode = "GNT";
+                window.location.href = "/Gallery.html?album=846";
+                break;
+            case "Bond Girls":
+                eventCode = "BND";
+                window.location.href = "/Gallery.html?album=10326";
+                break;
+            case "Oggle Porn":
+                eventCode = "PRN";
+                window.location.href = "/Gallery.html?album=242";
+                break;
+            case "softcore":
+                eventCode = "SFT";
+                window.location.href = "/album.html?folder=846";
+                break;
+        }
+        logEvent(eventCode, calledFromFolderId);
+    }
+    catch (e) {
+        logCatch("rtpe", e);
+    }
 }
 
 function logEvent(eventCode, calledFromFolderId) {
@@ -268,14 +250,21 @@ function logEvent(eventCode, calledFromFolderId) {
     //$visitorId = $_GET['visitorId'];
     try
     {
-        let visitorId = getCookieValue("VisitorId", calledFrom + "log Event/" + eventCode);
-
-        $.getJSON('php/logEvent.php?eventCode=' + EventCode + '&folderId=' + calledFromFolderId + '&visitorId=' + visitorId, function (data) {
-            console.log(data);
-        });
+        console.log("logEvent: " + eventCode + " calledFrom: " + calledFromFolderId);
+        //let visitorId = getCookieValue("VisitorId", "log Event/" + eventCode);
+        //$.getJSON('php/logEvent.php?eventCode=' + eventCode + '&folderId=' + calledFromFolderId + '&visitorId=' + visitorId, function (data) {
+        //    console.log(data);
+        //});
     } catch (e) {
         logCatch("logEvent", e);
     }
+}
+
+function bannerLink(labelText, calledFromFolderId) {
+    return "<div class='headerBannerButton'>" +
+            "<div class='clickable' onclick='rtpe(\"" + labelText + "\"," + calledFromFolderId + ")'>" + labelText + "</div>\n" +
+           "</div>\n";
+    //"<div class='clickable' onclick='rtpe(\"" + labelText + "\"," + calledFromFolderId + ")'>" + labelText + "</div></div>\n";
 }
 
 // -------- Cookies -----------
@@ -294,7 +283,6 @@ function getCookieValue(itemName, calledFrom) {
                 if (!isNullorUndefined(cookieItemValue)) {
                     returnValue = cookieItemValue;
                     localStorage[itemName] = cookieItemValue;
-                    //logActivity2(localStorage["VisitorId"], "CK0", 1031122, "GET CookieValue/" + calledFrom); // cookie actually worked
                     break;
                 }
             }
@@ -305,9 +293,9 @@ function getCookieValue(itemName, calledFrom) {
                 returnValue = localStorage[itemName];
                 rebuildCookie();
                 if (itemName == "VisitorId")
-                    logActivity2(localStorage["VisitorId"], "CK1", 1031122, calledFrom + "/GET CookieValue"); // local storage bypass
+                    logActivity("CK1", calledFrom); // local storage bypass
                 else
-                    logActivity2("unavailable", "CK1", 1031128, "itemName: " + itemName + ". calledFrom: " + calledFrom); // local storage bypass
+                    logActivity("CK2", calledFrom);
             }
             else {
                 if (itemName == "VisitorId") {
@@ -317,7 +305,7 @@ function getCookieValue(itemName, calledFrom) {
                         rebuildCookie();
                         addVisitor(newVisId, 1111, "cookie not found");
                         returnValue = newVisId;
-                        logError2(newVisId, "CK2", 703245, "navigator.cookieEnabled: " + navigator.cookieEnabled, calledFrom + "/GET CookieValue"); // visitor added from get cookie
+                        logError("CK2", 217731, "navigator.cookieEnabled: " + navigator.cookieEnabled, calledFrom + "/GET CookieValue");
                     }
                 }
                 else {
@@ -327,15 +315,14 @@ function getCookieValue(itemName, calledFrom) {
                         rebuildCookie();
                     }
                     else {
-                        logError2("unavailable", "CK3", 703245, "itemName: " + itemName + ". navigator.cookieEnabled: " + navigator.cookieEnabled + "calledFrom:" + calledFrom); // No local storage bypass
+                        logError("CK3", 217731, "navigator.cookieEnabled: " + navigator.cookieEnabled, calledFrom + "/GET CookieValue");
                     }
                 }
             }
         }
-        //else logActivity2(returnValue, "CK0", 11151150, "navigator.cookieEnabled: " + navigator.cookieEnabled); // cookie test ok
     }
     catch (ex) {
-        logError2("unavailable", "CAT", 1130123, "returnValue: " + returnValue + ". ex: " + ex, "get Cookie outer fail/" + calledFrom);
+        logCatch("getCookieValue", e);
     }
     finally {
         return returnValue;
@@ -349,7 +336,7 @@ function rebuildCookie() {
         document.cookie = "IsLoggedIn=" + localStorage["IsLoggedIn"];
 
     } catch (e) {
-        logError2(localStorage["VisitorId"], "CAT", 333, e, "rebuild Cookie");
+        logCatch("rebuildCookie", e);
     }
 }
 
@@ -378,9 +365,12 @@ function displayHeader(headerContext) {
             break;
         case "oggleGallery":
             $('#fancyHeaderTitle').html("OggleBooble");
-            $('#topHeaderRow').html("Home of the Big Naturals");
-            $('#topRowRightContainer').html("");
-            $('#hdrBtmRowSec3').html("");
+            $('#topRowRightContainer').append(bannerLink("every playboy centerfold", 3908));
+            $('#hdrBtmRowSec3').append(bannerLink("Oggle Porn", 242));
+            $('#hdrBtmRowSec3').append(bannerLink("softcore", 5233));
+            $('#hdrBtmRowSec3').append(bannerLink("Gent Archive", 846));
+            $('#hdrBtmRowSec3').append(bannerLink("Bond Girls", 10326));
+            //$('#topHeaderRow').html("Home of the Big Naturals");
             break;
         case "playboyIndex": 
             $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
@@ -561,8 +551,7 @@ function setTopHeaderRow(headerContext) {
             break;
         }
         default: {
-            console.log("topHeaderRow: " + headerContext + " unhandled");
-            //logError("SWT", folderId, "subdomain: " + subdomain, "setHdrBottomRow");
+            logCatch("topHeaderRow", e);
         }
     }
 }
@@ -583,7 +572,7 @@ function changeFavoriteIcon(headerContext) {
         }
         document.getElementsByTagName('head')[0].appendChild(link);
     } catch (e) {
-        logError("CAT", 3992, e, "changeFavoriteIcon");
+        logCatch("changeFavoriteIcon", e);
     }
 }
 
@@ -838,8 +827,7 @@ function displayFooter(footerContext) {
         //    $('#footerCol5').hide();
 
     } catch (e) {
-        alert("footer catch error: " + e);
-        //logError("CAT", folderId, e, "setOggleFooter", "footer/" + calledFrom);
+        logCatch("display footer", e);
     }
 }
 

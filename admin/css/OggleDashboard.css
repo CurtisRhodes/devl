@@ -1,4 +1,9 @@
-﻿
+﻿.dashboardTopRow {
+    padding-top: 11px;
+    padding-bottom: 3px;
+    border-bottom: #decd6f 3px solid;
+}
+
 .expadoContainer {
     /*  border: solid 0.75px red; */
     margin: 0.25px;

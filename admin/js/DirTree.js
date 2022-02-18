@@ -156,19 +156,24 @@ function commonDirTreeClick(danniPath, folderId) {
         let activeDirTree = "dashboard";
 
 
-        pSelectedTreeId = folderId;
+        //pSelectedTreeId = folderId;
         pSelectedTreeFolderPath = danniPath.replace(".OGGLEBOOBLE.COM", "").replace("/Root/", "").replace(/%20/g, " ");
         //$("#topHeaderRow").html($('.txtLinkPath').val());
         switch (activeDirTree) {
             case "dashboard":
+
+                $('#txtCurrentActiveFolder').val(danniPath);
+                $('#txtActiveFolderId').val(folderId);
+
                 //window.location.href = "/gallery.html?album=" + folderId;  //  open page in same window
-                window.open("https://Ogglebooble.com/gallery.html?album=" + folderId, "_blank");    // open in new tab
+                
                 break;
             case "catListDialog":
                 window.location.href = "\album.html?folder=" + folderId;
                 break;
             case "linkManipulateDirTree":
-                $('#dirTreeResults').html(pSelectedTreeFolderPath); break;
+                $('#dirTreeResults').html(pSelectedTreeFolderPath);
+                break;
             case "moveFolder":
                 dSelectedTreeId = folderId;
                 $('#txtNewMoveDestiation').val(danniPath);

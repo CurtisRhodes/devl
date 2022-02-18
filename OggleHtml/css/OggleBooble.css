@@ -4,11 +4,6 @@
     overflow-x: auto;
 }
 
-.thumbImage {
-    height: 200px;
-    cursor: zoom-in;
-}
-
 .latestContentBox {
     display: inline-block;
     margin: 2px;

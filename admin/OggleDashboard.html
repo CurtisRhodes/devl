@@ -20,7 +20,8 @@
         <div class="leftColumn dashboardLeftColumn">
             <div class="vertMenu">
                 <div onclick='getDashboardStartRoot()'>Build Dir Tree</div>
-                <div onclick='testConnection()'>Import</div>
+                <div onclick='showImportDialog()'>Import</div>
+                <div onclick='showRepairDialog()'>Repair</div>
                 <div onclick='testConnection()'>test Connection</div>
                 <div onclick='strincattest()'>sql sandbox</div>
                 <div onclick='showSortTool()'>Sort Folder</div>
@@ -33,6 +34,17 @@
         <div class="middleColumn">
             <img id='dashBoardLoadingGif' alt="spinner" title="loading" class='loadingGif' src='https://common.ogglefiles.com/img/loader.gif' />
             <div id='dashboardContainer' class='fullScreenContainer'>
+                <div class="dashboardTopRow">
+                    <div class="flexbox">
+                        <div>Active Folder<input id="txtCurrentActiveFolder" class="roundedInput" style="width:77%" readonly="readonly"/>
+                        <input id="txtActiveFolderId" class="roundedInput" style="width:44px"  readonly="readonly"/></div>
+                    </div>
+                    <div class="flexbox">
+                        <div class='roundendButton' onclick='launchPage()'>Open Page</div>
+                        <div class='roundendButton' onclick='saveBlogEntry()'>Open Page</div>
+                        <div class='roundendButton' onclick='saveBlogEntry()'>Open Page</div>
+                    </div>
+                </div>
 
                 <div id='addImageLinkDialog' class='fullScreenSection displayHidden'>
                     <div id='addLinkCrudArea' class='addLinkCrudArea'>
@@ -61,8 +73,8 @@
                             </div>
                         </div>
                         <!--<div class='workAreaCloseButton'>
-                            <img style='height:25px' src='https://common.ogglefiles.com/img/powerOffRed01.png' onclick='showDefaultWorkArea()'>
-                        </div>-->
+                <img style='height:25px' src='https://common.ogglefiles.com/img/powerOffRed01.png' onclick='showDefaultWorkArea()'>
+            </div>-->
                     </div>
                     <div id='mmDirTreeContainer' class='floatingDirTreeContainer'></div>
                     <div id='moveManyImageArea' class='workAreaDisplayContainer'></div>
@@ -127,6 +139,12 @@
                 resizePage();
             });
         });
+
+        function launchPage() {
+            
+            let folderId = Number($('#txtActiveFolderId').val());
+            window.open("https://Ogglebooble.com/gallery.html?album=" + folderId);
+        }
         function resizePage() {
             $('#visableArea').css('height', $(window).height() - $('header').height());
             $('#visableArea').css('width', $(window).width());

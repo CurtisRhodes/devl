@@ -1,0 +1,13 @@
+
+
+.explodingImageContainer {
+    position: absolute;
+    display: none;
+    border: solid 2px var(--borderColor); /* #f5d82c;*/
+    
+}
+.explodingInnerContainer {
+    border: solid 2px var(--innerBorderColor); /* : gold; */
+}
+
+

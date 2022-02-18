@@ -1,5 +1,8 @@
 ﻿:root {
     --brucheumBlue: #74bac3;
+    --borderColor: #f5d82c;
+    --innerBorderColor: gold;
+    --brucheumBlue: #74bac3;
     --oggleBackgroundColor: #c1bad1; /*#fef;  #f7eef7  #b081b1 #f8e8e8 */
     --oggleContainerBackgroundColor: #93b798; /* #bc61e4; #d1f5f3; #f8e8e8 */
     --oggleDialogBackgroundColor: #c4c6ae;
@@ -112,6 +115,12 @@ body {
     border-radius: 6px;
     padding: 8px 20px;
     cursor: pointer;
+}
+
+.roundedInput {
+    display: inline-block;
+    border-radius: 6px;
+    padding: 8px 20px;
 }
 
 .centeringOuterShell {

@@ -102,7 +102,7 @@ function getGalleryImages(folderId) {
                     " \nonerror='imageError(\"" + obj.LinkId + "\",\"" + obj.SrcId + "\",\"getChildFolders\")'\n" +
                     " alt='" + obj.LinkId + "' titile='" + obj.SrcFolder + "' \n" +
                     " oncontextmenu='albumContextMenu(\"Image\",\"" + obj.LinkId + "\"," + obj.FolderId + ",\"" + imgSrc + "\")'\n" +
-                    " onclick='callLaunchViewer(\"" + obj.LinkId + "\",false)'/>\n");
+                    " onclick='viewImage(\"" + imgSrc + "\",\"" + obj.LinkId + "\")'/>\n");
             });
             resizeGalleryPage();
         });
@@ -222,32 +222,45 @@ function addBreadcrumb(folderId, folderName, className) {
 
 function setBreadcrumbs(folderId) {
     try {
-        $.getJSON('php/customQuery.php?query=Select * from VwDirTree', function (data) {
-            let dirTreeArray = data;
-            let breadcrumbItem = dirTreeArray.filter(function (item) { return item.Id === folderId; });
-            if (breadcrumbItem.length == 0) {
-                $('#breadcrumbContainer').html("no good");
-                return;
-            }
-            $('#breadcrumbContainer').html(addBreadcrumb(folderId, breadcrumbItem[0].FolderName, "inactiveBreadCrumb"));
-            let parent = breadcrumbItem[0].Parent;
-
-            while (parent > 0) {
-                breadcrumbItem = dirTreeArray.filter(function (item) { return item.Id == parent; });
-                if (isNullorUndefined(breadcrumbItem)) {
-                    parent = 99;
-                    $('#breadcrumbContainer').prepend("item: " + parent + " isNullorUndefined");
+        $.ajax({
+            url: "php/customQuery.php?query=Select * from VwDirTree",
+            success: function (data) {
+                if (data.indexOf("Fatal error") > 0) {
+                    $('#breadcrumbContainer').html(data);
                 }
                 else {
+                    let dirTreeArray = JSON.parse(data);
+                    let breadcrumbItem = dirTreeArray.filter(function (item) { return item.Id === folderId; });
                     if (breadcrumbItem.length == 0) {
-                        $('#breadcrumbContainer').prepend("no good " + parent + " length == 0");
-                        parent = 99;
+                        $('#breadcrumbContainer').html("no good");
+                        return;
                     }
-                    else {
-                        $('#breadcrumbContainer').prepend(addBreadcrumb(parent, breadcrumbItem[0].FolderName, "activeBreadCrumb"));
-                        parent = breadcrumbItem[0].Parent;
+                    $('#breadcrumbContainer').html(addBreadcrumb(folderId, breadcrumbItem[0].FolderName, "inactiveBreadCrumb"));
+                    let parent = breadcrumbItem[0].Parent;
+
+                    while (parent > 0) {
+                        breadcrumbItem = dirTreeArray.filter(function (item) { return item.Id == parent; });
+                        if (isNullorUndefined(breadcrumbItem)) {
+                            parent = 99;
+                            $('#breadcrumbContainer').prepend("item: " + parent + " isNullorUndefined");
+                        }
+                        else {
+                            if (breadcrumbItem.length == 0) {
+                                $('#breadcrumbContainer').prepend("no good " + parent + " length == 0");
+                                parent = 99;
+                            }
+                            else {
+                                $('#breadcrumbContainer').prepend(addBreadcrumb(parent, breadcrumbItem[0].FolderName, "activeBreadCrumb"));
+                                parent = breadcrumbItem[0].Parent;
+                            }
+                        }
                     }
                 }
+            },
+            error: function (jqXHR) {
+                $('#albumPageLoadingGif').hide();
+                let errMsg = getXHRErrorDetails(jqXHR);
+                $('#breadcrumbContainer').html(errMsg);
             }
         });
     } catch (e) {
@@ -269,12 +282,6 @@ function testConnection() {
 
 /*-- click events -----------------------------------*/
 
-function bannerLink(labelText, calledFromFolderId) {
-    return "<div class='headerBannerButton'>" +
-        "<div class='clickable' onclick='rtpe(\"" + labelText + "\"," + calledFromFolderId + ")'>" + labelText + "</div>\n" +
-        "</div>\n";
-      //"<div class='clickable' onclick='rtpe(\"" + labelText + "\"," + calledFromFolderId + ")'>" + labelText + "</div></div>\n";
-}
 function addPgLinkButton(folderId, labelText) {
     return "<div class='headerBannerButton'>" +
         "   <div class='clickable' onclick='rtpe(\"HB2\",\"" + hdrRootFolder + "\"," + hdrFolderId + "," + folderId + ")'>" + labelText + "</div>" +
@@ -481,36 +488,6 @@ function addPgLinkButton(folderId, labelText) {
 }
 
 // REPORT THEN PERFORM EVENT
-function rtpe(labelText, calledFromFolderId) {
-    try {
-        switch (labelText) {
-            case "every playboy centerfold":
-                //logEvent("EPC", calledFromFolderId);
-                window.location.href = "/playboy.html";
-                break;
-            case "Gent Archive":
-                logEvent("GNT", calledFromFolderId);
-                window.location.href = "/album.html?folder=846";
-                break;
-            case "Bond Girls":
-                logEvent("BND", calledFromFolderId);
-                window.location.href = "/album.html?folder=10326";
-                break;
-            case "Oggle Porn":
-                logEvent("PRN", calledFromFolderId);
-                window.location.href = "/index.html?folder=846";
-                break;
-            case "softcore":
-                logEvent("SFT", calledFromFolderId);
-                window.location.href = "/album.html?folder=846";
-                break;
-        }
-    }
-    catch (e) {
-        alert("rtpe: " + e);
-        //logError("CAT", folderId, e, eventCode + "  rtpe/" + calledFrom);
-    }
-}
 
 function performEvent(eventCode, eventDetail, folderId) {
 //        if (eventCode === "PRN") {

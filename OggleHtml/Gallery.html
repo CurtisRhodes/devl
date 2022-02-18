@@ -8,12 +8,14 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
-    <script src="https://common.brucheum.com/js/Common.js"></script>
+    <script src="https://common.ogglefiles.com/js/Common.js"></script>
     <script src="js/OggleBooble.js"></script>
+    <script src="js/Slideshow.js"></script>
 
-    <link href="https://common.brucheum.com/css/Common.css" rel="stylesheet" />
+    <link href="https://common.ogglefiles.com/css/Common.css" rel="stylesheet" />
     <link href="css/GalleryPage.css" rel="stylesheet" />
     <link href="css/OggleBooble.css" rel="stylesheet" />
+    <link href="css/Slideshow.css" rel="stylesheet" />
 </head>
     <body>
         <header id="oggleHeader" class="stickyHeader"></header>
@@ -30,13 +32,18 @@
                     <div id='seoPageName' class="albumPageMetaTitle"></div>
                     <div id="aboveImageContainerMessageArea" class="flexboxMiddleSection"></div>
                     <div id="largeLoadButton" class='albumMsgLink'
-                            title='slideshow includes all child folders'
-                            onclick='launchLargeLoad();'>load all folders</div>
+                         title='slideshow includes all child folders'
+                         onclick='launchLargeLoad();'>load all folders</div>
                     <div id="deepSlideshowButton" class='albumMsgLink'
-                            title='album page with all child folder images'
-                            onclick='launchDeepSlideShow();'>gallery slideshow</div>
+                         title='album page with all child folder images'
+                         onclick='launchDeepSlideShow();'>gallery slideshow</div>
                 </div>
                 <div id="imageContainer" class="galleryContainer"></div>
+                <div id="singleImageOuterContainer" class="explodingImageContainer">
+                    <div id="singleImageContainer" class="explodingImageContainer">
+                        <img id='viewerImage' class='explodingViewerImage' />
+                    </div>
+                </div>
                 <div id="slideShowContainer" class="fullScreenViewer"></div>
                 <div id="galleryBottomfileCount" class="countContainer"></div>
                 <div id="trackbackContainer" class="trackbackLinkContainer">
@@ -71,12 +78,6 @@
                 displayFooter("oggleGallery");
 
                 loadAlbumPage(albumParamFolderId, islargeLoad);
-
-                $('#topRowRightContainer').append(bannerLink("every playboy centerfold", albumParamFolderId));
-                $('#hdrBtmRowSec3').append(bannerLink("Oggle Porn", albumParamFolderId));
-                $('#hdrBtmRowSec3').append(bannerLink("softcore", albumParamFolderId));
-                $('#hdrBtmRowSec3').append(bannerLink("Gent Archive", albumParamFolderId));
-                $('#hdrBtmRowSec3').append(bannerLink("Bond Girls", albumParamFolderId));
 
                 window.addEventListener("resize", resizeGalleryPage);
                 resizeGalleryPage();
