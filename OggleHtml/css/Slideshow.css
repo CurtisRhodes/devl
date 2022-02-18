@@ -7,7 +7,22 @@
     
 }
 .explodingInnerContainer {
-    border: solid 2px var(--innerBorderColor); /* : gold; */
+    /* border: solid 2px var(--innerBorderColor);  : gold; */
+    display: block;
+    border: solid 6px lime;
 }
 
+.slideshowButton {
+    position: relative;
+    display: none;
+    background-color: #876d6dc7;
+    color: #d7d91e;
+    font-weight: bold;
+    cursor: pointer;
+}
 
+.floatingCloseButton {
+    position: relative;
+    right: 10px;
+    display: none;
+}
