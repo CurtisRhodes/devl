@@ -78,23 +78,6 @@
     border-bottom: #407d6e 5px solid;
 }
 
-.headerBannerButton {
-    font-size: 15px;
-    display: inline-block;
-    border: solid 2px #000;
-    border-radius: 10px;
-    padding: 2.5px;
-    color: #000;
-    background-color: aliceblue;
-    margin-left: 4px;
-    margin-top: 4px;
-    cursor: pointer;
-}
-
-    .headerBannerButton a {
-        text-decoration: none;
-    }
-
 .badgeImage {
     height: 31px;
     margin-left: 9px;

@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="utf-8" />
+    <title>CurtisRhodes.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.75">
+    <link rel='shortcut icon' href='Images/Brucheum.ico' type='image/x-icon' />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="Scripts/Common.js"></script>
+    <script src="Scripts/Snippets.js"></script>
+    <script src="Scripts/Headers.js"></script>
+    <script src="Scripts/Footer.js"></script>
+    <link href="Styles/Books.css" rel="stylesheet" />
+    <link href="Styles/Common.css" rel="stylesheet">
+    <link href="Styles/Header.css" rel="stylesheet">
+    <link href="Styles/Footer.css" rel="stylesheet">
+
+</head>
+<body>
+    <header></header>
+    <div id="visableArea" class="threeColumnLayout">
+        <div id="leftColumn"></div>
+        <div id="middleColumn">            
+            <div class="divLibrayPages" id="divBooksRead">Books I am writing</div>
+            <div class="divMyBooks">
+                <div class="divBook" book="The Blond Jew" onclick="showBook(1)">
+                    <img class="bookImage" src="Images/TheBlondJew.jpg" />
+                </div>
+                <div class="divBook" book="Time Squared" onclick="showBook(2)">
+                    <img class="bookImage" src="Images/TimeSquared.jpg" />
+                </div>
+                <div class="divBook" book="Ready; Fire; Aim" onclick="showBook(3)'">
+                    <img class="bookImage" src="Images/ReadyFireAim.jpg" />
+                </div>
+            </div>
+            <div class="divLibrayPages" id="divBooksRead">Books I have Read</div>
+            <div class="divLibrayPages" id="divBooksIOwn">Book I Own</div>
+        </div>
+        <div id="rightColumn"></div>
+    </div>
+    <footer></footer>
+    <script>
+        $(document).ready(function () {
+            loadHeader("Books");
+            $('#leftColumn').html(BrucheumMenu());
+            displayFooter("welcome");
+
+            resizePage();
+            $(window).resize(function () {
+                resizePage();
+            });
+        });
+        function resizePage() {
+            $('#visableArea').css('min-height', $(window).height());
+            //$('.divMyBooks').css('min-height', $(window).height());
+        }
+
+    </script>
+</body>
+</html>

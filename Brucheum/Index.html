@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="utf-8" />
+    <title>CurtisRhodes.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.75">
+    <link rel='shortcut icon' href='Images/Brucheum.ico' type='image/x-icon' />
+    <!--
+        <script src="https ://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <link href="https ://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https ://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+        <script src="https ://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+        <script src="https ://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.js"></script>
+        <script type="text/javascript" src="http ://code.jquery.com/jquery.min.js" charset="utf-8"></script>
+    -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script src="Scripts/Common.js"></script>
+    <script src="Scripts/VerifyConnection.js"></script>
+    <script src="Scripts/Carousel.js"></script>
+    <script src="Scripts/Logging.js"></script>
+    <script src="Scripts/Footer.js"></script>
+    <script src="Scripts/jquery-te-1.4.0.min.js"></script>
+    <script src="Scripts/Books.js"></script>
+    <script src="Scripts/BookEdit.js"></script>
+    <script src="Scripts/ArticleList.js"></script>
+    <script src="Scripts/ArticleView.js"></script>
+    <script src="Scripts/ArticleEdit.js"></script>
+    <script src="Scripts/IntelDesign.js"></script>
+    <script src="Scripts/Snippets.js"></script>
+    <script src="Scripts/Headers.js"></script>
+
+    <link href="Styles/Carousel.css" rel="stylesheet" />
+    <link href="Styles/Common.css" rel="stylesheet">
+    <link href="Styles/loginDialog.css" rel="stylesheet">
+    <link href="Styles/Header.css" rel="stylesheet">
+    <link href="Styles/Footer.css" rel="stylesheet">
+    <link href="Styles/IntelDesign.css" rel="stylesheet">
+    <link href="Styles/ArticleList.css" rel="stylesheet" />
+    <link href="Styles/ArticleView.css" rel="stylesheet" />
+    <link href="Styles/ArticleEdit.css" rel="stylesheet" />
+    <link href="Styles/jqueryUI.css" rel="stylesheet" />
+    <link href="Styles/jquery-te-1.4.0.css" rel="stylesheet" />
+
+</head>
+<body>
+    <header></header>
+    <div id="visableArea" class="threeColumnLayout">
+        <div id="leftColumn"></div>
+        <div id="middleColumn"></div>
+        <div id="rightColumn"></div>
+    </div>
+    <footer></footer>
+    <script>
+        $(document).ready(function () {
+
+                // EnableSessionState=False
+            //host = Request.ServerVariables("HTTP_HOST");
+            //if (host == "http://curtisrhodes.com") {
+            //    alert("redirection to https");
+            //    console.log("redirection to https");
+            //    response.redirect("https://curtisrhodes.com/")
+            //}
+
+
+
+            setIndexPage();
+
+            resizePage();
+            $(window).resize(function () {
+                resizePage();
+            });
+        });
+
+        function resizePage() {
+            // set page width
+            //    var winW = $(window).width();
+            //    var lcW = $('#leftColumn').width();
+            //    var rcW = $('#rightColumn').width();
+            //    $('#middleColumn').width(winW - lcW - rcW);
+
+            //    //set page height
+            //    var winH = $(window).height();
+            //<header></header>
+            //    var headerH = $('header').height();
+            //$('#visableArea').css('min-height', $(window).height() - $('header').height());
+            //$('#testMsg1').html("win.height: " + $(window).height());
+            //$('#testMsg2').html("header.hgt: " + $('header').height());
+            //$('#testMsg3').html("visableAra: " + $('#visableArea').height());
+            $('#visableArea').css('min-height', $(window).height());
+        }
+    </script>
+</body>
+</html>

@@ -356,12 +356,15 @@ function displayHeader(headerContext) {
     $('#hdrBtmRowSec3').html("");
     switch (headerContext) {
         case "oggleIndex":
-            document.title = "document.title";
-            //$("#divLoginArea").hide();
+            document.title = "OggleBooble : Home of the Big Naturals";
             $('#fancyHeaderTitle').html("OggleBooble");
             $('#topHeaderRow').html("Home of the Big Naturals");
             $('#topRowRightContainer').append(bannerLink("every playboy centerfold", 3908));
             $('#topRowRightContainer').append(bannerLink("Bond Girls", 3908));
+            break;
+        case "slideshow":
+            $('#fancyHeaderTitle').html("OggleBooble");
+            $('#topHeaderRow').html("Slideshow");
             break;
         case "oggleGallery":
             $('#fancyHeaderTitle').html("OggleBooble");
@@ -551,7 +554,7 @@ function setTopHeaderRow(headerContext) {
             break;
         }
         default: {
-            logCatch("topHeaderRow", e);
+            console.log("no top header row set for: " + headerContext);
         }
     }
 }

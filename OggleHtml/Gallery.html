@@ -9,12 +9,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
     <script src="https://common.ogglefiles.com/js/Common.js"></script>
-    <script src="js/OggleBooble.js"></script>
+    <script src="js/Gallery.js"></script>
     <script src="js/Slideshow.js"></script>
 
     <link href="https://common.ogglefiles.com/css/Common.css" rel="stylesheet" />
     <link href="css/GalleryPage.css" rel="stylesheet" />
-    <link href="css/OggleBooble.css" rel="stylesheet" />
     <link href="css/Slideshow.css" rel="stylesheet" />
 </head>
     <body>
@@ -81,9 +80,14 @@
 
                 loadAlbumPage(albumParamFolderId, islargeLoad);
 
-                window.addEventListener("resize", resizeGalleryPage);
+                window.addEventListener("resize", callResizeGalleryPage);
                 resizeGalleryPage();
             });
+
+            function callResizeGalleryPage() {
+                resizeGalleryPage();
+                alert('callResizeGalleryPage');
+            }
 
             function resizeGalleryPage() {
                 $('#visableArea').css('height', $(window).height() - $('header').height());
