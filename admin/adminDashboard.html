@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Admin - OggleBooble.com</title>
+    <link rel='shortcut icon' href='https://common.ogglefiles.com/img/Brucheum.ico' type='image/x-icon' />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=.07">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+    <script src="https://common.ogglefiles.com/js/Common.js"></script>
+    <link href="https://common.ogglefiles.com/css/Common.css" rel="stylesheet" />
+</head>
+<body>
+    <header id="oggleHeader" class="stickyHeader boobsHeader"></header>
+    <img id="maintLoadingGif" class="loadingGif" title='loading' alt='' src="img/loader.gif" />
+    <div id="visableArea" class="threeColumnLayout">
+        <div id="leftColumnArea" class="leftColumn">
+            <div id="promoMessagesContainer" class="promoBox"></div>
+        </div>
+        <div class="middleColumn">
+            <div id="divStatusMessage"></div>
+            <div id="indexMiddleColumn" class="dataArea">
+
+                <div class="linkBlocksContainer">
+                    <div class="linkBlock" onclick="window.location.href='OggleDashboard.html'"><div>Oggle dashboard</div></div>
+                    <div class="linkBlock" onclick="window.location.href='BrucheumDashboard.html'"><div>Brucheum dashboard</div></div>
+                    <div class="linkBlock" onclick="window.location.href='OggleDashboard.html'"><div>Reports</div></div>
+                    <div class="linkBlock" onclick="window.location.href='OggleDashboard.html'"><div>Metrics</div></div>
+                    <div class="linkBlock" onclick="window.location.href='OggleDashboard.html'"><div>GetaGig dashboard</div></div>
+                    <div class="linkBlock" onclick="window.location.href='OggleDashboard.html'"><div>Oggle dashboard</div></div>
+                    <!--<div class="linkBlock" onclick="showAddFoldersDialog()"><div>add folders</div></div>
+                    <div class="linkBlock"><div>clean folders</div></div>
+                    <div class="linkBlock"><div>Oggle dashboard</div></div>-->
+                </div>
+            </div>
+        </div>
+        <div id="rightColumnArea" class="rightColumn"></div>
+    </div>
+    <footer class="ogglefooter"></footer>
+
+    <script>
+        $(document).ready(function () {
+            displayHeader("admin");
+            displayFooter("welcome");
+            resizePage();
+            $(window).resize(function () { resizePage(); });
+        });
+        function resizePage() {
+            $('#visableArea').css('min-height', $(window).height());
+        }
+    </script>
+</body>
+</html>

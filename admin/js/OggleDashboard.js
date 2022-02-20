@@ -1,6 +1,9 @@
 ﻿// let settingsImgRepo = 'https://img.brucheum.com/';
 // let settingsImgRepo = 'st21569.ispot.cc/danni/';
 let settingsImgRepo = 'https://ogglefiles.com/danni/';
+// let filePath = "/home/st21569/domains/ogglefiles.com/public_html/danni/";
+let filePath = "danni/";
+
 
 function showReportsSection() {
     $('.fullScreenSection').hide();
@@ -37,14 +40,13 @@ function getDashboardStartRoot() {
     $('#floatingDialogBox').css("left", "250px");
     $('#txtRoot').focus();
 }
-
 function performBuildDirTree() {
     let startRoot = $('#selDirTreeRoot').val();
-    if (startRoot === "0")
-        startRoot = $('#txtRoot').val();
+    if ((startRoot === "0") || (isNullorUndefined(startRoot))) {
+        startRoot = 10326
+    }
     buildDirTree(startRoot);
 }
-
 
 // CREATE NEW FOLDER
 function showCreateNewFolderDialog() {
@@ -101,7 +103,6 @@ function performCreateNewFolder() {
     });
 }
 
-
 // ADD NEW IMAGES
 function showImportDialog() {
     $('#dashboardDialogTitle').html("add new images");
@@ -119,6 +120,40 @@ function importNewImages() {
     // 
 
 
+}
+
+// PHP DISK OPERATIONS
+function showFiles() {
+    try {
+        let infoStart = Date.now();
+        //let pathTest = "ftp//storage1400.is.cc/domains/ogglefiles.com/public_html/danni/";
+        let pathTest = "/ogglefiles.com/public_html/danni/" + $('#txtCurrentActiveFolder').val();
+        console.log("pathTest: " + pathTest);
+        $.ajax({
+            //url: 'php/getDirectoryFiles.php?path=' + pathTest + $('#txtCurrentActiveFolder').val(),
+            url: 'php/getDirectoryFiles.php?path=".."',
+            success: function (data) {
+                if (data == "false") {
+                    $('#serverFileList').html("folder not found: " + pathTest + $('#txtCurrentActiveFolder').val());
+                }
+                else {
+                    let serverFileListArray = JSON.parse(data);
+                    $('#serverFileList').html("");
+                    $.each(serverFileListArray, function (idx, obj) {
+                        $('#serverFileList').append(obj);
+                    });
+                    let delta = (Date.now() - infoStart) / 1000;
+                    console.log("showFiles took: " + delta.toFixed(3));
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                alert("showFiles: " + errMsg);
+            }
+        });
+    } catch (e) {
+        logCatch("showFiles", e);
+    }
 }
 
 // REPAIR FUNCTIONS
