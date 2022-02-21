@@ -36,8 +36,10 @@
             <div id='dashboardContainer' class='fullScreenContainer'>
                 <div class="dashboardTopRow">
                     <div class="flexbox">
-                        <div>Active Folder<input id="txtCurrentActiveFolder" class="roundedInput" style="width:77%" readonly="readonly"/>
-                        <input id="txtActiveFolderId" class="roundedInput" style="width:44px"  readonly="readonly"/></div>
+                        <div>
+                            Active Folder<input id="txtCurrentActiveFolder" class="roundedInput" style="width:77%" readonly="readonly" />
+                            <input id="txtActiveFolderId" class="roundedInput" style="width:44px" readonly="readonly" />
+                        </div>
                     </div>
                     <div class="flexbox">
                         <div class='roundendButton' onclick='launchPage()'>Open Page</div>
@@ -45,11 +47,15 @@
                         <div class='roundendButton' onclick='saveBlogEntry()'>Folder Details</div>
                     </div>
                 </div>
+
                 <div id="serverFileListContainer" class="dashboardFileList">
-                    <div id="serverFileListHeader">
-                        <div id="serverFileListHeaderTitle"></div>
-                        "<img height="31" title='you may use the {esc} key' src='https://common.ogglefiles.com/img/close.png' onclick="closeDashboardFileList()" />
-                </div>
+                    <div id="serverFileListHeader"  class="dashboardFileListHeader">
+                        <div id="serverFileListHeaderTitle">ffff</div>
+                        <img height="31" title='you may use the {esc} key' 
+                              class="serverFileListHeaderCloseButton"
+                              src='https://common.ogglefiles.com/img/close.png' 
+                              onclick="closeDashboardFileList()" />
+                    </div>
                     <div id="serverFileList"></div>
                 </div>
 
@@ -138,6 +144,7 @@
         $(document).ready(function () {
             displayHeader("OggleDashboard");
             displayFooter("welcome");
+            $('#serverFileListContainer').hide();
 
             performBuildDirTree();
 
@@ -147,11 +154,11 @@
             });
         });
 
-        function launchPage() {
-            
+        function launchPage() {            
             let folderId = Number($('#txtActiveFolderId').val());
             window.open("https://Ogglebooble.com/gallery.html?album=" + folderId);
         }
+
         function resizePage() {
             $('#visableArea').css('height', $(window).height() - $('header').height());
             $('#visableArea').css('width', $(window).width());

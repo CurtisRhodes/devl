@@ -5,13 +5,23 @@
 }
 
 .dashboardFileList {
-    display: none;
+    display: inline-block;
     overflow: auto;
     margin: 2px;
     border: solid 1px #decd6f;
     padding: 8px;
 }
-
+.dashboardFileListHeader {
+    display: flex;
+    font-size: large;
+    border-bottom: solid 2px black;
+}
+.serverFileListHeaderCloseButton {
+    cursor: pointer;
+    position: relative;
+    right: -55px;
+    top: -5px;
+}
 .expadoContainer {
     /*  border: solid 0.75px red; */
     margin: 0.25px;
