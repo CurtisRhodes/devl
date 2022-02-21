@@ -45,7 +45,13 @@
                         <div class='roundendButton' onclick='saveBlogEntry()'>Folder Details</div>
                     </div>
                 </div>
-                <div id="serverFileList"></div>
+                <div id="serverFileListContainer" class="dashboardFileList">
+                    <div id="serverFileListHeader">
+                        <div id="serverFileListHeaderTitle"></div>
+                        "<img height="31" title='you may use the {esc} key' src='https://common.ogglefiles.com/img/close.png' onclick="closeDashboardFileList()" />
+                </div>
+                    <div id="serverFileList"></div>
+                </div>
 
                 <div id='addImageLinkDialog' class='fullScreenSection displayHidden'>
                     <div id='addLinkCrudArea' class='addLinkCrudArea'>
@@ -150,6 +156,7 @@
             $('#visableArea').css('height', $(window).height() - $('header').height());
             $('#visableArea').css('width', $(window).width());
             $('#dirTreeContainer').css('height', $('#visableArea').height());
+            $('#serverFileList').css('height', $('#visableArea').height());
 
             $('footer').css('width', $(window).width());
             //$('#hdrBtmRowSec3').html("$(window).height(): " + $(window).height() + " $('header').height(): " + $('header').height());

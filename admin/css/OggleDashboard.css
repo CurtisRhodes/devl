@@ -4,6 +4,14 @@
     border-bottom: #decd6f 3px solid;
 }
 
+.dashboardFileList {
+    display: none;
+    overflow: auto;
+    margin: 2px;
+    border: solid 1px #decd6f;
+    padding: 8px;
+}
+
 .expadoContainer {
     /*  border: solid 0.75px red; */
     margin: 0.25px;
@@ -72,6 +80,7 @@ flexbox {
 }
 
 .fullScreenContainer {
+    
 }
 
 .fullScreenSection {
