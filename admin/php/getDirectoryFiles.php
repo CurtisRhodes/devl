@@ -11,7 +11,7 @@ try
 
     foreach ($files as $file) {
 
-        if ( is_dir($file) ) {
+        if(is_dir($path.'/'.$file)) {
            $results[] = ['name' => $file,'type' => 'dir'];
         }
         else{

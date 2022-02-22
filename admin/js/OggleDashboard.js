@@ -212,6 +212,7 @@ function showFiles() {
         checkForOrphanImageFileRecords($('#txtCurrentActiveFolder').val(), $('#txtActiveFolderId').val(), justOne);
     }
 
+    let serverFilesArray = [];
     function checkForOrphanImageFileRecords(startFolderPath, startFolderId, recurr) {
         try {
             let path = "../../danni/" + startFolderPath;
@@ -232,19 +233,14 @@ function showFiles() {
                                 $('#serverFileList').html("data: " + data);
                             }
                             else {
-                                let serverFilesArray = JSON.parse(data);
-
-                                let serverFileCount = serverFilesArray.length;
-
-                                //let serverFileCount = Object.keys(objServerFiles).length;
-
+                                serverFilesArray = JSON.parse(data);
                                 $.ajax({
                                     url: "php/getImageFiles.php?folderId=" + startFolderId,
                                     success: function (data) {
                                         let imageFileRows = JSON.parse(data);
 
-                                        console.log("imageFiles.count(" + imageFileRows.length + ") , serverFileListArray.count(" + serverFileCount + ")");
-                                        if (imageFileRows.length < serverFileCount) {
+                                        console.log("imageFiles.count(" + imageFileRows.length + ") , serverFileListArray.count(" + serverFilesArray.length + ")");
+                                        if (imageFileRows.length < serverFilesArray.length) {
                                             console.log("more physcial files than ImageFile rows");
                                         }
 
@@ -254,19 +250,6 @@ function showFiles() {
                                             if (physcialFile == null) {
                                                 repairReport.OrphanImageArray.push("<input style='width:500px' value=" + encodeURI(imageFileRow.FileName) + " />");
                                             }
-
-                                            //let found = false;
-                                            //let dotAdjustment = 2;
-                                            //for (i = dotAdjustment; i < serverFileCount + dotAdjustment; i++) {
-                                            //    if (imageFileRow.FileName == objServerFiles[i]) {
-                                            //        found = true;
-                                            //        break;
-                                            //    }
-                                            //}
-                                            //if (!found) {
-                                            //    // delete this physcial ImageFile
-                                            //    repairReport.OrphanImageArray.push("<input style='width:500px' value=" + encodeURI(imageFileRow.FileName) + " />");
-                                            //}
                                             repairReport.PhyscialFilesProcessed++;
                                         });
 
@@ -293,14 +276,9 @@ function showFiles() {
                         }
 
                         if (recurr) {
-
-                            //let physcialFile = serverFilesArray.filter(node => node.name == imageFileRow.FileName);
-
                             $.each(serverFilesArray, function (idx, obj) {
                                 if (obj.type == "dir") {
-
-                                    //checkForOrphanImageFileRecords(startFolderPath, startFolderId, recurr)
-
+                                    checkForOrphanImageFileRecords(startFolderPath + "/" + obj.name, obj.folderId, recurr);
                                 }
                             });
                         }
