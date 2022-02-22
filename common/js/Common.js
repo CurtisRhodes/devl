@@ -355,6 +355,13 @@ function displayHeader(headerContext) {
     $('#badgesContainer').html("");
     $('#hdrBtmRowSec3').html("");
     switch (headerContext) {
+        case "brucheum":
+            $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/house.gif");
+            $('#fancyHeaderTitle').html("The Brucheum");
+            $('#topHeaderRow').html("");
+            $('#searchBox').hide();
+            showLogin(false);
+            break;
         case "oggleIndex":
             document.title = "OggleBooble : Home of the Big Naturals";
             $('#fancyHeaderTitle').html("OggleBooble");
@@ -384,7 +391,7 @@ function displayHeader(headerContext) {
         case "OggleDashboard":
             $('#fancyHeaderTitle').html("OggleBooble.com");
             $('#topHeaderRow').html("admin");
-            $('#divSiteLogo').attr("src","https://admin.ogglefiles.com/img/adminPanel01.png");
+            $('#divSiteLogo').attr("src","https://common.ogglefiles.com/img/adminPanel01.png");
             $('#fancyHeaderTitle').html("Oggle Dashboard");
             break;
         case "admin":
@@ -393,10 +400,17 @@ function displayHeader(headerContext) {
             $('#topHeaderRow').html("admin");
             $('#searchBox').hide();            
             break;
+        case "IntelDesign":
+            document.title = "Intelligent Design Software : CurtisRhodes.com";
+            $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/intel01.jpg");
+            $('#fancyHeaderTitle').html("Intelligent Design Software");
+            break;
         case "blog": {
-            document.title = "blog : Brucheum.com";
-            $('#fancyHeaderTitle').html("Brucheum.com");
+            document.title = "blog : CurtisRhodes.com";
+            $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/house.gif");
+            $('#fancyHeaderTitle').html("CurtisRhodes.com");
             $('#topHeaderRow').html("blog");
+            $('#searchBox').hide();
             break;
         }
         case "bond":
@@ -565,11 +579,11 @@ function changeFavoriteIcon(headerContext) {
         link.type = 'image/x-icon';
         link.rel = 'shortcut icon';
         switch (headerContext) {
-            case "brucheum": link.href = 'Images/Brucheum.ico'; break;
+            case "brucheum": link.href = 'https://common.ogglefiles.com/img/Brucheum.ico'; break;
             case "playboy": link.href = 'img/playboyBallon.png'; break;
-            case "intelDesign": link.href = 'Images/intel01.jpg'; break;
-            case "getaJob": link.href = 'Images/GetaJob.png'; break;
-            case "loading": link.href = "Images/loader.gif"; link.type = 'image/gif'; break;
+            case "intelDesign": link.href = 'https://common.ogglefiles.com/img/intel01.jpg'; break;
+            case "getaJob": link.href = 'https://common.ogglefiles.com/img/GetaJob.png'; break;
+            case "loading": link.href = "https://common.ogglefiles.com/img/loader.gif"; link.type = 'image/gif'; break;
             case "redBallon": link.href = 'Images/favicon.png'; break;
             default: link.href = 'Images/Brucheum.ico'; break;
         }
@@ -627,6 +641,20 @@ function showHamburger() {
     $('#hamburgerCtx').show();
 }
 
+function showLogin(isLoggedIn, userName) {
+    if (isLoggedIn) {
+        $('#spnUserName').html(userName);
+        $('#optionNotLoggedIn').hide();
+        $('#optionLoggedIn').show();
+        $('#footerCol5').show();
+    }
+    else {
+        $('#optionLoggedIn').hide();
+        $('#optionNotLoggedIn').show();
+        $('#footerCol5').hide();
+    }
+}
+
 function headerHtml() {
     return "<div class='siteLogoContainer' onclick='topLogoClick()' >" +
         "       <img id='divSiteLogo' title='home' class='siteLogo' src='https://common.ogglefiles.com/img/redballon.png'/>" +
@@ -674,7 +702,7 @@ function headerHtml() {
         "           <div id='centeredDialogHeader'class='floatingDialogHeader' onmousedown='centeredDialogEnterDragMode()' onmouseup='centeredDialogCancelDragMode()'>" +
         "               <div id='centeredDialogTitle' class='floatingDialogTitle'></div>" +
         "               <div id='centeredDialogCloseButton' class='dialogCloseButton'>" +
-        "               <img src='https://common.ogglefiles.com/img/powerOffRed01.png' onclick='centeringDialogClose()'/></div>\n" +
+        "               <img src='https://common.ogglefiles.com/img/close.png' onclick='centeringDialogClose()'/></div>\n" +
         "           </div>\n"+
         "           <div id='centeredDialogContents' class='floatingDialogContents'></div>\n"+
         "      </div>\n"+
@@ -684,13 +712,13 @@ function headerHtml() {
         "<div id='floatingDialogBox' class='floatingDialogContainer displayHidden'>\n"+
         "    <div class='floatingDialogHeader'>\n"+
         "        <div \id='floatingDialogBoxTitle' class='floatingDialogTitle'></div>\n" +
-        "        <div class='dialogCloseButton'><img src='https://common.ogglefiles.com/img/powerOffRed01.png' onclick='$('#dfloatingDialogBox').hide()'/></div>\n" +
+        "        <div class='dialogCloseButton'><img src='https://common.ogglefiles.com/img/close.png' onclick='$('#dfloatingDialogBox').hide()'/></div>\n" +
         "    </div>\n" +
         "    <div id='floatingDialogContents' class='floatingDialogContents'></div>\n" +
         "</div>\n" +
 
         "<div id='customDirTreeContainer' class='dirTreeImageContainer floatingDirTreeImage'>\n" +
-        "   <img class='customDirTreeImage'/>\n" +
+        "   <img class='customDirTreeImage' src='https://common.ogglefiles.com/img/close.png'/>\n" +
         "</div>\n" +
 
         "<div id='vailShell' class='modalVail'></div>\n" +

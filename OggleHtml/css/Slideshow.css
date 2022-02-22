@@ -193,12 +193,10 @@
 }
 
 #leftClickArea {
-    /*cursor: url('https://ogglebooble.com/images/leftArrowcursor.png'), sw-resize;*/
     cursor: pointer;
 }
 
 #rightClickArea {
-    /*cursor: url('https://ogglebooble.com/images/rightArrowcursor.png'), ne-resize;*/
     cursor: pointer;
 }
 

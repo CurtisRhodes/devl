@@ -1,4 +1,8 @@
-﻿.dashboardTopRow {
+﻿body {
+    background-color: #dcd7be;
+}
+
+.dashboardTopRow {
     padding-top: 11px;
     padding-bottom: 3px;
     border-bottom: #decd6f 3px solid;
@@ -29,7 +33,6 @@
 }
 
 .dirTreeArea {
-    background-color: #dcd7be;
     overflow: auto;
     margin-right: 33px;
     border-left: #decd6f 3px solid;

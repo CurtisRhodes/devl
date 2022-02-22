@@ -24,7 +24,7 @@ function displaySkillsCloud() {
     $('#middleColumn').html(`
         <div class='whiteContrastBackground'>
             <h2>My Skills</h2>
-            <div id="skillsloadingGif" class="loadingGif"><img src="Images/loader.gif" /></div>
+            <div id="skillsloadingGif" class="loadingGif"><img src="https://common.ogglefiles.com/img/loader.gif" /></div>
             <div id="skillsCloud" class="wordCloudContainer"></div>
             <div class="centeredDivShell">
                 <div id="skillDetails" class="centeredDivInner skillDialogPopupBox" onmouseout="$(this).fadeOut()" onclick="$(this).fadeOut()">
@@ -86,7 +86,7 @@ function displayMyResume() {
     document.title = "my resume : CurtisRhodes.com";
     $('#middleColumn').html(`
         <div id="resumeSectionContainer" class="resumeContainer">
-            <div id="resumeLoadingGif" class="loadingGif"><img src="Images/loader.gif" /></div>
+            <div id="resumeLoadingGif" class="loadingGif"><img src="https://common.ogglefiles.com/img/loader.gif" /></div>
             <div id="resumeTopSection"></div>
             <div id="resumeJobSection"></div>
             <div id="resumeBottomSection"></div>

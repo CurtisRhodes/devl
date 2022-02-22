@@ -1,0 +1,218 @@
+﻿
+.divMyBooks {
+    margin-top: 55px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 95px;
+}
+
+.divBook {
+    float: left;
+    margin-right: 70px;
+}
+.bookTitle {
+    margin-top: 14px;
+    font-size: 33px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight: bold;
+    font-style: italic;
+    text-align: center;
+    padding-bottom: 2px;
+    cursor: pointer;
+}
+
+.bookImage {
+    height: 235px;
+    width: 210px;
+    box-shadow: 5px 4px rgba(128, 128, 128, 0.40);
+    cursor: pointer;
+}
+
+.divLibrayPages {
+    font-size: 24px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left: 200px;
+    margin-bottom: 45px;
+}
+
+.toCcontainer {
+    box-sizing: border-box;
+    margin-top: 33px;
+    padding: 16px 145px;
+}
+
+.chapterContainer {
+    display: flex;
+    cursor: pointer;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.chapterName {
+    float: left;
+    font-family: 'Georgia';
+    font-size: 22px;
+    font-weight: bold;
+    padding-right: 6px;
+    white-space: nowrap;
+}
+
+.dots {
+    float: left;
+    border-bottom: dotted 5px #214c87;
+    width: 100%;
+}
+
+.divCaret {
+    padding-left: 6px;
+    float: right;
+}
+
+    .divCaret img {
+        margin-bottom: -20px;
+        height: 15px;
+    }
+
+.tocSectionContainer {
+    display: none;
+    padding-left: 100px;
+}
+
+.divSection {
+    font-family: 'Georgia';
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    cursor: pointer;
+}
+
+.divSubsections {
+    padding-left: 50px;
+}
+
+.divSubSection {
+    font-family: 'Georgia';
+    font-size: 18px;
+    margin-bottom: 4px;
+    cursor: pointer;
+}
+
+.hiddenContainer {
+    display: none;
+}
+
+.block {
+    display: block;
+}
+
+.paupaStyle {
+    font-family: 'Georgia';
+    margin-top: 15px;
+    background-color: #ddd69f;
+}
+
+.paupaBorderContainer {
+    width: 48%;
+    height: 50px;
+    background-color: rgb(247,240,214);
+}
+
+.full {
+    width: 100%;
+}
+
+.inlineRelative {
+    display: inline;
+    position: relative;
+}
+
+.paupaPageColor {
+    background-color: rgb(247,240,214);
+}
+
+.paupaPage {
+    background-color: rgb(247,240,214);
+    font-family: 'Times New Roman';
+    font-size: 17px;
+    text-align: justify;
+    width: 48%;
+    overflow-y: auto;
+}
+.paupaInnerEditorContainer {
+    display: block;
+    border: solid thin black;
+    overflow-y: auto;
+}
+.paupaLeftColumnButtonContainer {    
+    margin-top: 66px;
+    margin-left: 26px;
+}
+    .paupaLeftColumnButtonContainer div {
+        display: block;
+        cursor: pointer;
+        text-decoration: underline;
+        margin-bottom: 12px;
+    }
+
+.dirtyStatusImage {
+    margin-top: 100px;
+    height: 25px; 
+}
+
+
+.bookPreface {
+    /*margin: 5px 166px;*/
+    text-align: center;
+    font-size: 15px;
+    margin:40px 200px;
+    font-style: italic;
+    color: #821c1c;
+    font-weight: bold;
+}
+
+.chapterHeader {
+    font-family: Verdana;
+    clear: left !important;
+    font-size: 20px;
+    margin-left: 44px;
+    padding-bottom: 2px;
+    width: 100%;
+}
+
+.sectionHeader {
+    clear: left !important;
+    font-size: 24px;
+    margin-left: 88px;
+    padding: 6px;
+}
+
+.subSectionHeader {
+    font-size: 22px;
+    margin-left: 114px;
+    padding-top: 6px;
+}
+
+.sectionContents {
+    padding: 2px 11px;
+    text-align: justify;
+    font-size: 18px;
+}
+
+.inlineLabel {
+    position: absolute;
+    display: inline;
+    margin-top: 15px;
+    font-size: 18px;
+}
+
+.cosmic01 {
+    background-color: #98d1d3;
+    height: 666px;
+    overflow-y: auto;
+}
+.noWrap {
+    white-space: nowrap;
+}

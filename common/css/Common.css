@@ -25,14 +25,12 @@
 }
 
 body {
-    background-color: var(--oggleBackgroundColor);
     font-family: Verdana;
     font-size: var(--normalFont);
 }
 
 .threeColumnLayout {
     width: 100%;
-    background-color: var(--oggleBackgroundColor);
     display: flex;
 }
 

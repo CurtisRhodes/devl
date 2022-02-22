@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="utf-8" />
+    <title>The Brucheum</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.75">
+    <link rel='shortcut icon' href='https://common.ogglefiles.com/img/Brucheum.ico' type='image/x-icon' />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+    <script src="https://common.ogglefiles.com/js/Common.js"></script>
+
+    <link href="https://common.ogglefiles.com/css/Common.css" rel="stylesheet" />
+    <link href="css/Brucheum.css" rel="stylesheet" />
+
+</head>
+<body>
+    <header class="stickyHeader"></header>
+    <div id="visableArea" class="threeColumnLayout">
+        <div id="leftColumn">
+            <div id="tanBlue" class="vMenu">
+                <div id="itemIntelDesgn" class="tabvMenuItem" onclick="window.location.href='index.html?spa=IntelDesign'">
+                    <img src="img/TanBlue/IntelligentDesignTan.png" onmouseover="this.src='img/TanBlue/IntelligentDesignBlue.png'" onmouseout="this.src='img/TanBlue/IntelligentDesignTan.png'" />
+                </div>
+                <div id="itemBlondJew" class="tabvMenuItem" onclick="showBook(1)">
+                    <img src="img/TanBlue/BlondJewTan.png" onmouseover="this.src='img/TanBlue/BlondJewBlue.png'" onmouseout="this.src='img/TanBlue/BlondJewTan.png'" />
+                </div>
+                <div id="itemBrucheum" class="tabvMenuItem" onclick="displayOldWebsite()">
+                    <img src="img/TanBlue/OggleBoobleTan.png" onmouseover="this.src='img/TanBlue/OggleBoobleBlue.png'" onmouseout="this.src='img/TanBlue/OggleBoobleTan.png'" />
+                </div>
+                <div class="tabvMenuItem" onclick="displayFlitter()">
+                    <img src="img/TanBlue/FlitterTan.png" onmouseover="this.src='img/TanBlue/FlitterBlue.png'" onmouseout="this.src='img/TanBlue/FlitterTan.png'" />
+                </div>
+                <div class="tabvMenuItem" onclick="window.location.href='index.html?spa=GetaGig'">
+                    <img src="img/TanBlue/GetaJobTan.png" onmouseover="this.src='img/TanBlue/GetaJobBlue.png'" onmouseout="this.src='img/TanBlue/GetaJobTan.png'" />
+                </div>
+                <div class="tabvMenuItem" onclick="window.location.href='showbook(2)">
+                    <img src="img/TanBlue/TimeSquaredTan.png" onmouseover="this.src='img/TanBlue/TimeSquaredBlue.png'" onmouseout="this.src='img/TanBlue/TimeSquaredTan.png'" />
+                </div>
+                <div id="item2aT" class="tabvMenuItem" onclick="display2aT()">
+                    <img src="img/TanBlue/ToATeeTan.png" onmouseover="this.src='img/TanBlue/ToATeeBlue.png'" onmouseout="this.src='img/TanBlue/ToATeeTan.png'" />
+                </div>
+            </div>`
+        </div>
+        <div id="middleColumn">
+            <div id="bruchCaveImage" class="caveImage"></div>
+        </div>
+        <div id="rightColumn"></div>
+    </div>
+    <footer></footer>
+    <script>
+        $(document).ready(function () {
+
+            displayHeader("brucheum");
+            showLogin(false);
+            $('#topHeaderRow').html("welcome");
+            $("#breadcrumbContainer").html(`
+                <div class='hoverTab'><a href='javascript:displayArticleList(0)'>Latest Articles</a></div>\n
+                <div class='hoverTab'><a href='books.html'>Books</a></div>\n
+                <div class='hoverTab'><a href='javascript:displayCustomPage(\"Apps\")'>Apps</a></div>\n
+                <div class='hoverTab'><a href='IntelDesign.html'>Intelligent Design</a></div>\n
+                <div class='hoverTab'><a href='javascript:displayCustomPage(\"GetaGig\")'>Get a Gig</a></div>\n
+                <div class='hoverTab'><a href='https://ogglefiles.com/admin'>Admin</a></div>\n`
+            );
+
+            resizePage();
+            $(window).resize(function () {
+                resizePage();
+            });
+        });
+        function resizePage() {
+            $('#visableArea').css('min-height', $(window).height());
+        }
+    </script>
+</body>
+</html>

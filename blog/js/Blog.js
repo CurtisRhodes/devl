@@ -238,7 +238,6 @@ function loadRefs() {
 function clearBlogGets() {
     // $('#txtommentTile').val($('#txtLnk').val("");
     $('#sumernoteContainer').summernote('cde', "");
-    //$('#imgBlogLink').attr("src"" "http:/boobs.ogglebooble.com/images/redballon.png" );
     $('#imgBlogLink').attr("src", "");
     blogObject.Id = "";
 }
@@ -317,61 +316,3 @@ function btnNewCancelAction() {
     }
 }
 
-function testConnection() {
-    $.ajax({    //create an ajax request to display.php
-        type: "GET",
-        url: "php/validateConnection.php",
-        dataType: "html",   //expect html to be returned                
-        success: function (response) {
-            $("#blogArticleJogArea").html(response);
-        }
-    });
-}
-
-
-
-    //$('#leftColumnArea').html("<div class='blogLeftColumn'>
-    //     +
-    //);
-
-    // ref	CommentType	count(*)
-    // CMT	Comment on an Image	126
-    // PRO	Promo Messages	18
-    // PBE	Public Blog Post	17
-    // PGM	Programmer Notes	12
-    // CON	Site Content	11
-    // if (isInRole("BLG")) {
-    // if (document.domain === 'localhost') alert("is in role blog editor");
-    // $('.adminOnly').show();
-    // $('.blogEditButton').show();
-    // $('#footerMessage').html("blog Editor");
-    //}
-    //function displayBlogEditHtml() {
-    //$('#indexMiddleColumn').html(
-    //);
-    //$('#summernoteContainer').summernote({
-    //toolbar: [['codeview']],
-    //height: "300" ,
-    //dialogsInBody: true
-    //});
-    //$(".note-editable").css('font-size', '19px' );
-    //}
-    //<img id='betaExcuse' class='floatingFlow' src='/Images/beta.png" +
-    // title='I hope you are enjoying my totally free website.\nDuring Beta you can expect continual changes." +
-    // \nIf you experience problems please press Ctrl-F5 to clear your browser cache to make sure you have the most recent html and javascript." +
-    // \nIf you continue to experience problems please send me feedback using the footer link.'/>" + websiteName + "</div >
-
-
-
-
-    //<div class="">
-    //    <div class='floatleft'>
-    //        <img class="blogArticleJogImage" src="`+ settingsImgRepo + blogComment.ImgSrc + `"
-    //            onclick="viewBlogEntry('` + blogComment.PkId + `');" />
-    //    </div>
-    //    <div class='floatleft'>
-    //        <div class="blogArticleTitle"></div>
-    //        <div class="blogArticleText"></div>
-    //        <div class="clickable" onclick="editBlogEntry('`+ blogComment.PkId + `');"> ...</div>
-    //    </div>
-    //</div>

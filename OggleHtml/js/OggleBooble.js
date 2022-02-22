@@ -85,9 +85,7 @@ function testConnection() {
     });
 }
 
-
 /*-- click events -----------------------------------*/
-
 function addPgLinkButton(folderId, labelText) {
     return "<div class='headerBannerButton'>" +
         "   <div class='clickable' onclick='rtpe(\"HB2\",\"" + hdrRootFolder + "\"," + hdrFolderId + "," + folderId + ")'>" + labelText + "</div>" +
@@ -260,19 +258,6 @@ function resetOggleHeader(folderId, rootFolder) {
         default:
             logError("SWT", 1117705, "switch case: " + rootFolder, "reset OggleHeader");
             window.location.href = "Index.html";
-    }
-
-    if (localStorage["IsLoggedIn"] == "true") {
-        //getCookieValue("IsLoggedIn", "reset OggleHeader") == "true") {
-        $('#spnUserName').html(getCookieValue("UserName", "reset OggleHeader"));
-        $('#optionNotLoggedIn').hide();
-        $('#optionLoggedIn').show();
-        $('#footerCol5').show();
-    }
-    else {
-        $('#optionLoggedIn').hide();
-        $('#optionNotLoggedIn').show();
-        $('#footerCol5').hide();
     }
 }
 

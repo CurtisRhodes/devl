@@ -25,7 +25,7 @@
         <div class="middleColumn">
             <div id="divStatusMessage"></div>
             <div id="dots"></div>
-            <img id="indexPageLoadingGif" class="loadingGif" title='loading gif' alt='' src="img/loader.gif" />
+            <img id="indexPageLoadingGif" class="loadingGif" title='loading gif' alt='' src="https://common.ogglefiles.com/img/loader.gif" />
             <div id="indexMiddleColumn">
                 <div>
                     <div id="carouselContainer"></div>
@@ -54,6 +54,12 @@
                 pageContext = params.spa;
             }
             displayHeader(pageContext);
+
+            /*-- login -----------------------------------*/
+            //if (localStorage["IsLoggedIn"] == "true") {
+            //    getCookieValue("IsLoggedIn", "reset OggleHeader") == "true") {
+            //    $('#spnUserName').html(getCookieValue("UserName", "reset OggleHeader"));
+            showLogin(false);
 
             if (pageContext == "oggleIndex") {
                 getRandomGalleries(pageContext);

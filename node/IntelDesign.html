@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="utf-8" />
+    <title>CurtisRhodes.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.75">
+    <link rel='shortcut icon' href='https://common.ogglefiles.com/img/Brucheum.ico' type='image/x-icon' />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://common.ogglefiles.com/js/Common.js"></script>
+    <script src="js/IntelDesign.js"></script>
+
+    <link href="https://common.ogglefiles.com/css/Common.css" rel="stylesheet" />
+    <link href="css/IntelDesign.css" rel="stylesheet">
+
+</head>
+<body>
+    <header></header>
+    <div id="visableArea" class="threeColumnLayout">
+        <div id="leftColumn"></div>
+        <div id="middleColumn">
+            <div class="intelDsgnBackground">
+                <div id="divWelcomeMessage" class="welcomeMessage">
+                    <div class="algerian">Welcome to Intelligent Design Software</div>
+                    <p>This web site demonstrates the work of an experienced if socially autistic web applications developer</p>
+                    <p>Check out the scection describing the <a href="javascript:displaySkillsCloud()">skills used to build this site</a></p>
+                    <p>Read some of my <a href="javascript:displayIntelArticles(1)">articles on computer programming</a></p>
+                    <p>Learn about <a href="javascript:displayArticleDialogBox(0)">our approach</a> to application development</p>
+                    <p>See <a href="javascript:displayMyResume()">My resume</a> with over thirty years experience. (yes I am old af)</p>
+                    <p>If you might be interested in having me do some work for you</p>
+                    <p>(remote only) (direct hire only) please <a href="javascript:displayContactForm()">contact me</a> </p>
+                </div>
+            </div>
+            <div class='cacaMessage clickable' onclick='displayArticleDialogBox("cac953ce-58b8-4716-92e8-4c2e6cdafeca")'>Why I Built a Naked Lady Web Site</div>`
+        </div>
+        <div id="rightColumn"></div>
+    </div>
+    <footer></footer>
+    <script>
+        $(document).ready(function () {
+
+            displayHeader("IntelDesign");
+            displayFooter("welcome");
+
+            resizePage();
+            $(window).resize(function () {
+                resizePage();
+            });
+        });
+        function resizePage() {
+            $('#visableArea').css('height', $(window).height() - 100);
+            //$('.divMyBooks').css('min-height', $(window).height());
+        }
+
+    </script>
+</body>
+</html>

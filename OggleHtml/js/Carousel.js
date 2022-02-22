@@ -501,7 +501,7 @@ function carouselHtml() {
         "   <div class='floatingDialogHeader'>" +
         "       <div class='floatingDialogTitle'>Carousel Settings</div>" +
         "       <div class='dialogCloseButton'>" +
-        "       <img src='https://common.ogglefiles.com/img/powerOffRed01.png' onclick='resume(); $(\"#carouselSettingsDialog\").hide();'/></div>\n" +
+        "       <img src='https://common.ogglefiles.com/img/close.png' onclick='resume(); $(\"#carouselSettingsDialog\").hide();'/></div>\n" +
         "   </div>\n" +
         "   <div class='floatingDialogContents'>\n" +
         "       <input type='checkbox' id='ckCenterfold'></input> Include Centerfolds<br/>\n" +

@@ -1,5 +1,9 @@
-﻿.intelDsgnBackground {
-    background-image: url(../Images/globlic.jpg);
+﻿body {
+    background-color: #000;
+}
+
+.intelDsgnBackground {
+    background-image: url(../img/globlic.jpg);
     background-repeat: no-repeat;
     background-size: cover;
     height: 100%;
