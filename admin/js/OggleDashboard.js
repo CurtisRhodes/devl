@@ -424,18 +424,22 @@ function showSortTool() {
         alert("select a folder");
         return;
     }
+
+    //checkForOrphanImageFileRecords($('#txtCurrentActiveFolder').val(), $('#txtActiveFolderId').val()
+
     $('.fullScreenSection').hide();
+    $('#dirTreeContainer').hide();
     $('#sortToolSection').show();
     $('#sortToolImageArea').css("height", $('#dashboardContainer').height() - $('#sortToolHeader').height());
     $('#sortTableHeader').html(pSelectedTreeFolderPath.replace(".OGGLEBOOBLE.COM", "").replace("/Root/", "").replace(/%20/g, " ")
-        + "(" + pSelectedTreeId + ")");
+        + "(" + $('#txtActiveFolderId').val() + ")");
     $('#dashBoardLoadingGif').fadeIn();
     var daInfoMessage = $('#dataifyInfo').html();
     $('#dataifyInfo').append("loading sorted images");
 
     //imgLinks.Links = db.VwLinks.Where(l => l.FolderId == folderId).OrderBy(l => l.SortOrder).ToList();
     $.ajax({
-        url: "php/customQuery.php?query=select VwLinks where FolderId=" + $('#txtActiveFolderId').val() + " order by SortOrder",
+        url: "php/customQuery.php?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val() + " order by SortOrder",
         success: function (imgLinks) {
             $('#dashBoardLoadingGif').hide();
             if (imgLinks.indexOf("error") > -1)
@@ -443,12 +447,12 @@ function showSortTool() {
             else {
                 let links = JSON.parse(imgLinks);
                 sortOrderArray = [];
-                $.each(imgLinks.Links, function (ndx, obj) {
+                $.each(links, function (ndx, obj) {
                     $('#sortToolImageArea').append("<div class='sortBox'><img class='sortBoxImage' src='" +
                         settingsImgRepo + obj.FileName + "'/>" +
                         "<br/><input class='sortBoxInput' id=" + obj.LinkId + " value=" + obj.SortOrder + "></input></div>");
                     sortOrderArray.push({
-                        FolderId: pSelectedTreeId,
+                        FolderId: $('#txtActiveFolderId').val(),
                         ItemId: obj.LinkId,
                         ImageSrc: settingsImgRepo + obj.FileName,
                         SortOrder: obj.SortOrder
@@ -460,7 +464,7 @@ function showSortTool() {
         },
         error: function (jqXHR) {
             let errMsg = getXHRErrorDetails(jqXHR);
-            if (!checkFor404(errMsg, pSelectedTreeId, "load SortImages")) logError("XHR", pSelectedTreeId, errMsg, "load SortImages");
+            logError("AJX", $('#txtActiveFolderId').val(), errMsg, "showSortTool");
         }
     });
 }
@@ -470,7 +474,7 @@ function updateSortOrder() {
     sortOrderArray = [];
     $('#sortToolImageArea').children().each(function () {
         sortOrderArray.push({
-            FolderId: pSelectedTreeId,
+            FolderId: $('#txtActiveFolderId').val(),
             ItemId: $(this).find("input").attr("id"),
             ImageSrc: $(this).find("img").attr("src"),
             SortOrder: $(this).find("input").val()
@@ -493,7 +497,7 @@ function autoIncrimentSortOrder() {
     let autoI = 0;
     $('#sortToolImageArea').children().each(function () {
         sortOrderArray.push({
-            FolderId: pSelectedTreeId,
+            FolderId: $('#txtActiveFolderId').val(),
             ItemId: $(this).find("input").attr("id"),
             ImageSrc: $(this).find("img").attr("src"),
             SortOrder: autoI += 2
@@ -544,7 +548,8 @@ function saveSortOrder() {
                 $('#dataifyInfo').hide();
                 let errMsg = getXHRErrorDetails(jqXHR);
                 alert("XHR: " + errMsg);
-                if (!checkFor404(errMsg, pSelectedTreeId, "save SortChanges")) logError("XHR", pSelectedTreeId, errMsg, "save SortChanges");
+                //if (!checkFor404(errMsg, $('#txtActiveFolderId').val(), "save SortChanges"))
+                logError("XHR", $('#txtActiveFolderId').val(), errMsg, "save SortChanges");
             }
         });
     } catch (e) {
