@@ -53,8 +53,8 @@ function performBuildDirTree() {
 
 // CREATE NEW FOLDER
 function showCreateNewFolderDialog() {
-    $('#dashboardDialogTitle').html("Create New Folder");
-    $('#dashboardDialogContents').html(
+    $('#floatingDialogBoxTitle').html("Create New Folder");
+    $('#floatingDialogContents').html(
         //"       <div></div>\n" +
         "       <div><span>parent</span><input id='txtCreateFolderParent' class='txtLinkPath inlineInput roundedInput' readonly='readonly'></input></div>\n" +
         "       <div><span>title</span><input id='txtNewFolderTitle' class='inlineInput roundedInput'></input></div>\n" +
@@ -72,17 +72,44 @@ function showCreateNewFolderDialog() {
             performCreateNewFolder();
         }
     });
-    $("#txtCreateFolderParent").val(pSelectedTreeFolderPath);
-    $('#dashboardDialog').fadeIn();
+    $("#txtCreateFolderParent").val($('#txtCurrentActiveFolder').val());
+    $('#floatingDialogBox').css("top", "160px");
+    $('#floatingDialogBox').css("left", "250px");
+    $('#floatingDialogBox').draggable().fadeIn();
 }
 function performCreateNewFolder() {
+    try {
+        $('#dashBoardLoadingGif').show();
+        $('#dataifyInfo').show().html("saving changes");
+        let sStart = Date.now();
+
+        $.ajax({
+            url: "php/createNewFolder.php?parentId=" + $('#txtActiveFolderId').val(),
+            "&newFolderName=" + $('#txtNewFolderTitle').val() + "&folderType=" + $('#ddNewFolderType').val(),
+            success: function (success) {
+                $('#dataifyInfo').html(success);
+                $('#dashBoardLoadingGif').hide();
+                let delta = (Date.now() - sStart);
+                if (delta < 150)
+                    $('#dataifyInfo').hide();
+                else {
+                    $('#dataifyInfo').html("saving changes took: " + (delta / 1000).toFixed(3));
+                    $('#dataifyInfo').html(success);
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                logError("AJX", $('#txtActiveFolderId').val(), errMsg, "showSortTool");
+            }
+        });
+    } catch (e) {
+        logCatch("saveSortOrder", e);
+    }
     $('#dashBoardLoadingGif').fadeIn();
     var newFolder = {};
     newFolder.FolderName = $('#txtNewFolderTitle').val();
     $.ajax({
         type: "POST",
-        url: settingsArray.ApiServer + "/api/CatFolder/Create?parentId=" + $('#txtActiveFolderId').val() +
-            "&newFolderName=" + $('#txtNewFolderTitle').val() + "&folderType=" + $('#ddNewFolderType').val(),
         success: function (successModel) {
             $('#dashBoardLoadingGif').hide();
             if (successModel.Success === "ok") {
@@ -416,7 +443,6 @@ function testGetCatFolder() {
 }
 
 // SORT FUNCTIONS
-// SORT TOOL
 let sortOrderArray = [];
 function showSortTool() {
     //checkForOrphanImageFileRecords($('#txtCurrentActiveFolder').val(), $('#txtActiveFolderId').val(), justOne);
@@ -424,13 +450,13 @@ function showSortTool() {
         alert("select a folder");
         return;
     }
-
     //checkForOrphanImageFileRecords($('#txtCurrentActiveFolder').val(), $('#txtActiveFolderId').val()
-
     $('.fullScreenSection').hide();
+    $('#dashboardTopRow').hide();
     $('#dirTreeContainer').hide();
     $('#sortToolSection').show();
-    $('#sortToolImageArea').css("height", $('#dashboardContainer').height() - $('#sortToolHeader').height());
+    resizeDashboardPage();
+    //$('#sortToolImageArea').css("height", $('#dashboardContainer').height() - $('#sortToolHeader').height());
     $('#sortTableHeader').html(pSelectedTreeFolderPath.replace(".OGGLEBOOBLE.COM", "").replace("/Root/", "").replace(/%20/g, " ")
         + "(" + $('#txtActiveFolderId').val() + ")");
     $('#dashBoardLoadingGif').fadeIn();
@@ -443,8 +469,9 @@ function showSortTool() {
         success: function (imgLinks) {
             $('#dashBoardLoadingGif').hide();
             if (imgLinks.indexOf("error") > -1)
-                $('#sortToolImageArea').html("");
+                $('#sortToolImageArea').html(imgLinks);
             else {
+                $('#sortToolImageArea').html("");
                 let links = JSON.parse(imgLinks);
                 sortOrderArray = [];
                 $.each(links, function (ndx, obj) {
@@ -468,6 +495,7 @@ function showSortTool() {
         }
     });
 }
+
 function updateSortOrder() {
     $('#dashBoardLoadingGif').show();
     $('#dataifyInfo').show().html("sorting array");
@@ -484,11 +512,13 @@ function updateSortOrder() {
     reloadSortTool();
     //saveSortChanges(sortOrderArray, "sort");
 }
+
 function SortImageArray(a, b) {
     var aSortOrder = Number(a.SortOrder);
     var bSortOrder = Number(b.SortOrder);
     return ((aSortOrder < bSortOrder) ? -1 : ((aSortOrder > bSortOrder) ? 1 : 0));
 }
+
 function autoIncrimentSortOrder() {
     //if (confirm("reset all sort orders")) {
     $('#dashBoardLoadingGif').show();
@@ -507,6 +537,7 @@ function autoIncrimentSortOrder() {
     //saveSortChanges(sortOrderArray, "incrimenting");
     //}
 }
+
 function reloadSortTool() {
     $('#sortToolImageArea').html("");
     $.each(sortOrderArray, function (idx, obj) {
@@ -516,45 +547,41 @@ function reloadSortTool() {
     $('#dashBoardLoadingGif').hide();
     $('#dataifyInfo').hide();
 }
+// 2 22 2022
 function saveSortOrder() {
     try {
         $('#dashBoardLoadingGif').show();
         $('#dataifyInfo').show().html("saving changes");
         let sStart = Date.now();
-        $.ajax({
-            type: "PUT",
-            url: settingsArray.ApiServer + "api/Links/UpdateSortOrder",
-            contentType: 'application/json',
-            data: JSON.stringify(sortOrderArray),
-            success: function (success) {
-                $('#dashBoardLoadingGif').hide();
-                if (success == "ok") {
-                    let delta = (Date.now() - sStart);
-                    if (delta < 1500)
-                        $('#dataifyInfo').hide();
-                    else
-                        $('#dataifyInfo').html("saving changes took: " + (delta / 1000).toFixed(3));
 
-                    //loadSortImages();
-                }
+        $.ajax({
+            type: "POST",
+            url: "php/saveSortChanges.php",
+            data: { 'sortOrderArray': JSON.stringify(sortOrderArray) },
+            cache: false,
+            success: function (success) {
+                $('#dataifyInfo').html(success);
+                $('#dashBoardLoadingGif').hide();
+                let delta = (Date.now() - sStart);
+                if (delta < 150)
+                    $('#dataifyInfo').hide();
                 else {
-                    $('#dashBoardLoadingGif').hide();
-                    alert(success);
-                    logError("AJX", mmSourceFolderId, success, "UpdateSortOrder");
+                    $('#dataifyInfo').html("saving changes took: " + (delta / 1000).toFixed(3));
+                    $('#dataifyInfo').html(success);
                 }
             },
             error: function (jqXHR) {
-                $('#dashBoardLoadingGif').hide();
-                $('#dataifyInfo').hide();
                 let errMsg = getXHRErrorDetails(jqXHR);
-                alert("XHR: " + errMsg);
-                //if (!checkFor404(errMsg, $('#txtActiveFolderId').val(), "save SortChanges"))
-                logError("XHR", $('#txtActiveFolderId').val(), errMsg, "save SortChanges");
+                logError("AJX", $('#txtActiveFolderId').val(), errMsg, "showSortTool");
             }
         });
     } catch (e) {
-        $('#dashBoardLoadingGif').hide();
-        $('#dataifyInfo').hide();
-        alert("CAT: " + e);
+        logCatch("saveSortOrder", e);
     }
+}
+
+function showDefaultWorkArea() {
+    $('.fullScreenSection').hide();
+    $('#dashboardTopRow').show();
+    $('#dirTreeContainer').show();
 }

@@ -20,12 +20,12 @@
         <div class="leftColumn dashboardLeftColumn">
             <div class="vertMenu">
                 <div onclick='getDashboardStartRoot()'>Build Dir Tree</div>
-                <div onclick='showImportDialog()'>Import</div>
+                <div onclick='showSortTool()'>Sort Folder</div>
                 <div onclick='showRepairDialog()'>Repair</div>
+                <div onclick='showImportDialog()'>Import</div>
                 <div onclick='testConnection()'>test Connection</div>
                 <div onclick='strincattest()'>sql sandbox</div>
-                <div onclick='showSortTool()'>Sort Folder</div>
-                <div onclick="showCreateNewFolderDialog">Create New Folder</div>
+                <div onclick="showCreateNewFolderDialog()">Create New Folder</div>
                 <div onclick='showMoveFolderDialog()'>Move Folder</div>
                 <div onclick='showAddStepChildFolderDialog()'>Copy Folder</div>
                 <div onclick="showRenameFolderDialog()">Rename Folder</div>
@@ -34,7 +34,7 @@
         <div class="middleColumn">
             <img id='dashBoardLoadingGif' alt="spinner" title="loading" class='loadingGif' src='https://common.ogglefiles.com/img/loader.gif' />
             <div id='dashboardContainer' class='fullScreenContainer'>
-                <div class="dashboardTopRow">
+                <div id="dashboardTopRow" class="dashboardTopContainer">
                     <div class="flexbox">
                         <div>
                             Active Folder<input id="txtCurrentActiveFolder" class="roundedInput" style="width:77%" readonly="readonly" />
@@ -49,12 +49,12 @@
                 </div>
 
                 <div id="serverFileListContainer" class="dashboardFileList">
-                    <div id="serverFileListHeader"  class="dashboardFileListHeader">
+                    <div id="serverFileListHeader" class="dashboardFileListHeader">
                         <div id="serverFileListHeaderTitle">ffff</div>
-                        <img height="31" title='you may use the {esc} key' 
-                              class="serverFileListHeaderCloseButton"
-                              src='https://common.ogglefiles.com/img/close.png' 
-                              onclick="closeDashboardFileList()" />
+                        <img height="31" title='you may use the {esc} key'
+                             class="serverFileListHeaderCloseButton"
+                             src='https://common.ogglefiles.com/img/close.png'
+                             onclick="closeDashboardFileList()" />
                     </div>
                     <div id="serverFileList"></div>
                 </div>
@@ -107,8 +107,9 @@
                     <div>
                         <div id='sortToolImageArea' class='workAreaDisplayContainer'></div>
                         <div id='sortToolFooter' class='workareaFooter'>
-                            <button onclick='updateSortOrder()'>ReSort</button>
-                            <button onclick='autoIncrimentSortOrder()'>AutoIncriment</button>
+                            <button class="sortButton" onclick='updateSortOrder()'>ReSort</button>
+                            <button class="sortButton" onclick='autoIncrimentSortOrder()'>AutoIncriment</button>
+                            <button class="sortButton" onclick='saveSortOrder()'>Save</button>
                         </div>
                     </div>
                 </div>
@@ -132,6 +133,7 @@
                     </div>
                 </div>
 
+                <div id="dataifyInfo" class="infoLine" onclick='$("#dataifyInfo").hide()'></div>
             </div>
         </div>
         <div class="rightColumn">
@@ -148,9 +150,9 @@
 
             performBuildDirTree();
 
-            resizePage();
+            resizeDashboardPage();
             $(window).resize(function () {
-                resizePage();
+                resizeDashboardPage();
             });
         });
 
@@ -159,11 +161,12 @@
             window.open("https://Ogglebooble.com/gallery.html?album=" + folderId);
         }
 
-        function resizePage() {
-            $('#visableArea').css('height', $(window).height() - $('header').height());
+        function resizeDashboardPage() {
+            $('#visableArea').css('min-height', $(window).height() - $('header').height());
             $('#visableArea').css('width', $(window).width());
             $('#dirTreeContainer').css('height', $('#visableArea').height());
             $('#serverFileList').css('height', $('#visableArea').height());
+            $('#sortToolImageArea').css("height", $('#visableArea').height());
 
             $('footer').css('width', $(window).width());
             //$('#hdrBtmRowSec3').html("$(window).height(): " + $(window).height() + " $('header').height(): " + $('header').height());
