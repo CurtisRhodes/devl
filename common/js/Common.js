@@ -712,7 +712,7 @@ function headerHtml() {
         "<div id='floatingDialogBox' class='floatingDialogContainer displayHidden'>\n"+
         "    <div class='floatingDialogHeader'>\n"+
         "        <div \id='floatingDialogBoxTitle' class='floatingDialogTitle'></div>\n" +
-        "        <div class='dialogCloseButton'><img src='https://common.ogglefiles.com/img/close.png' onclick='$('#dfloatingDialogBox').hide()'/></div>\n" +
+        "        <div class='dialogCloseButton'><img src='https://common.ogglefiles.com/img/close.png' onclick='$(\"#floatingDialogBox\").hide()'/></div>\n" +
         "    </div>\n" +
         "    <div id='floatingDialogContents' class='floatingDialogContents'></div>\n" +
         "</div>\n" +

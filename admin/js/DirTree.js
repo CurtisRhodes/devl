@@ -5,7 +5,7 @@ function buildDirTree(startNode) {
     try {
         let startTime = Date.now();
         $('#dashBoardLoadingGif').show();
-        $.getJSON('php/getDirTree.php', function (data) {
+        $.getJSON('php/getDirTree.php?query=select * from VwDirTree order by Id', function (data) {
             $('#dashBoardLoadingGif').hide();
             let delta = (Date.now() - startTime) / 1000;
             console.log("loading vwLinks took: " + delta.toFixed(3));

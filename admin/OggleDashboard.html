@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="utf-8" />
-    <title>Admin - OggleBooble.com</title>
+    <title>Oggle Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=0.75">
     <link rel='shortcut icon' href='img/favicon.png' type='image/x-icon' />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
@@ -19,12 +19,12 @@
     <div id="visableArea" class="threeColumnLayout">
         <div class="leftColumn dashboardLeftColumn">
             <div class="vertMenu">
-                <div onclick='getDashboardStartRoot()'>Build Dir Tree</div>
+                <div onclick='showBuildDirTreeDialog()'>Build Dir Tree</div>
                 <div onclick='showSortTool()'>Sort Folder</div>
                 <div onclick='showRepairDialog()'>Repair</div>
                 <div onclick='showImportDialog()'>Import</div>
                 <div onclick='testConnection()'>test Connection</div>
-                <div onclick='strincattest()'>sql sandbox</div>
+                <div onclick='showCreateNewFolderDialog()'>sql sandbox</div>
                 <div onclick="showCreateNewFolderDialog()">Create New Folder</div>
                 <div onclick='showMoveFolderDialog()'>Move Folder</div>
                 <div onclick='showAddStepChildFolderDialog()'>Copy Folder</div>
@@ -140,6 +140,16 @@
             <div id="dirTreeContainer" class="dirTreeArea"></div>
         </div>
     </div>
+
+    <div id='dashboardDialogBox' class='floatingDialogContainer displayHidden'>
+        <div class='floatingDialogHeader'>
+            <div \id='dashboardDialogBoxTitle' class='floatingDialogTitle'></div>
+            <div class='dialogCloseButton'><img src='https://common.ogglefiles.com/img/close.png' onclick='dashboardDialogBoxClose()'/></div>
+        </div>
+        <div id='dashboardDialogContents' class='dashboardDialogContents'></div>
+    </div>
+
+
     <footer></footer>
 
     <script>

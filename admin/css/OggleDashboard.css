@@ -94,7 +94,6 @@ flexbox {
 
 .fullScreenContainer {
     display: block;
-    border: solid thick red;
 }
 
 .fullScreenSection {

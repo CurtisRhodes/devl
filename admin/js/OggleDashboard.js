@@ -4,10 +4,10 @@ let settingsImgRepo = 'https://ogglefiles.com/danni/';
 
 
 // LOAD DIR TREE
-function getDashboardStartRoot() {
+function showBuildDirTreeDialog() {
     $('#serverFileListContainer').hide();
-    $('#floatingDialogBoxTitle').html("Build Dir Tree");
-    $('#floatingDialogContents').html(
+    $('#dashboardDialogBoxTitle').html("Build Dir Tree");
+    $('#dashboardDialogContents').html(
         "    <div><span>choose start folder</span><select id='selDirTreeRoot' class='txtLinkPath roundedInput'>\n" +
         "              <option selected='selected' value='0'>-- or select --</option>\n" +
         "              <option selected='selected' value='3'>Big Naturals ~(115,000)</option>\n" +
@@ -21,32 +21,32 @@ function getDashboardStartRoot() {
         "              <option selected='selected' value='10326'>Bond Girls	~(5,000)</option>\n" +
         "           </select></div>\n" +
         "    <div><span>or select start folder</span><input id='txtRoot' class='txtLinkPath roundedInput'></input></div>\n" +
-        "    <div class='roundendButton' tabindex='0' onclick='performBuildDirTree()')'>Go</div>");
-    $('#floatingDialogBox').draggable().fadeIn();
-    $('#floatingDialogContents').keydown(function (event) {
+        "    <div class='roundendButton' tabindex='0' onclick='performBuildDirTree();dashboardDialogBoxClose(\"showBuildDirTreeDialog click\");')'>Go</div>");
+    $('#dashboardDialogBox').draggable().fadeIn();
+    $('#dashboardDialogContents').keydown(function (event) {
         if (event.keyCode === 13) {
             performBuildDirTree();
+            dashboardDialogBoxClose('showBuildDirTreeDialog kk');
         }
     });
-    $('#floatingDialogBox').css("top", "150px");
-    $('#floatingDialogBox').css("left", "250px");
+    $('#dashboardDialogBox').css("top", "150px");
+    $('#dashboardDialogBox').css("left", "250px");
     $('#txtRoot').focus();
 }
+
 function performBuildDirTree() {
     let startRoot = $('#txtRoot').val();
     if ((startRoot === "0") || (isNullorUndefined(startRoot)))
         startRoot = $('#selDirTreeRoot').val();
     if ((startRoot === "0") || (isNullorUndefined(startRoot)))
         startRoot = 10326
-   
     buildDirTree(startRoot);
 }
 
 // CREATE NEW FOLDER
 function showCreateNewFolderDialog() {
-    $('#floatingDialogBoxTitle').html("Create New Folder");
-    $('#floatingDialogContents').html(
-        //"       <div></div>\n" +
+    $('#dashboardDialogBoxTitle').html("Create New Folder");
+    $('#dashboardDialogContents').html(
         "       <div><span>parent</span><input id='txtCreateFolderParent' class='txtLinkPath inlineInput roundedInput' readonly='readonly'></input></div>\n" +
         "       <div><span>title</span><input id='txtNewFolderTitle' class='inlineInput roundedInput'></input></div>\n" +
         "       <div><span>type</span><select id='ddNewFolderType' class='inlineInput roundedInput'>\n" +
@@ -56,33 +56,34 @@ function showCreateNewFolderDialog() {
         "              <option value='multiModel'>multiModel</option>\n" +
         "              <option value='multiFolder'>multiFolder</option>\n" +
         "          </select></div>\n" +
+        "       <div><span>sort order</span><input id='txtSortOrder' class='inlineInput roundedInput'></input></div>\n" +
         "       <div class='roundendButton' onclick='performCreateNewFolder()'>Create Folder</div>\n");
-    $('#txtNewFolderTitle').keydown(function (event) {
+    $("#txtSortOrder").val("0");
+
+    let cp = $('#txtCurrentActiveFolder').val();
+    $("#txtCreateFolderParent").val(cp);
+    $("#txtNewFolderTitle").val(cp.substr(cp.lastIndexOf("/") + 1));
+
+    $('#dashboardDialogContents').keydown(function (event) {
         if (event.keyCode === 13) {
-            //alert("keydown 13");
-            performCreateNewFolder();
+            performCreateNewFolder('showCreateNewFolderDialog');
         }
     });
-    $("#txtCreateFolderParent").val($('#txtCurrentActiveFolder').val());
-    $('#floatingDialogBox').css("top", "160px");
-    $('#floatingDialogBox').css("left", "250px");
-    $('#floatingDialogBox').draggable().fadeIn();
+
+    $('#dashboardDialogBox').css("top", "160px");
+    $('#dashboardDialogBox').css("left", "250px");
+    $('#dashboardDialogBox').draggable().fadeIn();
 }
 function performCreateNewFolder() {
     try {
+        let sStart = Date.now();
         $('#dashBoardLoadingGif').show();
         $('#dataifyInfo').show().html("saving changes");
-        let sStart = Date.now();
-
-        //$parentId = $_GET['parentId'];
-        //$newFolderName = $_GET['newFolderName'];
-        //$rootFolder = $_GET['rootFolder'];
-        //$folderType = $_GET['folderType'];
-
         $.ajax({
             url: "php/createNewFolder.php?parentId=" + $('#txtActiveFolderId').val() +
                 "&newFolderName=" + $('#txtNewFolderTitle').val() +
-                "&folderType=" + $('#ddNewFolderType').val(),
+                "&folderType=" + $('#ddNewFolderType').val()+
+                "&sortOrder=" + $('#txtSortOrder').val(),
             success: function (success) {
                 $('#dataifyInfo').html(success);
                 $('#dashBoardLoadingGif').hide();
@@ -90,44 +91,20 @@ function performCreateNewFolder() {
                 if (delta < 150)
                     $('#dataifyInfo').hide();
                 else {
-                    $('#dataifyInfo').html("saving changes took: " + (delta / 1000).toFixed(3));
                     $('#dataifyInfo').html(success);
+                    $('#dataifyInfo').append("  saving changes took: " + (delta / 1000).toFixed(3));
                 }
             },
             error: function (jqXHR) {
+                $('#dashBoardLoadingGif').hide();
                 let errMsg = getXHRErrorDetails(jqXHR);
                 logError("AJX", $('#txtActiveFolderId').val(), errMsg, "showSortTool");
             }
         });
     } catch (e) {
-        logCatch("saveSortOrder", e);
+        $('#dashBoardLoadingGif').hide();
+        logCatch("CreateNewFolder", e);
     }
-    $('#dashBoardLoadingGif').fadeIn();
-    var newFolder = {};
-    newFolder.FolderName = $('#txtNewFolderTitle').val();
-    $.ajax({
-        type: "POST",
-        success: function (successModel) {
-            $('#dashBoardLoadingGif').hide();
-            if (successModel.Success === "ok") {
-                displayStatusMessage("ok", "new folder " + $('#txtNewFolderTitle').val() + " created");
-                logDataActivity({
-                    VisitorId: getCookieValue("VisitorId", "perform CreateNewFolder"),
-                    ActivityCode: "NFC",
-                    PageId: successModel.ReturnValue,
-                    Details: $('#txtNewFolderTitle').val()
-                });
-                $('#txtNewFolderTitle').val('');
-                //$('#createNewFolderDialog').dialog('close');
-            }
-            else
-                alert("CreateNewFolder: " + successModel.Success);
-        },
-        error: function (xhr) {
-            $('#dashBoardLoadingGif').hide();
-            alert("createNewFolder xhr error: " + getXHRErrorDetails(xhr));
-        }
-    });
 }
 
 // ADD NEW IMAGES
@@ -166,7 +143,6 @@ function showFiles() {
         let path = "../../danni/" + $('#txtCurrentActiveFolder').val();
         console.log("path: " + path);
         $.ajax({
-            //url: 'php/getDirectoryFiles.php?path=' + pathTest + $('#txtCurrentActiveFolder').val(),
             url: "php/getDirectoryFiles.php?path=" + path,
             success: function (data) {
                 $('#serverFileListContainer').show();
@@ -191,39 +167,39 @@ function showFiles() {
             },
             error: function (jqXHR) {
                 let errMsg = getXHRErrorDetails(jqXHR);
-                alert("showFiles: " + errMsg);
+                alert("showFiles AJX: " + errMsg);
             }
         });
     } catch (e) {
-        logCatch("showFiles", e);
+        logCatch("showFiles CATCH: ", e);
     }
 }
 
 // REPAIR FUNCTIONS
 {
     function showRepairDialog() {
-        $('#floatingDialogBoxTitle').html("Repair Links");
-        $('#floatingDialogContents').html(
+        $('#dashboardDialogBoxTitle').html("Repair Links");
+        $('#dashboardDialogContents').html(
             "    <div><span>folder to repair</span><input id='txtFolderToRepair' readonly='readonly' class='roundedInput'></input></div>\n" +
             "    <div><span>include all subfolders </span><input type='checkbox' id='ckRepairIncludeSubfolders'></input></div>\n" +
             "    <div><span>remove orphan ImageFiles </span><input type='checkbox' id='ckRemoveOrphans'></input></div>\n" +
-            "    <div class='roundendButton' onclick='performRepairLinks($(\"#ckRepairIncludeSubfolders\").is(\":checked\"))'>Run</div>\n");
+            "    <div class='roundendButton'onclick = 'performRepairLinks($(\"#ckRepairIncludeSubfolders\").is(\":checked\"),\"#ckRemoveOrphans\").is(\":checked\")' > Run</div >\n");
 
         $('#txtFolderToRepair').val($('#txtCurrentActiveFolder').val());
-        $('#floatingDialogBoxTitle').fadeIn();
-        $('#floatingDialogContents').keydown(function (event) {
+        $('#dashboardDialogBoxTitle').fadeIn();
+        $('#dashboardDialogContents').keydown(function (event) {
             if (event.keyCode === 13) {
                 performRepairLinks($("#ckRepairIncludeSubfolders").is(":checked"));
             }
         });
-        $('#floatingDialogBox').css("top", "160px");
-        $('#floatingDialogBox').css("left", "250px");
-        $('#floatingDialogBox').draggable().fadeIn();
+        $('#dashboardDialogBox').css("top", "160px");
+        $('#dashboardDialogBox').css("left", "250px");
+        $('#dashboardDialogBox').draggable().fadeIn();
     }
 
     let repairReport = {};
     let startTime;
-    function performRepairLinks(justOne) {
+    function performRepairLinks(justOne,remove) {
         startTime = Date.now();
         $('#dataifyInfo').show().html("checking and repairing links");
         //$('#dashBoardLoadingGif').fadeIn();
@@ -235,18 +211,11 @@ function showFiles() {
         };
         repairReport.OrphanImageFiles = [];
 
-        $('#serverFileListContainer').show()
-            .keydown(function (event) {
-                if (event.keyCode === 27) {
-                    closeDashboardFileList();
-                }
-            });
-
-        checkForOrphanImageFileRecords($('#txtCurrentActiveFolder').val(), $('#txtActiveFolderId').val(), justOne);
+        checkForOrphanImageFileRecords($('#txtCurrentActiveFolder').val(), $('#txtActiveFolderId').val(), justOne, remove);
     }
 
     let serverFilesArray = [];
-    function checkForOrphanImageFileRecords(startFolderPath, startFolderId, recurr) {
+    function checkForOrphanImageFileRecords(startFolderPath, startFolderId, recurr, remove) {
         try {
             let path = "../../danni/" + startFolderPath;
             console.log("path: " + path);
@@ -268,7 +237,7 @@ function showFiles() {
                             else {
                                 serverFilesArray = JSON.parse(data);
                                 $.ajax({
-                                    url: "php/getImageFiles.php?folderId=" + startFolderId,
+                                    url: "php/customQuery.php?query=select * from ImageFile where FolderId=" + startFolderId,
                                     success: function (data) {
                                         let imageFileRows = JSON.parse(data);
 
@@ -290,6 +259,11 @@ function showFiles() {
 
                                             let imageFileRow = imageFileRows.filter(node => node.FileName == objServerFile);
                                             if (imageFileRow == null) {
+                                                if (remove) {
+
+
+                                                }
+
                                                 // delete this ImageFileRow
                                                 repairReport.OrphanImageFileArray.push("<input value=" + objServerFile + " />");
                                             }
@@ -320,7 +294,7 @@ function showFiles() {
                 error: function (jqXHR) {
                     $('#dashBoardLoadingGif').hide();
                     let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("RepairLinks/getDirectoryFiles AJX: " + errMsg);
+                    alert("RepairLinks/getDirectoryFiles XHR: " + errMsg);
                 }
             });
         } catch (e) {
@@ -337,7 +311,7 @@ function showFiles() {
         try {
 
             $('#serverFileListContainer').show();
-            $('#floatingDialogBox').hide();
+            dashboardDialogBoxClose('reportRepairResults');
 
             $('#serverFileListHeaderTitle').html("repair report");
 
@@ -586,4 +560,11 @@ function showDefaultWorkArea() {
     $('.fullScreenSection').hide();
     $('#dashboardTopRow').show();
     $('#dirTreeContainer').show();
+}
+
+function dashboardDialogBoxClose(calledFrom) {
+    alert("dashboard DialogBox Close. calledFrom: " + calledFrom)
+    $('#dashboardDialogBox').hide();
+    //$('#dashboardDialogContents').keydown = null;
+    document.onkeydown = null;
 }
