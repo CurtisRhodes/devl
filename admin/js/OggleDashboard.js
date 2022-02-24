@@ -1,16 +1,7 @@
-﻿// let settingsImgRepo = 'https://img.brucheum.com/';
+﻿// let settingsImgRepo = 'https ://img.brucheum.com/';
 // let settingsImgRepo = 'st21569.ispot.cc/danni/';
 let settingsImgRepo = 'https://ogglefiles.com/danni/';
-// let filePath = "/home/st21569/domains/ogglefiles.com/public_html/danni/";
-let filePath = "danni/";
 
-
-function showReportsSection() {
-    $('.fullScreenSection').hide();
-    $('#reportsSection').show();
-    setLeftMenu("reports");
-    $('#reportsMiddleColumn').css("width", $('#dashboardContainer').width() - $('#reportsLeftColumn').width());
-}
 
 // LOAD DIR TREE
 function getDashboardStartRoot() {
@@ -83,9 +74,15 @@ function performCreateNewFolder() {
         $('#dataifyInfo').show().html("saving changes");
         let sStart = Date.now();
 
+        //$parentId = $_GET['parentId'];
+        //$newFolderName = $_GET['newFolderName'];
+        //$rootFolder = $_GET['rootFolder'];
+        //$folderType = $_GET['folderType'];
+
         $.ajax({
-            url: "php/createNewFolder.php?parentId=" + $('#txtActiveFolderId').val(),
-            "&newFolderName=" + $('#txtNewFolderTitle').val() + "&folderType=" + $('#ddNewFolderType').val(),
+            url: "php/createNewFolder.php?parentId=" + $('#txtActiveFolderId').val() +
+                "&newFolderName=" + $('#txtNewFolderTitle').val() +
+                "&folderType=" + $('#ddNewFolderType').val(),
             success: function (success) {
                 $('#dataifyInfo').html(success);
                 $('#dashBoardLoadingGif').hide();
@@ -153,6 +150,15 @@ function importNewImages() {
 }
 
 // PHP DISK OPERATIONS
+function showReportsSection() {
+    $('.fullScreenSection').hide();
+    $('#reportsSection').show();
+    setLeftMenu("reports");
+    $('#reportsMiddleColumn').css("width", $('#dashboardContainer').width() - $('#reportsLeftColumn').width());
+}
+function closeDashboardFileList() {
+    $('#serverFileListContainer').hide();
+}
 function showFiles() {
     try {
         let infoStart = Date.now();
@@ -406,10 +412,6 @@ function showFiles() {
     }
 }
 
-function closeDashboardFileList() {
-    $('#serverFileListContainer').hide();
-}
-
 function testConnection() {
     alert("url: php/validateConnection.php")
     $.ajax({    //create an ajax request to display.php
@@ -427,7 +429,6 @@ function testConnection() {
         }
     });
 }
-
 function testGetCatFolder() {
 
     let whereClause = "where Id=411";
@@ -443,131 +444,51 @@ function testGetCatFolder() {
 }
 
 // SORT FUNCTIONS
-let sortOrderArray = [];
-function showSortTool() {
-    //checkForOrphanImageFileRecords($('#txtCurrentActiveFolder').val(), $('#txtActiveFolderId').val(), justOne);
-    if (isNullorUndefined($('#txtActiveFolderId').val())) {
-        alert("select a folder");
-        return;
-    }
-    //checkForOrphanImageFileRecords($('#txtCurrentActiveFolder').val(), $('#txtActiveFolderId').val()
-    $('.fullScreenSection').hide();
-    $('#dashboardTopRow').hide();
-    $('#dirTreeContainer').hide();
-    $('#sortToolSection').show();
-    resizeDashboardPage();
-    //$('#sortToolImageArea').css("height", $('#dashboardContainer').height() - $('#sortToolHeader').height());
-    $('#sortTableHeader').html(pSelectedTreeFolderPath.replace(".OGGLEBOOBLE.COM", "").replace("/Root/", "").replace(/%20/g, " ")
-        + "(" + $('#txtActiveFolderId').val() + ")");
-    $('#dashBoardLoadingGif').fadeIn();
-    var daInfoMessage = $('#dataifyInfo').html();
-    $('#dataifyInfo').append("loading sorted images");
-
-    //imgLinks.Links = db.VwLinks.Where(l => l.FolderId == folderId).OrderBy(l => l.SortOrder).ToList();
-    $.ajax({
-        url: "php/customQuery.php?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val() + " order by SortOrder",
-        success: function (imgLinks) {
-            $('#dashBoardLoadingGif').hide();
-            if (imgLinks.indexOf("error") > -1)
-                $('#sortToolImageArea').html(imgLinks);
-            else {
-                $('#sortToolImageArea').html("");
-                let links = JSON.parse(imgLinks);
-                sortOrderArray = [];
-                $.each(links, function (ndx, obj) {
-                    $('#sortToolImageArea').append("<div class='sortBox'><img class='sortBoxImage' src='" +
-                        settingsImgRepo + obj.FileName + "'/>" +
-                        "<br/><input class='sortBoxInput' id=" + obj.LinkId + " value=" + obj.SortOrder + "></input></div>");
-                    sortOrderArray.push({
-                        FolderId: $('#txtActiveFolderId').val(),
-                        ItemId: obj.LinkId,
-                        ImageSrc: settingsImgRepo + obj.FileName,
-                        SortOrder: obj.SortOrder
-                    });
-                });
-                $('#dashBoardLoadingGif').hide();
-                $('#dataifyInfo').html(daInfoMessage + " done");
-            }
-        },
-        error: function (jqXHR) {
-            let errMsg = getXHRErrorDetails(jqXHR);
-            logError("AJX", $('#txtActiveFolderId').val(), errMsg, "showSortTool");
+{
+    let sortOrderArray = [];
+    function showSortTool() {
+        //checkForOrphanImageFileRecords($('#txtCurrentActiveFolder').val(), $('#txtActiveFolderId').val(), justOne);
+        if (isNullorUndefined($('#txtActiveFolderId').val())) {
+            alert("select a folder");
+            return;
         }
-    });
-}
+        //checkForOrphanImageFileRecords($('#txtCurrentActiveFolder').val(), $('#txtActiveFolderId').val()
+        $('.fullScreenSection').hide();
+        $('#dashboardTopRow').hide();
+        $('#dirTreeContainer').hide();
+        $('#sortToolSection').show();
+        resizeDashboardPage();
+        //$('#sortToolImageArea').css("height", $('#dashboardContainer').height() - $('#sortToolHeader').height());
+        $('#sortTableHeader').html(pSelectedTreeFolderPath.replace(".OGGLEBOOBLE.COM", "").replace("/Root/", "").replace(/%20/g, " ")
+            + "(" + $('#txtActiveFolderId').val() + ")");
+        $('#dashBoardLoadingGif').fadeIn();
+        var daInfoMessage = $('#dataifyInfo').html();
+        $('#dataifyInfo').append("loading sorted images");
 
-function updateSortOrder() {
-    $('#dashBoardLoadingGif').show();
-    $('#dataifyInfo').show().html("sorting array");
-    sortOrderArray = [];
-    $('#sortToolImageArea').children().each(function () {
-        sortOrderArray.push({
-            FolderId: $('#txtActiveFolderId').val(),
-            ItemId: $(this).find("input").attr("id"),
-            ImageSrc: $(this).find("img").attr("src"),
-            SortOrder: $(this).find("input").val()
-        });
-    });
-    sortOrderArray = sortOrderArray.sort(SortImageArray);
-    reloadSortTool();
-    //saveSortChanges(sortOrderArray, "sort");
-}
-
-function SortImageArray(a, b) {
-    var aSortOrder = Number(a.SortOrder);
-    var bSortOrder = Number(b.SortOrder);
-    return ((aSortOrder < bSortOrder) ? -1 : ((aSortOrder > bSortOrder) ? 1 : 0));
-}
-
-function autoIncrimentSortOrder() {
-    //if (confirm("reset all sort orders")) {
-    $('#dashBoardLoadingGif').show();
-    $('#dataifyInfo').show().html("auto incrimenting array");
-    sortOrderArray = [];
-    let autoI = 0;
-    $('#sortToolImageArea').children().each(function () {
-        sortOrderArray.push({
-            FolderId: $('#txtActiveFolderId').val(),
-            ItemId: $(this).find("input").attr("id"),
-            ImageSrc: $(this).find("img").attr("src"),
-            SortOrder: autoI += 2
-        });
-    });
-    reloadSortTool();
-    //saveSortChanges(sortOrderArray, "incrimenting");
-    //}
-}
-
-function reloadSortTool() {
-    $('#sortToolImageArea').html("");
-    $.each(sortOrderArray, function (idx, obj) {
-        $('#sortToolImageArea').append("<div class='sortBox'><img class='sortBoxImage' src='" + obj.ImageSrc + "'/>" +
-            "<br/><input class='sortBoxInput' id=" + obj.ItemId + " value=" + obj.SortOrder + "></input></div>");
-    });
-    $('#dashBoardLoadingGif').hide();
-    $('#dataifyInfo').hide();
-}
-// 2 22 2022
-function saveSortOrder() {
-    try {
-        $('#dashBoardLoadingGif').show();
-        $('#dataifyInfo').show().html("saving changes");
-        let sStart = Date.now();
-
+        //imgLinks.Links = db.VwLinks.Where(l => l.FolderId == folderId).OrderBy(l => l.SortOrder).ToList();
         $.ajax({
-            type: "POST",
-            url: "php/saveSortChanges.php",
-            data: { 'sortOrderArray': JSON.stringify(sortOrderArray) },
-            cache: false,
-            success: function (success) {
-                $('#dataifyInfo').html(success);
+            url: "php/customQuery.php?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val() + " order by SortOrder",
+            success: function (imgLinks) {
                 $('#dashBoardLoadingGif').hide();
-                let delta = (Date.now() - sStart);
-                if (delta < 150)
-                    $('#dataifyInfo').hide();
+                if (imgLinks.indexOf("error") > -1)
+                    $('#sortToolImageArea').html(imgLinks);
                 else {
-                    $('#dataifyInfo').html("saving changes took: " + (delta / 1000).toFixed(3));
-                    $('#dataifyInfo').html(success);
+                    $('#sortToolImageArea').html("");
+                    let links = JSON.parse(imgLinks);
+                    sortOrderArray = [];
+                    $.each(links, function (ndx, obj) {
+                        $('#sortToolImageArea').append("<div class='sortBox'><img class='sortBoxImage' src='" +
+                            settingsImgRepo + obj.FileName + "'/>" +
+                            "<br/><input class='sortBoxInput' id=" + obj.LinkId + " value=" + obj.SortOrder + "></input></div>");
+                        sortOrderArray.push({
+                            FolderId: $('#txtActiveFolderId').val(),
+                            ItemId: obj.LinkId,
+                            ImageSrc: settingsImgRepo + obj.FileName,
+                            SortOrder: obj.SortOrder
+                        });
+                    });
+                    $('#dashBoardLoadingGif').hide();
+                    $('#dataifyInfo').html(daInfoMessage + " done");
                 }
             },
             error: function (jqXHR) {
@@ -575,11 +496,92 @@ function saveSortOrder() {
                 logError("AJX", $('#txtActiveFolderId').val(), errMsg, "showSortTool");
             }
         });
-    } catch (e) {
-        logCatch("saveSortOrder", e);
+    }
+
+    function updateSortOrder() {
+        $('#dashBoardLoadingGif').show();
+        $('#dataifyInfo').show().html("sorting array");
+        sortOrderArray = [];
+        $('#sortToolImageArea').children().each(function () {
+            sortOrderArray.push({
+                FolderId: $('#txtActiveFolderId').val(),
+                ItemId: $(this).find("input").attr("id"),
+                ImageSrc: $(this).find("img").attr("src"),
+                SortOrder: $(this).find("input").val()
+            });
+        });
+        sortOrderArray = sortOrderArray.sort(SortImageArray);
+        reloadSortTool();
+        //saveSortChanges(sortOrderArray, "sort");
+    }
+
+    function SortImageArray(a, b) {
+        var aSortOrder = Number(a.SortOrder);
+        var bSortOrder = Number(b.SortOrder);
+        return ((aSortOrder < bSortOrder) ? -1 : ((aSortOrder > bSortOrder) ? 1 : 0));
+    }
+
+    function autoIncrimentSortOrder() {
+        //if (confirm("reset all sort orders")) {
+        $('#dashBoardLoadingGif').show();
+        $('#dataifyInfo').show().html("auto incrimenting array");
+        sortOrderArray = [];
+        let autoI = 0;
+        $('#sortToolImageArea').children().each(function () {
+            sortOrderArray.push({
+                FolderId: $('#txtActiveFolderId').val(),
+                ItemId: $(this).find("input").attr("id"),
+                ImageSrc: $(this).find("img").attr("src"),
+                SortOrder: autoI += 2
+            });
+        });
+        reloadSortTool();
+        //saveSortChanges(sortOrderArray, "incrimenting");
+        //}
+    }
+
+    function reloadSortTool() {
+        $('#sortToolImageArea').html("");
+        $.each(sortOrderArray, function (idx, obj) {
+            $('#sortToolImageArea').append("<div class='sortBox'><img class='sortBoxImage' src='" + obj.ImageSrc + "'/>" +
+                "<br/><input class='sortBoxInput' id=" + obj.ItemId + " value=" + obj.SortOrder + "></input></div>");
+        });
+        $('#dashBoardLoadingGif').hide();
+        $('#dataifyInfo').hide();
+    }
+    // 2 22 2022
+    function saveSortOrder() {
+        try {
+            $('#dashBoardLoadingGif').show();
+            $('#dataifyInfo').show().html("saving changes");
+            let sStart = Date.now();
+
+            $.ajax({
+                type: "POST",
+                url: "php/saveSortChanges.php",
+                data: { 'sortOrderArray': JSON.stringify(sortOrderArray) },
+                cache: false,
+                success: function (success) {
+                    $('#dataifyInfo').html(success);
+                    $('#dashBoardLoadingGif').hide();
+                    let delta = (Date.now() - sStart);
+                    if (delta < 150)
+                        $('#dataifyInfo').hide();
+                    else {
+                        $('#dataifyInfo').html("saving changes took: " + (delta / 1000).toFixed(3));
+                        $('#dataifyInfo').html(success);
+                    }
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    logError("AJX", $('#txtActiveFolderId').val(), errMsg, "showSortTool");
+                }
+            });
+        } catch (e) {
+            logCatch("saveSortOrder", e);
+        }
     }
 }
-
 function showDefaultWorkArea() {
     $('.fullScreenSection').hide();
     $('#dashboardTopRow').show();

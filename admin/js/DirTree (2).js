@@ -1,4 +1,4 @@
-﻿let dirTreeArray, dirTreeTab = 0, dirTreeTabIndent = 20, maxExpandDepth = 39;
+﻿let vDirTree, dirTreeArray, dirTreeTab = 0, dirTreeTabIndent = 20, maxExpandDepth = 39;
 let largetxtstring;
 
 function buildDirTree(startNode) {
@@ -11,24 +11,21 @@ function buildDirTree(startNode) {
             console.log("loading vwLinks took: " + delta.toFixed(3));
             $('#floatingDialogBox').fadeOut();
 
-            dirTreeArray = data;
+            vDirTree = data;
 
             startTime = Date.now();
-            let rootNode = dirTreeArray.filter(node => node.Id == startNode)[0];
-            let randomId = create_UUID();
-            //[{ "id": 1, "text": "Root node", "children": [{ "id": 2, "text": "Child node 1" }, { "id": 3, "text": "Child node 2" }] }]
+            let rootNode = vDirTree.filter(node => node.Id == startNode)[0];
+            let randomId = create_UUID(); maxExpandDepth
+            largetxtstring = dirTreeNode(rootNode, randomId);
             dirTreeArray = [{
-                "id": randomId,
+                "id": 0,
                 "name": "Root",
                 "folderId": startNode,
                 "treeNodeTxt": dirTreeNode(subNode),
                 "children": []
             }];
-
-
-            //largetxtstring = dirTreeNode(rootNode, randomId);
             //largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer'>";
-            $('#dirTreeContainer').html(dirTreeArray[0].treeNodeTxt);
+            $('#dirTreeContainer').html(largetxtstring + "</div>");
 
             traverseDirTree(rootNode);
 
@@ -45,7 +42,7 @@ function buildDirTree(startNode) {
 }
 
 function traverseDirTree(thisNode) {
-    let subNodes = dirTreeArray.filter(node => node.Parent == thisNode.Id);
+    let subNodes = vDirTree.filter(node => node.Parent == thisNode.Id);
     dirTreeTab += dirTreeTabIndent;
     $.each(subNodes, function (idx, subNode) {
 
@@ -54,10 +51,32 @@ function traverseDirTree(thisNode) {
             alert("bad subNode?");
         }
         else {
+
+            dirTreeArray = [{
+                "id": 0,
+                "name": "Root",
+                "folderId": startNode,
+                "treeNodeTxt": dirTreeNode(subNode),
+                "children": []
+            }];
+            console.log(months[0].id);
+
             let randomId = create_UUID();
-            largetxtstring += dirTreeNode(subNode, randomId);
+
+            //largetxtstring += dirTreeNode(subNode, randomId);
             if (subNode.SubFolderCount > 0) {
                 if (dirTreeTab > maxExpandDepth) {
+
+
+            dirTreeArray = [{
+                "id": 0,
+                "name": "Root",
+                "folderId": startNode,
+                "treeNodeTxt": dirTreeNode(subNode),
+                "children": []
+            }];
+
+
                     largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer' style='display:none' >";
                 }
                 else {
