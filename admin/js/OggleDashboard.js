@@ -180,20 +180,18 @@ function showFiles() {
     function showRepairDialog() {
         $('#dashboardDialogBoxTitle').html("Repair Links");
         $('#dashboardDialogContents').html(
-            "    <div><span>folder to repair</span><input id='txtFolderToRepair' readonly='readonly' class='roundedInput'></input></div>\n" +
+            "    <div><span>folder to repair</span><input id='txtFolderToRepair' readonly='readonly' style='width:444px' class='roundedInput'></input></div>\n" +
             "    <div><span>include all subfolders </span><input type='checkbox' id='ckRepairIncludeSubfolders'></input></div>\n" +
             "    <div><span>remove orphan ImageFiles </span><input type='checkbox' id='ckRemoveOrphans'></input></div>\n" +
-            "    <div class='roundendButton'onclick = 'performRepairLinks($(\"#ckRepairIncludeSubfolders\").is(\":checked\"),\"#ckRemoveOrphans\").is(\":checked\")' > Run</div >\n");
+            "    <div class='roundendButton' onclick='performRepairLinks($(\"#ckRepairIncludeSubfolders\").is(\":checked\"),\"#ckRemoveOrphans\").is(\":checked\")'> Run</div>\n");
 
         $('#txtFolderToRepair').val($('#txtCurrentActiveFolder').val());
-        $('#dashboardDialogBoxTitle').fadeIn();
         $('#dashboardDialogContents').keydown(function (event) {
             if (event.keyCode === 13) {
                 performRepairLinks($("#ckRepairIncludeSubfolders").is(":checked"));
             }
         });
-        $('#dashboardDialogBox').css("width", "460px");
-        $('#dashboardDialogBox').css("top", "160px");
+        $('#dashboardDialogBox').css("top", "212px");
         $('#dashboardDialogBox').css("left", "250px");
         $('#dashboardDialogBox').draggable().fadeIn();
     }
@@ -219,39 +217,68 @@ function showFiles() {
 
     function checkForOrphanImageFileRecords(startFolderPath, startFolderId, recurr, remove) {
         try {
+            let filekname = startFolderPath;
             let path = "../../danni/" + startFolderPath;
             console.log("path: " + path);
             $.ajax({
-                url: "php/getOggleFolder.php?folderId=" + startFolderId + "&path=" + path,
-                //url: "php/getOggleFolder.php?folderId=" + startFolderId,
+                url: "php/customQuery.php?query=select p.Id Parent, p.FolderName as pName, f.FolderName, f.FolderType" +
+                    " from CategoryFolder f join CategoryFolder p on p.Id = f.Parent where f.Id = " + startFolderId,
                 success: function (catFolderJson) {
-                    if (catFolderJson.indexOf('Error') > -1) {
-                        $('#serverFileList').html(catFolderJson);
+                    if (catFolderJson.FolderType == "singleChild")
+                        filekname = catFolderJson.pName;
+
+
+
+                },
+                error: function (jqXHR) {
+                    $('#dashBoardLoadingGif').hide();
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    alert("RepairLinks/getDirectoryFiles XHR: " + errMsg);
+                }
+
+            });
+
+
+
+            $.ajax({
+                url: "php/customQuery.php?query=select * from ImageFile where FolderId=" + startFolderId,
+                //url: "php/getOggleFolder.php?folderId=" + startFolderId,
+                success: function (imageFileJson) {
+                    if (imageFileJson.indexOf('Error') > -1) {
+                        $('#serverFileList').html(imageFileJson);
                     }
                     else {
-                        let dataTableRows = JSON.parse(catFolderJson);
+                        let dataTableRows = JSON.parse(imageFileJson);
                         $.ajax({
-                            url: "php/customQuery.php?query=select * from ImageFile where FolderId=" + startFolderId,
+                            url: "php/getOggleFolder.php?folderId=" + startFolderId + "&path=" + path,
                             success: function (scanDirJson) {
-                                let physcialimageFileRows = JSON.parse(scanDirJson);
-                                //console.log("imageFiles.count(" + physcialimageFileRows.length + ") , serverFileListArray.count(" + dataTableRows.length + ")");
+                                let allDirValues = JSON.parse(scanDirJson);
+                                let physcialimageFileRows = allDirValues.filter(node => node.type == "file");
+                                let physcialdirectories = allDirValues.filter(node => node.type == "dir");
                                 if (physcialimageFileRows.length < dataTableRows.length)
                                     repairReport.ErrorArray.push("more physcial files than ImageFile rows");
 
                                 $.each(physcialimageFileRows, function (idx, objPhyscialimageFileRow) {
-                                    let dataTableRow = dataTableRows.filter(node => node.FileName == objPhyscialimageFileRow);
-                                    if (dataTableRow == null) {
+                                    //let xfile = 
+
+                                    let dataTableRow = dataTableRows.filter(node => node.FileName == objPhyscialimageFileRow.name);
+                                    if (dataTableRow.length == 0) {
                                         // we have a physcialFile missing a data record
-                                        repairReport.OrphanImageArray.push("<input style='width:500px' value=" + encodeURI(objPhyscialimageFileRow) + " />");
+                                        repairReport.OrphanImageArray.push("<div style='min-width:500px'>1" +
+                                            startFolderId + "  " + objPhyscialimageFileRow.name + "</div>");
+                                        addMissingImageFile(startFolderId, objPhyscialimageFileRow.name)
                                     }
                                     repairReport.PhyscialFilesProcessed++;
                                 });
 
                                 $.each(dataTableRows, function (idx, objDataTableRow) {
-                                    let physcialFileRow = physcialimageFileRows.filter(node => node == objDataTableRow.FileName);
-                                    if (physcialFileRow == null) {
+                                    //let folderName = dataTableRow.FilePath.substr(dataTableRow.FilePath.lastIndexOf('/'))
+
+                                    let physcialFileRow = physcialimageFileRows.filter(node => node.name == objDataTableRow.FileName);
+                                    if (physcialFileRow.length == 0) {
                                         // we have a data record with no physcial file
-                                        repairReport.OrphanImageFileArray.push("<input value=" + objDataTableRow.Id + " />");
+                                        repairReport.OrphanImageFileArray.push("<div>2" + objDataTableRow.Id +
+                                            "  " + objDataTableRow.FileName + "</div>");
                                     }
                                     repairReport.ImageFilesProcessed++;
                                 });
@@ -259,10 +286,8 @@ function showFiles() {
                                 $('#dashBoardLoadingGif').hide();
                                 reportRepairResults(repairReport);
                                 if (recurr) {
-                                    $.each(dataTableRows, function (idx, obj) {
-                                        if (obj.type == "dir") {
-                                            checkForOrphanImageFileRecords(startFolderPath + "/" + obj.name, obj.folderId, recurr);
-                                        }
+                                    $.each(physcialdirectories, function (idx, obj) {
+                                        checkForOrphanImageFileRecords(startFolderPath + "/" + obj.name, obj.folderId, recurr);
                                     });
                                 }
                             },
@@ -290,6 +315,16 @@ function showFiles() {
 
     }
 
+    function addMissingImageFile(folderId, fileName) {
+
+
+        // cccccccccccccccccccccccccccccccccccccccccccccc
+        // cccccccccccccccccccccccccccccccccccccccccccccc
+        // cccccccccccccccccccccccccccccccccccccccccccccc
+
+
+    }
+
     function reportRepairResults(repairReport) {
         try {
 
@@ -298,18 +333,16 @@ function showFiles() {
             $('#serverFileListHeaderTitle').html("repair report");
 
             $('#serverFileList').html("<div>Physcial Files Processed : " + repairReport.PhyscialFilesProcessed + "</div>");
-            $('#serverFileList').html("<div>Orphan Image Files : " + repairReport.OrphanImageArray.length + "</div>");
             if (repairReport.OrphanImageArray.length > 0) {
-                $('#serverFileList').append("<div>Orphan Image Files</div><div>");
+                $('#serverFileList').append("<div>Orphan Image Files : " + repairReport.OrphanImageArray.length + "</div><div>");
                 $.each(repairReport.OrphanImageArray, function (idx, obj) {
                     $('#serverFileList').append("<div>" + obj + "</div>");
                 })
                 $('#serverFileList').append("</div>");
             }
-            $('#serverFileList').append("<div>Image Files Processed: " + Number(repairReport.ImageFilesProcessed).toLocalString() + "</div>");
-            $('#serverFileList').append("<div>Orphan Image File Rows: " + repairReport.OrphanImageFileArray.length + "</div>");
+            $('#serverFileList').append("<div>Image Files Processed: " + repairReport.ImageFilesProcessed.toLocaleString() + "</div>");
             if (repairReport.OrphanImageFileArray.length > 0) {
-                $('#serverFileList').append("<div>Orphan Image File Rows</div><div>");
+                $('#serverFileList').append("<div>Orphan Image File Rows: " + repairReport.OrphanImageFileArray.length + "</div><div>");
                 $.each(repairReport.OrphanImageFileArray, function (idx, obj) {
                     $('#serverFileList').append("<div>" + obj + "</div>");
                 })
@@ -318,15 +351,14 @@ function showFiles() {
 
             //$('#dataifyInfo').append(", Links: " + repairReport.LinkRecordsProcessed);
             //$('#dataifyInfo').append(", Image rows: " + repairReport.ImageFilesProcessed);
+            if (repairReport.ErrorArray.length > 0) {
+                $('#serverFileList').append("<div>Errors: " + repairReport.ErrorArray.length + "</div><div>");
+                $.each(repairReport.ErrorArray, function (idx, obj) {
+                    $('#serverFileList').append("<div>" + obj + "</div>");
+                })
+                $('#serverFileList').append("</div>");
+            }
 
-            //if (repairReport.Errors.length > 0) {
-            //    $('#repairErrorReport').show().html("");
-            //    $.each(repairReport.Errors, function (idx, obj) {
-            //        $('#repairErrorReport').append("<div>" + obj + "</div>");
-            //    })
-            //}
-
-            //$('#dataifyInfo').append(", Errors: " + repairReport.Errors.length);
             if (repairReport.LinksEdited > 0)
                 $('#serverFileList').append(", links Edited: " + repairReport.LinksEdited);
             if (repairReport.ImageFilesAdded > 0)

@@ -6,8 +6,9 @@
     --oggleBackgroundColor: #c1bad1; /*#fef;  #f7eef7  #b081b1 #f8e8e8 */
     --oggleContainerBackgroundColor: #93b798; /* #bc61e4; #d1f5f3; #f8e8e8 */
     --oggleDialogBackgroundColor: #c4c6ae;
-    --oggleBorderColor: #b200ff; /* #f1cff7;*/
+    --oggleBorderColor: #b200ff; /* #f1cff7; #acdde4; */
     --ogglePurple: #79078f;
+    --buttonBackgroundColor: #acdde4;
     --normalFont: 15px;
     --ogglgeTextColor: #000;
     --oggleTitleColor: #7f2c8f;
@@ -70,15 +71,14 @@ body {
     height: 40px;
     margin: 3px;
 }
-    
+
 .roundendButton {
-    padding: 11px;
+    margin: 9px;
+    padding: 7px;
     display: inline-block;
     text-align: center;
-    background-color: #acdde4;
-    color: #000;
+    background-color: var(--buttonBackgroundColor);
     border-radius: 6px;
-    padding: 8px;
     cursor: pointer;
 }
 
