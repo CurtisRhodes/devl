@@ -13,7 +13,8 @@ try
     $results = [];
     foreach ($files as $file) {
         if(is_dir($path.'/'.$file)) {
-            $cmd = $pdo->query("select * from CategoryFolder where FolderName = '".$file."'");
+            $cmd = $pdo->query("select * from CategoryFolder where Parent=".$folderId." and substr(FolderPath,CHAR_LENGTH(FolderPath) - LOCATE('/', REVERSE(FolderPath))+2)='".$file."'");
+            //$cmd = $pdo->query("select * from CategoryFolder where FolderName = '".$file."'");
             $catRow = $cmd->fetch();
 
             $results[] = ['name' => $file,'type' => 'dir','folderId' => $catRow[Id]];
@@ -22,6 +23,7 @@ try
             $results[] = ['name' => $file,'type' => 'file'];
         }
     }
+    
 
     $cmd = null;
     $pdo = null;

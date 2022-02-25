@@ -486,3 +486,7 @@ workAreaHeaderDetailRow {
     text-align: center;
     padding-right: 11px;
 }
+
+.adminCheckbox {
+    font-size: 110%;
+}
