@@ -34,8 +34,11 @@
 
 .dirTreeArea {
     overflow: auto;
-    margin-right: 33px;
+    margin-right: 8px;
     border-left: #decd6f 3px solid;
+    resize: horizontal;
+    width: 322px;
+    font-size: 12px;
     padding: 4px;
 }
 

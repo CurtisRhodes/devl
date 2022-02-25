@@ -5,7 +5,7 @@ function buildDirTree(startNode) {
     try {
         let startTime = Date.now();
         $('#dashBoardLoadingGif').show();
-        $.getJSON('php/getDirTree.php?query=select * from VwDirTree order by Id', function (data) {
+        $.getJSON('php/customQuery.php?query=select * from VwDirTree', function (data) {
             $('#dashBoardLoadingGif').hide();
             let delta = (Date.now() - startTime) / 1000;
             console.log("loading vwLinks took: " + delta.toFixed(3));
@@ -16,18 +16,9 @@ function buildDirTree(startNode) {
             startTime = Date.now();
             let rootNode = dirTreeArray.filter(node => node.Id == startNode)[0];
             let randomId = create_UUID();
-            //[{ "id": 1, "text": "Root node", "children": [{ "id": 2, "text": "Child node 1" }, { "id": 3, "text": "Child node 2" }] }]
-            dirTreeArray = [{
-                "id": randomId,
-                "name": "Root",
-                "folderId": startNode,
-                "treeNodeTxt": dirTreeNode(subNode),
-                "children": []
-            }];
 
-
-            //largetxtstring = dirTreeNode(rootNode, randomId);
-            //largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer'>";
+            largetxtstring = dirTreeNode(rootNode, randomId);
+            largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer'>";
             $('#dirTreeContainer').html(dirTreeArray[0].treeNodeTxt);
 
             traverseDirTree(rootNode);
@@ -83,12 +74,12 @@ function dirTreeNode(node, randomId) {
             alert("bad node?");
         }
         else {
-            let expandMode = "-";
+            let expandMode = "[-]";
             if (node.SubFolderCount == 0)
-                expandMode = "o";
+                expandMode = "├";
             else {
                 if (dirTreeTab > maxExpandDepth) {
-                    expandMode = "+";
+                    expandMode = "[+]";
                 }
             }
 
@@ -102,7 +93,7 @@ function dirTreeNode(node, randomId) {
                 folderImage = settingsImgRepo + node.FolderImage;
 
             treeNodeTxt = "<div id='" + randomId + "' class='dirTreeNode clickable' style='text-indent:" + dirTreeTab + "px'>\n"
-                + "<span id='TT" + randomId + "' onclick='toggleDirTree(\"" + randomId + "\")'>[" + expandMode + "]</span>"
+                + "<span id='TT" + randomId + "' onclick='toggleDirTree(\"" + randomId + "\")'>" + expandMode + "</span>"
                 + "<div class='dirTreeItemName' onclick='commonDirTreeClick(\"" + node.FolderPath + "\"," + node.Id + ")' "
                 + "\n oncontextmenu='showDirTreeContextMenu(" + node.Id + ")' "
                 + "\n onmouseover='showFolderImage(\"" + folderImage + "\")' "

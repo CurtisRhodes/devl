@@ -26,7 +26,7 @@ function showBuildDirTreeDialog() {
     $('#dashboardDialogContents').keydown(function (event) {
         if (event.keyCode === 13) {
             performBuildDirTree();
-            dashboardDialogBoxClose('showBuildDirTreeDialog kk');
+            dashboardDialogBoxClose('showBuildDirTreeDialog keydown');
         }
     });
     $('#dashboardDialogBox').css("top", "150px");
@@ -192,6 +192,7 @@ function showFiles() {
                 performRepairLinks($("#ckRepairIncludeSubfolders").is(":checked"));
             }
         });
+        $('#dashboardDialogBox').css("width", "460px");
         $('#dashboardDialogBox').css("top", "160px");
         $('#dashboardDialogBox').css("left", "250px");
         $('#dashboardDialogBox').draggable().fadeIn();
@@ -199,22 +200,23 @@ function showFiles() {
 
     let repairReport = {};
     let startTime;
-    function performRepairLinks(justOne,remove) {
+    function performRepairLinks(justOne, remove) {
         startTime = Date.now();
-        $('#dataifyInfo').show().html("checking and repairing links");
-        //$('#dashBoardLoadingGif').fadeIn();
+        //$('#dataifyInfo').show().html("checking and repairing links");
+        $('#dashboardDialogContents').off();
         repairReport = {
+            PhyscialFilesProcessed: 0,
+            ImageFilesProcessed: 0,
             OrphanImageArray: [],
             OrphanImageFileArray: [],
-            PhyscialFilesProcessed: 0,
-            ImageFilesProcessed: 0
+            ErrorArray: []
         };
         repairReport.OrphanImageFiles = [];
 
         checkForOrphanImageFileRecords($('#txtCurrentActiveFolder').val(), $('#txtActiveFolderId').val(), justOne, remove);
+        dashboardDialogBoxClose("performRepairLinks");
     }
 
-    let serverFilesArray = [];
     function checkForOrphanImageFileRecords(startFolderPath, startFolderId, recurr, remove) {
         try {
             let path = "../../danni/" + startFolderPath;
@@ -222,73 +224,54 @@ function showFiles() {
             $.ajax({
                 url: "php/getOggleFolder.php?folderId=" + startFolderId + "&path=" + path,
                 //url: "php/getOggleFolder.php?folderId=" + startFolderId,
-                success: function (data) {
-                    if (data.indexOf('Error') > -1) {
-                        $('#serverFileList').html(data);
+                success: function (catFolderJson) {
+                    if (catFolderJson.indexOf('Error') > -1) {
+                        $('#serverFileList').html(catFolderJson);
                     }
                     else {
-                        if (data == "false") {
-                            $('#serverFileList').html("folder not found: " + path);
-                        }
-                        else {
-                            if (isNullorUndefined(data)) {
-                                $('#serverFileList').html("data: " + data);
-                            }
-                            else {
-                                serverFilesArray = JSON.parse(data);
-                                $.ajax({
-                                    url: "php/customQuery.php?query=select * from ImageFile where FolderId=" + startFolderId,
-                                    success: function (data) {
-                                        let imageFileRows = JSON.parse(data);
+                        let dataTableRows = JSON.parse(catFolderJson);
+                        $.ajax({
+                            url: "php/customQuery.php?query=select * from ImageFile where FolderId=" + startFolderId,
+                            success: function (scanDirJson) {
+                                let physcialimageFileRows = JSON.parse(scanDirJson);
+                                //console.log("imageFiles.count(" + physcialimageFileRows.length + ") , serverFileListArray.count(" + dataTableRows.length + ")");
+                                if (physcialimageFileRows.length < dataTableRows.length)
+                                    repairReport.ErrorArray.push("more physcial files than ImageFile rows");
 
-                                        console.log("imageFiles.count(" + imageFileRows.length + ") , serverFileListArray.count(" + serverFilesArray.length + ")");
-                                        if (imageFileRows.length < serverFilesArray.length) {
-                                            console.log("more physcial files than ImageFile rows");
-                                        }
-
-                                        $.each(imageFileRows, function (idx, imageFileRow) {
-
-                                            let physcialFile = serverFilesArray.filter(node => node.name == imageFileRow.FileName);
-                                            if (physcialFile == null) {
-                                                repairReport.OrphanImageArray.push("<input style='width:500px' value=" + encodeURI(imageFileRow.FileName) + " />");
-                                            }
-                                            repairReport.PhyscialFilesProcessed++;
-                                        });
-
-                                        $.each(serverFilesArray, function (idx, objServerFile) {
-
-                                            let imageFileRow = imageFileRows.filter(node => node.FileName == objServerFile);
-                                            if (imageFileRow == null) {
-                                                if (remove) {
-
-
-                                                }
-
-                                                // delete this ImageFileRow
-                                                repairReport.OrphanImageFileArray.push("<input value=" + objServerFile + " />");
-                                            }
-                                            repairReport.ImageFilesProcessed++;
-                                        });
-
-                                        $('#dashBoardLoadingGif').hide();
-                                        reportRepairResults(repairReport);
-                                    },
-                                    error: function (jqXHR) {
-                                        $('#dashBoardLoadingGif').hide();
-                                        let errMsg = getXHRErrorDetails(jqXHR);
-                                        alert("RepairLinks/getImageFiles AJX: " + errMsg);
+                                $.each(physcialimageFileRows, function (idx, objPhyscialimageFileRow) {
+                                    let dataTableRow = dataTableRows.filter(node => node.FileName == objPhyscialimageFileRow);
+                                    if (dataTableRow == null) {
+                                        // we have a physcialFile missing a data record
+                                        repairReport.OrphanImageArray.push("<input style='width:500px' value=" + encodeURI(objPhyscialimageFileRow) + " />");
                                     }
+                                    repairReport.PhyscialFilesProcessed++;
                                 });
-                            }
-                        }
 
-                        if (recurr) {
-                            $.each(serverFilesArray, function (idx, obj) {
-                                if (obj.type == "dir") {
-                                    checkForOrphanImageFileRecords(startFolderPath + "/" + obj.name, obj.folderId, recurr);
+                                $.each(dataTableRows, function (idx, objDataTableRow) {
+                                    let physcialFileRow = physcialimageFileRows.filter(node => node == objDataTableRow.FileName);
+                                    if (physcialFileRow == null) {
+                                        // we have a data record with no physcial file
+                                        repairReport.OrphanImageFileArray.push("<input value=" + objDataTableRow.Id + " />");
+                                    }
+                                    repairReport.ImageFilesProcessed++;
+                                });
+
+                                $('#dashBoardLoadingGif').hide();
+                                reportRepairResults(repairReport);
+                                if (recurr) {
+                                    $.each(dataTableRows, function (idx, obj) {
+                                        if (obj.type == "dir") {
+                                            checkForOrphanImageFileRecords(startFolderPath + "/" + obj.name, obj.folderId, recurr);
+                                        }
+                                    });
                                 }
-                            });
-                        }
+                            },
+                            error: function (jqXHR) {
+                                $('#dashBoardLoadingGif').hide();
+                                let errMsg = getXHRErrorDetails(jqXHR);
+                                alert("RepairLinks/getImageFiles AJX: " + errMsg);
+                            }
+                        });
                     }
                 },
                 error: function (jqXHR) {
@@ -311,7 +294,6 @@ function showFiles() {
         try {
 
             $('#serverFileListContainer').show();
-            dashboardDialogBoxClose('reportRepairResults');
 
             $('#serverFileListHeaderTitle').html("repair report");
 
@@ -324,7 +306,7 @@ function showFiles() {
                 })
                 $('#serverFileList').append("</div>");
             }
-            $('#serverFileList').append("<div>Image Files Processed: " + repairReport.ImageFilesProcessed + "</div>");
+            $('#serverFileList').append("<div>Image Files Processed: " + Number(repairReport.ImageFilesProcessed).toLocalString() + "</div>");
             $('#serverFileList').append("<div>Orphan Image File Rows: " + repairReport.OrphanImageFileArray.length + "</div>");
             if (repairReport.OrphanImageFileArray.length > 0) {
                 $('#serverFileList').append("<div>Orphan Image File Rows</div><div>");
@@ -345,39 +327,37 @@ function showFiles() {
             //}
 
             //$('#dataifyInfo').append(", Errors: " + repairReport.Errors.length);
-            //if (repairReport.LinksEdited > 0)
-            //    $('#dataifyInfo').append(", links Edited: " + repairReport.LinksEdited);
-            //if (repairReport.ImageFilesAdded > 0)
-            //    $('#dataifyInfo').append(", ImageFilesAdded: " + repairReport.ImagesRenamed);
-            //if (repairReport.PhyscialFileRenamed > 0)
-            //    $('#dataifyInfo').append(", Physcial File Names Renamed: " + repairReport.PhyscialFileRenamed);
-            //if (repairReport.ImageFilesRenamed > 0)
-            //    $('#dataifyInfo').append(", Image File Names Renamed: " + repairReport.ImageFilesRenamed);
-            //if (repairReport.ImagesRenamed > 0)
-            //    $('#dataifyInfo').append(", Image Files Renamed: " + repairReport.ImagesRenamed);
-            //if (repairReport.ZeroLenFileResized > 0)
-            //    $('#dataifyInfo').append(", ZeroLen File Resized: " + repairReport.ZeroLenFileResized);
-            //if (repairReport.ImageFilesMoved > 0)
-            //    $('#dataifyInfo').append(", Images Moved: " + repairReport.ImageFilesMoved);
-            //if (repairReport.CatLinksRemoved > 0)
-            //    $('#dataifyInfo').append(", Links Removed: " + repairReport.CatLinksRemoved);
-            //if (repairReport.CatLinksAdded > 0)
-            //    $('#dataifyInfo').append(", CatLinks Added: " + repairReport.CatLinksAdded);
-            //if (repairReport.ImageFilesAdded > 0)
-            //    $('#dataifyInfo').append(", ImageFiles Added: " + repairReport.ImageFilesAdded);
-            //if (repairReport.ImagesDownLoaded > 0)
-            //    $('#dataifyInfo').append(", ImageFiles ImagesDownLoaded: " + repairReport.ImagesDownLoaded);
-            //if (repairReport.ImageFilesRemoved > 0)
-            //    $('#dataifyInfo').append(", ImageFiles Removed: " + repairReport.ImageFilesRemoved);
-            //if (repairReport.ZeroLenImageFilesRemoved > 0)
-            //    $('#dataifyInfo').append(", ZeroLen ImageFiles Removed: " + repairReport.ZeroLenImageFilesRemoved);
+            if (repairReport.LinksEdited > 0)
+                $('#serverFileList').append(", links Edited: " + repairReport.LinksEdited);
+            if (repairReport.ImageFilesAdded > 0)
+                $('#serverFileList').append(", ImageFilesAdded: " + repairReport.ImagesRenamed);
+            if (repairReport.PhyscialFileRenamed > 0)
+                $('#serverFileList').append(", Physcial File Names Renamed: " + repairReport.PhyscialFileRenamed);
+            if (repairReport.ImageFilesRenamed > 0)
+                $('#serverFileList').append(", Image File Names Renamed: " + repairReport.ImageFilesRenamed);
+            if (repairReport.ImagesRenamed > 0)
+                $('#serverFileList').append(", Image Files Renamed: " + repairReport.ImagesRenamed);
+            if (repairReport.ZeroLenFileResized > 0)
+                $('#serverFileList').append(", ZeroLen File Resized: " + repairReport.ZeroLenFileResized);
+            if (repairReport.ImageFilesMoved > 0)
+                $('#serverFileList').append(", Images Moved: " + repairReport.ImageFilesMoved);
+            if (repairReport.CatLinksRemoved > 0)
+                $('#serverFileList').append(", Links Removed: " + repairReport.CatLinksRemoved);
+            if (repairReport.CatLinksAdded > 0)
+                $('#serverFileList').append(", CatLinks Added: " + repairReport.CatLinksAdded);
+            if (repairReport.ImageFilesAdded > 0)
+                $('#serverFileList').append(", ImageFiles Added: " + repairReport.ImageFilesAdded);
+            if (repairReport.ImagesDownLoaded > 0)
+                $('#serverFileList').append(", ImageFiles ImagesDownLoaded: " + repairReport.ImagesDownLoaded);
+            if (repairReport.ImageFilesRemoved > 0)
+                $('#serverFileList').append(", ImageFiles Removed: " + repairReport.ImageFilesRemoved);
+            if (repairReport.ZeroLenImageFilesRemoved > 0)
+                $('#serverFileList').append("<div>ZeroLen ImageFiles Removed: " + repairReport.ZeroLenImageFilesRemoved + "</div>");
+
 
             let delta = Date.now() - startTime;
             let minutes = Math.floor(delta / 60000);
             let seconds = (delta % 60000 / 1000).toFixed(0);
-            //console.log("repair links took: " + minutes + ":" + (seconds < 10 ? '0' : '') + seconds);
-            //let delta = (Date.now() - startTime) / 1000;
-            //console.log("showFiles took: " + delta.toFixed(3));
             $('#serverFileList').append("<div>repair links took: " + minutes + ":" + (seconds < 10 ? '0' : '') + seconds + "</div>");
         }
         catch (e) {
@@ -563,8 +543,7 @@ function showDefaultWorkArea() {
 }
 
 function dashboardDialogBoxClose(calledFrom) {
-    alert("dashboard DialogBox Close. calledFrom: " + calledFrom)
+    //alert("dashboard DialogBox Close. calledFrom: " + calledFrom)
     $('#dashboardDialogBox').hide();
-    //$('#dashboardDialogContents').keydown = null;
-    document.onkeydown = null;
+    $('#dashboardDialogContents').off();
 }
