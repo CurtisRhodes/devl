@@ -244,7 +244,8 @@ function showFiles() {
                                     if (dataTableRow.length == 0) {
                                         // we have a physcialFile missing a data record
                                         repairReport.OrphanImageArray.push("<div style='min-width:500px'>" + startFolderId + " - " + objPhyscialimageFileRow.name + "</div>");
-                                        addMissingImageFile(startFolderId, objPhyscialimageFileRow.name);
+                                        if (remove)
+                                            removeImageFile(startFolderId, objPhyscialimageFileRow.name);
                                     }
                                     repairReport.PhyscialFilesProcessed++;
                                     //repairReport.PhyscialFilesProcessed++;
@@ -282,7 +283,7 @@ function showFiles() {
                 error: function (jqXHR) {
                     $('#dashBoardLoadingGif').hide();
                     let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("RepairLinks/getDirectoryFiles XHR: " + errMsg);
+                    alert("check For OrphanImageFileRecords XHR: " + errMsg);
                 }
             });
         } catch (e) {
@@ -291,8 +292,15 @@ function showFiles() {
         }
     }
 
-    function addNewImages(rootFolderId) {
-        try {
+
+    function addNewImages() {
+        let rootFolderId = $('#txtActiveFolderId').val();
+        addNewImagesRecurr(rootFolderId, true);
+    }
+
+    function addNewImagesRecurr(rootFolderId, recurr) {
+        try
+        {
             startTime = Date.now();
             //$('#dataifyInfo').show().html("checking and repairing links");
             repairReport = {
@@ -307,20 +315,29 @@ function showFiles() {
                 url: "php/customQuery.php?query=select p.Id Parent, p.FolderName as ParentName, f.FolderName, f.FolderPath, f.FolderType" +
                     " from CategoryFolder f join CategoryFolder p on p.Id = f.Parent where f.Id = " + rootFolderId,
                 success: function (catFolderJson) {
-                    let fileNamePrefix = f.FileName;
-                    if (catFolderJson.FolderType == "singleChild")
-                        fileNamePrefix = catFolderJson.ParentName;
-                    let fullPath = "../../danni/" + catFolderJson.FolderPath;
+                    if (catFolderJson.indexOf('Error') > -1) {
+                        repairReport.ErrorArray.push("folder not found: " + fullPath);
+                        reportRepairResults(repairReport);
+                        return;
+                    }
+                    let catFolder = JSON.parse(catFolderJson)[0];
+                    let fileNamePrefix = catFolder.FolderName;
+                    if (catFolder.FolderType == "singleChild")
+                        fileNamePrefix = catFolder.ParentName;
+
+                    let fullPath = "../../danni/" + catFolder.FolderPath;
 
                     $.ajax({
-                        url: "php/getDirectoryFiles.php?path=" + fullPath,
-                        success: function (directoryData) {
-                            if (directoryData == "false") {
+                        url: "php/getOggleFolder.php?path=" + fullPath + "&folderId=" + rootFolderId,
+                        success: function (scanDirJson) {
+                            if (scanDirJson == "false") {
                                 repairReport.ErrorArray.push("folder not found: " + fullPath);
                                 reportRepairResults(repairReport);
                                 return;
                             }
-                            let physcialImageFileRows = JSON.parse(directoryData);
+                            let allDirValues = JSON.parse(scanDirJson);
+                            let physcialImageFileRows = allDirValues.filter(node => node.type == "file");
+                            let physcialDirectories = allDirValues.filter(node => node.type == "dir");
                             $.ajax({
                                 url: "php/customQuery.php?query=select * from ImageFile where FolderId=" + rootFolderId,
                                 success: function (imageFileJson) {
@@ -330,10 +347,9 @@ function showFiles() {
                                         let dataTableRow = imageFileRows.filter(imageFile => encodeURI(imageFile.FileName) == encodeURI(objPhyscialimageFileRow.name));
                                         if (dataTableRow.length == 0) {
                                             // we have a physcialFile missing a data record
-
-                                            renameConform(objPhyscialimageFileRow.name, fileNamePrefix);
-
-                                            repairReport.
+///////////////////////////////////////////
+                                            let newFileName = renameConform(objPhyscialimageFileRow.name, fileNamePrefix);
+                                            addImageFile(newFileName, rootFolderId, catFolder.FolderType, fullPath);
                                         }
                                         repairReport.PhyscialFilesProcessed++;
                                     });
@@ -342,29 +358,30 @@ function showFiles() {
                                         let physcialFileRow = physcialImageFileRows.filter(node => node.name == objDataTableRow.FileName);
                                         if (physcialFileRow.length == 0) {
                                             // we have a data record with no physcial file
-                                            repairReport.OrphanImageFileArray.push("<div>" + startFolderId + " - " + objDataTableRow.Id +
-                                                " - " + objDataTableRow.FileName + "</div>");
+                                            repairReport.OrphanImageFileArray.push("<div>" + catFolder.FolderName + "(" + rootFolderId + ") - "
+                                                + objDataTableRow.FileName + "</div>");
                                         }
                                         repairReport.ImageFilesProcessed++;
                                     });
 
-
-                                    let delta = (Date.now() - infoStart) / 1000;
-                                    console.log("addNewImages took: " + delta.toFixed(3));
-                                    $('#dashBoardLoadingGif').hide();
                                     reportRepairResults(repairReport);
+                                    if (recurr) {
+                                        $.each(physcialDirectories, function (idx, obj) {
+                                            addNewImagesRecurr(obj.folderId, recurr)
+                                        });
+                                    }
                                 },
                                 error: function (jqXHR) {
                                     $('#dashBoardLoadingGif').hide();
                                     let errMsg = getXHRErrorDetails(jqXHR);
-                                    alert("getDirectoryFiles AJX: " + errMsg);
+                                    alert("addnew / get DirectoryFiles AJX: " + errMsg);
                                 }
                             });
                         },
                         error: function (jqXHR) {
                             $('#dashBoardLoadingGif').hide();
                             let errMsg = getXHRErrorDetails(jqXHR);
-                            alert("getDirectoryFiles AJX: " + errMsg);
+                            alert("addnew/get DirectoryFiles XHR: " + errMsg);
                         }
                     });
                 },
@@ -380,35 +397,73 @@ function showFiles() {
         }
     }
 
-    function renameConform(physcialimageFileName, desiredFileNamePrefix,path) {
-        let newFileName = "err";
-        if (physcialimageFileName.startsWith(desiredFileNamePrefix)) {
-
+    function renameConform(physcialimageFileName, desiredFileNamePrefix, path) {
+        let newFileName = physcialimageFileName;
+        if (!physcialimageFileName.startsWith(desiredFileNamePrefix)) {
             newFileName = desiredFileNamePrefix + "_" + create_UUID();
             $.ajax({
                 url: "php/renameFile.php?path=" + path + "&oldFileName=" + physcialimageFileName + "&newFileName=" + newFileName,
                 success: function (success) {
-
-                    repairReport.PhyscialFileRenamed++;
+                    if (success == 1) {
+                        repairReport.PhyscialFileRenamed++;
+                        return newFileName;
+                    }
+                    else
+                        return success;
                 },
                 error: function (jqXHR) {
                     $('#dashBoardLoadingGif').hide();
                     let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("getDirectoryFiles AJX: " + errMsg);
+                    alert("rename Conform AJX: " + errMsg);
                 }
             });
         }
-        //if (repairReport.ImageFilesAdded > 0)
-        //if (repairReport.ImageFilesRenamed > 0)
-        //if (repairReport.ImagesRenamed > 0)
+        else {
+            let guidPart = physcialimageFileName.substring(physcialimageFileName.indexOf("_"), 36);
+            if (!isUUId(guidPart))
+                return "bad guid";
+            return newFileName;
+        }
     }
 
+    function isUUId(guidPart) {
+        return true;
+    }
 
-    function addMissingImageFile(folderId, fileName) {
+    function addImageFile(newFileName, folderId, folderType, path) {
+        let Id = newFileName.substr(newFileName.indexOf("_") + 1, 36);
+
+        let data = {
+            Id: Id,
+            path: path,
+            fileName: newFileName,
+            folderId: folderId,
+            folderType: folderType
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "php/addImageFile.php",
+            data: data,
+            success: function (addImageFileSuccess) {
+                if (addImageFileSuccess.trim() == "ok")
+                    repairReport.PhyscialFileRenamed++;
+                else {
+                    console.log(renameSuccess);
+                    repairReport.ErrorArray.push("addImageFile: " + renameSuccess);
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                repairReport.ErrorArray.push("addImageFile: " + errMsg);
+            }
+        });
+    }
+
+    function removeImageFile(folderId, fileName) {
     }
     function checkForOrphanCatLinkRecords() {
     }
-
     function reportRepairResults(repairReport) {
         try {
 
@@ -659,4 +714,8 @@ function dashboardDialogBoxClose(calledFrom) {
     //alert("dashboard DialogBox Close. calledFrom: " + calledFrom)
     $('#dashboardDialogBox').hide();
     $('#dashboardDialogContents').off();
+}
+
+function sqlSandbox() {
+    alert("SQL Sandbox");
 }

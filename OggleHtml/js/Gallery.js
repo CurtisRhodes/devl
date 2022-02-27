@@ -61,7 +61,8 @@ function getSubFolders(folderId) {
         $.getJSON("php/customQuery.php?query=select * from VwDirTree where Parent=" + folderId +
             " order by SortOrder,FolderName", function (data) {
                 $('#galleryPageLoadingGif').hide();
-                $.each(data, function (index, obj) {
+            $.each(data, function (index, obj) {
+                    if(isNullorUndefined())
                     let imgSrc = settingsImgRepo + "/" + obj.FolderImage.replace(/'/g, '%27');
                     let linkId = create_UUID();
                     let folderCounts = "(" + obj.FileCount.toLocaleString() + ")";
