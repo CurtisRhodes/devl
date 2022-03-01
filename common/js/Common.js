@@ -991,11 +991,11 @@ function showContextMenu(menuType, pos, imgSrc, linkId, folderId) {
             $('#contextMenuContent').html(contextMenuHtml())
         }
 
-        $('#ctxMdlName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='Images/loader.gif'/>");
+        $('#ctxMdlName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='https://common.ogglefiles.com/img/loader.gif'/>");
         if (menuType === "Folder")
             getFolderctxMenuDetails();
-        //else
-        //    getSingleImageDetails(linkId);
+        else
+            getSingleImageDetails(linkId);
 
         $('#ctxComment').show();
         $('#ctxExplode').show();
@@ -1010,15 +1010,12 @@ function showContextMenu(menuType, pos, imgSrc, linkId, folderId) {
         //    $('.adminLink').hide();
 
     } catch (e) {
-        logError("CAT", folderId, e, "show ContextMenu");
-        alert("context menu CATCH: " + e);
+        logCatch("show ContextMenu", e);
     }
 }
 
 function contextMenuHtml() {
-    return
-        `<div id='ctxMenuType' class='ctxItem'>
-        <div id='ctxMdlName' class='ctxItem' onclick='contextMenuAction(\"showDialog\")'>model name</div>
+    let content= `<div id='ctxMdlName' class='ctxItem' onclick='contextMenuAction(\"showDialog\")'>model name</div>
         <div id='ctxSeeMore' class='ctxItem' onclick='contextMenuAction(\"see more\")'>see more of her</div>
         <div id='ctxNewTab' class='ctxItem' onclick='contextMenuAction(\"openInNewTab\")'>Open in new tab</div>
         <div id='ctxComment' class='ctxItem' onclick='contextMenuAction(\"comment\")'>Comment</div>
@@ -1061,104 +1058,10 @@ function contextMenuHtml() {
             <div onclick='contextMenuAction(\"delete\")'>Delete Image</div>
             <div onclick='contextMenuAction(\"setF\")'>Set as Folder Image</div>
             <div onclick='contextMenuAction(\"setC\")'>Set as Category Image</div>
-        </div>
-    </div>`
+        </div>`;
+    return content;
 }
 
-function getSingleImageDetails(linkId, folderId) {
-    try {
-        //let start = Date.now();
-        $.ajax({
-            type: "GET",
-            url: "https://common.ogglefiles.com/php/customQuery.php?query=select p.Id ParentId, i.*, f.* from ImageFile i " +
-                "join CategoryFolder f on i.FolderId = f.Id join CategoryFolder p on f.Parent = p.Id where i.id =" + linkId,
-            success: function (imgData) {
-
-                pFolderName = imgData.FolderName;
-
-                if (imgData.FolderType == "singleChild")
-                    $('#ctxMdlName').html(imgData.ParentFolderName);
-                else {
-                    $('#ctxMdlName').html(imgData.FolderName);
-                }
-
-                if (imgData.FolderType == "multiModel") {
-                    if (imgData.Id != folderId) { //  we have a link
-                        $('#ctxSeeMore').show();
-                    }
-                    else {
-                        $('#ctxMdlName').html("unknown model");
-                    }
-                }
-
-                $('#imageInfoFileName').html(imgData.FileName);
-                $('#imageInfoFolderPath').html(imgData.FolderPath);
-                $('#imageInfoLinkId').val(linkId);
-                $('#imageInfoHeight').html(imgData.Height);
-                $('#imageInfoWidth').html(imgData.Width);
-                $('#imageInfoSize').html(imgData.Size);
-                $('#imageInfoLastModified').html(imgData.LastModified);
-                $('#imageInfoExternalLink').html(imageInfo.ExternalLink);
-
-
-
-        //var dbPageFolder = db.CategoryFolders.Where(f => f.Id == folderId).FirstOrDefault();
-        //imageInfo.FolderName = dbPageFolder.FolderName;
-        //imageInfo.FolderType = dbPageFolder.FolderType;
-
-        //var dbImageFile = db.ImageFiles.Where(i => i.Id == linkId).FirstOrDefault();
-        //if (dbImageFile == null) { imageInfo.Success = "no image link found"; return imageInfo; }
-        //if (dbImageFile.FolderId != folderId) {
-        //    var dbModelFolder = db.CategoryFolders.Where(f => f.Id == dbImageFile.FolderId).FirstOrDefault();
-        //    if (dbModelFolder == null) { imageInfo.Success = "no image link folderId file found"; return imageInfo; }
-        //    imageInfo.ModelFolderId = dbModelFolder.Id;
-        //    imageInfo.ModelFolderName = dbModelFolder.FolderName;
-        //}
-        //  select * from ImageFile i join CategoryFolder f on i.FolderId = f.Id where i.id = 'b600bf7e-dc77-433b-8b42-e10062d68ebe';
-
-                // getFullImageDetails();
-                //    CategoryFolder dbPageFolder = db.CategoryFolders.Where(f => f.Id == folderId).FirstOrDefault();
-                //    imageInfo.RootFolder = dbPageFolder.RootFolder;
-                //    imageInfo.FolderPath = dbPageFolder.FolderPath;
-
-                //    ImageFile dbImageFile = db.ImageFiles.Where(i => i.Id == linkId).FirstOrDefault();
-                //    if (dbImageFile == null) { imageInfo.Success = "no image link found"; return imageInfo; }
-
-                //    if (dbImageFile.FolderId != folderId) {
-                //        var dbModelFolder = db.CategoryFolders.Where(f => f.Id == dbImageFile.FolderId).FirstOrDefault();
-                //        if (dbModelFolder == null) { imageInfo.Success = "no image link folderId file found"; return imageInfo; }
-                //        imageInfo.ModelFolderId = dbModelFolder.Id;
-                //        imageInfo.ModelFolderName = dbModelFolder.FolderName;
-                //    }
-
-
-
-                //    imageInfo.InternalLinks = (from l in db.CategoryImageLinks
-                //    join f in db.CategoryFolders on l.ImageCategoryId equals f.Id
-                //    where l.ImageLinkId == linkId && l.ImageCategoryId != folderId
-                //    select new { folderId = f.Id, folderName = f.FolderName })
-                //                                           .ToDictionary(i => i.folderId, i => i.folderName);
-                //}
-                //            imageInfo.Success = "ok";
-
-                var delta = Date.now() - start;
-                var minutes = Math.floor(delta / 60000);
-                var seconds = (delta % 60000 / 1000).toFixed(0);
-                console.log("get Single Image Details took: " + minutes + ":" + (seconds < 10 ? '0' : '') + seconds);
-            },
-            error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                if (!checkFor404(errMsg, folderId, "getLimitedImageDetails")) {
-                    if (document.domain == "localhost") alert("getLimitedImageDetails: " + errMsg);
-                    logError("XHR", folderId, errMsg, "getLimitedImageDetails");
-                }
-            }
-        });
-    } catch (e) {
-        if (document.domain == "localhost") alert("getFullImageDetails: " + e);
-        logError("CAT", pFolderId, e, getFullImageDetails);
-    }
-}
 
 function getImageFileDetalis() {
     try {
@@ -1214,14 +1117,7 @@ function ctxGetFolderDetails() {
 function contextMenuAction(action) {
     switch (action) {
         case "saveAs":
-            // alert("window.open(" + pImgSrc + ")");
-            //window.open(pImgSrc);
-
-            // <a href="data:application/xml;charset=utf-8,your code here" download="filename.html">Save</a>
-
             document.execCommand("SaveAs", null, "file.csv");
-
-            // <a href="data:application/xml;charset=utf-8,your code here" download="filename.html">Save</a>
             break;
         case "download":
             if (localStorage["IsLoggedIn"] == "true")
@@ -1258,17 +1154,7 @@ function contextMenuAction(action) {
             break;
         }
         case "explode": {
-            logEvent("EXP", pFolderId, pFolderName, pLinkId);
-            if (pMenuType === "Slideshow") {
-                slideShowButtonsActive = false;
-                $("#slideshowCtxMenuContainer").hide();
-                blowupImage();
-            }
-            else {
-                $("#imageContextMenu").hide();
-                $("#contextMenuContainer").hide();
-                replaceFullPage(pImgSrc);
-            }
+            explodeImage();
             break;
         }
         case "Image tags":

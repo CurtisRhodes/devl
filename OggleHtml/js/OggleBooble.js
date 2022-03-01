@@ -513,3 +513,160 @@ function logOggleError(errorCode, folderId, errorMessage, calledFrom) {
         }
     });
 }
+
+function imageError(folderId, linkId) {
+    try {
+        let calledFrom = "noneya";
+        console.log("imageError(linkId: " + linkId + ", folderId: " + folderId + ")");
+
+        $('#' + linkId).attr('src', 'https://common.ogglefiles.com/img/redballonSmall.png');
+        // logError("ILF", folderId, "linkId: " + linkId, "gallery");
+
+    } catch (e) {
+        logCatch("imageError", e);
+    }
+}
+
+
+/*--  context menu --------------------------------------*/
+function albumContextMenu(menuType, linkId, folderId, imgSrc) {
+    //alert("$(window).scrollTop(): " + $(window).scrollTop() + " event.clientY: " + event.clientY);    
+    pos = {};
+    pos.x = event.clientX;
+    pos.y = event.clientY + $(window).scrollTop();
+    showContextMenu(menuType, pos, imgSrc, linkId, folderId);
+}
+
+function getSingleImageDetails(linkId, folderId) {
+    try {
+        let getSingleImageDetailsStart = Date.now();
+        $.ajax({
+            type: "GET",
+            url: "php/getContextMenuSingle.php?linkId=" + linkId,
+            success: function (data) {
+
+                let imgData = JSON.parse(data);
+
+                pFolderName = imgData.FolderName;
+
+                if (imgData.FolderType == "singleChild")
+                    $('#ctxMdlName').html(imgData.ParentFolderName);
+                else {
+                    $('#ctxMdlName').html(imgData.FolderName);
+                }
+
+                if (imgData.FolderType == "multiModel") {
+                    if (imgData.Id != folderId) { //  we have a link
+                        $('#ctxSeeMore').show();
+                    }
+                    else {
+                        $('#ctxMdlName').html("unknown model");
+                    }
+                }
+
+                $('#imageInfoFileName').html(imgData.FileName);
+                $('#imageInfoFolderPath').html(imgData.FolderPath);
+                $('#imageInfoLinkId').val(linkId);
+                $('#imageInfoHeight').html(imgData.Height);
+                $('#imageInfoWidth').html(imgData.Width);
+                $('#imageInfoSize').html(imgData.Size).toLocaleString();
+                $('#imageInfoLastModified').html(imgData.Acquired);
+                $('#imageInfoExternalLink').html(imgData.ExternalLink);
+
+
+
+                //var dbPageFolder = db.CategoryFolders.Where(f => f.Id == folderId).FirstOrDefault();
+                //imageInfo.FolderName = dbPageFolder.FolderName;
+                //imageInfo.FolderType = dbPageFolder.FolderType;
+
+                //var dbImageFile = db.ImageFiles.Where(i => i.Id == linkId).FirstOrDefault();
+                //if (dbImageFile == null) { imageInfo.Success = "no image link found"; return imageInfo; }
+                //if (dbImageFile.FolderId != folderId) {
+                //    var dbModelFolder = db.CategoryFolders.Where(f => f.Id == dbImageFile.FolderId).FirstOrDefault();
+                //    if (dbModelFolder == null) { imageInfo.Success = "no image link folderId file found"; return imageInfo; }
+                //    imageInfo.ModelFolderId = dbModelFolder.Id;
+                //    imageInfo.ModelFolderName = dbModelFolder.FolderName;
+                //}
+                //  select * from ImageFile i join CategoryFolder f on i.FolderId = f.Id where i.id = 'b600bf7e-dc77-433b-8b42-e10062d68ebe';
+
+                // getFullImageDetails();
+                //    CategoryFolder dbPageFolder = db.CategoryFolders.Where(f => f.Id == folderId).FirstOrDefault();
+                //    imageInfo.RootFolder = dbPageFolder.RootFolder;
+                //    imageInfo.FolderPath = dbPageFolder.FolderPath;
+
+                //    ImageFile dbImageFile = db.ImageFiles.Where(i => i.Id == linkId).FirstOrDefault();
+                //    if (dbImageFile == null) { imageInfo.Success = "no image link found"; return imageInfo; }
+
+                //    if (dbImageFile.FolderId != folderId) {
+                //        var dbModelFolder = db.CategoryFolders.Where(f => f.Id == dbImageFile.FolderId).FirstOrDefault();
+                //        if (dbModelFolder == null) { imageInfo.Success = "no image link folderId file found"; return imageInfo; }
+                //        imageInfo.ModelFolderId = dbModelFolder.Id;
+                //        imageInfo.ModelFolderName = dbModelFolder.FolderName;
+                //    }
+
+
+
+                //    imageInfo.InternalLinks = (from l in db.CategoryImageLinks
+                //    join f in db.CategoryFolders on l.ImageCategoryId equals f.Id
+                //    where l.ImageLinkId == linkId && l.ImageCategoryId != folderId
+                //    select new { folderId = f.Id, folderName = f.FolderName })
+                //                                           .ToDictionary(i => i.folderId, i => i.folderName);
+                //}
+                //            imageInfo.Success = "ok";
+
+                var delta = Date.now() - getSingleImageDetailsStart;
+                var minutes = Math.floor(delta / 60000);
+                var seconds = (delta % 60000 / 1000).toFixed(0);
+                console.log("get Single Image Details took: " + minutes + ":" + (seconds < 10 ? '0' : '') + seconds);
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                logError("XHR", folderId, errMsg, "getLimitedImageDetails");
+                alert("getSingle ImageDetails: " + errMsg);
+            }
+        });
+    } catch (e) {
+        logCatch("getSingle ImageDetails", e);
+    }
+}
+
+function explodeImage() {
+    //logEvent("EXP", pFolderId, pFolderName, pLinkId);
+    //    if (pMenuType === "Slideshow") {
+    //        slideShowButtonsActive = false;
+    //        $("#slideshowCtxMenuContainer").hide();
+    //    }
+    //    else {
+    //        $("#imageContextMenu").hide();
+    //        $("#contextMenuContainer").hide();
+    //        //replaceFullPage(pImgSrc);
+    //        viewImage(imgSrc, linkId)
+    //    }
+}
+
+function setFolderImage(linkId, folderId, level) {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "php/UpdateFolderImage.php?linkId=" + linkId + "&folderId=" + folderId + "&level=" + level,
+            success: function (success) {
+                if (success.trim() === "ok") {
+                    displayStatusMessage("ok", level + " image set");
+                    $("#imageContextMenu").fadeOut();
+                }
+                else {
+                    logError("AJX", folderId, success, "setFolderImage");
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                alert("setFolderImage: " + errMsg);
+            }
+        });
+    } catch (e) {
+        logCatch("set Folder Image", e);
+    }
+}
+
+
+

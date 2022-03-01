@@ -1,4 +1,4 @@
-let settingsImgRepo = 'https://ogglefiles.com/danni/';
+// let settingsImgRepo = 'https://ogglefiles.com/danni/';
 
 function loadAlbumPage(folderId, largeLoad) {
     islargeLoad = largeLoad;
@@ -18,20 +18,6 @@ function loadAlbumPage(folderId, largeLoad) {
     //    quickLoadAlbum(albumParamFolderId);
 }
 
-function folderClick(folderId, isStepChild) {
-    try {
-        if (isStepChild == 1)
-            window.open("/gallery.html?album=" + folderId, "_blank");  // open in new tab
-        else {
-            // report event pare hit
-            window.location.href = "/gallery.html?album=" + folderId;  //  open page in same window
-        }
-        //" onclick='rtpe(\"SUB\",\"called from: " + folderId + "\",\"" + folder.DirectoryName + "\"," + folder.FolderId + ")'>\n" +
-    } catch (e) {
-        logCatch("folderClick", e);
-    }
-}
-
 /*-- php -----------------------------------*/
 function getGalleryImages(folderId) {
     try {
@@ -39,7 +25,6 @@ function getGalleryImages(folderId) {
         $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' + folderId+' order by SortOrder', function (data) {
             $('#galleryPageLoadingGif').hide();
             $.each(data, function (idx, vLink) {
-
                 let imgSrc = 'https://common.ogglefiles.com/img/redballonSmall.png';
                 if (!isNullorUndefined(vLink.FileName))
                     imgSrc = settingsImgRepo + "/" + vLink.FileName.replace(/'/g, '%27');
@@ -49,10 +34,6 @@ function getGalleryImages(folderId) {
                     "onerror='imageError(" + folderId + ",\"" + vLink.LinkId + "\")'\n" +
                     "oncontextmenu='albumContextMenu(\"Image\",\"" + vLink.LinkId + "\"," + folderId + ",\"" + imgSrc + "\")'" +
                     "onclick='viewImage(\"" + imgSrc + "\",\"" + vLink.LinkId + "\")'/></div>");
-
-                    // \"" + vLink.SrcId + ",\"galleryImage\")'\n" +
-                    // "alt='" + vLink.LinkId + "' titile='" + vLink.SrcFolder + "' \n" +
-                    // + vLink.FolderId + ",\"" + imgSrc + "\")'\n" +
             });
             resizeGalleryPage();
         });
@@ -251,6 +232,7 @@ function incrementExplode() {
     }
 }
 
+/*-- show slideshow -------------------*/
 function showSlideshow() {
     currentImagelinkId
     try {
@@ -271,24 +253,18 @@ function closeImageViewer() {
     $('body').off();
 }
 
-/*--  --------------------------------------*/
-function imageError(folderId, linkId) {
+/*---------------------*/
+function folderClick(folderId, isStepChild) {
     try {
-        let calledFrom = "noneya";
-        console.log("imageError(linkId: " + linkId + ", folderId: " + folderId + ")");
-
-        $('#' + linkId).attr('src', 'https://common.ogglefiles.com/img/redballonSmall.png');
-        // logError("ILF", folderId, "linkId: " + linkId, "gallery");
-
+        if (isStepChild == 1)
+            window.open("/gallery.html?album=" + folderId, "_blank");  // open in new tab
+        else {
+            // report event pare hit
+            window.location.href = "/gallery.html?album=" + folderId;  //  open page in same window
+        }
+        //" onclick='rtpe(\"SUB\",\"called from: " + folderId + "\",\"" + folder.DirectoryName + "\"," + folder.FolderId + ")'>\n" +
     } catch (e) {
-        logCatch("imageError", e);
+        logCatch("folderClick", e);
     }
 }
 
-function albumContextMenu(menuType, linkId, folderId, imgSrc) {
-    //alert("$(window).scrollTop(): " + $(window).scrollTop() + " event.clientY: " + event.clientY);    
-    pos = {};
-    pos.x = event.clientX;
-    pos.y = event.clientY + $(window).scrollTop();
-    showContextMenu(menuType, pos, imgSrc, linkId, folderId);
-}
