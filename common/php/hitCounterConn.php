@@ -1,9 +1,9 @@
 <?php
 function pdoConn() {
-      $host_name = 'db5006368569.hosting-data.io';
-      $database = 'dbs5303285';
-      $user_name = 'dbu361219';
-      $password = 'Larimore_4ab5a1f4-a130-4fcf-b715-2d5ba6d8e1f9.jpg';
+    $host_name = '64.20.55.234';
+    $user_name = 'st21569_registro';
+    $password = '166ca201-3891-435f-9962-eb23e9b8eaa8';
+    $link = new mysqli($host_name, $user_name, $password, $database);
 
     try {
     	return new PDO('mysql:host=' . $host_name . ';dbname=' . $database . ';charset=utf8', $user_name, $password);

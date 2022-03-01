@@ -1,4 +1,4 @@
-let settingsImgRepo = 'https://ogglefiles.com/danni/';
+let slideShowImgRepo = 'https://ogglefiles.com/danni/';
 let imageArray, imageViewerIndex = 0, albumFolderId = 0, spSessionCount = 0, slideShowSpeed = 5000,
     slideshowImgSrc = new Image(), tempImgSrc = new Image(),
     slideShowButtonsActive = false, islargeLoad = false, spSlideShowRunning, imageViewerIntervalTimer,
@@ -34,10 +34,10 @@ function loadSlideshowItems(folderId, startLink) {
                     imageArray = JSON.parse(data);
 
                     imageViewerIndex = imageArray.findIndex(node => node.LinkId == startLink);
-                    let testal = settingsImgRepo + imageArray[imageViewerIndex].FileName;
+                    let testal = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
                     console.log("testal: " + testal);
 
-                    $('#viewerImage').attr("src", settingsImgRepo + imageArray[imageViewerIndex].FileName);
+                    $('#viewerImage').attr("src", slideShowImgRepo + imageArray[imageViewerIndex].FileName);
                     $('#viewerImage').show();
                     $('#headerMessage').html(imageViewerIndex + " / " + imageArray.length);
                     resizeSlideshow();
@@ -249,7 +249,7 @@ function slide(direction) {
                 if (--imageViewerIndex < 0)
                     imageViewerIndex = imageArray.length - 1;
             }
-            tempImgSrc.src = settingsImgRepo + imageArray[imageViewerIndex].FileName;
+            tempImgSrc.src = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
             spSessionCount++;
             $('#footerMessage').html("image: " + imageViewerIndex + " of: " + imageArray.length);
 
@@ -299,11 +299,13 @@ function slideshowContextMenu() {
     pos.x = event.clientX;
     pos.y = event.clientY;
     showContextMenu("Slideshow", pos,
-        settingsImgRepo + imageViewerArray[imageViewerIndex].FileName,
+        slideShowImgRepo + imageViewerArray[imageViewerIndex].FileName,
         imageViewerArray[imageViewerIndex].LinkId,
         imageViewerArray[imageViewerIndex].FolderId,
         imageViewerArray[imageViewerIndex].FolderName);
 }
 
-
+function closeViewer() {
+    window.location.href = "/Gallery.html?album=" + albumFolderId;
+}
 

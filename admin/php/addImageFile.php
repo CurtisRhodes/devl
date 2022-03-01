@@ -5,40 +5,39 @@
         include('yagdrassel.php');
         $pdo = pdoConn();
 
-        $Id = $_POST['newId'];
+        $Id = $_POST['Id'];
         $path = $_POST['path'];
-        $fileName =  $_POST['fileName'];
+        $fileName = $_POST['fileName'];
         $folderId = $_POST['folderId'];
         $folderType = $_POST['folderType'];
-        $width = 0;
-        $height = 0; 
-        $fileSize = 0;
-        $type = 0; 
-        $attr = "";
+        $externalLink = "??";
+        $now = date('Y-m-d H:i:s');
 
         $files = preg_grep('/^([^.])/', scandir($path));
         
         $success = 'not found';
         foreach ($files as $file) {
             if(trim($file) == $fileName) {
-                $success = 'file found but';
-                //list($width, $height, $type, $attr) = getimagesize($path.$fileName);
-                $fileSize = filesize($path.$fileName);
+                $success = 'file found but';                
+                $image_info = getimagesize($path.'/'.$fileName);
+                $width = $image_info[0];
+                $height = $image_info[1];
+                $fileSize = filesize($path.'/'.$fileName);
                 $success = 'file data ok';
             }
         }
 
         if($success == 'file data ok')
         {
-            $stmt1 = $pdo->prepare("INSERT INTO ImageFile (Id,FileName,FolderId,ExternalLink,Width,Height,Size,Acquired) VALUES (?,?,?,?,?,?)");
-            $stmt2 = $pdo->prepare("INSERT INTO CategoryImageLink (ImageCategoryId,ImageLinkId) VALUES (?,?)");
-            $pdo->beginTransaction();
+            $sql = "INSERT INTO ImageFile (Id,FileName,FolderId,ExternalLink,Width,Height,Size,Acquired) ".
+              "VALUES ('".$Id."','".$fileName."','".$folderId."','".$externalLink."',".$width.",".$height.",".$fileSize.",'".$now."')";
+            $stmt1 = $pdo->prepare($sql);
+            $stmt1->execute();
 
-            $stmt1->execute([$Id, $fileName, $folderId, $folderPath, $path, $width, $height, $fileSize, date("Y/m/d:HH:MM")]);
-            $stmt2->execute([$folderId, $Id]);
+            $stmt2 = $pdo->prepare("INSERT INTO CategoryImageLink (ImageCategoryId,ImageLinkId,SortOrder) VALUES (".$folderId.",'".$Id."',0)");
+            $stmt2->execute();
 
-            $pdo->commit();
-            $success = "ok";
+            $success = 'ok '.$sql;
         }
 
         $pdo = null;

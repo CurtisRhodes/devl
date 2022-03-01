@@ -20,13 +20,11 @@
         <div class="leftColumn dashboardLeftColumn">
             <div class="vertMenu">
                 <div onclick='showBuildDirTreeDialog()'>Build Dir Tree</div>
+                <div onclick="showCreateNewFolderDialog()">Create New Folder</div>
                 <div onclick='showSortTool()'>Sort Folder</div>
-                <div onclick='showRepairDialog()'>Check</div>
-                <!--<div onclick='showRepairDialog()'>Repair</div>-->
-                <div onclick='addNewImages()'>Add New Images</div>
+                <div onclick='showRepairDialog()'>Repair Links</div>
                 <div onclick='testConnection()'>test Connection</div>
                 <div onclick='sqlSandbox()'>sql sandbox</div>
-                <div onclick="showCreateNewFolderDialog()">Create New Folder</div>
                 <div onclick='showMoveFolderDialog()'>Move Folder</div>
                 <div onclick='showAddStepChildFolderDialog()'>Copy Folder</div>
                 <div onclick="showRenameFolderDialog()">Rename Folder</div>
@@ -49,15 +47,15 @@
                     </div>
                 </div>
 
-                <div id="serverFileListContainer" class="dashboardFileList">
-                    <div id="serverFileListHeader" class="dashboardFileListHeader">
-                        <div id="serverFileListHeaderTitle">ffff</div>
+                <div id="dashboardFileListContainer" class="dashboardFileList">
+                    <div id="dashboardFileListHeader" class="dashboardFileListHeader">
+                        <div id="dashboardFileListHeaderTitle">ffff</div>
                         <img height="31" title='you may use the {esc} key'
-                             class="serverFileListHeaderCloseButton"
+                             class="dashboardFileListHeaderCloseButton"
                              src='https://common.ogglefiles.com/img/close.png'
                              onclick="closeDashboardFileList()" />
                     </div>
-                    <div id="serverFileList"></div>
+                    <div id="dashboardFileList"></div>
                 </div>
 
                 <div id='addImageLinkDialog' class='fullScreenSection displayHidden'>
@@ -157,7 +155,7 @@
         $(document).ready(function () {
             displayHeader("OggleDashboard");
             displayFooter("welcome");
-            $('#serverFileListContainer').hide();
+            $('#dashboardFileListContainer').hide();
 
             performBuildDirTree();
 
@@ -176,7 +174,7 @@
             $('#visableArea').css('min-height', $(window).height() - $('header').height());
             $('#visableArea').css('width', $(window).width());
             $('#dirTreeContainer').css('height', $('#visableArea').height());
-            $('#serverFileList').css('height', $('#visableArea').height());
+            $('#dashboardFileList').css('height', $('#visableArea').height());
             $('#sortToolImageArea').css("height", $('#visableArea').height());
 
             $('footer').css('width', $(window).width());

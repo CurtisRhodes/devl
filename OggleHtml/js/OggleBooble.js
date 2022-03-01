@@ -349,24 +349,6 @@ function performEvent(eventCode, eventDetail, folderId) {
 //        }
 }
 
-/*--  -----------------------------------*/
-function imageError(linkId, imgSrc, calledFrom) {
-    try {
-        setTimeout(function () {
-            debugger;
-            //alert("imageError(linkId: " + linkId + ", imgSrc: " + imgSrc + ", calledFrom: " + calledFrom);
-            console.log("imageError(linkId: " + linkId + ", imgSrc: " + imgSrc + ", calledFrom: " + calledFrom);
-
-            if ($('#' + linkId).attr('src') == null) {
-                $('#' + linkId).attr('src', "Images/redballon.png");
-
-                //logError("ILF", apFolderId, "linkId: " + linkId + " imgSrc: " + imgSrc, calledFrom);
-            }
-        }, 600);
-    } catch (e) {
-        logCatch("imageError", e);
-    }
-}
 
 /*-- Search -----------------------------------*/
 
@@ -503,3 +485,31 @@ function linkItemKeyDown(event) {
     alert("linkItemKeyDown");
 }
 
+/*-- log error -----------------------------------*/
+function logOggleError(errorCode, folderId, errorMessage, calledFrom) {
+    //alert(errorCode + "," + folderId + ", " + errorMessage + " calledFrom: " + calledFrom);
+    //logError("ILF", folderId, "linkId: " + linkId + " imgSrc: " + imgSrc, "gallery");
+
+    let visitorId = getCookieValue("VisitorId", calledFrom + "/logError");
+    $.ajax({
+        type: "POST",
+        url: "php/addError.php",
+        data: {
+            ErrorCode: errorCode,
+            FolderId: folderId,
+            VisitorId: visitorId,
+            CalledFrom: calledFrom,
+            ErrorMessage: errorMessage
+        },
+        success: function (success) {
+            if (success == "!ok") {
+                console.log(addImageFileSuccess);
+                $('#dashboardFileList').append("<div style='color:red'>add image file error: " + addImageFileSuccess + "</div>");
+            }
+        },
+        error: function (jqXHR) {
+            let errMsg = getXHRErrorDetails(jqXHR);
+            alert("Error log error: " + errMsg);
+        }
+    });
+}

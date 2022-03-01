@@ -1,8 +1,4 @@
-﻿function logError(errorCode, folderId, errorMessage, calledFrom) {
-    if (errorCode != "404")
-        logError2(getCookieValue("VisitorId"), errorCode, folderId, errorMessage, calledFrom);
-}
-
+﻿
 function logError2(visitorId, errorCode, folderId, errorMessage, calledFrom) {
     if (isNullorUndefined(calledFrom))
         calledFrom = "unknown";

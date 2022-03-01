@@ -77,13 +77,14 @@
             $('#breadcrumbContainer').html("<div id='imageViewerHeaderTitle' class='imageViewerTitle'></div>");
             $('#badgesContainer').html("<img id='imgComment' class='slideshowHeaderButton' title='comment' onclick='showImageViewerCommentDialog()' src='/img/comment.png'/></div>");
             $('#hdrBtmRowSec3').html("");
-            $("#divLoginArea").html(
-                "<div class='floatRight clickable' onclick='runSlideShow(\"faster\");'><img id='fasterSlideshow' class='slideshowHeaderButton' title='faster' src='/img/speedDialFaster.png' /></div>\n" +
-                "<div id='txtStartSlideShow' class='floatRight clickable' style='padding-top:4px' onclick='runSlideShow(\"start\");'>start slideshow</div>\n" +
-                "<div class='floatRight clickable' onclick='runSlideShow(\"slower\");'><img id='slowerSlideShow' class='slideshowHeaderButton' title='slower' src='/img/speedDialSlower.png' /></div>\n" +
-                "<div class='floatRight clickable' onclick='blowupImage()'><img class='popoutBox slideshowHeaderButton' title='open image in a new window' src='/img/expand02.png' /> </div>\n" +
-                "<div class='floatRight clickable' onclick='closeViewer(\"click\");'>" +
-                "<img class='slideshowHeaderButton' title='you may use the {esc} key' src='https://common.ogglefiles.com/img/close.png' /> </div>").show();
+            $("#divLoginArea").html("<div class='buttonSection'>"+
+                "<div onclick='blowupImage()'><img class='popoutBox slideshowHeaderButton' title='open image in a new window' src='/img/expand02.png' /> </div>\n" +
+                "<div onclick='runSlideShow(\"faster\");'>" +
+                "<img id='fasterSlideshow' class='slideshowHeaderButton' title='faster' src='/img/speedDialFaster.png' /></div>\n" +
+                "<div id='txtStartSlideShow' style='padding-top:4px' onclick='runSlideShow(\"start\");'>start slideshow</div>\n" +
+                "<div onclick='runSlideShow(\"slower\");'><img id='slowerSlideShow' class='slideshowHeaderButton' title='slower' src='/img/speedDialSlower.png'/></div>\n" +
+                "<div><img class='slideshowHeaderButton' onclick='closeViewer(\"click\") title='you may use the {esc} key' src='https://common.ogglefiles.com/img/close.png'></div>"
+            );
 
             displayFooter("oggleGallery");
 
@@ -94,8 +95,8 @@
         });
 
         function callResizeSlideshow() {
-            resizeGalleryPage();
-            alert('callResizeSlideshow');
+            resizeSlideshow();
+            //alert('callResizeSlideshow');
         }
         function resizeSlideshow() {
             $('#visableArea').css('height', $(window).height() - $('header').height());

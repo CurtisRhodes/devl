@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head lang="en">
+    <meta charset="utf-8" />
+    <title>Oggle Metrics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.75">
+    <link rel='shortcut icon' href='img/favicon.png' type='image/x-icon' />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://common.ogglefiles.com/js/Common.js"></script>
+    <script src="js/OggleMetrics.js"></script>
+
+    <link href="https://common.ogglefiles.com/css/Common.css" rel="stylesheet" />
+    <link href="css/OggleDashboard.css" rel="stylesheet">
+  </head>
+  <body>
+    <header class="stickyHeader"></header>
+    <div id="visableArea" class="threeColumnLayout">
+        <div class="leftColumn dashboardLeftColumn">
+            <div class="vertMenu">
+                <div onclick='showDailyError()'>Daily Error Report</div>
+                <div onclick='verifyHITConnection()'>verify HIT Connection</div>
+            </div>
+        </div>
+        <div class="middleColumn">
+            <img id='oggleMetricsGif' alt="spinner" title="loading" class='loadingGif' src='https://common.ogglefiles.com/img/loader.gif' />
+            <div id='oggleMetricsContainer' class='fullScreenContainer'>
+
+
+            </div>
+            <div id="dataifyInfo" class="infoLine" onclick='$("#dataifyInfo").hide()'></div>
+        </div>
+        <div class="rightColumn">
+            <div id="dirTreeContainer" class="dirTreeArea"></div>
+        </div>
+    </div>
+    <footer></footer>
+    <script>
+        $(document).ready(function () {
+            displayHeader("OggleDashboard");
+            displayFooter("welcome");
+            $('#dashboardFileListContainer').hide();
+
+            //performBuildDirTree();
+
+
+
+            resizeOggleMetricsPage();
+            $(window).resize(function () {
+                resizeOggleMetricsPage();
+            });
+        });
+
+        function launchPage() {
+            let folderId = Number($('#txtActiveFolderId').val());
+            window.open("https://Ogglebooble.com/gallery.html?album=" + folderId);
+        }
+
+        function resizeOggleMetricsPage() {
+            $('#visableArea').css('min-height', $(window).height() - $('header').height());
+            $('#visableArea').css('width', $(window).width());
+
+            $('footer').css('width', $(window).width());
+        }
+    </script>
+  </body>
+</html>

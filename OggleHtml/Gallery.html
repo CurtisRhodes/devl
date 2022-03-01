@@ -41,8 +41,9 @@
                 <div id="singleImageOuterContainer" class="explodingImageContainer">
                     <div id="singleImageInnerContainer" class="explodingInnerContainer">
                         <div id="divShowSlideshow" class="slideshowButton" onclick="showSlideshow()">slideshow</div>
-                        <img id='viewerImage' class='explodingViewerImage' />
-                        <img id='viewerCloseButton' class='floatingCloseButton' />
+                        <img id='viewerImage' class='explodingViewerImage' />                       
+                        <img id='viewerCloseButton' class='floatingCloseButton' 
+                             src="https://common.ogglefiles.com/img/close.png" onclick="closeImageViewer()"  />
                     </div>
                 </div>
                 <div id="slideShowContainer" class="fullScreenViewer"></div>
@@ -54,6 +55,7 @@
             </div>
             <div id="rightColumnArea" class="rightColumn"></div>
         </div>
+
         <footer class="ogglefooter"></footer>
 
         <script>
@@ -86,7 +88,7 @@
 
             function callResizeGalleryPage() {
                 resizeGalleryPage();
-                alert('callResizeGalleryPage');
+                // alert('callResizeGalleryPage');
             }
 
             function resizeGalleryPage() {
