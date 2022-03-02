@@ -93,10 +93,11 @@
             }
 
             function resizeGalleryPage() {
-                $('#visableArea').css('height', $(window).height() - $('header').height());
-                $('#imageContainer').css('max-height', $('#visableArea').height() - 52);
+                let visAreaHeight = $(window).height() - $('header').height();
+                $('#visableArea').css('height', visAreaHeight);
+                $('#imageContainer').css('max-height', visAreaHeight - 52);
                 $('footer').css('width', $(window).width());
-                $("#singleImageOuterContainer").css("height", visAreaH);
+                $("#singleImageOuterContainer").css("height", visAreaHeight);
             }
         </script>
     </body>

@@ -390,7 +390,8 @@ function oggleSearchKeyDown(event) {
                 performSearch(searchString);
             }
             else {
-                searchString += String.fromCharCode(ev);
+                searchString += String.fromCharCode(ev);                
+                $('#txtSearch').val(searchString);
                 performSearch(searchString);
             }
         }
@@ -429,26 +430,48 @@ function oggleSearchKeyDown(event) {
 
 function performSearch(searchString) {
     if (searchString.length > 2) {
-        let likeSearchString = "'%" + searchString + "%'";
-
         try {
+            $('#divLoginArea').hide();
             $.ajax({
                 type: "GET",
-                url: "php/oggleSearch.php?searchString=" + likeSearchString,
+                url: "php/oggleSearch.php?searchString=" + searchString + "&searchMode=startsWith",
                 success: function (data) {
                     if (data.indexOf("Error") > 0) {
-                        alert(likeSearchString + data);
+                        alert(data);
                     }
                     else {
-                        $('#searchResultsDiv').html("<ul class='searchResultList>").show();
                         let fData = JSON.parse(data);
+                        $('#searchResultsDiv').html("<ul class='searchResultList>").show();
                         $.each(fData, function (idx, obj) {
                             $('#searchResultsDiv').append("<li id=" + obj.Id +
                                 " onclick='jumpToSelected(" + obj.Id + ")'>" +
                                 obj.ParentName + "-" + obj.FolderName + "</li>");
                         });
-                        $('#searchResultsDiv').append("</ul>").show();
-                        $('#divLoginArea').hide();
+
+                        $.ajax({
+                            type: "GET",
+                            url: "php/oggleSearch.php?searchString=" + searchString + "&searchMode=contains",
+                            success: function (data) {
+                                if (data.indexOf("Error") > 0) {
+                                    alert(data);
+                                }
+                                else {
+                                    let fData = JSON.parse(data);
+                                    //$('#searchResultsDiv').html("<ul class='searchResultList>").show();
+                                    $.each(fData, function (idx, obj) {
+                                        $('#searchResultsDiv').append("<li id=" + obj.Id +
+                                            " onclick='jumpToSelected(" + obj.Id + ")'>" +
+                                            obj.ParentName + "-" + obj.FolderName + "</li>");
+                                    });
+                                    $('#searchResultsDiv').append("</ul>").show();
+                                }
+                            },
+                            error: function (jqXHR) {
+                                $('#albumPageLoadingGif').hide();
+                                let errMsg = getXHRErrorDetails(jqXHR);
+                                $('#randomGalleriesContainer').html(errMsg)
+                            }
+                        });
                     }
                 },
                 error: function (jqXHR) {
@@ -477,7 +500,7 @@ function clearSearch() {
 function jumpToSelected(selectedFolderId) {
     //rtpe('SRC', hdrFolderId, searchString, selectedFolderId);
     //logEvent("SRC", selectedFolderId, "jumpToSelected", "searchString: " + searchString);
-    window.open("/album.html?folder=" + selectedFolderId, "_blank");  // open in new tab
+    window.open("/Gallery.html?album=" + selectedFolderId, "_blank");  // open in new tab
     clearSearch();
 }
 
@@ -544,11 +567,8 @@ function getSingleImageDetails(linkId, folderId) {
             type: "GET",
             url: "php/getContextMenuSingle.php?linkId=" + linkId,
             success: function (data) {
-
                 let imgData = JSON.parse(data);
-
                 pFolderName = imgData.FolderName;
-
                 if (imgData.FolderType == "singleChild")
                     $('#ctxMdlName').html(imgData.ParentFolderName);
                 else {
@@ -621,7 +641,7 @@ function getSingleImageDetails(linkId, folderId) {
             },
             error: function (jqXHR) {
                 let errMsg = getXHRErrorDetails(jqXHR);
-                logError("XHR", folderId, errMsg, "getLimitedImageDetails");
+                logError("XHR", folderId, errMsg, "getSingle ImageDetails");
                 alert("getSingle ImageDetails: " + errMsg);
             }
         });
@@ -644,14 +664,16 @@ function explodeImage() {
     //    }
 }
 
-function setFolderImage(linkId, folderId, level) {
+
+
+function setFolderImage(filinkId, folderId, level) {
     try {
         $.ajax({
             type: "GET",
-            url: "php/UpdateFolderImage.php?linkId=" + linkId + "&folderId=" + folderId + "&level=" + level,
+            url: "php/UpdateFolderImage.php?folderImage='" + filinkId + "'&folderId=" + folderId + "&level=" + level,
             success: function (success) {
-                if (success.trim() === "ok") {
-                    displayStatusMessage("ok", level + " image set");
+                if (success.trim().startsWith("ok")) {
+                    displayStatusMessage("ok", level + " image set for " + folderId);
                     $("#imageContextMenu").fadeOut();
                 }
                 else {

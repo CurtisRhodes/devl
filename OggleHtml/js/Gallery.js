@@ -1,4 +1,3 @@
-// let settingsImgRepo = 'https://ogglefiles.com/danni/';
 
 function loadAlbumPage(folderId, largeLoad) {
     islargeLoad = largeLoad;
@@ -10,12 +9,6 @@ function loadAlbumPage(folderId, largeLoad) {
         getSubFolders(folderId);
         getGalleryPageInfo(folderId);
     }
-    //    qucikHeader(folderId);
-    //    settingsImgRepo = settingsArray.ImageRepo;
-    //    qucikHeader(folderId);
-    //    settingsImgRepo = settingsArray.ImageRepo;
-    //    getAlbumPageInfo(folderId, visitorId, false);
-    //    quickLoadAlbum(albumParamFolderId);
 }
 
 /*-- php -----------------------------------*/
@@ -113,6 +106,8 @@ function getGalleryPageInfo(folderId) {
                         break;
                 }
                 $('#galleryBottomfileCount').show();
+                $('#galleryBottomfileCount').on("click", function () { updateFolderCount(folderId, catfolder.FolderPath) });
+
                 setBreadcrumbs(folderId);
                 $('#feedbackButton').on("click", function () {
                     showFeedbackDialog(folderId, catfolder.FolderName);
@@ -185,53 +180,79 @@ function setBreadcrumbs(folderId) {
     }
 }
 
+function updateFolderCount(folderId, folderPath) {
+    try {
+        
+        let path = "https://ogglefiles.com/danni/" + folderPath;
+        $.ajax({
+            type: "GET",
+            url: "php/updateFolderCount.php?folderId=" + folderId + "&path=" + path,
+            success: function (success) {
+                if (success.trim().startsWith("ok")) {
+                    $('#galleryBottomfileCount').html(success);
+                    displayStatusMessage("ok", "Folder Count for " + folderId + " updated");
+                }
+                else {
+                    logError("AJX", folderId, success, "update Folder Count");
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                alert("update Folder Count: " + errMsg);
+            }
+        });
+    } catch (e) {
+        logCatch("update Folder Count", e);
+    }
+}
+
 /*-- exploding image view -------------------*/
+{
+    let explodeSpeed = 22,
+        heightIncrease = 22,
+        visAreaH, viewerH,
+        laps = 0,
+        currentImagelinkId;
 
-let explodeSpeed = 22,
-    heightIncrease = 22,
-    visAreaH, viewerH,
-    laps = 0,
-    currentImagelinkId;
+    function viewImage(imgSrc, linkId) {
+        currentImagelinkId = linkId;
+        $('#viewerImage').attr("src", imgSrc);
+        $('#singleImageOuterContainer').show();
+        viewerH = 50;
+        visAreaH = $('#visableArea').height() - 22;
+        let parentPos = $('#visableArea').offset();
+        $("#singleImageOuterContainer").css({ top: parentPos.top, left: parentPos.left + 200 });
+        $("#viewerImage").css({ "height": 50, "width": 50 });
 
-function viewImage(imgSrc, linkId) {
-    currentImagelinkId = linkId;
-    $('#viewerImage').attr("src", imgSrc);
-    $('#singleImageOuterContainer').show();
-    viewerH = 50;
-    visAreaH = $('#visableArea').height() - 22;
-    let parentPos = $('#visableArea').offset();
-    $("#singleImageOuterContainer").css({ top: parentPos.top, left: parentPos.left + 200 });
-    $("#viewerImage").css({ "height": 50, "width": 50 });
+        // $("#hdrBtmRowSec3").html("visAreaH" + visAreaH + "  viewerH: " + viewerH);
+        incrementExplode();
+        $("#vailShell").show();
 
-    // $("#hdrBtmRowSec3").html("visAreaH" + visAreaH + "  viewerH: " + viewerH);
-    incrementExplode();
-    $("#vailShell").show();
+        $('body').keydown(function (event) {
+            if (event.keyCode === 27) {
+                closeImageViewer();
+            }
+        });
 
-    $('body').keydown(function (event) {
-        if (event.keyCode === 27) {
-            closeImageViewer();
+    }
+
+    function incrementExplode() {
+        // $("#hdrBtmRowSec3").html("visableArea height: " + visAreaH + "  viewerImage height: " + viewerH + " lap: " + laps);
+        if (viewerH + 5 < visAreaH) {
+            setTimeout(function () {
+                viewerH += heightIncrease;
+                laps++;
+                $("#viewerImage").css({ "height": viewerH, "min-width": viewerH });
+                incrementExplode();
+            }, explodeSpeed);
         }
-    });
-
-}
-
-function incrementExplode() {
-    // $("#hdrBtmRowSec3").html("visableArea height: " + visAreaH + "  viewerImage height: " + viewerH + " lap: " + laps);
-    if (viewerH + 5 < visAreaH) {
-        setTimeout(function () {
-            viewerH += heightIncrease;
-            laps++;
-            $("#viewerImage").css({ "height": viewerH, "min-width": viewerH });
-            incrementExplode();
-        }, explodeSpeed);
-    }
-    else {
-        $("#singleImageOuterContainer").css("height", visAreaH);
-        $("#divShowSlideshow").show();
-        $("#viewerCloseButton").show();
+        else {
+            $("#singleImageOuterContainer").css("height", visAreaH);
+            $("#divShowSlideshow").show();
+            $("#viewerCloseButton").show();
+        }
     }
 }
-
 /*-- show slideshow -------------------*/
 function showSlideshow() {
     currentImagelinkId

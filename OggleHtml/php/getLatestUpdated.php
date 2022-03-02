@@ -7,13 +7,22 @@
 
    $limit = $_GET['limit'];
          
-   //$cmd = $pdo->query("select * from VwLatestUpdateGalleries where RootFolder='boobs' limit 10");
-   $cmd = $pdo->query("select * from VwLatestUpdateGalleries where RootFolder='" . $spaType . "' limit " . $limit);
-   //$cmd = $pdo->query("SELECT * FROM VwLatestUpdateGalleries");
-   $pdo = null;
+   call spLatestTouchedGalleries(); 
+
+
+   if($spaType == 'playboy'){
+       $cmd = $pdo->query("select * from LatestTouchedGalleries ". 
+       "where ((RootFolder = 'playboy') or (RootFolder = 'centerfold') or (RootFolder = 'cybergirl')) limit .$limit ");
+   }
+   if($spaType == 'porn'){
+       $cmd = $pdo->query("select * from LatestTouchedGalleries ". 
+       "where ((RootFolder = 'playboy') or (RootFolder = 'centerfold') or (RootFolder = 'cybergirl'))");
+   }
+
 
    $results = $cmd->fetchAll();
 
+   $pdo = null;
    echo json_encode($results);
 
 ?>

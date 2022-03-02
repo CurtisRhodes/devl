@@ -175,6 +175,35 @@ function showFiles() {
     }
 }
 
+function updateFolderCount() {
+    try {
+
+        //let path = "h  ttps://ogglefiles.com/danni/" + $('#txtCurrentActiveFolder').val();;
+        let folderId = $('#txtActiveFolderId').val();
+        let path = "../../danni/" + $('#txtCurrentActiveFolder').val();
+        $.ajax({
+            type: "GET",
+            url: "php/updateFolderCount.php?folderId=" + folderId + "&path=" + path,
+            success: function (success) {
+                if (success.trim().startsWith("ok")) {
+                    //$('#galleryBottomfileCount').html(success);
+                    displayStatusMessage("ok", "Folder Count for " + $('#txtCurrentActiveFolder').val() + " updated to: " + success);
+                }
+                else {
+                    logError("AJX", folderId, success, "update Folder Count");
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                alert("update Folder Count: " + errMsg);
+            }
+        });
+    } catch (e) {
+        logCatch("update Folder Count", e);
+    }
+}
+
+
 // REPAIR FUNCTIONS
 {
     let recurr = false, addNew = false;

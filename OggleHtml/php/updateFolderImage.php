@@ -5,15 +5,17 @@
         include('settings.php');
         $pdo = pdoConn();
 
-        $linkId = $_GET['$linkId'];
+        $folderImage = $_GET['folderImage'];
         $folderId = $_GET['folderId'];
         $level = $_GET['level'];
 
         if($level == 'folder') {
-            $sql = "UPDATE CategoryFolder SET FolderImage=? WHERE Id=".$folderId;
+            $sql = "UPDATE CategoryFolder SET FolderImage=".$folderImage." WHERE Id=".$folderId;
         }
         if($level == 'parent') {
-            $sql = "UPDATE CategoryImageLink SET SortOrder=? WHERE ImageCategoryId=? AND ImageLinkId=?";
+            $cmd = $pdo->query("select Parent from CategoryFolder where Id = ".$folderId);
+            $catRow = $cmd->fetch();
+            $sql = "UPDATE CategoryImageLink SET FolderImage=".$folderImage." WHERE  Id=".$catRow[Id];
         }
 
         $stmt= $pdo->prepare($sql);
