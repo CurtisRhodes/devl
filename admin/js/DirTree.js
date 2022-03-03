@@ -162,12 +162,8 @@ function commonDirTreeClick(danniPath, folderId) {
         //$("#topHeaderRow").html($('.txtLinkPath').val());
         switch (activeDirTree) {
             case "dashboard":
-
                 $('#txtCurrentActiveFolder').val(danniPath);
                 $('#txtActiveFolderId').val(folderId);
-
-                //window.location.href = "/gallery.html?album=" + folderId;  //  open page in same window
-                
                 break;
             case "catListDialog":
                 window.location.href = "\album.html?folder=" + folderId;

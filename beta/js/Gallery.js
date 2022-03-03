@@ -54,9 +54,12 @@ function getSubFolders(folderId) {
                 $('#imageContainer').append("<div class='subFolderContainer'\n" +
                     // " oncontextmenu='albumContextMenu(\"Folder\",\"" + linkId + "\"," + folderId + ",\"" + imgSrc + "\")'\n" +
                     " onclick='folderClick(" + obj.Id + "," + obj.IsStepChild + ")'>\n" +
-                    "onerror='imageError(" + folderId + ",\"" + vLink.LinkId + "\")'\n" +
+
                     "<img id='" + linkId + "' class='folderImage' src='" + imgSrc + "'/> " +
-                     // alt = 'https://common.ogglefiles.com/img/RenStimpy8.jpg' /> " +
+
+                        // alt = 'https://common.ogglefiles.com/img/RenStimpy8.jpg' /> " +
+                        //"onerror='imageError(\"" + folderId + "\",\"'" + obj.linkId + "\"',\"'" + imgSrc + "\"','\"subFolder\")'/>\n" +
+
                         "<div class='defaultSubFolderImage'>" + obj.FolderName + "</div>\n" +
                     "<span Id='fc" + obj.FolderId + "'>" + folderCounts + "</span></div>");
             });
@@ -126,7 +129,7 @@ function getGalleryPageInfo(folderId) {
 function getMultipleAlbumImages(parentId) { }
 
 function addBreadcrumb(folderId, folderName, className) {
-    return "<div class='" + className + "' onclick='window.location.href=\"gallery.html?album=" + folderId + "\"'>" + folderName + "</div>";
+    return "<div class='" + className + "' onclick='window.location.href=\"https://ogglefiles.com/beta/Gallery.html?album=" + folderId + "\"'>" + folderName + "</div>";
 }
 
 function setBreadcrumbs(folderId) {
@@ -250,10 +253,10 @@ function closeImageViewer() {
 function folderClick(folderId, isStepChild) {
     try {
         if (isStepChild == 1)
-            window.open("/gallery.html?album=" + folderId, "_blank");  // open in new tab
+            window.open("/https://ogglefiles.com/beta/Gallery.html?album=" + folderId, "_blank");  // open in new tab
         else {
             // report event pare hit
-            window.location.href = "/gallery.html?album=" + folderId;  //  open page in same window
+            window.location.href = "/https://ogglefiles.com/beta/Gallery.html?album=" + folderId;  //  open page in same window
         }
         //" onclick='rtpe(\"SUB\",\"called from: " + folderId + "\",\"" + folder.DirectoryName + "\"," + folder.FolderId + ")'>\n" +
     } catch (e) {

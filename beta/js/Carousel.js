@@ -2,7 +2,7 @@
 const rotationSpeed = 7000, carouselDebugMode = false;
 let carouselFooterHeight = 40, intervalReady = true, initialImageLoad = false, isPaused = false,
     imageIndex = 0, carouselRows = [], imageHistory = [], absolueStartTime,
-    vCarouselInterval = null,
+    vCarouselInterval = null, lastImageIndex = 0,
     mainImageClickId, knownModelLabelClickId, imageTopLabelClickId, footerLabelClickId,
     jsCarouselSettings, arryItemsShownCount = 0,
     cacheSize = 45;
@@ -76,7 +76,6 @@ function startCarousel(pageContext, calledFrom) {
                     intervalBody(pageContext);
                     $('#footerMessage1').html("started carousel from: " + calledFrom);
                     imageIndex = 0; // Math.floor(Math.random() * carouselRows.length);
-                    //$('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow");
                     vCarouselInterval = setInterval(function () {
                         intervalBody(pageContext);
                     }, rotationSpeed);
@@ -95,44 +94,43 @@ function startCarousel(pageContext, calledFrom) {
 function intervalBody(pageContext) {
     try {
         //if (!isPaused) {
-            if (intervalReady) {
-                intervalReady = false;
-                if ((carouselRows.length - imageIndex++) < 2) {
-                    if (confirm("imageIndex: " + imageIndex + "  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
-                        loadImages(pageContext);
-                        imageIndex = Math.floor(Math.random() * 5);
-                    }
+        if (intervalReady) {
+            intervalReady = false;
+            if ((carouselRows.length - imageIndex++) < 2) {
+                if (confirm("imageIndex: " + imageIndex + "  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
+                    loadImages(pageContext);
+                    imageIndex = Math.floor(Math.random() * 5);
                 }
-                if (carouselRows.length <= imageIndex) {
-                    alert("imageIndex: " + imageIndex + ", carouselRows.length: " + carouselRows.length + "\nresetting carousel loop");
-                    imageIndex = 0;
-                }
-                $('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow").load(function () {
-                    setLabelLinks(imageIndex);
-                    resizeCarousel();
-                    intervalReady = true;
-
-
-                    try {
+            }
+            if (carouselRows.length <= imageIndex) {
+                alert("imageIndex: " + imageIndex + ", carouselRows.length: " + carouselRows.length + "\nresetting carousel loop");
+                imageIndex = 0;
+            }
+            $('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow").load(function () {
+                setLabelLinks(imageIndex);
+                resizeCarousel();
+                intervalReady = true;
+                try {
+                    if (lastImageIndex != imageIndex) {
+                        lastImageIndex = imageIndex;
                         let carouselImage = document.createElement("img");
                         carouselImage.src = settingsImgRepo + carouselRows[imageIndex].ImageFileName;
-                        averageColor(carouselImage);
-
-                    } catch (e) {
-                        console.error("carouselImage" + e);
+                        let rgb = averageColor(carouselImage);
+                        console.log("background-color: rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")");
+                        $('#indexMiddleColumn').css("background-color", "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")");
                     }
-                    
-                    $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
-                    imageHistory.push(imageIndex);
-                    arryItemsShownCount++;
-                });
-            }
-      //  }
-      //  else
-      //      alert("pauseButton: " + $('#pauseButton').html());
-      //      alert("pauseButton: " + $('#pauseButton').html());
-      //      alert("pauseButton: " + $('#pauseButton').html());
-      //      alert("pauseButton: " + $('#pauseButton').html());
+                } catch (e) {
+                    console.error("carouselImage" + e);
+                }
+
+                $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
+                imageHistory.push(imageIndex);
+                arryItemsShownCount++;
+            });
+        }
+        //  }
+        //  else
+        //      alert("pauseButton: " + $('#pauseButton').html());
     } catch (e) {
         logCatch("intervalBody", e);
     }
@@ -140,45 +138,16 @@ function intervalBody(pageContext) {
 
 function resizeCarousel() {
     try {
-
-        //let innerHeight = window.innerHeight * .62;
-        //if ($('#thisCarouselImage').height() > innerHeight + 10) {
-        //    alert("image height: " + $('#thisCarouselImage').height() + "  innerHeight: " + innerHeight);
-        //}
-
-        //if ($('#thisCarouselImage').width() > $('#carouselImageInnerContainer').width()){
-        //    alert("image too wide");
-        //}
-
-        //$('#thisCarouselImage').css('max-height', ($('#carouselImageInnerContainer').height()));
-        //$('#thisCarouselImage').css('max-with', ($('#carouselImageInnerContainer').width() - 100));
-
         $('#thisCarouselImage').css('height', window.innerHeight * .62);
         let marginOffsetWidth = ($('#carouselImageOutterContainer').width() / 2) - ($('#carouselImageInnerContainer').width() / 2);
         $('#carouselImageInnerContainer').css('margin-left', marginOffsetWidth);
-
-
-        //let containerTop = $('#carouselImageInnerContainer').offset().top;
-        //let containerBottom = $('#thisCarouselImage').height() + $('#carouselImageInnerContainer').offset().top - $('#carouselFooterLabel').height() - 10;
-        //$("#imageTopLabel").offset({ top: containerTop, left: $('#carouselImageInnerContainer').offset().left }).fadeIn("slow");
-        //$('#carouselFooterLabel').offset({
-        //    top: containerBottom,
-        //    left: $('#carouselImageInnerContainer').offset().left
-        //}).fadeIn("slow");
-        //$('#knownModelLabel').offset({
-        //    top: containerBottom,
-        //    left: $('#carouselImageInnerContainer').offset().left + $('#carouselImageInnerContainer').width()
-        //}).fadeIn("slow");
-
-        //$('#headerMessage').html("carouselImageInnerContainer.top: " + $('#carouselImageInnerContainer').offset().top + "  left: " + $('#carouselFooterLabel').offset().left);
     } catch (e) {
         logCatch("resizeCarousel", e);
     }
 }
 
 function setLabelLinks(llIdx) {
-    try
-    {
+    try {
         //$("#imageTopLabel").hide();
         //$('#carouselFooterLabel').hide();
         //$('#knownModelLabel').hide();
@@ -350,8 +319,7 @@ function refreshCache(pageContext, forceRefresh) {
         if (isNullorUndefined(window.localStorage[pageContext]))
             doit = true;
 
-        if (doit)
-        {
+        if (doit) {
             let cacheArray = [];
             window.localStorage.clear();
             for (i = 0; i < cacheSize; i++) {
@@ -371,7 +339,7 @@ function insureUnique100() {
     let alreadyShow = false;
     try {
         if (!isNullorUndefined(imageHistory.find(h => h == imageIndex))) {
-           console.log(carouselRows[imageIndex].ImageFileName + " alreday shown");
+            console.log(carouselRows[imageIndex].ImageFileName + " alreday shown");
             alreadyShow = true;
         }
 
@@ -461,7 +429,7 @@ function clickViewGallery(labelClick) {
             case 4: clickFolderId = footerLabelClickId; carouselButtonClicked = "footerLabel"; break;// footer 
         }
         pause();
-        window.location.href = "/gallery.html?album=" + clickFolderId;  //  open page in same window
+        window.location.href = "https://ogglefiles.com/beta/Gallery.html?album=" + clickFolderId;  //  open page in same window
     } catch (e) {
         logCatch("clickViewGallery", e);
     }
@@ -480,28 +448,32 @@ function carouselContextMenu() {
 
 function imgErrorThrown() {
 
-    $('#thisCarouselImage').attr('src', "img/redballon.png");
+    //alert($('#thisCarouselImage').attr('src') + " not found");
+    console.warn($('#thisCarouselImage').attr('src') + " not found");
+
+    $('#thisCarouselImage').attr('src', "https://common.ogglefiles.com/img/redBallonSmall.png");
     $('#thisCarouselImage').css('height', window.innerHeight * .5);
 
+    logError("CIM")
 
-//  alert("imgErrorThrown");
-//    setTimeout(function () {
-//        if ($('#thisCarouselImage').attr('src') == null) {
-//            $('#thisCarouselImage').attr('src', "img/redballon.png");
-//            logError("ILF", carouselRows[imageIndex].FolderId, "linkId: " + carouselRows[imageIndex].LinkId + " imgSrc: " + imgSrc, "Carousel");
+    //  alert("imgErrorThrown");
+    //    setTimeout(function () {
+    //        if ($('#thisCarouselImage').attr('src') == null) {
+    //            $('#thisCarouselImage').attr('src', "img/redballon.png");
+    //            logError("ILF", carouselRows[imageIndex].FolderId, "linkId: " + carouselRows[imageIndex].LinkId + " imgSrc: " + imgSrc, "Carousel");
 
-//            if (document.domain == 'localhost') {
-//                pause();
-//                alert("image error\npage: " + carouselRows[imageIndex].FolderId +
-//                    ",\nPageName: " + carouselRows[imageIndex].FolderName +
-//                    ",\nLink: " + carouselRows[imageIndex].LinkId);
+    //            if (document.domain == 'localhost') {
+    //                pause();
+    //                alert("image error\npage: " + carouselRows[imageIndex].FolderId +
+    //                    ",\nPageName: " + carouselRows[imageIndex].FolderName +
+    //                    ",\nLink: " + carouselRows[imageIndex].LinkId);
 
-//                console.log("image error\npage: " + carouselRows[imageIndex].FolderId +
-//                    ",\nPageName: " + carouselRows[imageIndex].FolderName +
-//                    ",\nActivity: " + carouselRows[imageIndex].LinkId);
-//            }
-//        }
-//    }, 600);
+    //                console.log("image error\npage: " + carouselRows[imageIndex].FolderId +
+    //                    ",\nPageName: " + carouselRows[imageIndex].FolderName +
+    //                    ",\nActivity: " + carouselRows[imageIndex].LinkId);
+    //            }
+    //        }
+    //    }, 600);
 }
 
 function carouselHtml() {

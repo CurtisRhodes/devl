@@ -1,0 +1,221 @@
+﻿.galleryContainer {
+    display: flex;
+    text-align: center;
+    border: solid .02px #d1cccc;
+    min-height: 200px;
+    flex-wrap: wrap;
+    max-height: inherit;
+    overflow-y: scroll;
+}
+
+.subFolderContainer {
+    background-color: #b3d9ca;
+    border: solid 5px #b3d9ca;
+    border-radius: 4px;
+    margin: 1px;
+    display: inline-block;
+}
+.albumImageContainer {
+    background-color: var(--thumbnailBorderColor);
+    border: solid 5px var(--thumbnailBorderColor);
+    border-radius: 4px;
+    margin: 1px;
+    display: inline-block;
+}
+.aboveImageContainerDiv {
+    display: flex;
+    /*border: solid thin red;*/
+    padding: 2px;
+    overflow: auto;
+    display: none;
+}
+
+.albumPageMetaTitle {
+    white-space: nowrap;
+    color: var(--oggleTitleColor);
+}
+
+.back2gallery {
+    font-size: 19px;
+    padding-left: 16px;
+    margin-top: 6px;
+}
+
+.knownModelIndicator {
+    position: relative;
+    bottom: 23px;
+    text-align: right;
+    margin-bottom: -25px;
+}
+
+    .knownModelIndicator img {
+        height: 20px;
+    }
+
+.flexboxMiddleSection {
+    float: left;
+    width: 100%;
+    text-align: center;
+}
+
+.folderCommentButton {
+    position: relative;
+    display: none;
+    top: 120px;
+    left: 15px;
+    height: 31px;
+    cursor: pointer;
+}
+
+.albumMsgLink {
+    display: none;
+    float: right;
+    cursor: pointer;
+    color: var(--oggleTitleColor);
+    white-space: nowrap;
+}
+
+    .albumMsgLink:hover {
+        text-decoration: underline;
+    }
+
+.floatRightLabel {
+    float: right;
+}
+
+.selectedSearchItem {
+    background-color: var(--thumbnailBorderColor);
+}
+
+.adminRow div {
+    margin: 3px;
+}
+
+.defaultImageFrame {
+    margin: 4.5px;
+    /*border: solid .05px #676b8a;*/
+}
+
+.adminLink {
+    color: blue;
+}
+
+.multiLinkImageFrame {
+    margin: 2px;
+    border: dashed 3px #08fb08;
+}
+
+.nonLocalImageFrame {
+    padding: 1px;
+    margin: 1px;
+    border: dashed 3px #988470;
+}
+
+.noLinksImageFrame {
+    margin: 1px;
+    padding: 1px;
+    margin-bottom: 4px;
+    border: dashed 2px #d19154;
+}
+
+/*border: solid 6px */
+
+.pornFolderImageOutterFrame {
+    background-color: #333;
+    border: solid 6px #966211;
+    border-radius: 4px;
+    margin: 4px;
+}
+
+.folderImageOutterFrame {
+    background-color: var(--thumbnailBorderColor);
+    border: solid 6px var(--thumbnailBorderColor);
+    border-radius: 4px;
+    margin: 4px;
+}
+
+.defaultSubFolderImage {
+    display: inline-block;
+    text-align: center;
+    margin-right: 4px;
+}
+
+.pornSubDirLabel {
+    text-align: center;
+    background-color: #966211;
+    color: #ececec;
+}
+
+.folderImageFrameName {
+    text-align: center;
+    background-color: orangered; /*#ffcccc;*/
+}
+
+.pornFolderImageFrame {
+    text-align: center;
+    background-color: #ffcccc;
+}
+
+.nonLocalIndicator {
+    border-right: dotted 24px #ff00dc;
+}
+
+.folderImage {
+    height: 200px;
+    cursor: pointer;
+    display: block;
+    margin: auto;
+    background-image: url("https://common.ogglefiles.com/img/redballonSmall.png");
+}
+
+.centerfold {
+    height: 500px;
+    cursor: pointer;
+}
+
+.thumbImage {
+    height: 180px;
+    cursor: pointer;
+}
+
+:after {
+    border: solid 1px #ff00dc;
+    margin: 2px;
+}
+
+.countContainer {
+    padding: 0,5px;
+    margin-right:11px;
+    background-color:#f3f3e7;
+    text-align: right;
+}
+
+.viewerImageNav {
+    float: left;
+    cursor: pointer;
+}
+
+.closeButton {
+    margin-top: -5px;
+    margin-right: -5px;
+    padding-left: 10px;
+}
+
+.trackbackLinkContainer {
+    margin-top: -23px;
+    display: none;
+}
+
+.trackbackArea {
+    margin-top: 3px;
+}
+
+.trackBackLink {
+    display: inline;
+    padding: 2px;
+    margin-left: 8px;
+    color: #000;
+    background-color: var(--oggleBackgroundColor);
+    border: solid .5px yellow;
+    border-radius: 4px;
+}

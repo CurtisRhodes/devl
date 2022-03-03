@@ -26,7 +26,7 @@ function getLatestUpdatedGalleries(spaType) {
                             "<div class='latestContentBoxLabel'>" + jdata[i].FolderName + "</div>" +
                             "<img id='lt" + jdata[i].FolderId + "' class='latestContentBoxImage' alt='img/redballon.png' \nsrc='" + thisItemSrc + "' \n" +
                             " onerror='imageError(\"" + jdata[i].FolderId + "\",\"" + thisItemSrc + "\",'LatestUpdatedGalleries'\")'\n" +
-                            "\nonclick='window.location.href=\"Gallery.html?album=" + jdata[i].FolderId + "\" ' />" +
+                            "\nonclick='window.location.href=\"https://ogglefiles.com/beta/Gallery.html?album=" + jdata[i].FolderId + "\" ' />" +
                             "<div class='latestContentBoxDateLabel'>updated: " + dateString2(jdata[i].Acquired) + "</span></div>" +
                             "</div>");
                     }
@@ -73,7 +73,7 @@ function getRandomGalleries(pageContext) {
                             "<div class='latestContentBoxLabel'>" + obj.FolderName + "</div>" +
                             "<img id='lt" + obj.Id + "' class='latestContentBoxImage' " +
                             "alt='Images/redballon.png' src='" + thisItemSrc + "' " +
-                            "onclick='window.location.href=\"Gallery.html?album=" + obj.Id + "\" ' /></div>");
+                            "onclick='window.location.href=\"https://ogglefiles.com/beta/Gallery.html?album=" + obj.Id + "\" ' /></div>");
                     });
                 }
             },
@@ -512,7 +512,7 @@ function clearSearch() {
 function jumpToSelected(selectedFolderId) {
     //rtpe('SRC', hdrFolderId, searchString, selectedFolderId);
     //logEvent("SRC", selectedFolderId, "jumpToSelected", "searchString: " + searchString);
-    window.open("/Gallery.html?album=" + selectedFolderId, "_blank");  // open in new tab
+    window.open("https://ogglefiles.com/beta/Gallery.html?album=" + selectedFolderId, "_blank");  // open in new tab
     clearSearch();
 }
 
@@ -552,7 +552,7 @@ function logOggleError(errorCode, folderId, errorMessage, calledFrom) {
 function imageError(folderId, linkId) {
     try {
         // let calledFrom = "noneya";
-        console.log("imageError(linkId: " + linkId + ", folderId: " + folderId + ")");
+        console.warn("imageError(linkId: " + linkId + ", folderId: " + folderId + ")");
 
         $('#' + linkId).attr('src', 'https://common.ogglefiles.com/img/redballonSmall.png');
         // logError("ILF", folderId, "linkId: " + linkId, "gallery");
@@ -684,7 +684,7 @@ function ww3Canvas(imageElement) {
 function averageColor(imageElement) {
     try {
         if (imageElement.height == 0) {
-            return (222, 222, 222);
+            return { r: 222, g: 223, b: 222 };
         }
 
         let canvas = document.createElement('canvas');
@@ -695,36 +695,18 @@ function averageColor(imageElement) {
             rgb = { r: 0, g: 0, b: 0 }, count = 0;
 
         ctx.drawImage(imageElement, 0, 0);
-
         imgData = ctx.getImageData(0, 0, imgW, imgH);
-
-        // Get the length of image data object
         length = imgData.data.length;
-
         for (var i = 0; i < length; i += 4) {
-
-            // Sum all values of red colour
             rgb.r += imgData.data[i];
-
-            // Sum all values of green colour
             rgb.g += imgData.data[i + 1];
-
-            // Sum all values of blue colour
             rgb.b += imgData.data[i + 2];
-
-            // Increment the total number of
-            // values of rgb colours
             count++;
         }
 
-        // Find the average of red
-        rgb.r = Math.floor(rgb.r / count);
-
-        // Find the average of green
-        rgb.g = Math.floor(rgb.g / count);
-
-        // Find the average of blue
-        rgb.b = Math.floor(rgb.b / count);
+        rgb.r = giveMeThree(rgb.r / count);
+        rgb.g = giveMeThree(rgb.g / count);
+        rgb.b = giveMeThree(rgb.b / count);
 
         return rgb;
     } catch (e) {
@@ -733,5 +715,25 @@ function averageColor(imageElement) {
     }
 }
 
+function giveMeThree(inVal) {
+    //return giveMeTwo(inVal);
+    let outVal = Math.floor(inVal);
+    if (outVal < 99) {
+        if (outVal < 10) 
+            outVal = Math.floor(inVal*100);
+        else
+            outVal = Math.floor(inVal * 10);
+    }
+    if (outVal > 999)
+        outVal = Math.floor(inVal / 10);
+    return outVal;
+}
 
-
+function giveMeTwo(inVal) {
+    let outVal = Math.floor(inVal);
+    if (outVal < 10)
+        outVal = Math.floor(inVal * 10);
+    if (outVal > 999)
+        outVal = Math.floor(inVal / 10);
+    return outVal;
+}
