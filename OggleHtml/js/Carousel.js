@@ -1,5 +1,5 @@
 ﻿
-const rotationSpeed = 7000, intervalSpeed = 600, carouselDebugMode = false;
+const rotationSpeed = 7000, carouselDebugMode = false;
 let carouselFooterHeight = 40, intervalReady = true, initialImageLoad = false, isPaused = false,
     imageIndex = 0, carouselRows = [], imageHistory = [], absolueStartTime,
     vCarouselInterval = null,
@@ -72,14 +72,15 @@ function startCarousel(pageContext, calledFrom) {
                 resizeCarousel();
                 $('#carouselImageInnerContainer').show();
                 resizeCarousel();
-                //setTimeout(function () {
-                    intervalBody(pageContext);
+                setTimeout(function () {
+                    intervalBody(carouselRoot);
                     $('#footerMessage1').html("started carousel from: " + calledFrom);
+                    imageIndex = 0; // Math.floor(Math.random() * carouselRows.length);
                     //$('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow");
                     vCarouselInterval = setInterval(function () {
-                        intervalBody(pageContext);
+                        intervalBody(carouselRoot);
                     }, rotationSpeed);
-                //}, 400);
+                }, 400);
             }
             else {
                 alert("failed to start carousel. carouselRows.length: " + carouselRows.length);
@@ -94,32 +95,30 @@ function startCarousel(pageContext, calledFrom) {
 function intervalBody(pageContext) {
     try {
         //if (!isPaused) {
-        if (intervalReady) {
-            intervalReady = false;
-            imageIndex = Math.floor(Math.random() * carouselRows.length);
-            if (insureUnique100()) {
-                intervalBody(pageContext);
-            }
-            setLabelLinks(imageIndex);
-            $('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow").load(function () {
-                resizeCarousel();
-                setLabelLinks(imageIndex);
-                intervalReady = true;
-                $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
-                imageHistory.push(imageIndex);
-
-                if ((carouselRows.length <= ++arryItemsShownCount)) {
-                    if (confirm("images shown: " + arryItemsShownCount + ">  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
-                        loadImages(pageContext);
+            if (intervalReady) {
+                intervalReady = false;
+                if ((carouselRows.length - imageIndex++) < 2) {
+                    if (confirm("imageIndex: " + imageIndex + "  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
+                        loadImages(carouselRoot);
                         imageIndex = Math.floor(Math.random() * 5);
                     }
-                    arryItemsShownCount = 0;
                 }
-            });
-        }
-        //  }
-        //  else
-        //      alert("pauseButton: " + $('#pauseButton').html());
+                if (carouselRows.length <= imageIndex) {
+                    alert("imageIndex: " + imageIndex + ", carouselRows.length: " + carouselRows.length + "\nresetting carousel loop");
+                    imageIndex = 0;
+                }
+                $('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow").load(function () {
+                    setLabelLinks(imageIndex);
+                    resizeCarousel();
+                    intervalReady = true;
+                    $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
+                    imageHistory.push(imageIndex);
+                    arryItemsShownCount++;
+                });
+            }
+      //  }
+      //  else
+      //      alert("pauseButton: " + $('#pauseButton').html());
     } catch (e) {
         logCatch("intervalBody", e);
     }

@@ -180,32 +180,6 @@ function setBreadcrumbs(folderId) {
     }
 }
 
-function updateFolderCount(folderId, folderPath) {
-    try {
-        
-        let path = "https://ogglefiles.com/danni/" + folderPath;
-        $.ajax({
-            type: "GET",
-            url: "php/updateFolderCount.php?folderId=" + folderId + "&path=" + path,
-            success: function (success) {
-                if (success.trim().startsWith("ok")) {
-                    $('#galleryBottomfileCount').html(success);
-                    displayStatusMessage("ok", "Folder Count for " + folderId + " updated");
-                }
-                else {
-                    logError("AJX", folderId, success, "update Folder Count");
-                }
-            },
-            error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                alert("update Folder Count: " + errMsg);
-            }
-        });
-    } catch (e) {
-        logCatch("update Folder Count", e);
-    }
-}
-
 /*-- exploding image view -------------------*/
 {
     let explodeSpeed = 22,
