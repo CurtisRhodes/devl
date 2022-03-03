@@ -222,7 +222,8 @@ function updateFolderCount(folderId, folderPath) {
         visAreaH = $('#visableArea').height() - 22;
         let parentPos = $('#visableArea').offset();
         $("#singleImageOuterContainer").css({ top: parentPos.top, left: parentPos.left + 200 });
-        $("#viewerImage").css({ "height": 50, "width": 50 });
+        $("#viewerImage").css("height", 50);
+        //$("#viewerImage").css("width", "auto");
 
         // $("#hdrBtmRowSec3").html("visAreaH" + visAreaH + "  viewerH: " + viewerH);
         incrementExplode();
@@ -242,7 +243,7 @@ function updateFolderCount(folderId, folderPath) {
             setTimeout(function () {
                 viewerH += heightIncrease;
                 laps++;
-                $("#viewerImage").css({ "height": viewerH, "min-width": viewerH });
+                $("#viewerImage").css("height", viewerH);
                 incrementExplode();
             }, explodeSpeed);
         }
@@ -252,17 +253,17 @@ function updateFolderCount(folderId, folderPath) {
             $("#viewerCloseButton").show();
         }
     }
-}
-/*-- show slideshow -------------------*/
-function showSlideshow() {
-    currentImagelinkId
-    try {
-        if (islargeLoad)
-            window.location.href = "/Slideshow.html?parentfolderId=" + currentFolderId + "&=startLink" + currentImagelinkId;
-        else
-            window.location.href = "/Slideshow.html?folderId=" + currentFolderId + "&startLink=" + currentImagelinkId;
-    } catch (e) {
-        logCatch("folderClick", e);
+
+    /*-- show slideshow -------------------*/
+    function showSlideshow() {
+        try {
+            if (islargeLoad)
+                window.location.href = "/Slideshow.html?parentfolderId=" + currentFolderId + "&=startLink" + currentImagelinkId;
+            else
+                window.location.href = "/Slideshow.html?folderId=" + currentFolderId + "&startLink=" + currentImagelinkId;
+        } catch (e) {
+            logCatch("showSlideshow", e);
+        }
     }
 }
 

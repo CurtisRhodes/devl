@@ -1,62 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+ <head>
     <title>OggleBooble : Every Playboy Centerfold</title>
-    <link rel='shortcut icon' href='img/favicon.png' type='image/x-icon' />
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=.07">
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
-    <script src="https://common.brucheum.com/js/Common.js"></script>
-    <script src="js/OggleBooble.js"></script>
-    <script src="js/Carousel.js"></script>
-
-    <link href="https://common.brucheum.com/css/Common.css" rel="stylesheet" />
-    <link href="css/OggleBooble.css" rel="stylesheet" />
-    <link href="css/Carousel.css" rel="stylesheet" />
-
-</head>
-<body>
-    <header id="oggleHeader" class="stickyHeader"></header>
-    <div id="visableArea" class="threeColumnLayout">
-        <div id="leftColumnArea" class="leftColumn">
-            <div id="promoMessagesContainer" class="promoBox"></div>
-        </div>
-        <div class="middleColumn playboyShell">
-            <div id="divStatusMessage"></div>
-            <div id="dots"></div>
-            <img id="indexPageLoadingGif" class="loadingGif" title='loading gif' alt='' src="img/loader.gif" />
-
-            <div id='carouselContainer'></div>
-
-            <div class="playboySectionLabel">random galleries<img onclick='refreshRandomGalleries("playboy")' src="img/refresh02.png" height="22" title="refresh random galleries" />
-            </div>
-            <div id="randomGalleriesContainer" class="overflowx"></div>
-
-            <div class='clickable playboySectionLabel' onclick='showHideGalleries()'>latest updates</div>
-            <div id="latestUpdatesContainer" class="dataArea"></div>
-        </div>
-        <div id="rightColumnArea" class="rightColumn"></div>
-    </div>
-    <footer></footer>
-    <script>
-        $(document).ready(function () {
-            displayHeader("playboyIndex");
-            getRandomGalleries('playboy');
-            getLatestUpdatedGalleries('centerfold');
-            launchCarousel('centerfold');
-
-            $('#topRowRightContainer').append(bannerLink("Bond Girls", 72));
-
-            displayFooter("welcome");
-            resizePage();
-            $(window).resize(function () {
-                resizePage();
-            });
-        });
-        function resizePage() {
-            $('#visableArea').css('min-height', $(window).height());
-        }
-    </script>
-</body>
+    <link rel='shortcut icon' href='https://common.ogglefiles.com/img/redBallon.ico' type='image/x-icon' />
+    <meta http-equiv="refresh" content="0; url=https://ogglebooble.com/index.html?spa=playboy" />
+ </head>
+ <body></body>
 </html>

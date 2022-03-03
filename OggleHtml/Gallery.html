@@ -61,8 +61,9 @@
 
         <script>
             $(document).ready(function () {
+                let pageContext = "gallery";
+                let pageName = "oggleIndex";
                 let params = getParams();
-                let albumParamFolderId;
                 let islargeLoad = false;
                 if (!isNullorUndefined(params.parentfolder)) {
                     //alert("params.parentfolder: " + params.parentfolder);
@@ -78,8 +79,8 @@
                     }
                 }
 
-                displayHeader("oggleGallery");
-                displayFooter("oggleGallery");
+                displayHeader(pageName);
+                displayFooter(pageContext);
 
                 loadAlbumPage(albumParamFolderId, islargeLoad);
 

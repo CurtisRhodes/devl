@@ -3,28 +3,44 @@ var busy = false;
 var searchString = "";
 var itemIndex = -1;
 var listboxActive = false;
+let limit = 11, skip = 0;
 
 /*-- php -----------------------------------*/
 function getLatestUpdatedGalleries(spaType) {
-    let limit = 11;
     try {
-        $('#latestUpdatesContainer').html('<img class="tinyloadingGif" src="img/loader.gif"/>');
-        $.getJSON('php/getLatestUpdated.php?spaType=' + spaType + '&limit=' + limit, function (data) {
-            $('#latestUpdatesContainer').html('');
-            $.each(data, function (idx, obj) {
-                let thisItemSrc = settingsImgRepo + obj.ImageFile;
-                $('#latestUpdatesContainer').append("<div class='latestContentBox'>" +
-                    "<div class='latestContentBoxLabel'>" + obj.FolderName + "</div>" +
-                    "<img id='lt" + obj.FolderId + "' class='latestContentBoxImage' alt='img/redballon.png' \nsrc='" + thisItemSrc + "' \n" +
-                    " onerror='imageError(\"" + obj.FolderId + "\",\"" + thisItemSrc + "\",'LatestUpdatedGalleries'\")'\n" +
-                    //"onclick='rtpe(\"LUP\",\"" + obj.RootFolder + "\",\"" + obj.FolderName + "\"," + obj.FolderId + ")' />" +
-                    "\nonclick='window.location.href=\"Gallery.html?album=" + obj.FolderId + "\" ' />" +
-                    "<div class='latestContentBoxDateLabel'>updated: " + obj.Acquired + "</span></div>" +
-                    "</div>");
-            });
+        $.ajax({
+            type: "GET",
+            url: "php/getLatestUpdated.php?spaType=" + spaType + "&limit=" + limit,
+            success: function (data) {
+                if (data.indexOf("error") > 0) {
+                    alert("getLatestUpdatedGalleries: " + data);
+                }
+                else {
+                    if (skip == 0) {
+                        $('#latestUpdatesContainer').html('');
+                    }
+                    let jdata = JSON.parse(data);
+                    for (i = skip; i < limit; i++) {
+                        let thisItemSrc = settingsImgRepo + jdata[i].ImageFile;
+                        $('#latestUpdatesContainer').append("<div class='latestContentBox'>" +
+                            "<div class='latestContentBoxLabel'>" + jdata[i].FolderName + "</div>" +
+                            "<img id='lt" + jdata[i].FolderId + "' class='latestContentBoxImage' alt='img/redballon.png' \nsrc='" + thisItemSrc + "' \n" +
+                            " onerror='imageError(\"" + jdata[i].FolderId + "\",\"" + thisItemSrc + "\",'LatestUpdatedGalleries'\")'\n" +
+                            "\nonclick='window.location.href=\"Gallery.html?album=" + jdata[i].FolderId + "\" ' />" +
+                            "<div class='latestContentBoxDateLabel'>updated: " + dateString2(jdata[i].Acquired) + "</span></div>" +
+                            "</div>");
+                    }
+                    skip += limit;
+                    limit += skip;
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                alert("setFolderImage: " + errMsg);
+            }
         });
     } catch (e) {
-        $('#latestUpdatesContainer').html(e);
+        logCatch("get Latest Updated Galleries", e);
     }
 }
 
@@ -259,10 +275,6 @@ function resetOggleHeader(folderId, rootFolder) {
             logError("SWT", 1117705, "switch case: " + rootFolder, "reset OggleHeader");
             window.location.href = "Index.html";
     }
-}
-
-function refreshRandomGalleries(pageContext) {
-    getRandomGalleries(1);
 }
 
 function addRankerButton(rankerType, labelText) {
@@ -539,7 +551,7 @@ function logOggleError(errorCode, folderId, errorMessage, calledFrom) {
 
 function imageError(folderId, linkId) {
     try {
-        let calledFrom = "noneya";
+        // let calledFrom = "noneya";
         console.log("imageError(linkId: " + linkId + ", folderId: " + folderId + ")");
 
         $('#' + linkId).attr('src', 'https://common.ogglefiles.com/img/redballonSmall.png');
@@ -593,50 +605,9 @@ function getSingleImageDetails(linkId, folderId) {
                 $('#imageInfoLastModified').html(imgData.Acquired);
                 $('#imageInfoExternalLink').html(imgData.ExternalLink);
 
-
-
-                //var dbPageFolder = db.CategoryFolders.Where(f => f.Id == folderId).FirstOrDefault();
-                //imageInfo.FolderName = dbPageFolder.FolderName;
-                //imageInfo.FolderType = dbPageFolder.FolderType;
-
-                //var dbImageFile = db.ImageFiles.Where(i => i.Id == linkId).FirstOrDefault();
-                //if (dbImageFile == null) { imageInfo.Success = "no image link found"; return imageInfo; }
-                //if (dbImageFile.FolderId != folderId) {
-                //    var dbModelFolder = db.CategoryFolders.Where(f => f.Id == dbImageFile.FolderId).FirstOrDefault();
-                //    if (dbModelFolder == null) { imageInfo.Success = "no image link folderId file found"; return imageInfo; }
-                //    imageInfo.ModelFolderId = dbModelFolder.Id;
-                //    imageInfo.ModelFolderName = dbModelFolder.FolderName;
-                //}
-                //  select * from ImageFile i join CategoryFolder f on i.FolderId = f.Id where i.id = 'b600bf7e-dc77-433b-8b42-e10062d68ebe';
-
-                // getFullImageDetails();
-                //    CategoryFolder dbPageFolder = db.CategoryFolders.Where(f => f.Id == folderId).FirstOrDefault();
-                //    imageInfo.RootFolder = dbPageFolder.RootFolder;
-                //    imageInfo.FolderPath = dbPageFolder.FolderPath;
-
-                //    ImageFile dbImageFile = db.ImageFiles.Where(i => i.Id == linkId).FirstOrDefault();
-                //    if (dbImageFile == null) { imageInfo.Success = "no image link found"; return imageInfo; }
-
-                //    if (dbImageFile.FolderId != folderId) {
-                //        var dbModelFolder = db.CategoryFolders.Where(f => f.Id == dbImageFile.FolderId).FirstOrDefault();
-                //        if (dbModelFolder == null) { imageInfo.Success = "no image link folderId file found"; return imageInfo; }
-                //        imageInfo.ModelFolderId = dbModelFolder.Id;
-                //        imageInfo.ModelFolderName = dbModelFolder.FolderName;
-                //    }
-
-
-
-                //    imageInfo.InternalLinks = (from l in db.CategoryImageLinks
-                //    join f in db.CategoryFolders on l.ImageCategoryId equals f.Id
-                //    where l.ImageLinkId == linkId && l.ImageCategoryId != folderId
-                //    select new { folderId = f.Id, folderName = f.FolderName })
-                //                                           .ToDictionary(i => i.folderId, i => i.folderName);
-                //}
-                //            imageInfo.Success = "ok";
-
-                var delta = Date.now() - getSingleImageDetailsStart;
-                var minutes = Math.floor(delta / 60000);
-                var seconds = (delta % 60000 / 1000).toFixed(0);
+                let delta = Date.now() - getSingleImageDetailsStart;
+                let minutes = Math.floor(delta / 60000);
+                let seconds = (delta % 60000 / 1000).toFixed(0);
                 console.log("get Single Image Details took: " + minutes + ":" + (seconds < 10 ? '0' : '') + seconds);
             },
             error: function (jqXHR) {
@@ -663,8 +634,6 @@ function explodeImage() {
     //        viewImage(imgSrc, linkId)
     //    }
 }
-
-
 
 function setFolderImage(filinkId, folderId, level) {
     try {

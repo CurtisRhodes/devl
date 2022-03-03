@@ -394,7 +394,7 @@ function displayHeader(headerContext) {
             $('#hdrBtmRowSec3').append(bannerLink("Bond Girls", 10326));
             //$('#topHeaderRow').html("Home of the Big Naturals");
             break;
-        case "playboyIndex": 
+        case "Playboy": 
             $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
             $('#fancyHeaderTitle').html("every playboy centerfold");
             document.title = "Every Playboy Centerfold : OggleBooble";
@@ -798,7 +798,30 @@ function displayFooter(footerContext) {
     try {
         $('footer').html(footerHtml());
         switch (footerContext) {
-            case "oggleGallery":
+            case "boobs":
+            case "gallery":
+                $('#footerCol2').append(`
+                    <div class='clickable' onclick='footerItemClick(1)'>Sitemap</div>\n
+                    <div class='clickable' onclick='displayFeedback()'>Feedback</div>\n`
+                );
+                $('#footerCol3').append(`
+                    <div class='clickable' onclick='footerItemClick(1)'>Search</div>\n
+                    <div class='clickable' onclick='footerItemClick(1)'>Research</div>\n
+                    <div class='clickable' onclick='footerItemClick(1)'>Advertize</div>\n`
+                );
+                $('#footerCol4').append(`
+                   <div class='clickable' onclick='footerItemClick(1)'>test 4</div>\n`
+                );
+                $('#footerCol5').append(`
+                    <div class='clickable' onclick='footerItemClick(1)'>test 5</div>\n`
+                );
+                $('#footerCol6').append(`
+                    <div class='clickable' onclick='window.open(\"index.html?spa=3910\")'>dashboard</div>\n`
+                );
+                $('#footerCol7').html(`
+                    <div class='clickable' onclick='footerItemClick(1)'>Category List</div>\n`
+                );
+                break;
             case "welcome":
                 $('#footerCol2').append(`
                     <div class='clickable' onclick='footerItemClick(1)'>Sitemap</div>\n
@@ -824,7 +847,31 @@ function displayFooter(footerContext) {
                     <div class='clickable' onclick='footerItemClick(1)'>Category List</div>\n`
                 );
                 break;
-            case "oggleIndex":
+            case "playboy":
+                $('#footerCol2').append(`
+                    <div class='clickable' onclick='footerItemClick(1)'>Sitemap</div>\n
+                    <div class='clickable' onclick='displayFeedback()'>Feedback</div>\n`
+                );
+                $('#footerCol3').append(`
+                    <div class='clickable' onclick='footerItemClick(1)'>Search</div>\n
+                    <div class='clickable' onclick='footerItemClick(1)'>Research</div>\n
+                    <div class='clickable' onclick='footerItemClick(1)'>Advertize</div>\n`
+                );
+                $('#footerCol4').append(`
+                   <div class='clickable' onclick='footerItemClick(1)'>test 4</div>\n`
+                );
+                $('#footerCol5').append(`
+                    <div class='clickable' onclick='footerItemClick(1)'>test 5</div>\n`
+                );
+                $('#footerCol6').append(`
+                    <div class='clickable' onclick='window.open(\"index.html?spa=3910\")'>dashboard</div>\n`
+                );
+                $('#footerCol7').html(`
+                    <div class='clickable' onclick='footerItemClick(1)'>Category List</div>\n
+                    <div class='clickable' onclick='footerItemClick(1)'>Category List</div>\n
+                    <div class='clickable' onclick='footerItemClick(1)'>Category List</div>\n`
+                );
+                break;
             case "blog":
             case "root":
             case "special":
@@ -838,8 +885,7 @@ function displayFooter(footerContext) {
                 break;
             }
             default: {
-                //logError("SWT", folderId, "rootFolder: " + rootFolder, "setOggleFooter");
-                $('#footerCol1').html("<div>unhandled domain: " + rootFolder + "</div>\n");
+                $('#footerCol1').html("<div>unhandled domain: " + footerContext + "</div>\n");
                 alert("footerContext not understood: " + footerContext)
                 break;
             }
@@ -862,8 +908,6 @@ function displayFooter(footerContext) {
         //        "   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);\n" +
         //        "   })();</script>\n");
         //}
-
-
         //if (isInRole("trusted"))
         //    $('#footerCol5').show();
         //else

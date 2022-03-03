@@ -4,10 +4,10 @@
    $pdo = pdoConn();
 
    $limit = $_GET['limit'];
-   $rootFolder = $_GET['rootFolder'];
+   $pageContext = $_GET['pageContext'];
 
    //$cmd = $pdo->query("select * from VwCarouselImages where (Orientation='L') and (RootFolder='". $rootFolder ."') order by rand() limit ". $limit);
-   $cmd = $pdo->query("select * from VwCarouselImages where Width > Height and RootFolder='". $rootFolder ."' order by rand() limit ". $limit);
+   $cmd = $pdo->query("select * from VwCarouselImages where Width > Height and RootFolder='". $pageContext ."' order by rand() limit ". $limit);
 
    $results = $cmd->fetchAll();
 

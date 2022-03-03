@@ -8,6 +8,8 @@
 }
 .explodingInnerContainer {
     /* border: solid 2px var(--innerBorderColor);  : gold; */
+    /* border: solid 2px var(--innerBorderColor);  : gold; */
+    /* border: solid 2px var(--innerBorderColor);  : gold; */
     display: block;
     border: solid 6px lime;
 }
@@ -22,16 +24,17 @@
     color: #d7d91e;
     font-weight: bold;
     cursor: pointer;
+    z-index: 21;
 }
 
 .floatingCloseButton {
-    height: 66px;
+    height: 55px;
     position: absolute;
     z-index: 21;
-    right: 10px;
-    height: 0;
+    right: 7px;
     cursor: pointer;
     display: none;
+    z-index: 21;
 }
 
 .slideshowHeaderButton {

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <title>OggleBooble : Big Naturals</title>
-    <link rel='shortcut icon' href='img/favicon.png' type='image/x-icon' />
+    <link rel='shortcut icon' href='https://common.ogglefiles.com/img/redBallon.ico' type='image/x-icon' />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=.07">
 
@@ -31,14 +31,14 @@
                     <div id="carouselContainer"></div>
                     <div class="sectionLabel">
                         random galleries
-                        <img class="refrehIcon"
-                             onclick="refreshRandomGalleries('playboy')"
-                             src="img/refresh02.png"
-                             title="refresh random galleries" />
+                        <img id="imgRandomGalleries" class="refrehIcon" src="img/refresh02.png" title="refresh random galleries" />
                     </div>
-                    <div id="randomGalleriesContainer" class="overflowx"></div>
-                    <div class="sectionLabel">latest updates</div>
-                    <div id="latestUpdatesContainer" class="dataArea"></div>
+                    <div id="randomGalleriesContainer" class="indexPageContainer"></div>
+                    <div class="sectionLabel">
+                        latest updates
+                        <img id="imgLatestUpdate" class="refrehIcon" src="img/refresh02.png" title="add more recently updated galleries" />
+                    </div>
+                    <div id="latestUpdatesContainer" class="indexPageContainer"></div>
                 </div>
             </div>
         </div>
@@ -47,30 +47,30 @@
     <footer></footer>
     <script>
         $(document).ready(function () {
-            let pageContext = "oggleIndex";
+            let pageContext = "boobs";
+            let pageName = "oggleIndex";
             let params = getParams();
             if (!isNullorUndefined(params.spa)) {
-                //alert("params.parentfolder: " + params.parentfolder);
+                console.log("params.spa: " + params.spa);
                 pageContext = params.spa;
+                pageName = params.spa
             }
-            displayHeader(pageContext);
 
             /*-- login -----------------------------------*/
             //if (localStorage["IsLoggedIn"] == "true") {
             //    getCookieValue("IsLoggedIn", "reset OggleHeader") == "true") {
             //    $('#spnUserName').html(getCookieValue("UserName", "reset OggleHeader"));
+
+            displayHeader(pageName);
             showLogin(false);
-
-            if (pageContext == "oggleIndex") {
-                getRandomGalleries(pageContext);
-                getLatestUpdatedGalleries('boobs');
-                launchCarousel('boobs')
-            }
-            if (pageContext == "blog") {
-            }
-
+            getRandomGalleries(pageContext);
+            $('#latestUpdatesContainer').html('<img class="tinyloadingGif" src="img/loader.gif"/>');
+            getLatestUpdatedGalleries(pageContext);
+            launchCarousel(pageContext)
             displayFooter(pageContext);
 
+            $('#imgLatestUpdate').on("click", function () { getLatestUpdatedGalleries(pageContext) });
+            $('#imgRandomGalleries').on("click", function () { getRandomGalleries(pageContext) });
             resizePage();
             $(window).resize(function () {
                 resizePage();

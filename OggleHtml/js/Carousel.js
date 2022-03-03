@@ -7,56 +7,60 @@ let carouselFooterHeight = 40, intervalReady = true, initialImageLoad = false, i
     jsCarouselSettings, arryItemsShownCount = 0,
     cacheSize = 45;
 
-function launchCarousel(startRoot) {
+function launchCarousel(pageContext) {
     try {
         absolueStartTime = Date.now();
         window.addEventListener("resize", resizeCarousel);
         $('#carouselContainer').html(carouselHtml());
-        loadFromCache(startRoot);
+        if (pageContext == "playboy") {
+            $('#carouselContainer').css("color", "#000");
+        }
+        loadFromCache(pageContext);
+        resizeCarousel();
         $(window).resize(function () {
-            resizeCarousel()
+            resizeCarousel();
         });
     } catch (e) {
         logCatch("launchCarousel", e);
     }    //settingsImgRepo = settingsArray.ImageRepo;
 }
 
-function loadFromCache(carouselRoot) {
+function loadFromCache(pageContext) {
     try {
         let cacheArray = [];
         if (isNullorUndefined(window.localStorage)) {
-            loadImages(carouselRoot, false);
+            loadImages(pageContext, false);
             console.warn("window.localStorage undefined");
             return;
         }
-        if (isNullorUndefined(window.localStorage[carouselRoot])) {
-            loadImages(carouselRoot, true);
-            console.log("no " + carouselRoot + " cache found");
+        if (isNullorUndefined(window.localStorage[pageContext])) {
+            loadImages(pageContext, true);
+            displayStatusMessage("error", "no " + pageContext + " cache found. Please wait...");
+            console.log("no " + pageContext + " cache found");
             return;
         }
-        cacheArray = JSON.parse(window.localStorage[carouselRoot]);
+        cacheArray = JSON.parse(window.localStorage[pageContext]);
         if (isNullorUndefined(cacheArray)) {
-            loadImages(carouselRoot, true);
+            loadImages(pageContext, true);
             console.log("cache may be corrupt");
             alert("cache may be corrupt");
             return;
         }
 
         carouselRows = cacheArray;
-        startCarousel(carouselRoot, " cache");
-        //alert("loaded " + carouselRows.length + " from " + carouselRoot + " cache");
-        console.log("loaded " + carouselRows.length + " from " + carouselRoot + " cache");
+        startCarousel(pageContext, " cache");
+        //alert("loaded " + carouselRows.length + " from " + pageContext + " cache");
+        console.log("loaded " + carouselRows.length + " from " + pageContext + " cache");
     }
     catch (e) {
         logCatch("loadFromCache", e);
-        //loadImages(carouselRoot, true);
     }
 }
 
-function startCarousel(carouselRoot, calledFrom) {
+function startCarousel(pageContext, calledFrom) {
     try {
         if (!initialImageLoad) {
-            loadImages(carouselRoot);
+            loadImages(pageContext);
         }
         if (vCarouselInterval) {
             alert("carousel interval already started. Called from: " + calledFrom);
@@ -68,15 +72,14 @@ function startCarousel(carouselRoot, calledFrom) {
                 resizeCarousel();
                 $('#carouselImageInnerContainer').show();
                 resizeCarousel();
-                setTimeout(function () {
-                    intervalBody(carouselRoot);
+                //setTimeout(function () {
+                    intervalBody(pageContext);
                     $('#footerMessage1').html("started carousel from: " + calledFrom);
-                    imageIndex = 0; // Math.floor(Math.random() * carouselRows.length);
                     //$('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow");
                     vCarouselInterval = setInterval(function () {
-                        intervalBody(carouselRoot);
+                        intervalBody(pageContext);
                     }, rotationSpeed);
-                }, 400);
+                //}, 400);
             }
             else {
                 alert("failed to start carousel. carouselRows.length: " + carouselRows.length);
@@ -88,33 +91,35 @@ function startCarousel(carouselRoot, calledFrom) {
     }
 }
 
-function intervalBody(carouselRoot) {
+function intervalBody(pageContext) {
     try {
         //if (!isPaused) {
-            if (intervalReady) {
-                intervalReady = false;
-                if ((carouselRows.length - imageIndex++) < 2) {
-                    if (confirm("imageIndex: " + imageIndex + "  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
-                        loadImages(carouselRoot);
+        if (intervalReady) {
+            intervalReady = false;
+            imageIndex = Math.floor(Math.random() * carouselRows.length);
+            if (insureUnique100()) {
+                intervalBody(pageContext);
+            }
+            setLabelLinks(imageIndex);
+            $('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow").load(function () {
+                resizeCarousel();
+                setLabelLinks(imageIndex);
+                intervalReady = true;
+                $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
+                imageHistory.push(imageIndex);
+
+                if ((carouselRows.length <= ++arryItemsShownCount)) {
+                    if (confirm("images shown: " + arryItemsShownCount + ">  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
+                        loadImages(pageContext);
                         imageIndex = Math.floor(Math.random() * 5);
                     }
+                    arryItemsShownCount = 0;
                 }
-                if (carouselRows.length <= imageIndex) {
-                    alert("imageIndex: " + imageIndex + ", carouselRows.length: " + carouselRows.length + "\nresetting carousel loop");
-                    imageIndex = 0;
-                }
-                $('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow").load(function () {
-                    setLabelLinks(imageIndex);
-                    resizeCarousel();
-                    intervalReady = true;
-                    $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
-                    imageHistory.push(imageIndex);
-                    arryItemsShownCount++;
-                });
-            }
-      //  }
-      //  else
-      //      alert("pauseButton: " + $('#pauseButton').html());
+            });
+        }
+        //  }
+        //  else
+        //      alert("pauseButton: " + $('#pauseButton').html());
     } catch (e) {
         logCatch("intervalBody", e);
     }
@@ -165,7 +170,7 @@ function setLabelLinks(llIdx) {
         //$('#carouselFooterLabel').hide();
         //$('#knownModelLabel').hide();
         let carouselItem = carouselRows[llIdx];
-        if (carouselItem.RootFolder == "centerfold") {
+        if (carouselItem.pageContext == "centerfold") {
             if (carouselItem.RealRoot == "centerfold")
                 $('#imageTopLabel').html("Playboy Playmate: " + carouselItem.PlayboyYear);
             else {
@@ -260,15 +265,14 @@ function setLabelLinks(llIdx) {
     }
 }
 
-function loadImages(carouselRoot, forceRefresh) {
+function loadImages(pageContext, forceRefresh) {
     try {
         let startTime = Date.now();
         initialImageLoad = true;
         let limit = 600;
-        let rootFolder = carouselRoot;
         $.ajax({
             type: "GET",
-            url: "php/getCarouselImages.php?rootFolder=" + rootFolder + "&limit=" + limit,
+            url: "php/getCarouselImages.php?pageContext=" + pageContext + "&limit=" + limit,
             success: function (data) {
                 if (data.indexOf("Fatal error") > 0) {
                     $('#carouselContainer').html(data);
@@ -285,11 +289,11 @@ function loadImages(carouselRoot, forceRefresh) {
 
                     console.log("added " + newRows.length + " images");
                     if (!vCarouselInterval) {
-                        startCarousel(carouselRoot, "loadImages");
+                        startCarousel(pageContext, "loadImages");
                     }
                     let delta = (Date.now() - startTime) / 1000;
                     console.log("loading images took: " + delta.toFixed(3));
-                    refreshCache(carouselRoot, forceRefresh);
+                    refreshCache(pageContext, forceRefresh);
                 }
             },
             error: function (jqXHR) {
@@ -304,7 +308,7 @@ function loadImages(carouselRoot, forceRefresh) {
     }
 }
 
-function refreshCache(carouselRoot, forceRefresh) {
+function refreshCache(pageContext, forceRefresh) {
     try {
         if ((isNullorUndefined(window.localStorage)) && (isNullorUndefined(window.localStorage))) {
             logError("SST", 1222, "this user should be flaged", "refresh carousle cache"); // NO SESSION STATE AVAILABLE
@@ -312,12 +316,12 @@ function refreshCache(carouselRoot, forceRefresh) {
             return;
         }
         let doit = forceRefresh;
-        if (isNullorUndefined(window.localStorage[carouselRoot + "lastCacheRefreshDate"])) {
-            window.localStorage[carouselRoot + "lastCacheRefreshDate"] = todayString();
+        if (isNullorUndefined(window.localStorage[pageContext + "lastCacheRefreshDate"])) {
+            window.localStorage[pageContext + "lastCacheRefreshDate"] = todayString();
             doit = true;
         }
         else {
-            let lastCacheRefreshDate = window.localStorage[carouselRoot + "lastCacheRefreshDate"];
+            let lastCacheRefreshDate = window.localStorage[pageContext + "lastCacheRefreshDate"];
             const d2 = new Date(lastCacheRefreshDate);
             //$('#headerMessage').html("is valid date: " + (d2 instanceof Date && !isNaN(d2.valueOf())));
 
@@ -326,11 +330,11 @@ function refreshCache(carouselRoot, forceRefresh) {
             let d1T = d1.getTime();
             let difference_In_Time = (d1T - d2T) / (1000 * 3600 * 24);
             if (difference_In_Time > 1.1) {
-                window.localStorage[carouselRoot + "lastCacheRefreshDate"] = todayString();
+                window.localStorage[pageContext + "lastCacheRefreshDate"] = todayString();
                 doit = true;
             }
         }
-        if (isNullorUndefined(window.localStorage[carouselRoot]))
+        if (isNullorUndefined(window.localStorage[pageContext]))
             doit = true;
 
         if (doit)
@@ -341,13 +345,27 @@ function refreshCache(carouselRoot, forceRefresh) {
                 let r = Math.floor(Math.random() * carouselRows.length);
                 cacheArray.push(carouselRows[r]);
             };
-            window.localStorage[carouselRoot] = JSON.stringify(cacheArray);
-            console.log("refreshed " + carouselRoot + " cache");
-            $('#footerMessage2').html("refreshed " + carouselRoot + " cache");
+            window.localStorage[pageContext] = JSON.stringify(cacheArray);
+            console.log("refreshed " + pageContext + " cache");
+            $('#footerMessage2').html("refreshed " + pageContext + " cache");
         }
     } catch (e) {
         logCatch("loadFromCache", e);
     }
+}
+
+function insureUnique100() {
+    let alreadyShow = false;
+    try {
+        if (!isNullorUndefined(imageHistory.find(h => h == imageIndex))) {
+            alert(carouselRows[imageIndex].ImageFileName + " alreday shown");
+            alreadyShow = true;
+        }
+
+    } catch (e) {
+        console.warn(e);
+    }
+    return alreadyShow;
 }
 
 function clickSpeed(speed) {
@@ -421,9 +439,6 @@ function clickViewGallery(labelClick) {
     try {
         event.preventDefault();
         window.event.returnValue = false;
-
-        //if (arryItemsShownCount > 88)
-            //alert("viewed " + arryItemsShownCount + " images");
 
         let clickFolderId = 0, carouselButtonClicked;
         switch (labelClick) {

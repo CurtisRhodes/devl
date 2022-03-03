@@ -306,12 +306,13 @@ function updateFolderCount() {
                                     $.each(imageFileRows, function (idx, objDataTableRow) {
                                         let physcialFileRow = physcialImageFileRows.filter(node => node.name == objDataTableRow.FileName);
                                         if (physcialFileRow.length == 0) {
+                                            // we have a data record with no physcial file
                                             if (!folderNameShowing) {
                                                 $('#dashboardFileList').append("<div style='text-decoration:underline'>: " +
+                                                    "data records with no physcial file. Foder: "+
                                                     catFolder.FolderName + "(" + rootFolderId + ")");
                                                 folderNameShowing = true;
                                             }
-                                            // we have a data record with no physcial file
                                             $('#dashboardFileList').append("<div>Orphan ImageFile row: " + objDataTableRow.FileName + "</div>");
                                         }
                                         $('#dcImageRowsProcessed').html("<div>Image Files Processed: " +

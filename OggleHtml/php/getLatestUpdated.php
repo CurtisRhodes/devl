@@ -6,19 +6,16 @@
    $spaType = $_GET['spaType'];
 
    $limit = $_GET['limit'];
-         
-   call spLatestTouchedGalleries(); 
 
+	try{         
+	   $p = $pdo->query('CALL spLatestTouchedGalleries()');
+	   $p->setFetchMode(PDO::FETCH_ASSOC);
+	}  
+	catch (PDOException $e) {
+		die("Error occurred:" . $e->getMessage());
+	}
 
-   if($spaType == 'playboy'){
-       $cmd = $pdo->query("select * from LatestTouchedGalleries ". 
-       "where ((RootFolder = 'playboy') or (RootFolder = 'centerfold') or (RootFolder = 'cybergirl')) limit .$limit ");
-   }
-   if($spaType == 'porn'){
-       $cmd = $pdo->query("select * from LatestTouchedGalleries ". 
-       "where ((RootFolder = 'playboy') or (RootFolder = 'centerfold') or (RootFolder = 'cybergirl'))");
-   }
-
+   $cmd = $pdo->query("select * from LatestTouchedGalleries where RootFolder = '".$spaType."' order by Acquired desc"); 
 
    $results = $cmd->fetchAll();
 

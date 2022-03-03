@@ -1,7 +1,9 @@
 
-.overflowx {
+.indexPageContainer {
     border: solid .02px #d1cccc;
+    min-height: 100px;
     overflow-x: auto;
+    text-align:center;
 }
 
 .latestContentBox {
