@@ -664,8 +664,6 @@ function explodeImage() {
     //    }
 }
 
-
-
 function setFolderImage(filinkId, folderId, level) {
     try {
         $.ajax({
@@ -687,6 +685,58 @@ function setFolderImage(filinkId, folderId, level) {
         });
     } catch (e) {
         logCatch("set Folder Image", e);
+    }
+}
+
+function averageColor(imageElement) {
+    try {
+
+        if (imageElement.height == 0) {
+            return (222, 222, 222);
+        }
+
+        let canvas = document.createElement('canvas');
+        let imgH = imageElement.height;
+        let imgW = imageElement.width;
+
+        let ctx = canvas.getContext && canvas.getContext('2d'), imgData, cWidth, cHeight, length,
+            rgb = { r: 0, g: 0, b: 0 }, count = 0;
+
+        ctx.drawImage(imageElement, 0, 0);
+
+        imgData = ctx.getImageData(0, 0, imgW, imgH);
+
+        // Get the length of image data object
+        length = imgData.data.length;
+
+        for (var i = 0; i < length; i += 4) {
+
+            // Sum all values of red colour
+            rgb.r += imgData.data[i];
+
+            // Sum all values of green colour
+            rgb.g += imgData.data[i + 1];
+
+            // Sum all values of blue colour
+            rgb.b += imgData.data[i + 2];
+
+            // Increment the total number of
+            // values of rgb colours
+            count++;
+        }
+
+        // Find the average of red
+        rgb.r = Math.floor(rgb.r / count);
+
+        // Find the average of green
+        rgb.g = Math.floor(rgb.g / count);
+
+        // Find the average of blue
+        rgb.b = Math.floor(rgb.b / count);
+
+        return rgb;
+    } catch (e) {
+        logCatch("averageColor", e);
     }
 }
 

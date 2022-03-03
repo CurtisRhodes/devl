@@ -177,8 +177,6 @@ function showFiles() {
 
 function updateFolderCount() {
     try {
-
-        //let path = "h  ttps://ogglefiles.com/danni/" + $('#txtCurrentActiveFolder').val();;
         let folderId = $('#txtActiveFolderId').val();
         let path = "../../danni/" + $('#txtCurrentActiveFolder').val();
         $.ajax({
@@ -186,7 +184,7 @@ function updateFolderCount() {
             url: "php/updateFolderCount.php?folderId=" + folderId + "&path=" + path,
             success: function (success) {
                 if (success.trim().startsWith("ok")) {
-                    //$('#galleryBottomfileCount').html(success);
+                    $('#dataifyInfo').show().html("Folder Count for " + $('#txtCurrentActiveFolder').val() + " updated to: " + success);
                     displayStatusMessage("ok", "Folder Count for " + $('#txtCurrentActiveFolder').val() + " updated to: " + success);
                 }
                 else {
@@ -202,7 +200,6 @@ function updateFolderCount() {
         logCatch("update Folder Count", e);
     }
 }
-
 
 // REPAIR FUNCTIONS
 {
@@ -546,18 +543,15 @@ function testGetCatFolder() {
 {
     let sortOrderArray = [];
     function showSortTool() {
-        //checkForOrphanImageFileRecords($('#txtCurrentActiveFolder').val(), $('#txtActiveFolderId').val(), justOne);
         if (isNullorUndefined($('#txtActiveFolderId').val())) {
             alert("select a folder");
             return;
         }
-        //checkForOrphanImageFileRecords($('#txtCurrentActiveFolder').val(), $('#txtActiveFolderId').val()
         $('.fullScreenSection').hide();
         $('#dashboardTopRow').hide();
         $('#dirTreeContainer').hide();
         $('#sortToolSection').show();
         resizeDashboardPage();
-        //$('#sortToolImageArea').css("height", $('#dashboardContainer').height() - $('#sortToolHeader').height());
         $('#sortTableHeader').html(pSelectedTreeFolderPath.replace(".OGGLEBOOBLE.COM", "").replace("/Root/", "").replace(/%20/g, " ")
             + "(" + $('#txtActiveFolderId').val() + ")");
         $('#dashBoardLoadingGif').fadeIn();
@@ -681,6 +675,7 @@ function testGetCatFolder() {
         }
     }
 }
+
 function showDefaultWorkArea() {
     $('.fullScreenSection').hide();
     $('#dashboardTopRow').show();

@@ -1,5 +1,5 @@
 ﻿
-const rotationSpeed = 7000, intervalSpeed = 600, carouselDebugMode = false;
+const rotationSpeed = 7000, carouselDebugMode = false;
 let carouselFooterHeight = 40, intervalReady = true, initialImageLoad = false, isPaused = false,
     imageIndex = 0, carouselRows = [], imageHistory = [], absolueStartTime,
     vCarouselInterval = null,
@@ -68,15 +68,13 @@ function startCarousel(carouselRoot, calledFrom) {
                 resizeCarousel();
                 $('#carouselImageInnerContainer').show();
                 resizeCarousel();
-                setTimeout(function () {
+                intervalBody(carouselRoot);
+                $('#footerMessage1').html("started carousel from: " + calledFrom);
+                imageIndex = 0; // Math.floor(Math.random() * carouselRows.length);
+                //$('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow");
+                vCarouselInterval = setInterval(function () {
                     intervalBody(carouselRoot);
-                    $('#footerMessage1').html("started carousel from: " + calledFrom);
-                    imageIndex = 0; // Math.floor(Math.random() * carouselRows.length);
-                    //$('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow");
-                    vCarouselInterval = setInterval(function () {
-                        intervalBody(carouselRoot);
-                    }, rotationSpeed);
-                }, 400);
+                }, rotationSpeed);
             }
             else {
                 alert("failed to start carousel. carouselRows.length: " + carouselRows.length);
@@ -103,9 +101,20 @@ function intervalBody(carouselRoot) {
                     alert("imageIndex: " + imageIndex + ", carouselRows.length: " + carouselRows.length + "\nresetting carousel loop");
                     imageIndex = 0;
                 }
+
                 $('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow").load(function () {
                     setLabelLinks(imageIndex);
                     resizeCarousel();
+
+                    //setTimeout(function () {
+                    //    let img = document.createElement('img');
+                    //    img.src = $('#thisCarouselImage').attr('src');
+                    //    if (img.height != 0) {
+                    //        //img.crossOrigin = "Anonymous";
+                    //        let rgb = averageColor(img);
+                    //        $('#indexMiddleColumn').css("background-color", rgb)
+                    //    }
+                    //}, 500);
                     intervalReady = true;
                     $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
                     imageHistory.push(imageIndex);
@@ -114,6 +123,8 @@ function intervalBody(carouselRoot) {
             }
       //  }
       //  else
+      //      alert("pauseButton: " + $('#pauseButton').html());
+      //      alert("pauseButton: " + $('#pauseButton').html());
       //      alert("pauseButton: " + $('#pauseButton').html());
     } catch (e) {
         logCatch("intervalBody", e);
