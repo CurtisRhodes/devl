@@ -253,10 +253,10 @@ function closeImageViewer() {
 function folderClick(folderId, isStepChild) {
     try {
         if (isStepChild == 1)
-            window.open("/https://ogglefiles.com/beta/Gallery.html?album=" + folderId, "_blank");  // open in new tab
+            window.open("https://ogglefiles.com/beta/Gallery.html?album=" + folderId, "_blank");  // open in new tab
         else {
             // report event pare hit
-            window.location.href = "/https://ogglefiles.com/beta/Gallery.html?album=" + folderId;  //  open page in same window
+            window.location.href = "https://ogglefiles.com/beta/Gallery.html?album=" + folderId;  //  open page in same window
         }
         //" onclick='rtpe(\"SUB\",\"called from: " + folderId + "\",\"" + folder.DirectoryName + "\"," + folder.FolderId + ")'>\n" +
     } catch (e) {
