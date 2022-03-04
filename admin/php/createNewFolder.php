@@ -6,8 +6,8 @@
         $pdo = pdoConn();
 
         $parentId = $_POST['parentId'];
-        $folderPath = $_POST['folderPath'];
         $newFolderName = $_POST['newFolderName'];
+        $folderPath = $_GET['folderPath'];
         $folderType = $_POST['folderType'];
         $rootfolder = $_POST['rootfolder'];
         $sortOrder = $_POST['sortOrder'];
@@ -24,17 +24,16 @@
         $stmt->execute([$parentId, $newFolderName, $rootFolder, $folderPath, $folderType, $sortOrder]);
         $pdo->commit();
         $pdo = null;
-        
-        // $success = 'ok but: '.$folderPath;
-        $mkdirSuccess = mkdir('../../danni/'.$folderPath);
-        //$success = $mkdirSuccessText = iff($mkdirSuccess,'ok','directory fail');
+
+
+        $fullPath = '../../danni/'.$folderPath;
+       
+        $success = mkdir($fullPath);
+
     }
     catch(PDOException $e) {
         $success = $e->getMessage();
         $pdo->rollback();
-    }
-    catch(Exception $e) {
-        $success = $e->getMessage();
     }
     echo $success;
 ?>
