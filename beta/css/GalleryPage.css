@@ -1,7 +1,10 @@
-﻿.galleryContainer {
+﻿body {
+    background-color: var(--oggleBackgroundColor);
+}
+
+.galleryContainer {
     display: flex;
     text-align: center;
-    border: solid .02px #d1cccc;
     min-height: 200px;
     flex-wrap: wrap;
     max-height: inherit;
@@ -73,6 +76,7 @@
     cursor: pointer;
     color: var(--oggleTitleColor);
     white-space: nowrap;
+    margin-right: 38px;
 }
 
     .albumMsgLink:hover {
@@ -186,7 +190,6 @@
 .countContainer {
     padding: 0,5px;
     margin-right:11px;
-    background-color:#f3f3e7;
     text-align: right;
 }
 

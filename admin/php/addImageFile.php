@@ -37,7 +37,7 @@
             $stmt2 = $pdo->prepare("INSERT INTO CategoryImageLink (ImageCategoryId,ImageLinkId,SortOrder) VALUES (".$folderId.",'".$Id."',0)");
             $stmt2->execute();
 
-            $success = 'ok '.$sql;
+            $success = 'ok';
         }
 
         $pdo = null;

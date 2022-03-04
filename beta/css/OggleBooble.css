@@ -1,3 +1,6 @@
+body {
+    background-color: var(--oggleBackgroundColor);
+}
 
 .indexPageContainer {
     border: solid .02px #d1cccc;

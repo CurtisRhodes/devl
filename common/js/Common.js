@@ -178,31 +178,30 @@ function logCatch(calledFrom, errorMessage) {
 }
 
 function logError(errorCode, folderId, errorMessage, calledFrom) {
-    alert("errorCode: " + errorCode + ", folderId: " + folderId + "\n errorMessage: " + errorMessage + "\ncalledFrom: " + calledFrom);
-    //logError("ILF", folderId, "linkId: " + linkId + " imgSrc: " + imgSrc, "gallery");
+    //alert("errorCode: " + errorCode + ", folderId: " + folderId + "\n errorMessage: " + errorMessage + "\ncalledFrom: " + calledFrom);
 
-//    let visitorId = getCookieValue("VisitorId", calledFrom + "/logError");
-//    $.ajax({
-//        type: "POST",
-//        url: "https://common.ogglefiles.com/php/addError.php",
-//        data: {
-//            ErrorCode: errorCode,
-//            FolderId: folderId,
-//            VisitorId: visitorId,
-//            CalledFrom: calledFrom,
-//            ErrorMessage: errorMessage
-//        },
-//        success: function (success) {
-//            if (success=="!ok") {
-//                console.log(addImageFileSuccess);
-//                $('#dashboardFileList').append("<div style='color:red'>add image file error: " + addImageFileSuccess + "</div>");
-//            }
-//        },
-//        error: function (jqXHR) {
-//            let errMsg = getXHRErrorDetails(jqXHR);
-//            alert("Error log error: " + errMsg);
-//        }
-//    });
+    let visitorId = getCookieValue("VisitorId", calledFrom + "/logError");
+    $.ajax({
+        type: "POST",
+        url: "php/addErrorLog.php",
+        data: {
+            ErrorCode: errorCode,
+            FolderId: folderId,
+            VisitorId: visitorId,
+            CalledFrom: calledFrom,
+            ErrorMessage: errorMessage
+        },
+        success: function (success) {
+            if (success=="!ok") {
+                console.log(success);
+                $('#dashboardFileList').append("<div style='color:red'>add image file error: " + success + "</div>");
+            }
+        },
+        error: function (jqXHR) {
+            let errMsg = getXHRErrorDetails(jqXHR);
+            alert("Error log error: " + errMsg);
+        }
+    });
 }
 
 function logActivity(eventCode, calledFrom) {
@@ -280,7 +279,6 @@ function bannerLink(labelText, calledFromFolderId) {
 }
 
 // -------- Cookies -----------
-
 function getCookieValue(itemName, calledFrom) {
     let returnValue = "cookie not found";
     try {

@@ -2,7 +2,7 @@
 const rotationSpeed = 7000, carouselDebugMode = false;
 let carouselFooterHeight = 40, intervalReady = true, initialImageLoad = false, isPaused = false,
     imageIndex = 0, carouselRows = [], imageHistory = [], absolueStartTime,
-    vCarouselInterval = null, lastImageIndex = 0,
+    vCarouselInterval = null, lastImageIndex = 0, lastErrorThrown = 0,
     mainImageClickId, knownModelLabelClickId, imageTopLabelClickId, footerLabelClickId,
     jsCarouselSettings, arryItemsShownCount = 0,
     cacheSize = 45;
@@ -117,7 +117,7 @@ function intervalBody(pageContext) {
                         carouselImage.src = settingsImgRepo + carouselRows[imageIndex].ImageFileName;
                         let rgb = averageColor(carouselImage);
                         console.log("background-color: rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")");
-                        $('#indexMiddleColumn').css("background-color", "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")");
+                        $('#indexMiddleColumn').css("background-color", "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")").fadeIn(4500);
                     }
                 } catch (e) {
                     console.error("carouselImage" + e);
@@ -437,6 +437,7 @@ function clickViewGallery(labelClick) {
 
 function carouselContextMenu() {
     pause();
+    pos = {};
     pos.x = event.clientX;
     pos.y = event.clientY;
     showContextMenu("Carousel", pos,
@@ -448,32 +449,15 @@ function carouselContextMenu() {
 
 function imgErrorThrown() {
 
-    //alert($('#thisCarouselImage').attr('src') + " not found");
-    console.warn($('#thisCarouselImage').attr('src') + " not found");
+    if (lastErrorThrown != imageIndex) {
+        lastErrorThrown = imageIndex;
+        //alert($('#thisCarouselImage').attr('src') + " not found");
+        console.warn($('#thisCarouselImage').attr('src') + " not found");
+        logError("ILF", 11, $('#thisCarouselImage').attr('src') + " not found", "carousel");
 
-    $('#thisCarouselImage').attr('src', "https://common.ogglefiles.com/img/redBallonSmall.png");
-    $('#thisCarouselImage').css('height', window.innerHeight * .5);
-
-    logError("CIM")
-
-    //  alert("imgErrorThrown");
-    //    setTimeout(function () {
-    //        if ($('#thisCarouselImage').attr('src') == null) {
-    //            $('#thisCarouselImage').attr('src', "img/redballon.png");
-    //            logError("ILF", carouselRows[imageIndex].FolderId, "linkId: " + carouselRows[imageIndex].LinkId + " imgSrc: " + imgSrc, "Carousel");
-
-    //            if (document.domain == 'localhost') {
-    //                pause();
-    //                alert("image error\npage: " + carouselRows[imageIndex].FolderId +
-    //                    ",\nPageName: " + carouselRows[imageIndex].FolderName +
-    //                    ",\nLink: " + carouselRows[imageIndex].LinkId);
-
-    //                console.log("image error\npage: " + carouselRows[imageIndex].FolderId +
-    //                    ",\nPageName: " + carouselRows[imageIndex].FolderName +
-    //                    ",\nActivity: " + carouselRows[imageIndex].LinkId);
-    //            }
-    //        }
-    //    }, 600);
+        $('#thisCarouselImage').attr('src', "https://common.ogglefiles.com/img/redBallonSmall.png");
+        $('#thisCarouselImage').css('height', window.innerHeight * .5);
+    }
 }
 
 function carouselHtml() {

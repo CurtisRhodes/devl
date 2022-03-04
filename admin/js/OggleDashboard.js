@@ -79,21 +79,26 @@ function performCreateNewFolder() {
         let sStart = Date.now();
         $('#dashBoardLoadingGif').show();
         $('#dataifyInfo').show().html("saving changes");
+
+        let folderPath = $('#txtCurrentActiveFolder').val() + "/" + $('#txtNewFolderTitle').val();
+
         $.ajax({
-            url: "php/createNewFolder.php?parentId=" + $('#txtActiveFolderId').val() +
-                "&newFolderName=" + $('#txtNewFolderTitle').val() +
-                "&folderType=" + $('#ddNewFolderType').val()+
-                "&sortOrder=" + $('#txtSortOrder').val(),
+            type: "POST",
+            url: "php/createNewFolder.php",
+            data: {
+                parentId: $('#txtActiveFolderId').val(),
+                folderPath: folderPath,
+                newFolderName: $('#txtNewFolderTitle').val(),
+                folderType: $('#ddNewFolderType').val(),
+                rootfolder: 'archive',
+                sortOrder: $('#txtSortOrder').val()
+            },
             success: function (success) {
                 $('#dataifyInfo').html(success);
                 $('#dashBoardLoadingGif').hide();
                 let delta = (Date.now() - sStart);
                 if (delta < 150)
-                    $('#dataifyInfo').hide();
-                else {
-                    $('#dataifyInfo').html(success);
                     $('#dataifyInfo').append("  saving changes took: " + (delta / 1000).toFixed(3));
-                }
             },
             error: function (jqXHR) {
                 $('#dashBoardLoadingGif').hide();
@@ -512,11 +517,383 @@ function updateFolderCount() {
     }
 }
 
+// MOVE MANY
+{
+    let mmSourceFolderId, mmSelectedTreeFolderPath;
+    function showMoveManyTool(cx) {
+        if (isNullorUndefined($('#txtCurrentActiveFolder').val())) {
+            alert("select a folder");
+            return;
+        }
+        if (cx == 1) {
+            $('#moveManyTitle').html("Move Many");
+            $('#moveManyButton').html("Move");
+        }
+        if (cx == 2) {
+            $('#moveManyTitle').html("Copy Many");
+            $('#moveManyButton').html("Copy");
+        }
+        if (cx == 3) {
+            $('#moveManyTitle').html("Archive Many");
+            $('#moveManyButton').html("Archive");
+        }
+        mmSourceFolderId = $('#txtActiveFolderId').val();
+        mmSelectedTreeFolderPath = $('#txtCurrentActiveFolder').val();
+        $('.fullScreenSection').hide();
+        $('#moveManySection').show();
+        $('#txtMoveManySource').val(mmSelectedTreeFolderPath);
+        $('#moveManyImageArea').css("height", $('#dashboardContainer').height() - $('#moveManyHeader').height());
+        //activeDirTree = "moveMany";
+        //loadDirectoryTree(1, "mmDirTreeContainer", true);
+        //showHtmlDirTree("mmDirTreeContainer");
+        loadMMcheckboxes();
+    }
+    function loadMMcheckboxes() {
+        $('#dashBoardLoadingGif').fadeIn();
+        let imgRepo = settingsArray.ImageRepo;
+        $.ajax({
+            type: "GET",
+
+            //db.VwLinks.Where(l => (l.FolderId == folderId) && (l.FolderId == l.SrcId)).OrderBy(l => l.SortOrder).ToList();
+            url: "php/customQuery?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val(),
+            success: function (imgLinks) {
+                $('#dashBoardLoadingGif').hide();
+                if (imgLinks != "error") {
+                    $('#moveManyImageArea').html("");
+                    let jLinks = JSON.parse(imgLinks)
+                    $.each(jLinks, function (ndx, obj) {
+                        $('#moveManyImageArea').append("<div class='sortBox'><img class='sortBoxImage' src='" + imgRepo + "/" + obj.FileName + "'/>" +
+                            "<br/><input type='checkbox' class='loadManyCheckbox' imageId=" + obj.LinkId + "></input></div>");
+                    });
+                    $('#moveManyCountContainer').html(imgLinks.Links.length.toLocaleString());
+                }
+                else { logError("AJX", mmSourceFolderId, imgLinks.Success, "getDeepFolderCounts"); }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                if (!checkFor404(errMsg, mmSourceFolderId, "loadMMcheckboxes")) logError("XHR", mmSourceFolderId, errMsg, "loadMMcheckboxes");
+            }
+        });
+    }
+
+    function mmSelectAll() {
+        if ($('#mmCkSelectAll').is(":checked"))
+            $('.loadManyCheckbox').prop("checked", true);
+        else
+            $('.loadManyCheckbox').prop("checked", false);
+    }
+}
+    function moveCheckedImages() {
+        if (mmSourceFolderId == pSelectedTreeId) {
+            alert("select a destination");
+            return;
+        }
+        var checkedImages = [];
+        $('#moveManyImageArea').children().each(function (ndx, obj) {
+            if ($(this).find("input").is(":checked")) {
+                checkedImages.push($(this).find("input").attr("imageId"));
+            }
+        });
+
+        let mmContext;
+        if ($('#moveManyTitle').html() == "Move Many")
+            mmContext = "move";
+        if ($('#moveManyTitle').html() == "Copy Many")
+            mmContext = "copy";
+        if ($('#moveManyTitle').html() == "Archive Many")
+            mmContext = "archive";
+
+        //let lblMoveManyDestination = $('#txtMoveManyDestination').val().replace(".OGGLEBOOBLE.COM", "").replace("/Root/", "").replace(/%20/g, " ");
+        let lblMoveManyDestination = $('#txtMoveManyDestination').val().replace(/%20/g, " ");
+        if (confirm(mmContext + " " + checkedImages.length + " images to " + lblMoveManyDestination)) {
+            let moveManyModel = {
+                Context: mmContext,
+                SourceFolderId: mmSourceFolderId,
+                DestinationFolderId: pSelectedTreeId,
+                ImageLinkIds: checkedImages
+            };
+            $('#dashBoardLoadingGif').fadeIn();
+            try {
+                $.ajax({
+                    type: "PUT",
+                    url: settingsArray.ApiServer + "api/Links/MoveMany",
+                    data: moveManyModel,
+                    success: function (success) {
+                        //$('#dashBoardLoadingGif').hide();
+                        //if (success === "ok") {
+
+                        //string ftpRepo = imgRepo.Substring(7);
+                        //var dbDestFolder = db.CategoryFolders.Where(i => i.Id == moveManyModel.DestinationFolderId).First();
+                        //string destFtpPath = ftpHost + ftpRepo + "/" + dbDestFolder.FolderPath;
+
+                        //if (!FtpUtilies.DirectoryExists(destFtpPath))
+                        //    FtpUtilies.CreateDirectory(destFtpPath);
+
+                        //var dbSourceFolder = db.CategoryFolders.Where(f => f.Id == moveManyModel.SourceFolderId).First();
+                        //string sourceFtpPath = ftpHost + ftpRepo + "/" + dbSourceFolder.FolderPath;
+
+                        //ImageFile dbImageFile = null;
+                        //string oldFileName;
+                        //string newFileName;
+                        //string linkId;
+                        //int sortOrder;
+                        //        for (int i = 0; i < moveManyModel.ImageLinkIds.Length; i++)
+                        //        {
+                        //            linkId = moveManyModel.ImageLinkIds[i];
+                        //            if (moveManyModel.Context == "copy") //only
+                        //            {
+                        //                db.CategoryImageLinks.Add(new MySqlDataContext.CategoryImageLink()
+                        //                    {
+                        //                        ImageCategoryId = dbDestFolder.Id,
+                        //                        ImageLinkId = linkId,
+                        //                        SortOrder = 9876
+                        //                    });
+                        //                db.SaveChanges();
+                        //            }
+                        //            else {
+                        //                dbImageFile = db.ImageFiles.Where(f => f.Id == linkId).First();
+                        //                oldFileName = dbImageFile.FileName;
+                        //                string ext = dbImageFile.FileName.Substring(dbImageFile.FileName.LastIndexOf("."));
+
+                        //                if (dbDestFolder.FolderType == "singleChild") {
+                        //                    var destinationParent = db.CategoryFolders.Where(f => f.Id == dbDestFolder.Parent).First();
+                        //                    newFileName = destinationParent.FolderName + "_" + linkId + ext;
+                        //                }
+                        //                else
+                        //                    newFileName = dbDestFolder.FolderName + "_" + linkId + ext;
+
+                        //                if (dbDestFolder.Parent == dbSourceFolder.Id)
+                        //                    newFileName = oldFileName;
+
+                        //                success = FtpUtilies.MoveFile(sourceFtpPath + "/" + oldFileName, destFtpPath + "/" + newFileName);
+                        //                if (success == "ok") {
+                        //                    dbImageFile.FolderId = moveManyModel.DestinationFolderId;
+                        //                    dbImageFile.FileName = newFileName;
+                        //                    db.SaveChanges();
+
+                        //                    var oldLink = db.CategoryImageLinks.Where(l => l.ImageCategoryId == dbSourceFolder.Id && l.ImageLinkId == linkId).First();
+                        //                    sortOrder = oldLink.SortOrder;
+                        //                    if (moveManyModel.Context == "move") {
+                        //                        db.CategoryImageLinks.Remove(oldLink);
+                        //                        db.SaveChanges();
+                        //                    }
+
+                        //                    db.CategoryImageLinks.Add(new CategoryImageLink()
+                        //                        {
+                        //                            ImageCategoryId = dbDestFolder.Id,
+                        //                            ImageLinkId = linkId,
+                        //                            SortOrder = sortOrder
+                        //                        });
+                        //                    db.SaveChanges();
+                        //                    // SIGNAR
+                        //                }
+                        //                else
+                        //                    return success;
+                        //            }
+                        //        }
+                        //        db.SaveChanges();
+                        //        success = "ok";
+                    }
+                });
+            }
+            catch (ex) {
+                success += Helpers.ErrorDetails(ex);
+            }
+        }
+    }
+    // SORT FUNCTIONS
+    {
+        let sortOrderArray = [];
+        function showSortTool() {
+            if (isNullorUndefined($('#txtActiveFolderId').val())) {
+                alert("select a folder");
+                return;
+            }
+            $('.fullScreenSection').hide();
+            $('#dashboardTopRow').hide();
+            $('#dirTreeContainer').hide();
+            $('#sortToolSection').show();
+            resizeDashboardPage();
+            $('#sortTableHeader').html(pSelectedTreeFolderPath.replace(".OGGLEBOOBLE.COM", "").replace("/Root/", "").replace(/%20/g, " ")
+                + "(" + $('#txtActiveFolderId').val() + ")");
+            $('#dashBoardLoadingGif').fadeIn();
+            var daInfoMessage = $('#dataifyInfo').html();
+            $('#dataifyInfo').append("loading sorted images");
+
+            //imgLinks.Links = db.VwLinks.Where(l => l.FolderId == folderId).OrderBy(l => l.SortOrder).ToList();
+            $.ajax({
+                url: "php/customQuery.php?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val() + " order by SortOrder",
+                success: function (imgLinks) {
+                    $('#dashBoardLoadingGif').hide();
+                    if (imgLinks.indexOf("error") > -1)
+                        $('#sortToolImageArea').html(imgLinks);
+                    else {
+                        $('#sortToolImageArea').html("");
+                        let links = JSON.parse(imgLinks);
+                        sortOrderArray = [];
+                        $.each(links, function (ndx, obj) {
+                            $('#sortToolImageArea').append("<div class='sortBox'><img class='sortBoxImage' src='" +
+                                settingsImgRepo + obj.FileName + "'/>" +
+                                "<br/><input class='sortBoxInput' id=" + obj.LinkId + " value=" + obj.SortOrder + "></input></div>");
+                            sortOrderArray.push({
+                                FolderId: $('#txtActiveFolderId').val(),
+                                ItemId: obj.LinkId,
+                                ImageSrc: settingsImgRepo + obj.FileName,
+                                SortOrder: obj.SortOrder
+                            });
+                        });
+                        $('#dashBoardLoadingGif').hide();
+                        $('#dataifyInfo').html(daInfoMessage + " done");
+                    }
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    logError("AJX", $('#txtActiveFolderId').val(), errMsg, "showSortTool");
+                }
+            });
+        }
+
+        function updateSortOrder() {
+            $('#dashBoardLoadingGif').show();
+            $('#dataifyInfo').show().html("sorting array");
+            sortOrderArray = [];
+            $('#sortToolImageArea').children().each(function () {
+                sortOrderArray.push({
+                    FolderId: $('#txtActiveFolderId').val(),
+                    ItemId: $(this).find("input").attr("id"),
+                    ImageSrc: $(this).find("img").attr("src"),
+                    SortOrder: $(this).find("input").val()
+                });
+            });
+            sortOrderArray = sortOrderArray.sort(SortImageArray);
+            reloadSortTool();
+            //saveSortChanges(sortOrderArray, "sort");
+        }
+
+        function SortImageArray(a, b) {
+            var aSortOrder = Number(a.SortOrder);
+            var bSortOrder = Number(b.SortOrder);
+            return ((aSortOrder < bSortOrder) ? -1 : ((aSortOrder > bSortOrder) ? 1 : 0));
+        }
+
+        function autoIncrimentSortOrder() {
+            //if (confirm("reset all sort orders")) {
+            $('#dashBoardLoadingGif').show();
+            $('#dataifyInfo').show().html("auto incrimenting array");
+            sortOrderArray = [];
+            let autoI = 0;
+            $('#sortToolImageArea').children().each(function () {
+                sortOrderArray.push({
+                    FolderId: $('#txtActiveFolderId').val(),
+                    ItemId: $(this).find("input").attr("id"),
+                    ImageSrc: $(this).find("img").attr("src"),
+                    SortOrder: autoI += 2
+                });
+            });
+            reloadSortTool();
+            //saveSortChanges(sortOrderArray, "incrimenting");
+            //}
+        }
+
+        function reloadSortTool() {
+            $('#sortToolImageArea').html("");
+            $.each(sortOrderArray, function (idx, obj) {
+                $('#sortToolImageArea').append("<div class='sortBox'><img class='sortBoxImage' src='" + obj.ImageSrc + "'/>" +
+                    "<br/><input class='sortBoxInput' id=" + obj.ItemId + " value=" + obj.SortOrder + "></input></div>");
+            });
+            $('#dashBoardLoadingGif').hide();
+            $('#dataifyInfo').hide();
+        }
+        // 2 22 2022
+        function saveSortOrder() {
+            try {
+                $('#dashBoardLoadingGif').show();
+                $('#dataifyInfo').show().html("saving changes");
+                let sStart = Date.now();
+
+                $.ajax({
+                    type: "POST",
+                    url: "php/saveSortChanges.php",
+                    data: { 'sortOrderArray': JSON.stringify(sortOrderArray) },
+                    cache: false,
+                    success: function (success) {
+                        $('#dataifyInfo').html(success);
+                        $('#dashBoardLoadingGif').hide();
+                        let delta = (Date.now() - sStart);
+                        if (delta < 150)
+                            $('#dataifyInfo').hide();
+                        else {
+                            $('#dataifyInfo').html("saving changes took: " + (delta / 1000).toFixed(3));
+                            $('#dataifyInfo').html(success);
+                        }
+                    },
+                    error: function (jqXHR) {
+                        let errMsg = getXHRErrorDetails(jqXHR);
+                        logError("AJX", $('#txtActiveFolderId').val(), errMsg, "showSortTool");
+                    }
+                });
+            } catch (e) {
+                logCatch("saveSortOrder", e);
+            }
+        }
+    }
+
+function showDefaultWorkArea() {
+    $('.fullScreenSection').hide();
+    $('#dashboardTopRow').show();
+    $('#dirTreeContainer').show();
+}
+
+function dashboardDialogBoxClose(calledFrom) {
+    //alert("dashboard DialogBox Close. calledFrom: " + calledFrom)
+    $('#dashboardDialogBox').hide();
+    $('#dashboardDialogContents').off();
+}
+
+function sqlSandbox() {
+    $('.fullScreenSection').hide();
+    $('#sqlSandboxSection').show();
+}
+
+function throwAnError() {
+    logError("TST", 11, "test error", "oggle dashboard");
+    //logLocalError("TST", 11, "test error", "oggle dashboard");
+}
+
+function logLocalError(errorCode, folderId, errorMessage, calledFrom) {
+
+    let visitorId = "xxx"; // getCookieValue("VisitorId", calledFrom + "/logError");
+    $.ajax({
+        type: "POST",
+        url: "php/addErrorLog.php",
+        data: {
+            ErrorCode: errorCode,
+            FolderId: folderId,
+            VisitorId: visitorId,
+            CalledFrom: calledFrom,
+            ErrorMessage: errorMessage
+        },
+        success: function (success) {
+            if (success == "!ok") {
+                console.log(success);
+                $('#rightSideWorkarea').append("<div style='color:red'>add image file error: " + success + "</div>");
+            }
+            else
+                $('#dataifyInfo').show().html(success);
+
+        },
+        error: function (jqXHR) {
+            let errMsg = getXHRErrorDetails(jqXHR);
+            alert("Error log error: " + errMsg);
+        }
+    });
+}
+
 function testConnection() {
-    alert("url: php/validateConnection.php")
+    alert("url: php/validateHITConnection.php")
     $.ajax({    //create an ajax request to display.php
         type: "GET",
-        url: "php/validateConnection.php",
+        url: "php/validateHITConnection.php",
         dataType: "html",   //expect html to be returned                
         success: function (response) {
             $("#dashboardContainer").html(response);
@@ -533,162 +910,9 @@ function testGetCatFolder() {
     $.ajax({
         type: "GET",
         url: "php/customQuery.php?query=select * from CategoryFolder where Id = 411",
-        dataType: "html",       
+        dataType: "html",
         success: function (response) {
             $("#outputArea").html(response);
         }
     });
-}
-
-// SORT FUNCTIONS
-{
-    let sortOrderArray = [];
-    function showSortTool() {
-        if (isNullorUndefined($('#txtActiveFolderId').val())) {
-            alert("select a folder");
-            return;
-        }
-        $('.fullScreenSection').hide();
-        $('#dashboardTopRow').hide();
-        $('#dirTreeContainer').hide();
-        $('#sortToolSection').show();
-        resizeDashboardPage();
-        $('#sortTableHeader').html(pSelectedTreeFolderPath.replace(".OGGLEBOOBLE.COM", "").replace("/Root/", "").replace(/%20/g, " ")
-            + "(" + $('#txtActiveFolderId').val() + ")");
-        $('#dashBoardLoadingGif').fadeIn();
-        var daInfoMessage = $('#dataifyInfo').html();
-        $('#dataifyInfo').append("loading sorted images");
-
-        //imgLinks.Links = db.VwLinks.Where(l => l.FolderId == folderId).OrderBy(l => l.SortOrder).ToList();
-        $.ajax({
-            url: "php/customQuery.php?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val() + " order by SortOrder",
-            success: function (imgLinks) {
-                $('#dashBoardLoadingGif').hide();
-                if (imgLinks.indexOf("error") > -1)
-                    $('#sortToolImageArea').html(imgLinks);
-                else {
-                    $('#sortToolImageArea').html("");
-                    let links = JSON.parse(imgLinks);
-                    sortOrderArray = [];
-                    $.each(links, function (ndx, obj) {
-                        $('#sortToolImageArea').append("<div class='sortBox'><img class='sortBoxImage' src='" +
-                            settingsImgRepo + obj.FileName + "'/>" +
-                            "<br/><input class='sortBoxInput' id=" + obj.LinkId + " value=" + obj.SortOrder + "></input></div>");
-                        sortOrderArray.push({
-                            FolderId: $('#txtActiveFolderId').val(),
-                            ItemId: obj.LinkId,
-                            ImageSrc: settingsImgRepo + obj.FileName,
-                            SortOrder: obj.SortOrder
-                        });
-                    });
-                    $('#dashBoardLoadingGif').hide();
-                    $('#dataifyInfo').html(daInfoMessage + " done");
-                }
-            },
-            error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                logError("AJX", $('#txtActiveFolderId').val(), errMsg, "showSortTool");
-            }
-        });
-    }
-
-    function updateSortOrder() {
-        $('#dashBoardLoadingGif').show();
-        $('#dataifyInfo').show().html("sorting array");
-        sortOrderArray = [];
-        $('#sortToolImageArea').children().each(function () {
-            sortOrderArray.push({
-                FolderId: $('#txtActiveFolderId').val(),
-                ItemId: $(this).find("input").attr("id"),
-                ImageSrc: $(this).find("img").attr("src"),
-                SortOrder: $(this).find("input").val()
-            });
-        });
-        sortOrderArray = sortOrderArray.sort(SortImageArray);
-        reloadSortTool();
-        //saveSortChanges(sortOrderArray, "sort");
-    }
-
-    function SortImageArray(a, b) {
-        var aSortOrder = Number(a.SortOrder);
-        var bSortOrder = Number(b.SortOrder);
-        return ((aSortOrder < bSortOrder) ? -1 : ((aSortOrder > bSortOrder) ? 1 : 0));
-    }
-
-    function autoIncrimentSortOrder() {
-        //if (confirm("reset all sort orders")) {
-        $('#dashBoardLoadingGif').show();
-        $('#dataifyInfo').show().html("auto incrimenting array");
-        sortOrderArray = [];
-        let autoI = 0;
-        $('#sortToolImageArea').children().each(function () {
-            sortOrderArray.push({
-                FolderId: $('#txtActiveFolderId').val(),
-                ItemId: $(this).find("input").attr("id"),
-                ImageSrc: $(this).find("img").attr("src"),
-                SortOrder: autoI += 2
-            });
-        });
-        reloadSortTool();
-        //saveSortChanges(sortOrderArray, "incrimenting");
-        //}
-    }
-
-    function reloadSortTool() {
-        $('#sortToolImageArea').html("");
-        $.each(sortOrderArray, function (idx, obj) {
-            $('#sortToolImageArea').append("<div class='sortBox'><img class='sortBoxImage' src='" + obj.ImageSrc + "'/>" +
-                "<br/><input class='sortBoxInput' id=" + obj.ItemId + " value=" + obj.SortOrder + "></input></div>");
-        });
-        $('#dashBoardLoadingGif').hide();
-        $('#dataifyInfo').hide();
-    }
-    // 2 22 2022
-    function saveSortOrder() {
-        try {
-            $('#dashBoardLoadingGif').show();
-            $('#dataifyInfo').show().html("saving changes");
-            let sStart = Date.now();
-
-            $.ajax({
-                type: "POST",
-                url: "php/saveSortChanges.php",
-                data: { 'sortOrderArray': JSON.stringify(sortOrderArray) },
-                cache: false,
-                success: function (success) {
-                    $('#dataifyInfo').html(success);
-                    $('#dashBoardLoadingGif').hide();
-                    let delta = (Date.now() - sStart);
-                    if (delta < 150)
-                        $('#dataifyInfo').hide();
-                    else {
-                        $('#dataifyInfo').html("saving changes took: " + (delta / 1000).toFixed(3));
-                        $('#dataifyInfo').html(success);
-                    }
-                },
-                error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    logError("AJX", $('#txtActiveFolderId').val(), errMsg, "showSortTool");
-                }
-            });
-        } catch (e) {
-            logCatch("saveSortOrder", e);
-        }
-    }
-}
-
-function showDefaultWorkArea() {
-    $('.fullScreenSection').hide();
-    $('#dashboardTopRow').show();
-    $('#dirTreeContainer').show();
-}
-
-function dashboardDialogBoxClose(calledFrom) {
-    //alert("dashboard DialogBox Close. calledFrom: " + calledFrom)
-    $('#dashboardDialogBox').hide();
-    $('#dashboardDialogContents').off();
-}
-
-function sqlSandbox() {
-    alert("SQL Sandbox");
 }

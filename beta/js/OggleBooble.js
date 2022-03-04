@@ -726,6 +726,10 @@ function giveMeThree(inVal) {
     }
     if (outVal > 999)
         outVal = Math.floor(inVal / 10);
+
+    if (outVal > 500)
+        outVal -= 200;
+
     return outVal;
 }
 
