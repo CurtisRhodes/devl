@@ -448,12 +448,11 @@ function carouselContextMenu() {
 }
 
 function imgErrorThrown() {
-
     if (lastErrorThrown != imageIndex) {
         lastErrorThrown = imageIndex;
         //alert($('#thisCarouselImage').attr('src') + " not found");
-        console.warn($('#thisCarouselImage').attr('src') + " not found");
-        logError("ILF", 11, $('#thisCarouselImage').attr('src') + " not found", "carousel");
+        console.warn(carouselRows[imageIndex].ImageFileName + " not found");
+        logError("ILF", 11, carouselRows[imageIndex].ImageFileName+ " not found", "carousel");
 
         $('#thisCarouselImage').attr('src', "https://common.ogglefiles.com/img/redBallonSmall.png");
         $('#thisCarouselImage').css('height', window.innerHeight * .5);

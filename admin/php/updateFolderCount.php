@@ -18,7 +18,7 @@
         $stmt= $pdo->prepare($sql);
         $stmt->execute();
 
-        $success="ok ".$fileCount;
+        $success="ok ".$fileCount.' $path: '.$path;
 
         $pdo = null;
     }

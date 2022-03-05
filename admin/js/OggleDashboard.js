@@ -116,41 +116,6 @@ function performCreateNewFolder() {
     }
 }
 
-function getFolderCountsTest() {
-    try {
-
-        let folderPath = $('#txtCurrentActiveFolder').val() + "/" + $('#txtNewFolderTitle').val();
-
-        $.ajax({
-            type: "GET",
-            url: "php/makeDirectory.php?folderPath=" + folderPath,
-            success: function (success) {
-
-                $('#dataifyInfo').html(success);
-                $('#dashBoardLoadingGif').hide();
-                return true;
-            },
-            error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-
-                alert("make directory: " + errMsg);
-
-                logError("AJX", $('#txtActiveFolderId').val(), errMsg, "make Directory");
-
-                return false;
-            }
-        });
-    } catch (e) {
-        $('#dashBoardLoadingGif').hide();
-        logCatch("make Directory", e);
-        return false;
-    }
-}
-
-
-
-
-
 // ADD NEW IMAGES
 function showImportDialog() {
     $('#dashboardDialogTitle').html("add new images");
@@ -219,7 +184,8 @@ function showFiles() {
     }
 }
 
-function updateFolderCount() {
+// FOLDER COUNTS
+function folderCountTest() {
     try {
         let folderId = $('#txtActiveFolderId').val();
         let path = "../../danni/" + $('#txtCurrentActiveFolder').val();
@@ -242,6 +208,33 @@ function updateFolderCount() {
         });
     } catch (e) {
         logCatch("update Folder Count", e);
+    }
+}
+function updateFolderCounts() {
+    try {
+        let rootPath = $('#txtCurrentActiveFolder').val().trim();
+        $.ajax({
+            type: "GET",
+            url: "php/getFolderCounts.php?rootId=" + $('#txtActiveFolderId').val() + "&rootPath=" + rootPath,
+            success: function (returnObject) {
+                $('#dashBoardLoadingGif').hide();
+                
+                if (returnObject[success] == "ok") {
+                    $('#dataifyInfo').html("ok foldersProcessed: " + returnObject[0].foldersProcessed + "  changesMade: " + returnObject[0].changesMade);
+                }
+                else {
+                    alert("get folder counts AJX: " + returnObject);
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                alert("get folder counts XHR: " + errMsg);
+                logError("XHR", $('#txtActiveFolderId').val(), errMsg, "get folder counts");
+            }
+        });
+    } catch (e) {
+        $('#dashBoardLoadingGif').hide();
+        logCatch("get folder counts", e);
     }
 }
 
