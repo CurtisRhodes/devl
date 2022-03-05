@@ -232,9 +232,9 @@ function setBreadcrumbs(folderId) {
     function showSlideshow() {
         try {
             if (islargeLoad)
-                window.location.href = "/Slideshow.html?parentfolderId=" + currentFolderId + "&=startLink" + currentImagelinkId;
+                window.location.href = "Slideshow.html?parentfolderId=" + currentFolderId + "&=startLink" + currentImagelinkId;
             else
-                window.location.href = "/Slideshow.html?folderId=" + currentFolderId + "&startLink=" + currentImagelinkId;
+                window.location.href = "Slideshow.html?folderId=" + currentFolderId + "&startLink=" + currentImagelinkId;
         } catch (e) {
             logCatch("showSlideshow", e);
         }

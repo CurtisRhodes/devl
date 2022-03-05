@@ -185,42 +185,17 @@ function showFiles() {
 }
 
 // FOLDER COUNTS
-function folderCountTest() {
-    try {
-        let folderId = $('#txtActiveFolderId').val();
-        let path = "../../danni/" + $('#txtCurrentActiveFolder').val();
-        $.ajax({
-            type: "GET",
-            url: "php/updateFolderCount.php?folderId=" + folderId + "&path=" + path,
-            success: function (success) {
-                if (success.trim().startsWith("ok")) {
-                    $('#dataifyInfo').show().html("Folder Count for " + $('#txtCurrentActiveFolder').val() + " updated to: " + success);
-                    displayStatusMessage("ok", "Folder Count for " + $('#txtCurrentActiveFolder').val() + " updated to: " + success);
-                }
-                else {
-                    logError("AJX", folderId, success, "update Folder Count");
-                }
-            },
-            error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                alert("update Folder Count: " + errMsg);
-            }
-        });
-    } catch (e) {
-        logCatch("update Folder Count", e);
-    }
-}
 function updateFolderCounts() {
     try {
         let rootPath = $('#txtCurrentActiveFolder').val().trim();
         $.ajax({
             type: "GET",
             url: "php/getFolderCounts.php?rootId=" + $('#txtActiveFolderId').val() + "&rootPath=" + rootPath,
-            success: function (returnObject) {
+            success: function (data) {
                 $('#dashBoardLoadingGif').hide();
-                
-                if (returnObject[success] == "ok") {
-                    $('#dataifyInfo').html("ok foldersProcessed: " + returnObject[0].foldersProcessed + "  changesMade: " + returnObject[0].changesMade);
+                let returnObject = JSON.parse(data);
+                if (returnObject[0] == "ok") {
+                    $('#dataifyInfo').html("ok foldersProcessed: " + returnObject[1] + "  changesMade: " + returnObject[2]);
                 }
                 else {
                     alert("get folder counts AJX: " + returnObject);
@@ -975,5 +950,30 @@ function makeDirectoryTest() {
         $('#dashBoardLoadingGif').hide();
         logCatch("make Directory", e);
         return false;
+    }
+}
+function folderCountTest() {
+    try {
+        let folderId = $('#txtActiveFolderId').val();
+        let path = "../../danni/" + $('#txtCurrentActiveFolder').val();
+        $.ajax({
+            type: "GET",
+            url: "php/updateFolderCount.php?folderId=" + folderId + "&path=" + path,
+            success: function (success) {
+                if (success.trim().startsWith("ok")) {
+                    $('#dataifyInfo').show().html("Folder Count for " + $('#txtCurrentActiveFolder').val() + " updated to: " + success);
+                    displayStatusMessage("ok", "Folder Count for " + $('#txtCurrentActiveFolder').val() + " updated to: " + success);
+                }
+                else {
+                    logError("AJX", folderId, success, "update Folder Count");
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                alert("update Folder Count: " + errMsg);
+            }
+        });
+    } catch (e) {
+        logCatch("update Folder Count", e);
     }
 }
