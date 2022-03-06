@@ -21,15 +21,12 @@ function startSlideShow(folderId, startLink, largeLoad) {
 
     displayFooter("slideshow");
     $('#galleryContentArea').fadeOut();
-    $('#slideshowContent').fadeIn();
-
-    slideShowButtonsActive = true;
+    $('#slideshowContent').show().fadeIn();
     spSessionCount = 0;
     if (islargeLoad)
-        loadParentSlideshowItems()
+        loadParentSlideshowItems();
     else
         loadSlideshowItems(folderId, startLink);
-    getFolderDetails();
 }
 
 function loadSlideshowItems(folderId, startLink) {
@@ -45,19 +42,7 @@ function loadSlideshowItems(folderId, startLink) {
                 }
                 else {
                     imageArray = JSON.parse(data);
-
-                    imageViewerIndex = imageArray.findIndex(node => node.LinkId == startLink);
-                    let testal = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
-                    console.log("testal: " + testal);
-
-                    $('#viewerImage').attr("src", slideShowImgRepo + imageArray[imageViewerIndex].FileName);
-                    $('#viewerImage').show();
-                    $('#headerMessage').html(imageViewerIndex + " / " + imageArray.length);
-                    resizeSlideshow();
-                    setTimeout(function () {
-                        runSlideShow("start")
-                    }, 1000);
-
+                    initialExplode(startLink);
                 }
             },
             error: function (jqXHR) {
@@ -73,17 +58,30 @@ function loadSlideshowItems(folderId, startLink) {
     }
 }
 
+function initialExplode(startLink) {
+    imageViewerIndex = imageArray.findIndex(node => node.LinkId == startLink);
+    $('#viewerImage').attr("src", slideShowImgRepo + imageArray[imageViewerIndex].FileName);
+    $('#viewerImage').show();
+    getFolderDetails();
+    imageViewerIntervalTimer = setInterval(function () {
+        slide('next');
+    }, slideShowSpeed);
+    spSlideShowRunning = true;
+    slideShowButtonsActive = true;
+}
+
 function getFolderDetails() {
     $.ajax({
-        url: 'php/customQuery.php?query=select * from CategoryFolder where Id=' + albumFolderId,
+        url: 'php/customQuery.php?query=select f.FolderName, p.FolderName as ParentName ' +
+            ' from CategoryFolder f join CategoryFolder p on f.Parent = p.Id where f.Id=' + albumFolderId,
         success: function (data) {
             if (data.substring(20).indexOf("error") > 0) {
-                $('#blogListArea').html(data);
+                alert(data);
             }
             else {
                 let thisCatFolder = JSON.parse(data)[0];
-                imageViewerFolderName = thisCatFolder.FolderName;
-                $('#breadcrumbContainer').html(imageViewerFolderName);
+                $('#breadcrumbContainer').html("<span sytle='font-size:19px'>" + thisCatFolder.ParentName +
+                    "/" + thisCatFolder.FolderName + "</span>");
             }
         },
         error: function (jqXHR) {
@@ -271,6 +269,7 @@ function slide(direction) {
             tempImgSrc.src = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
             spSessionCount++;
             $('#footerMessage').html("image: " + imageViewerIndex + " of: " + imageArray.length);
+            //$('#headerMessage').html(imageViewerIndex + " / " + imageArray.length);
 
             //    if (typeof logImageHit === 'function')
             //        logImageHit(imageArray[imageViewerIndex].LinkId, albumFolderId, false);
@@ -287,7 +286,7 @@ $(document).keydown(function (event) {
     if (slideShowButtonsActive) {
         switch (event.which) {
             case 27:                        // esc
-                closeViewer("escape key");
+                closeSlideShow("escape key");
                 break;
             //case 38: scrollTabStrip('foward'); break;
             //case 33: scrollTabStrip('foward'); break;
@@ -324,7 +323,13 @@ function slideshowContextMenu() {
         imageViewerArray[imageViewerIndex].FolderName);
 }
 
-function closeViewer() {
-    window.location.href = "/album.html?folder=" + albumFolderId;
+function closeSlideShow() {
+    //window.location.href = "/album.html?folder=" + albumFolderId;
+    //displayFooter("slideshow");
+    $('#slideshowContent').fadeOut();
+    $('#galleryContentArea').fadeIn();
 }
 
+function resizeSlideshow() {
+
+}

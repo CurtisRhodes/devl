@@ -232,12 +232,12 @@ function setBreadcrumbs(folderId) {
         }
     }
 
-    function incrementImplode(divObject) {
+    function incrementImplodeViewer(divObject) {
         let viewerH = divObject.height();
         if (viewerH > 0) {
             setTimeout(function () {
                 divObject.css("height", viewerH - heightIncrement);
-                incrementImplode(divObject);
+                incrementImplodeViewer(divObject);
             }, explodeSpeed);
         }
         else {
@@ -250,9 +250,7 @@ function setBreadcrumbs(folderId) {
     }
 
     function closeImageViewer() {
-        incrementImplode($("#viewerImage")).done(function () {
-            alert("done");
-        });
+        incrementImplodeViewer($("#viewerImage"));
     }
 
     function resizeViewer() {
@@ -268,7 +266,12 @@ function setBreadcrumbs(folderId) {
     /*-- slideshow needs variables passed to viewer  -------------------*/
     function showSlideshow() {
         try {
-            startSlideShow(folderId, startLink, islargeLoad);
+            $("#vailShell").hide();
+            closeImageViewer();
+            setTimeout(function () {
+                $('#singleImageOuterContainer').hide();
+                startSlideShow(currentFolderId, currentImagelinkId, islargeLoad)
+            }, 1100);
         } catch (e) {
             logCatch("showSlideshow", e);
         }
