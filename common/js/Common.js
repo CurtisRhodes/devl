@@ -183,7 +183,7 @@ function logError(errorCode, folderId, errorMessage, calledFrom) {
     let visitorId = getCookieValue("VisitorId", calledFrom + "/logError");
     $.ajax({
         type: "POST",
-        url: "php/addErrorLog.php",
+        url: 'https://common.ogglefiles.com/php/addErrorLog.php',
         data: {
             ErrorCode: errorCode,
             FolderId: folderId,
@@ -383,7 +383,7 @@ function displayHeader(headerContext) {
             $('#fancyHeaderTitle').html("OggleBooble");
             $('#topHeaderRow').html("Slideshow");
             break;
-        case "oggleGallery":
+        case "oggleAlbum":
             $('#fancyHeaderTitle').html("OggleBooble");
             $('#topRowRightContainer').append(bannerLink("every playboy centerfold", 3908));
             $('#hdrBtmRowSec3').append(bannerLink("Oggle Porn", 242));
@@ -471,7 +471,7 @@ function displayHeader(headerContext) {
 function setTopHeaderRow(headerContext) {
     switch (headerContext) {
         case "oggleIndex":
-        case "oggleGallery": {
+        case "oggleAlbum": {
             $('#topHeaderRow').html(
                 "<span class='bigTits' onclick='headerMenuClick(\"boobs\",3)'>BIG Naturals</span></a > organized by\n" +
                 "<span onclick='headerMenuClick(\"boobs\",3916)'>poses, </span>\n" +
@@ -796,7 +796,7 @@ function displayFooter(footerContext) {
     try {
         $('footer').html(footerHtml());
         switch (footerContext) {
-            case "boobs":
+            case "oggleAlbum":
             case "gallery":
             case "slideshow":
                 $('#footerCol2').append(`

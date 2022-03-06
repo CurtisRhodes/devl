@@ -187,6 +187,8 @@ function showFiles() {
 // FOLDER COUNTS
 function updateFolderCounts() {
     try {
+        let sStart = Date.now();
+        $('#dashBoardLoadingGif').show();
         let rootPath = $('#txtCurrentActiveFolder').val().trim();
         $.ajax({
             type: "GET",
@@ -195,13 +197,19 @@ function updateFolderCounts() {
                 $('#dashBoardLoadingGif').hide();
                 let returnObject = JSON.parse(data);
                 if (returnObject[0] == "ok") {
-                    $('#dataifyInfo').html("ok foldersProcessed: " + returnObject[1] + "  changesMade: " + returnObject[2]);
+                    // $returnObject = ['ok', $ChangesMade, $FoldersProcessed, $TestChangesMade];
+
+                    $('#dataifyInfo').html("ok.  folders processed: " + returnObject[1] + "  changes made: " + returnObject[2] + "null changes: " + returnObject[3]).show();
+                    let delta = (Date.now() - sStart);
+                    if (delta > 150)
+                        $('#dataifyInfo').append("  .Took: " + (delta / 1000).toFixed(3));
                 }
                 else {
                     alert("get folder counts AJX: " + returnObject);
                 }
             },
             error: function (jqXHR) {
+                $('#dashBoardLoadingGif').hide();
                 let errMsg = getXHRErrorDetails(jqXHR);
                 alert("get folder counts XHR: " + errMsg);
                 logError("XHR", $('#txtActiveFolderId').val(), errMsg, "get folder counts");
@@ -215,7 +223,7 @@ function updateFolderCounts() {
 
 // REPAIR FUNCTIONS
 {
-    let recurr = false, addNew = false;
+    let recurr, addNew, startTime, physcialFilesProcessed, imageFilesProcessed, imageFilesAdded;
     function showRepairDialog() {
         $('#dashboardDialogBoxTitle').html("Repair Links");
         $('#dashboardDialogContents').html(`
@@ -240,13 +248,11 @@ function updateFolderCounts() {
         $('#dashboardDialogBox').draggable().fadeIn();
     }
 
-    let startTime;
-    let physcialFilesProcessed = 0;
-    let imageFilesProcessed = 0;
-    let imageFilesAdded = 0;
-
     function performRepairLinks() {
         startTime = Date.now();
+        physcialFilesProcessed = 0;
+        imageFilesProcessed = 0;
+        imageFilesAdded = 0;
         recurr = $("#ckRepairIncludeSubfolders").is(":checked");
         addNew = $("#ckAddNewImages").is(":checked");
         let rootFolderId = $('#txtActiveFolderId').val();
@@ -309,6 +315,7 @@ function updateFolderCounts() {
                                                     "Orphan physcial file. Missing ImageFile: " + objPhyscialimageFileRow.name + "</div>");
                                             }
                                         }
+
                                         $('#dcPhyscialFilesProcessed').html("<div>Physcial Files Processed: " +
                                             (++physcialFilesProcessed).toLocaleString() + "</div>");
                                     });
@@ -324,10 +331,10 @@ function updateFolderCounts() {
                                             }
                                             $('#dashboardFileList').append("<div>Orphan ImageFile row: " + objDataTableRow.FileName + "</div>");
                                         }
+
                                         $('#dcImageRowsProcessed').html("<div>Image Files Processed: " +
                                             (++imageFilesProcessed).toLocaleString() + "</div>");
                                     });
-
                                     if (recurr) {
                                         $.each(physcialDirectories, function (idx, obj) {
                                             repairImagesRecurr(obj.folderId, recurr, addNew)

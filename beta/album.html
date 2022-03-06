@@ -12,10 +12,9 @@
     <script src="js/OggleBooble.js"></script>
     <script src="js/AlbumPage.js"></script>
     <script src="js/Slideshow.js"></script>
-    <!--<script src="js/Slideshow.js"></script>-->
 
     <link href="https://common.ogglefiles.com/css/Common.css" rel="stylesheet" />
-    <link href="css/GalleryPage.css" rel="stylesheet" />
+    <link href="css/AlbumPage.css" rel="stylesheet" />
     <link href="css/Slideshow.css" rel="stylesheet" />
 </head>
     <body>
@@ -28,9 +27,9 @@
             </div>
             <div class="middleColumn">
                 <div id="divStatusMessage"></div>
-                <img id="galleryPageLoadingGif" alt='loading' src="https://common.ogglefiles.com/img/loader.gif" />
-                <div id="galleryContentArea">
-                    <div id="galleryTopRow" class="aboveImageContainerDiv">
+                <img id="albumPageLoadingGif" alt='loading' src="https://common.ogglefiles.com/img/loader.gif" />
+                <div id="AlbumContentArea">
+                    <div id="AlbumTopRow" class="aboveImageContainerDiv">
                         <div id='seoPageName' class="albumPageMetaTitle"></div>
                         <div id="aboveImageContainerMessageArea" class="flexboxMiddleSection"></div>
                         <div id="largeLoadButton" class='albumMsgLink'
@@ -38,9 +37,9 @@
                              onclick='launchLargeLoad();'>load all folders</div>
                         <div id="deepSlideshowButton" class='albumMsgLink'
                              title='album page with all child folder images'
-                             onclick='launchDeepSlideShow();'>gallery slideshow</div>
+                             onclick='launchDeepSlideShow();'>Album slideshow</div>
                     </div>
-                    <div id="imageContainer" class="galleryContainer"></div>
+                    <div id="imageContainer" class="AlbumContainer"></div>
                     <div id="singleImageOuterContainer" class="explodingImageContainer">
                         <div id="singleImageInnerContainer" class="explodingInnerContainer">
                             <div id="divSlideshowButton" class="slideshowButton" onclick="showSlideshow()">slideshow</div>
@@ -49,8 +48,7 @@
                                  src="https://common.ogglefiles.com/img/close.png" onclick="closeImageViewer()" />
                         </div>
                     </div>
-                    <div id="slideShowContainer" class="fullScreenViewer"></div>
-                    <div id="galleryBottomfileCount" class="countContainer"></div>
+                    <div id="AlbumBottomfileCount" class="countContainer"></div>
                     <div id="trackbackContainer" class="trackbackLinkContainer">
                         <div>trackback links</div>
                         <div id="trackbackLinkArea" class="trackbackArea">
@@ -73,7 +71,7 @@
                         <div class='centeringInnerShell'>
                             <div id='viewerImageContainer' class='flexContainer'>
                                 <div class='slideshowNavgArrows'><img src='img/leftArrowOpaque02.png' /></div>
-                                <img id='viewerImage' class='slideshowImage' />
+                                <img id='slideshowImage' class='slideshowImage' />
                                 <div class='slideshowNavgArrows'><img src='img/rightArrowOpaque02.png' /></div>
                             </div>
                         </div>
@@ -94,7 +92,7 @@
 
         <script>
             $(document).ready(function () {
-                let pageContext = "gallery";
+                let pageContext = "oggleAlbum";
                 let pageName = "oggleIndex";
                 let params = getParams();
                 let islargeLoad = false;
@@ -117,21 +115,24 @@
 
                 loadAlbumPage(albumParamFolderId, islargeLoad);
 
-                window.addEventListener("resize", callResizeGalleryPage);
-                resizeGalleryPage();
+                window.addEventListener("resize", callResizeAlbumPage);
+                resizeAlbumPage();
             });
 
-            function callResizeGalleryPage() {
-                resizeGalleryPage();
+            function callResizeAlbumPage() {
+                resizeAlbumPage();
             }
 
-            function resizeGalleryPage() {
-                let visAreaH = $(window).height() - $('header').height();
+            function resizeAlbumPage() {
+                let dinky = 50;
+                let visAreaH = ($(window).height() - $('header').height()) - dinky;
                 $('#visableArea').css('height', visAreaH);
                 $('#imageContainer').css('max-height', visAreaH - 52);
                 $('footer').css('width', $(window).width());
-                if (typeof resizeViewer === 'function')
+                if (typeof resizeViewer == 'function')
                     resizeViewer();
+                if (typeof resizeSlideshow == 'function')
+                    resizeSlideshow();
             }
         </script>
     </body>

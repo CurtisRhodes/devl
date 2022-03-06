@@ -6,21 +6,21 @@ function loadAlbumPage(folderId, largeLoad) {
     if (islargeLoad)
         getMultipleAlbumImages(folderId)
     else {
-        $('#galleryPageLoadingGif').css("height", "11px");
 
-        getGalleryImages(folderId);
+        $('#albumPageLoadingGif').css("height", "17px");
+        getAlbumImages(folderId);
         getSubFolders(folderId);
-        getGalleryPageInfo(folderId);
+        getAlbumPageInfo(folderId);
     }
     $('#galleryContentArea').fadeIn();
 }
 
 /*-- php -----------------------------------*/
-function getGalleryImages(folderId) {
+function getAlbumImages(folderId) {
     try {
-        $('#galleryPageLoadingGif').show();
+        $('#albumPageLoadingGif').show();
         $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' + folderId+' order by SortOrder', function (data) {
-            $('#galleryPageLoadingGif').hide();
+            $('#albumPageLoadingGif').hide();
             $.each(data, function (idx, vLink) {
                 let imgSrc = 'https://common.ogglefiles.com/img/redballon.png';
                 if (!isNullorUndefined(vLink.FileName))
@@ -32,19 +32,19 @@ function getGalleryImages(folderId) {
                     "oncontextmenu='albumContextMenu(\"Image\",\"" + vLink.LinkId + "\"," + folderId + ",\"" + imgSrc + "\")'" +
                     "onclick='viewImage(\"" + imgSrc + "\",\"" + vLink.LinkId + "\")'/></div>");
             });
-            resizeGalleryPage();
+            resizeAlbumPage();
         });
     } catch (e) {
-        logCatch("getGalleryImages", e);
+        logCatch("getAlbumImages", e);
     }
 }
 
 function getSubFolders(folderId) {
     try {
-        $('#galleryPageLoadingGif').show();
+        $('#albumPageLoadingGif').show();
         $.getJSON("php/customQuery.php?query=select * from VwDirTree where Parent=" + folderId +
             " order by SortOrder,FolderName", function (data) {
-                $('#galleryPageLoadingGif').hide();
+                $('#albumPageLoadingGif').hide();
             $.each(data, function (index, obj) {
                 let linkId = create_UUID();
                 let folderCounts = "(" + obj.FileCount.toLocaleString() + ")";
@@ -67,15 +67,15 @@ function getSubFolders(folderId) {
                         "<div class='defaultSubFolderImage'>" + obj.FolderName + "</div>\n" +
                     "<span Id='fc" + obj.FolderId + "'>" + folderCounts + "</span></div>");
             });
-                resizeGalleryPage();
+                resizeAlbumPage();
             });
     } catch (e) {
-        $('#galleryPageLoadingGif').hide();
+        $('#albumPageLoadingGif').hide();
         logCatch("getSubFolders", e);
     }
 }
 
-function getGalleryPageInfo(folderId) {
+function getAlbumPageInfo(folderId) {
     try {
         let infoStart = Date.now();
         $('#galleryTopRow').show();
@@ -119,14 +119,14 @@ function getGalleryPageInfo(folderId) {
             },
             error: function (jqXHR) {
                 let errMsg = getXHRErrorDetails(jqXHR);
-                alert("getGalleryPageInfo: " + errMsg);
+                alert("getAlbumPageInfo: " + errMsg);
                 //if (!checkFor404(errMsg, folderId, "chargeCredits")) logError("XHR", folderId, errMsg, "chargeCredits");
             }
         });
         let delta = (Date.now() - infoStart) / 1000;
         console.log("getGalleyInfo took: " + delta.toFixed(3));
     } catch (e) {
-        logCatch("getGalleryPageInfo", e);
+        logCatch("getAlbumPageInfo", e);
     }
 }
 
@@ -232,12 +232,12 @@ function setBreadcrumbs(folderId) {
         }
     }
 
-    function incrementImplode(divObject) {
+    function incrementImplodeViewer(divObject) {
         let viewerH = divObject.height();
         if (viewerH > 0) {
             setTimeout(function () {
                 divObject.css("height", viewerH - heightIncrement);
-                incrementImplode(divObject);
+                incrementImplodeViewer(divObject);
             }, explodeSpeed);
         }
         else {
@@ -250,9 +250,7 @@ function setBreadcrumbs(folderId) {
     }
 
     function closeImageViewer() {
-        incrementImplode($("#viewerImage")).done(function () {
-            alert("done");
-        });
+        incrementImplodeViewer($("#viewerImage"));
     }
 
     function resizeViewer() {
@@ -268,7 +266,12 @@ function setBreadcrumbs(folderId) {
     /*-- slideshow needs variables passed to viewer  -------------------*/
     function showSlideshow() {
         try {
-            startSlideShow(folderId, startLink, islargeLoad);
+            $("#vailShell").hide();
+            closeImageViewer();
+            setTimeout(function () {
+                $('#singleImageOuterContainer').hide();
+                startSlideShow(currentFolderId, currentImagelinkId, islargeLoad)
+            }, 1100);
         } catch (e) {
             logCatch("showSlideshow", e);
         }
