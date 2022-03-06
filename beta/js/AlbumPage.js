@@ -1,14 +1,18 @@
-
+let currentFolderId, currentImagelinkId;
 function loadAlbumPage(folderId, largeLoad) {
+
     islargeLoad = largeLoad;
     currentFolderId = folderId;
     if (islargeLoad)
         getMultipleAlbumImages(folderId)
     else {
+        $('#galleryPageLoadingGif').css("height", "11px");
+
         getGalleryImages(folderId);
         getSubFolders(folderId);
         getGalleryPageInfo(folderId);
     }
+    $('#galleryContentArea').fadeIn();
 }
 
 /*-- php -----------------------------------*/
@@ -18,7 +22,7 @@ function getGalleryImages(folderId) {
         $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' + folderId+' order by SortOrder', function (data) {
             $('#galleryPageLoadingGif').hide();
             $.each(data, function (idx, vLink) {
-                let imgSrc = 'https://common.ogglefiles.com/img/redballonSmall.png';
+                let imgSrc = 'https://common.ogglefiles.com/img/redballon.png';
                 if (!isNullorUndefined(vLink.FileName))
                     imgSrc = settingsImgRepo + "/" + vLink.FileName.replace(/'/g, '%27');
 
@@ -129,7 +133,7 @@ function getGalleryPageInfo(folderId) {
 function getMultipleAlbumImages(parentId) { }
 
 function addBreadcrumb(folderId, folderName, className) {
-    return "<div class='" + className + "' onclick='window.location.href=\"https://ogglefiles.com/beta/Gallery.html?album=" + folderId + "\"'>" + folderName + "</div>";
+    return "<div class='" + className + "' onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + folderId + "\"'>" + folderName + "</div>";
 }
 
 function setBreadcrumbs(folderId) {
@@ -182,81 +186,103 @@ function setBreadcrumbs(folderId) {
 
 /*-- exploding image view -------------------*/
 {
-    let explodeSpeed = 22,
-        heightIncrease = 22,
-        visAreaH, viewerH,
-        laps = 0,
-        currentImagelinkId;
+    const viewerOffsetTop = -44, explodeSpeed = 22, heightIncrement = 22;
+    let visAreaH, viewerH, laps = 0;
 
     function viewImage(imgSrc, linkId) {
         currentImagelinkId = linkId;
+        visAreaH = $(window).height() - $('header').height();
+        viewerH = 50;
+        let parentPos = $('#visableArea').offset();
+        let startLeft = $('#visableArea').width() * .34;
+
+        $("#singleImageOuterContainer").css({ height: viewerH, top: parentPos.top + viewerOffsetTop, left: parentPos.left + startLeft });
+        $("#viewerImage").css("height", viewerH);
+        $("#vailShell").show().on("click", function () { closeImageViewer() });
         $('#viewerImage').attr("src", imgSrc);
         $('#singleImageOuterContainer').show();
-        viewerH = 50;
-        visAreaH = $('#visableArea').height() - 22;
-        let parentPos = $('#visableArea').offset();
-        $("#singleImageOuterContainer").css({ top: parentPos.top, left: parentPos.left + 200 });
-        $("#viewerImage").css("height", 50);
-        //$("#viewerImage").css("width", "auto");
-
-        // $("#hdrBtmRowSec3").html("visAreaH" + visAreaH + "  viewerH: " + viewerH);
         incrementExplode();
-        $("#vailShell").show();
 
         $('body').keydown(function (event) {
-            if (event.keyCode === 27) {
+            if (event.keyCode === 27)
                 closeImageViewer();
-            }
         });
-
     }
 
     function incrementExplode() {
-        // $("#hdrBtmRowSec3").html("visableArea height: " + visAreaH + "  viewerImage height: " + viewerH + " lap: " + laps);
-        if (viewerH + 5 < visAreaH) {
+        if (viewerH + viewerOffsetTop < visAreaH) {
             setTimeout(function () {
-                viewerH += heightIncrease;
+                viewerH += heightIncrement;
                 laps++;
                 $("#viewerImage").css("height", viewerH);
+
+                let imgleft = $("#singleImageOuterContainer").css("left");
+
+                $("#singleImageOuterContainer").css("left", imgleft - (heightIncrement / 2));
                 incrementExplode();
             }, explodeSpeed);
         }
         else {
-            $("#singleImageOuterContainer").css("height", visAreaH);
-            $("#divShowSlideshow").show();
+            $("#viewerImage").css("height", visAreaH - viewerOffsetTop);
+            $("#divSlideshowButton").show();
             $("#viewerCloseButton").show();
+            let visWidth = $('#visableArea').width();
+            let imgWidth = $('#viewerImage').width();
+            $("#singleImageOuterContainer").css("left", (visWidth / 2) - (imgWidth / 2));
         }
     }
 
-    /*-- show slideshow -------------------*/
+    function incrementImplode(divObject) {
+        let viewerH = divObject.height();
+        if (viewerH > 0) {
+            setTimeout(function () {
+                divObject.css("height", viewerH - heightIncrement);
+                incrementImplode(divObject);
+            }, explodeSpeed);
+        }
+        else {
+            $('#singleImageOuterContainer').hide();
+            $("#divSlideshowButton").hide();
+            $("#viewerCloseButton").hide();
+            $("#vailShell").hide();
+            $('body').off();
+        }
+    }
+
+    function closeImageViewer() {
+        incrementImplode($("#viewerImage")).done(function () {
+            alert("done");
+        });
+    }
+
+    function resizeViewer() {
+        if ($('#singleImageOuterContainer').is(":visible")) {
+            $("#viewerImage").css("height", visAreaH - viewerOffsetTop);
+            $("#singleImageOuterContainer").css("height", visAreaH - viewerOffsetTop);
+            let visWidth = $('#visableArea').width();
+            let imgWidth = $('#viewerImage').width();
+            $("#singleImageOuterContainer").css("left", (visWidth / 2) - (imgWidth / 2));
+        }
+    }
+
+    /*-- slideshow needs variables passed to viewer  -------------------*/
     function showSlideshow() {
         try {
-            if (islargeLoad)
-                window.location.href = "Slideshow.html?parentfolderId=" + currentFolderId + "&=startLink" + currentImagelinkId;
-            else
-                window.location.href = "Slideshow.html?folderId=" + currentFolderId + "&startLink=" + currentImagelinkId;
+            startSlideShow(folderId, startLink, islargeLoad);
         } catch (e) {
             logCatch("showSlideshow", e);
         }
     }
 }
 
-function closeImageViewer() {
-    $('#singleImageOuterContainer').hide();
-    $("#divShowSlideshow").hide();
-    $("#viewerCloseButton").hide();
-    $("#vailShell").hide();
-    $('body').off();
-}
-
 /*---------------------*/
 function folderClick(folderId, isStepChild) {
     try {
         if (isStepChild == 1)
-            window.open("https://ogglefiles.com/beta/Gallery.html?album=" + folderId, "_blank");  // open in new tab
+            window.open("https://ogglefiles.com/beta/album.html?folder=" + folderId, "_blank");  // open in new tab
         else {
             // report event pare hit
-            window.location.href = "https://ogglefiles.com/beta/Gallery.html?album=" + folderId;  //  open page in same window
+            window.location.href = "https://ogglefiles.com/beta/album.html?folder=" + folderId;  //  open page in same window
         }
         //" onclick='rtpe(\"SUB\",\"called from: " + folderId + "\",\"" + folder.DirectoryName + "\"," + folder.FolderId + ")'>\n" +
     } catch (e) {

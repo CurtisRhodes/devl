@@ -1,8 +1,16 @@
-let slideShowImgRepo = 'https://ogglefiles.com/danni/';
-let imageArray, imageViewerIndex = 0, albumFolderId = 0, spSessionCount = 0, slideShowSpeed = 5000,
-    slideshowImgSrc = new Image(), tempImgSrc = new Image(),
-    slideShowButtonsActive = false, islargeLoad = false, spSlideShowRunning, imageViewerIntervalTimer,
-    imageViewerFolderName = "imageViewerFolderName";
+const slideShowImgRepo = 'https://ogglefiles.com/danni/';
+const slideShowSpeed = 5000;
+
+let imageArray, imageViewerIndex = 0,
+    albumFolderId = 0,
+    spSessionCount = 0,
+    slideshowImgSrc = new Image(),
+    tempImgSrc = new Image(),
+    slideShowButtonsActive = false,
+    islargeLoad = false, spSlideShowRunning, imageViewerIntervalTimer,
+    imageViewerFolderName;
+
+
 /*
     ssVisitorId;
 */
@@ -10,13 +18,18 @@ let imageArray, imageViewerIndex = 0, albumFolderId = 0, spSessionCount = 0, sli
 function startSlideShow(folderId, startLink, largeLoad) {
     islargeLoad = largeLoad;
     albumFolderId = folderId;
+
+    displayFooter("slideshow");
+    $('#galleryContentArea').fadeOut();
+    $('#slideshowContent').fadeIn();
+
     slideShowButtonsActive = true;
     spSessionCount = 0;
     if (islargeLoad)
         loadParentSlideshowItems()
     else
         loadSlideshowItems(folderId, startLink);
-    getFolderDetails(folderId);
+    getFolderDetails();
 }
 
 function loadSlideshowItems(folderId, startLink) {
@@ -60,9 +73,9 @@ function loadSlideshowItems(folderId, startLink) {
     }
 }
 
-function getFolderDetails(folderId) {
+function getFolderDetails() {
     $.ajax({
-        url: 'php/customQuery.php?query=select * from CategoryFolder where Id=' + folderId,
+        url: 'php/customQuery.php?query=select * from CategoryFolder where Id=' + albumFolderId,
         success: function (data) {
             if (data.substring(20).indexOf("error") > 0) {
                 $('#blogListArea').html(data);
@@ -98,18 +111,20 @@ function runSlideShow(action) {
             if (spSlideShowRunning)
                 slide('next');
             else {
-
+                // here is where we really start the slideshow
                 imageViewerIntervalTimer = setInterval(function () {
                     slide('next');
                 }, slideShowSpeed);
-
                 spSlideShowRunning = true;
             }
         }
     }
     if (action === 'stop') {
-        $('#txtStartSlideShow').html("start slideshow");
-        spSlideShowRunning = false;
+        if (spSlideShowRunning) {
+            $('#txtStartSlideShow').html("start slideshow");
+            clearInterval(imageViewerIntervalTimer);
+            spSlideShowRunning = false;
+        }
         return;
     }
     if (action === 'pause') {
@@ -127,15 +142,18 @@ function runSlideShow(action) {
             }, slideShowSpeed);
         }
     }
-    //if (slideShowSpeed === 0) {
-    //    slideShowSpeed = 5000;
-    //}
-    //if (action === "faster") {
-    //    slideShowSpeed -= 1000;
-    //}
-    //if (action === "slower") {
-    //    slideShowSpeed += 1000;
-    //}
+}
+
+function adjustSlideshowSpeed(action) {
+    if (slideShowSpeed === 0) {
+        slideShowSpeed = 5000;
+    }
+    if (action === "faster") {
+        slideShowSpeed -= 1000;
+    }
+    if (action === "slower") {
+        slideShowSpeed += 1000;
+    }
     //if (slideShowSpeed <= 0) {
     //    $('#showSlideshow').attr("Title", "start slideshow");
     //    slideShowRunning = false;
@@ -143,6 +161,7 @@ function runSlideShow(action) {
     //}
     //$('#fasterSlideshow').attr("Title", "slideshow " + 10 - (slideShowSpeed / 1000) + "x");
     //$('#slowerSlideShow').attr("Title", "slideshow " + 10 - (slideShowSpeed / 1000) + "x");
+
 }
 
 function slideClick(direction) {
@@ -306,6 +325,6 @@ function slideshowContextMenu() {
 }
 
 function closeViewer() {
-    window.location.href = "/Gallery.html?album=" + albumFolderId;
+    window.location.href = "/album.html?folder=" + albumFolderId;
 }
 

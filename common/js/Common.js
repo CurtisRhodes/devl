@@ -236,15 +236,15 @@ function rtpe(labelText, calledFromFolderId) {
                 break;
             case "Gent Archive":
                 eventCode = "GNT";
-                window.location.href = "/Gallery.html?album=846";
+                window.location.href = "/album.html?folder=846";
                 break;
             case "Bond Girls":
                 eventCode = "BND";
-                window.location.href = "/Gallery.html?album=10326";
+                window.location.href = "/album.html?folder=10326";
                 break;
             case "Oggle Porn":
                 eventCode = "PRN";
-                window.location.href = "/Gallery.html?album=242";
+                window.location.href = "/album.html?folder=242";
                 break;
             case "softcore":
                 eventCode = "SFT";
@@ -623,7 +623,7 @@ function showResizeMessage(lasttopRowOption, lastBottomRowOption) {
 function headerMenuClick(calledFrom, folderId) {
     //alert("headerMenuClick folderId: " + folderId);
     //logEvent("TMC", folderId, calledFrom);
-    location.href = "Gallery.html?album=" + folderId;
+    location.href = "album.html?folder=" + folderId;
 }
 
 function topLogoClick() {
@@ -798,6 +798,7 @@ function displayFooter(footerContext) {
         switch (footerContext) {
             case "boobs":
             case "gallery":
+            case "slideshow":
                 $('#footerCol2').append(`
                     <div class='clickable' onclick='footerItemClick(1)'>Sitemap</div>\n
                     <div class='clickable' onclick='displayFeedback()'>Feedback</div>\n`

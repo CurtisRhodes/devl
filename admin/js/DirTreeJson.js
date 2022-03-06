@@ -184,18 +184,16 @@ function commonDirTreeClick(danniPath, folderId) {
     try {
         let activeDirTree = "dashboard";
 
+        // https ://ogglebooble.com/album.html?folder=80&calledFrom=boobpedia
+
 
         //pSelectedTreeId = folderId;
         pSelectedTreeFolderPath = danniPath.replace(".OGGLEBOOBLE.COM", "").replace("/Root/", "").replace(/%20/g, " ");
         //$("#topHeaderRow").html($('.txtLinkPath').val());
         switch (activeDirTree) {
             case "dashboard":
-
                 $('#txtCurrentActiveFolder').val(danniPath);
                 $('#txtActiveFolderId').val(folderId);
-
-                //window.location.href = "/gallery.html?album=" + folderId;  //  open page in same window
-                
                 break;
             case "catListDialog":
                 window.location.href = "\album.html?folder=" + folderId;

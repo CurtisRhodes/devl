@@ -26,7 +26,7 @@ function getLatestUpdatedGalleries(spaType) {
                             "<div class='latestContentBoxLabel'>" + jdata[i].FolderName + "</div>" +
                             "<img id='lt" + jdata[i].FolderId + "' class='latestContentBoxImage' alt='img/redballon.png' \nsrc='" + thisItemSrc + "' \n" +
                             " onerror='imageError(\"" + jdata[i].FolderId + "\",\"" + thisItemSrc + "\",'LatestUpdatedGalleries'\")'\n" +
-                            "\nonclick='window.location.href=\"https://ogglefiles.com/beta/Gallery.html?album=" + jdata[i].FolderId + "\" ' />" +
+                            "\nonclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + jdata[i].FolderId + "\" ' />" +
                             "<div class='latestContentBoxDateLabel'>updated: " + dateString2(jdata[i].Acquired) + "</span></div>" +
                             "</div>");
                     }
@@ -73,7 +73,7 @@ function getRandomGalleries(pageContext) {
                             "<div class='latestContentBoxLabel'>" + obj.FolderName + "</div>" +
                             "<img id='lt" + obj.Id + "' class='latestContentBoxImage' " +
                             "alt='Images/redballon.png' src='" + thisItemSrc + "' " +
-                            "onclick='window.location.href=\"https://ogglefiles.com/beta/Gallery.html?album=" + obj.Id + "\" ' /></div>");
+                            "onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + obj.Id + "\" ' /></div>");
                     });
                 }
             },
@@ -512,7 +512,7 @@ function clearSearch() {
 function jumpToSelected(selectedFolderId) {
     //rtpe('SRC', hdrFolderId, searchString, selectedFolderId);
     //logEvent("SRC", selectedFolderId, "jumpToSelected", "searchString: " + searchString);
-    window.open("https://ogglefiles.com/beta/Gallery.html?album=" + selectedFolderId, "_blank");  // open in new tab
+    window.open("https://ogglefiles.com/beta/album.html?folder=" + selectedFolderId, "_blank");  // open in new tab
     clearSearch();
 }
 
