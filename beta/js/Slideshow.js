@@ -7,10 +7,9 @@ let imageArray, imageViewerIndex = 0,
     slideshowImgSrc = new Image(),
     tempImgSrc = new Image(),
     slideShowButtonsActive = false,
-    islargeLoad = false, spSlideShowRunning, imageViewerIntervalTimer,
+    spSlideShowRunning, imageViewerIntervalTimer,
     imageViewerFolderName,
     slideShowAvailable;
-
 
 /*
     ssVisitorId;
@@ -34,8 +33,7 @@ function startSlideShow(folderId, startLink, largeLoad) {
 
 function loadSlideshowItems(folderId, startLink) {
     try {
-        let infoStart = Date.now();
-        $('#AlbumTopRow').show();
+        let infoStart = Date.now();        
         $('#aboveImageContainerMessageArea').html('loading');
         $.ajax({
             url: 'php/customQuery.php?query=select * from VwLinks where FolderId=' + folderId,

@@ -28,8 +28,8 @@
             <div class="middleColumn">
                 <div id="divStatusMessage"></div>
                 <img id="albumPageLoadingGif" alt='loading' src="https://common.ogglefiles.com/img/loader.gif" />
-                <div id="AlbumContentArea">
-                    <div id="AlbumTopRow" class="aboveImageContainerDiv">
+                <div id="albumContentArea">
+                    <div id="albumTopRow" class="aboveImageContainerDiv">
                         <div id='seoPageName' class="albumPageMetaTitle"></div>
                         <div id="aboveImageContainerMessageArea" class="flexboxMiddleSection"></div>
                         <div id="largeLoadButton" class='albumMsgLink'
@@ -39,7 +39,7 @@
                              title='album page with all child folder images'
                              onclick='launchDeepSlideShow();'>Album slideshow</div>
                     </div>
-                    <div id="imageContainer" class="AlbumContainer"></div>
+                    <div id="imageContainer" class="albumContainer"></div>
                     <div id="singleImageOuterContainer" class="explodingImageContainer">
                         <div id="singleImageInnerContainer" class="explodingInnerContainer">
                             <div id="divSlideshowButton" class="slideshowButton" onclick="showSlideshow()">slideshow</div>
@@ -48,12 +48,10 @@
                                  src="https://common.ogglefiles.com/img/close.png" onclick="closeImageViewer()" />
                         </div>
                     </div>
-                    <div id="AlbumBottomfileCount" class="countContainer"></div>
+                    <div id="albumBottomfileCount" class="albumBottomContainer"></div>
                     <div id="trackbackContainer" class="trackbackLinkContainer">
                         <div>trackback links</div>
-                        <div id="trackbackLinkArea" class="trackbackArea">
-
-                        </div>
+                        <div id="trackbackLinkArea" class="trackbackArea"></div>
                     </div>
                 </div>
                 <div id="slideshowContent" class="displayHidden">
@@ -83,8 +81,6 @@
                     <div id='slideshowImageLabel' class='slideshowImageLabel displayHidden' onclick='slides()'></div>
                 </div>
             </div>
-
-
             <div id="rightColumnArea" class="rightColumn"></div>
         </div>
 
@@ -97,7 +93,6 @@
                 let params = getParams();
                 let islargeLoad = false;
                 if (!isNullorUndefined(params.parentfolder)) {
-                    //alert("params.parentfolder: " + params.parentfolder);
                     albumParamFolderId = params.parentfolder;
                     islargeLoad = true;
                 }

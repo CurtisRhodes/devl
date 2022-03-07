@@ -466,7 +466,6 @@ function imageError(folderId, linkId) {
     }
 }
 
-
 /*--  context menu --------------------------------------*/
 function albumContextMenu(menuType, linkId, folderId, imgSrc) {
     //alert("$(window).scrollTop(): " + $(window).scrollTop() + " event.clientY: " + event.clientY);    
@@ -543,7 +542,7 @@ function setFolderImage(filinkId, folderId, level) {
     try {
         $.ajax({
             type: "GET",
-            url: "php/UpdateFolderImage.php?folderImage='" + filinkId + "'&folderId=" + folderId + "&level=" + level,
+            url: "php/updateFolderImage.php?folderImage='" + filinkId + "'&folderId=" + folderId + "&level=" + level,
             success: function (success) {
                 if (success.trim().startsWith("ok")) {
                     displayStatusMessage("ok", level + " image set for " + folderId);
@@ -562,7 +561,6 @@ function setFolderImage(filinkId, folderId, level) {
         logCatch("set Folder Image", e);
     }
 }
-
 
 function ww3Canvas(imageElement) {
     try {

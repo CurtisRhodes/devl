@@ -2,7 +2,7 @@
     background-color: var(--oggleBackgroundColor);
 }
 
-.galleryContainer {
+.albumContainer {
     display: flex;
     text-align: center;
     min-height: 200px;
@@ -187,10 +187,10 @@
     margin: 2px;
 }
 
-.countContainer {
-    padding: 0,5px;
-    margin-right:11px;
+.albumBottomContainer {
+    padding-right:33px;
     text-align: right;
+    margin-bottom: 6px;
 }
 
 .viewerImageNav {
