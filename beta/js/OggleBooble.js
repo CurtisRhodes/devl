@@ -426,13 +426,11 @@ function linkItemKeyDown(event) {
 
 /*-- log error -----------------------------------*/
 function logOggleError(errorCode, folderId, errorMessage, calledFrom) {
-    //alert(errorCode + "," + folderId + ", " + errorMessage + " calledFrom: " + calledFrom);
-    //logError("ILF", folderId, "linkId: " + linkId + " imgSrc: " + imgSrc, "gallery");
-
+    try {
     let visitorId = getCookieValue("VisitorId", calledFrom + "/logError");
     $.ajax({
         type: "POST",
-        url: "php/addError.php",
+        url: "php/logError.php",
         data: {
             ErrorCode: errorCode,
             FolderId: folderId,
@@ -443,7 +441,9 @@ function logOggleError(errorCode, folderId, errorMessage, calledFrom) {
         success: function (success) {
             if (success == "!ok") {
                 console.log(addImageFileSuccess);
-                $('#dashboardFileList').append("<div style='color:red'>add image file error: " + addImageFileSuccess + "</div>");
+            }
+            else {
+                console.error("log oggle error fail: " + success);
             }
         },
         error: function (jqXHR) {
@@ -451,6 +451,9 @@ function logOggleError(errorCode, folderId, errorMessage, calledFrom) {
             alert("Error log error: " + errMsg);
         }
     });
+    } catch (e) {
+        console.error("logOggle error not working: " + e);
+    }
 }
 
 function imageError(folderId, linkId) {

@@ -58,91 +58,123 @@ function performRepairLinks() {
 function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
     try {
         $.ajax({
-            url: "php/customQuery.php?query=select p.Id Parent, p.FolderName as ParentName, f.FolderName, f.FolderPath, f.FolderType" +
-                " from CategoryFolder f join CategoryFolder p on p.Id = f.Parent where f.Id = " + rootFolderId,
-            success: function (catFolderJson) {
-                if (catFolderJson.indexOf('Error') > -1) {
-                    $('#dashboardFileList').append("<div>Error: folder not found: " + fullPath + "</div>");
-                    return;
-                }
-                let catFolder = JSON.parse(catFolderJson);
-                setTimeout(function () {
-                    let catFolderFolderPath = catFolder[0].FolderPath;
-                    let fullPath = "../../danni/" + catFolderFolderPath;
-                    $.ajax({
-                        url: "php/getOggleFolder.php?path=" + fullPath + "&folderId=" + rootFolderId,
-                        success: function (scanDirJson) {
-                            if (scanDirJson == "false") {
-                                repairReport.errors.push("folder not found: " + fullPath);
-                                return;
-                            }
-                            let allDirValues = JSON.parse(scanDirJson);
-                            let physcialImageFileRows = allDirValues.filter(node => node.type == "file");
-                            let physcialDirectories = allDirValues.filter(node => node.type == "dir");
+            url: "php/customFetch.php?query=select * from CategoryFolder where Id=" + rootFolderId,
+            success: function (result) {
+                let catFolder = JSON.parse(result);
+                // GET SUBFOLDERS AS PER DATABASE
+                $.ajax({
+                    url: "php/customFetchAll.php?query=select p.Id Parent, p.FolderName as ParentName, f.FolderName, f.FolderPath, f.FolderType" +
+                        " from CategoryFolder f join CategoryFolder p on p.Id = f.Parent where f.Id = " + rootFolderId,
+                    success: function (childFolders) {
+                        if (childFolders.indexOf('Error') > -1) {
+                            $('#dashboardFileList').append("<div>Error: folder not found: " + fullPath + "</div>");
+                            return;
+                        }
+                        else {
+                            //let jchildFolders = JSON.parse(childFolders);
+                            // GET IMAGEFILE ROWS FROM DATABASE
                             $.ajax({
-                                url: "php/customQuery.php?query=select * from ImageFile where FolderId=" + rootFolderId,
+                                url: "php/customFetchAll.php?query=select * from ImageFile where FolderId=" + rootFolderId,
                                 success: function (imageFileJson) {
                                     let imageFileRows = JSON.parse(imageFileJson);
-                                    $.each(physcialImageFileRows, function (idx, objPhyscialimageFileRow) {
-                                        let dataTableRow = imageFileRows.filter(imageFile => encodeURI(imageFile.FileName) ==
-                                            encodeURI(objPhyscialimageFileRow.name));
-                                        if (dataTableRow.length == 0) {
-                                            // we have a physcialFile missing a data record
-                                            if (addNew) {
-                                                let fileNamePrefix = catFolder[0].FolderName;
-                                                if (catFolder[0].FolderType == "singleChild")
-                                                    fileNamePrefix = catFolder[0].ParentName;
-                                                renameImageFile(objPhyscialimageFileRow.name, fileNamePrefix, rootFolderId, catFolder[0].FolderType, fullPath);
+                                    let fullPath = "../../danni/" + catFolder.FolderPath;
+                                    // GET PHYSCIAL FILES AS PER SCANDIR
+                                    $.ajax({
+                                        url: "php/getOggleFolder.php?path=" + fullPath + "&folderId=" + rootFolderId,
+                                        success: function (scanDirJson) {
+                                            if (scanDirJson == "false") {
+                                                repairReport.errors.push("folder not found: " + fullPath);
+                                                return;
                                             }
-                                            else
-                                                repairReport.orphanImageFiles.push(catFolder[0].FolderName + "   (" + rootFolderId + ")");
+                                            let allDirValues = JSON.parse(scanDirJson);
+                                            let physcialImageFileRows = allDirValues.filter(node => node.type == "file");
+                                            let physcialDirectories = allDirValues.filter(node => node.type == "dir");
+
+
+                                            // COMPARE DATABSE CATEGORYFOLDER ROWS WITH PHYSCIAL DIRECTORIES
+                                            $.each(childFolders, function (idx, objChildFolder) {
+                                                let physcialDirectory = physcialDirectories.filter(node => node.name == objChildFolder.FileName);
+                                                if (physcialDirectory.length == 0) {
+                                                    alert("child folder row with no physcial directory")
+                                                }
+                                            });
+
+                                            // COMPARE PHYSCIAL DIRECTORIES WITH DATABSE CATEGORYFOLDER ROWS
+                                            $.each(physcialDirectories, function (idx, objphyscialDirectory) {
+                                                let dbChildFolder = childFolders.filter(node => node.name == objphyscialDirectory);
+                                                if (dbChildFolder.length == 0) {
+                                                    alert("physcial directory with no categoyFolder row ");
+                                                }
+                                            });
+
+                                            // COMPARE PHYSCIAL FILES WITH DATABSE IMAGEFILE ROWS
+                                            $.each(physcialImageFileRows, function (idx, objPhyscialimageFileRow) {
+                                                let dataTableRow = imageFileRows.filter(imageFile => encodeURI(imageFile.FileName) ==
+                                                    encodeURI(objPhyscialimageFileRow.name));
+                                                if (dataTableRow.length == 0) {
+                                                    // we have a physcialFile missing a data record
+                                                    if (addNew) {
+                                                        let fileNamePrefix = catFolder.FolderName;
+                                                        if (catFolder.FolderType == "singleChild")
+                                                            fileNamePrefix = catFolder.ParentName;
+                                                        renameImageFile(objPhyscialimageFileRow.name, fileNamePrefix, rootFolderId, catFolder[0].FolderType, fullPath);
+                                                    }
+                                                    else
+                                                        repairReport.orphanImageFiles.push(catFolder[0].FolderName + "   (" + rootFolderId + ")");
+                                                }
+                                                repairReport.physcialFilesProessed++;
+                                            });
+
+                                            // COMPARE DATABSE IMAGEFILE ROWS WITH PHYSCIAL FILES
+                                            $.each(imageFileRows, function (idx, imageFile) {
+                                                let physcialFileRow = physcialImageFileRows.filter(node => node.name == imageFile.FileName);
+                                                if (physcialFileRow.length == 0) {
+                                                    // we have a data record with no physcial file
+                                                    if (removeOrphans)
+                                                        removeImageFile(rootFolderId, imageFile.Id, catFolder[0].FolderName);
+                                                    else
+                                                        repairReport.orphanImages.push(imageFile.FileName);
+                                                }
+                                                repairReport.imageFilesProessed++;
+                                            });
+
+                                            if (recurr) {
+                                                $.each(childFolders, function (idx, childFolder) {
+                                                    repairImagesRecurr(childFolder.Id, recurr, addNew, removeOrphans);
+                                                });
+                                            }
+                                        },
+                                        error: function (jqXHR) {
+                                            $('#dashBoardLoadingGif').hide();
+                                            let errMsg = getXHRErrorDetails(jqXHR);
+                                            alert("get getOggleFolder AJX: " + errMsg);
                                         }
-                                        repairReport.physcialFilesProessed++;
                                     });
-                                    $.each(imageFileRows, function (idx, imageFile) {
-                                        let physcialFileRow = physcialImageFileRows.filter(node => node.name == imageFile.FileName);
-                                        if (physcialFileRow.length == 0) {
-                                            // we have a data record with no physcial file
-                                            if (removeOrphans)
-                                                removeImageFile(rootFolderId, imageFile.Id, catFolder[0].FolderName);
-                                            else
-                                                repairReport.orphanImages.push(imageFile.FileName);
-                                        }
-                                        repairReport.imageFilesProessed++;
-                                    });
-                                    if (recurr) {
-                                        $.each(physcialDirectories, function (idx, obj) {
-                                            repairImagesRecurr(obj.folderId, recurr, addNew, removeOrphans);
-                                        });
-                                    }
-
-
-
                                 },
                                 error: function (jqXHR) {
                                     $('#dashBoardLoadingGif').hide();
                                     let errMsg = getXHRErrorDetails(jqXHR);
-                                    alert("addnew / get DirectoryFiles AJX: " + errMsg);
+                                    alert("get ImageFiles XHR: " + errMsg);
                                 }
                             });
-                        },
-                        error: function (jqXHR) {
-                            $('#dashBoardLoadingGif').hide();
-                            let errMsg = getXHRErrorDetails(jqXHR);
-                            alert("addnew/get DirectoryFiles XHR: " + errMsg);
                         }
-                    });
-                }, 551);
+                    },
+                    error: function (jqXHR) {
+                        $('#dashBoardLoadingGif').hide();
+                        let errMsg = getXHRErrorDetails(jqXHR);
+                        alert("get child folders XHR: " + errMsg);
+                    }
+                });
             },
             error: function (jqXHR) {
                 $('#dashBoardLoadingGif').hide();
                 let errMsg = getXHRErrorDetails(jqXHR);
-                alert("catFolderJson XHR: " + errMsg);
+                alert("get CategoryFolder XHR: " + errMsg);
             }
         });
     } catch (e) {
         $('#dashBoardLoadingGif').hide();
-        logCatch("RepairLinks CAT", e);
+        logCatch("repair ImagesRecurr CAT", e);
     }
 }
 

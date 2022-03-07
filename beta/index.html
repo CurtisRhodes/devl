@@ -58,7 +58,6 @@
             }
             else {
                 $('body').addClass("oggleBody");
-
             }
 
             /*-- login -----------------------------------*/
@@ -73,6 +72,8 @@
             getLatestUpdatedGalleries(pageContext);
             launchCarousel(pageContext)
             displayFooter(pageContext);
+
+            //promoMessagesContainer
 
             $('#imgLatestUpdate').on("click", function () { getLatestUpdatedGalleries(pageContext) });
             $('#imgRandomGalleries').on("click", function () { getRandomGalleries(pageContext) });

@@ -259,7 +259,7 @@ function updateFolderCounts() {
             type: "GET",
 
             //db.VwLinks.Where(l => (l.FolderId == folderId) && (l.FolderId == l.SrcId)).OrderBy(l => l.SortOrder).ToList();
-            url: "php/customQuery?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val(),
+            url: "php/customFetchAll?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val(),
             success: function (imgLinks) {
                 $('#dashBoardLoadingGif').hide();
                 if (imgLinks != "error") {
@@ -426,7 +426,7 @@ function updateFolderCounts() {
 
         //imgLinks.Links = db.VwLinks.Where(l => l.FolderId == folderId).OrderBy(l => l.SortOrder).ToList();
         $.ajax({
-            url: "php/customQuery.php?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val() + " order by SortOrder",
+            url: "php/customFetchAll.php?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val() + " order by SortOrder",
             success: function (imgLinks) {
                 $('#dashBoardLoadingGif').hide();
                 if (imgLinks.indexOf("error") > -1)
@@ -613,7 +613,7 @@ function testConnection() {
 function testGetCatFolder() {
     $.ajax({
         type: "GET",
-        url: "php/customQuery.php?query=select * from CategoryFolder where Id = 411",
+        url: "php/customFetch.php?query=select * from CategoryFolder where Id = 411",
         dataType: "html",
         success: function (response) {
             $("#outputArea").html(response);
