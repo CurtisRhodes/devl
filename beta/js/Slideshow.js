@@ -1,7 +1,7 @@
 const slideShowImgRepo = 'https://ogglefiles.com/danni/';
 const slideShowSpeed = 5000;
 
-let imageArray, imageViewerIndex = 0,
+let imageArray = [], imageViewerIndex = 0,
     albumFolderId = 0,
     spSessionCount = 0,
     slideshowImgSrc = new Image(),
@@ -11,47 +11,77 @@ let imageArray, imageViewerIndex = 0,
     imageViewerFolderName,
     slideShowAvailable;
 
-/*
-    ssVisitorId;
-*/
-
 function startSlideShow(folderId, startLink, largeLoad) {
     islargeLoad = largeLoad;
     albumFolderId = folderId;
 
     displayFooter("slideshow");
-    $('#AlbumContentArea').fadeOut();
+    $('#albumContentArea').fadeOut();
     $('#slideshowContent').show().fadeIn();
 
     slideShowButtonsActive = true;
     spSessionCount = 0;
-    if (islargeLoad)
-        loadParentSlideshowItems();
-    else
-        loadSlideshowItems(folderId, startLink);
+    loadSlideshowItems(folderId, startLink);
+}
+
+function launchDeepSlideShow() {
+    startSlideShow(currentFolderId, 0, true);
 }
 
 function loadSlideshowItems(folderId, startLink) {
     try {
         let infoStart = Date.now();        
         $('#aboveImageContainerMessageArea').html('loading');
-        $.ajax({
-            url: 'php/customQuery.php?query=select * from VwLinks where FolderId=' + folderId,
-            success: function (data) {
-                if (data.substring(20).indexOf("error") > 0) {
-                    $('#blogListArea').html(data);
+        let asyncFlag = false;
+        if (islargeLoad) {
+            $.ajax({
+                url: "php/customQuery.php?query=Select * from CategoryFolder where Parent=" + folderId,
+                success: function (data) {
+                    let childFolders = JSON.parse(data);
+                    $.each(childFolders, function (idx, childFolder) {
+                        $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' + childFolder.Id + ' order by SortOrder',
+                            function (data) {
+                                $.each(data, function (idx, obj) {
+                                    imageArray.push(obj);
+
+                                if ((imageArray.length > 10) && (!asyncFlag)) {
+                                    asyncFlag = true;
+                                    imageViewerIndex = 0;
+                                    slideShowAvailable = true;
+                                    slide();
+                                    if (isNullorUndefined(imageViewerIntervalTimer)) {
+                                        imageViewerIntervalTimer = setInterval(function () {
+                                            slide('next');
+                                        }, slideShowSpeed);
+                                    }
+                                    $('#largeLoadButton').hide();
+                                    $('#deepSlideshowButton').hide();
+                                    }
+                                });
+                            });
+                    });
                 }
-                else {
-                    imageArray = JSON.parse(data);
-                    initialExplode(startLink);
+            });
+        }
+        else {
+            $.ajax({
+                url: 'php/customQuery.php?query=select * from VwLinks where FolderId=' + folderId,
+                success: function (data) {
+                    if (data.substring(20).indexOf("error") > 0) {
+                        $('#blogListArea').html(data);
+                    }
+                    else {
+                        imageArray = JSON.parse(data);
+                        initialExplode(startLink);
+                    }
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    alert("getAlbumPageInfo: " + errMsg);
+                    //if (!checkFor404(errMsg, folderId, "chargeCredits")) logError("XHR", folderId, errMsg, "chargeCredits");
                 }
-            },
-            error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                alert("getAlbumPageInfo: " + errMsg);
-                //if (!checkFor404(errMsg, folderId, "chargeCredits")) logError("XHR", folderId, errMsg, "chargeCredits");
-            }
-        });
+            });
+        }
         let delta = (Date.now() - infoStart) / 1000;
         console.log("getGalleyInfo took: " + delta.toFixed(3));
     } catch (e) {
@@ -181,8 +211,10 @@ function slide(direction) {
     try {
         if (slideShowAvailable) {
             slideShowAvailable = false;
-            if (isNullorUndefined(imageArray[imageViewerIndex]))
-                logError("SLA", albumFolderId, "", "slideshow.slide");
+            if (isNullorUndefined(imageArray[imageViewerIndex])) {
+                imageViewerIndex = Math.floor(Math.random() * imageArray.length);
+                //logOggleError("SLA", albumFolderId, "", "slideshow.slide");
+            }
             else {
                 $('#copycatDiv').hide();
                 let showLoadingGif = true;

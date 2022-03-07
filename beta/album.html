@@ -93,24 +93,17 @@
                 let pageContext = "oggleAlbum";
                 let pageName = "oggleIndex";
                 let params = getParams();
-                let islargeLoad = false;
-                if (!isNullorUndefined(params.parentfolder)) {
-                    albumParamFolderId = params.parentfolder;
-                    islargeLoad = true;
+                if (isNullorUndefined(params.folder)) {
+                    window.location.href = "index.html";
                 }
                 else {
-                    if (isNullorUndefined(params.folder)) {
-                        window.location.href = "index.html";
-                    }
-                    else {
-                        albumParamFolderId = params.folder;
-                    }
+                    albumParamFolderId = params.folder;
                 }
 
                 displayHeader(pageName);
                 displayFooter(pageContext);
 
-                loadAlbumPage(albumParamFolderId, islargeLoad);
+                loadAlbumPage(albumParamFolderId);
 
                 window.addEventListener("resize", callResizeAlbumPage);
                 resizeAlbumPage();
@@ -119,9 +112,8 @@
             function callResizeAlbumPage() {
                 resizeAlbumPage();
             }
-
             function resizeAlbumPage() {
-                let dinky = 50;
+                let dinky = 18;
                 let visAreaH = ($(window).height() - $('header').height()) - dinky;
                 $('#visableArea').css('height', visAreaH);
                 $('#imageContainer').css('max-height', visAreaH - 52);

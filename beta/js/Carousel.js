@@ -99,7 +99,7 @@ function intervalBody(pageContext) {
             if ((carouselRows.length - imageIndex++) < 2) {
                 if (confirm("imageIndex: " + imageIndex + "  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
                     loadImages(pageContext);
-                    imageIndex = Math.floor(Math.random() * 5);
+                    imageIndex = Math.floor(Math.random() * carouselRows.length);
                 }
             }
             if (carouselRows.length <= imageIndex) {
