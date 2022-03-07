@@ -24,7 +24,7 @@ function getAlbumImages(folderId) {
                 if (!isNullorUndefined(vLink.FileName))
                     imgSrc = settingsImgRepo + "/" + vLink.FileName.replace(/'/g, '%27');
 
-                $('#imageContainer').append("<div class='albumImageContainer'>" +
+                $('#imageContainer').append("<div class='intividualImageContainer'>" +
                     "<img id='" + vLink.LinkId + "' class='thumbImage' src='" + imgSrc + "'" +
                     "onerror='imageError(" + folderId + ",\"" + vLink.LinkId + "\")'\n" +
                     "oncontextmenu='albumContextMenu(\"Image\",\"" + vLink.LinkId + "\"," + folderId + ",\"" + imgSrc + "\")'" +
