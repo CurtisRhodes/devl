@@ -106,22 +106,11 @@ function intervalBody(pageContext) {
                 alert("imageIndex: " + imageIndex + ", carouselRows.length: " + carouselRows.length + "\nresetting carousel loop");
                 imageIndex = 0;
             }
+
             $('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow").load(function () {
                 setLabelLinks(imageIndex);
                 resizeCarousel();
                 intervalReady = true;
-                try {
-                    if (lastImageIndex != imageIndex) {
-                        lastImageIndex = imageIndex;
-                        let carouselImage = document.createElement("img");
-                        carouselImage.src = settingsImgRepo + carouselRows[imageIndex].ImageFileName;
-                        let rgb = averageColor(carouselImage);
-                        console.log("background-color: rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")");
-                        $('#indexMiddleColumn').css("background-color", "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")").fadeIn(4500);
-                    }
-                } catch (e) {
-                    console.error("carouselImage" + e);
-                }
 
                 $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
                 imageHistory.push(imageIndex);
@@ -451,12 +440,12 @@ function imgErrorThrown() {
     if (lastErrorThrown != imageIndex) {
         lastErrorThrown = imageIndex;
         //alert($('#thisCarouselImage').attr('src') + " not found");
-        console.warn(carouselRows[imageIndex].ImageFileName + " not found");
+        console.log(carouselRows[imageIndex].ImageFileName + " not found");
 
+        logOggleError("ILF", 11, carouselRows[imageIndex].ImageFileName + " not found", "carousel");
+        //logError("ILF", 11, carouselRows[imageIndex].ImageFileName+ " not found", "carousel");
 
-        logError("ILF", 11, carouselRows[imageIndex].ImageFileName+ " not found", "carousel");
-
-        $('#thisCarouselImage').attr('src', "https://common.ogglefiles.com/img/redBallonSmall.png");
+        $('#thisCarouselImage').attr('src', "https://common.ogglefiles.com/img/redBallon.png");
         $('#thisCarouselImage').css('height', window.innerHeight * .5);
     }
 }

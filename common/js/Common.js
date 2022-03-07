@@ -798,6 +798,7 @@ function displayFooter(footerContext) {
         switch (footerContext) {
             case "oggleAlbum":
             case "gallery":
+            case "boobs":
             case "slideshow":
                 $('#footerCol2').append(`
                     <div class='clickable' onclick='footerItemClick(1)'>Sitemap</div>\n
