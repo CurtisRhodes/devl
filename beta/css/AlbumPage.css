@@ -2,13 +2,13 @@
     background-color: var(--oggleBackgroundColor);
 }
 
-.galleryContainer {
+.albumContainer {
     display: flex;
     text-align: center;
     min-height: 200px;
     flex-wrap: wrap;
     max-height: inherit;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .subFolderContainer {
@@ -18,7 +18,7 @@
     margin: 1px;
     display: inline-block;
 }
-.albumImageContainer {
+.intividualImageContainer {
     background-color: var(--thumbnailBorderColor);
     border: solid 5px var(--thumbnailBorderColor);
     border-radius: 4px;
@@ -34,6 +34,7 @@
 }
 
 .albumPageMetaTitle {
+    display: inline-block;
     white-space: nowrap;
     color: var(--oggleTitleColor);
 }
@@ -56,8 +57,8 @@
     }
 
 .flexboxMiddleSection {
+    display: inline-block;
     float: left;
-    width: 100%;
     text-align: center;
 }
 
@@ -72,6 +73,7 @@
 
 .albumMsgLink {
     display: none;
+    display: inline-block;
     float: right;
     cursor: pointer;
     color: var(--oggleTitleColor);
@@ -187,10 +189,15 @@
     margin: 2px;
 }
 
-.countContainer {
-    padding: 0,5px;
-    margin-right:11px;
-    text-align: right;
+.albumBottomContainer {
+    position: absolute;
+    bottom: 32px;  
+    width: 100%;
+}
+.albumBottomContainerRightMostDiv {
+    display: inline-block;
+    float: right;
+    margin-right: 44px;
 }
 
 .viewerImageNav {

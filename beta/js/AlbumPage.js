@@ -1,85 +1,101 @@
-let currentFolderId, currentImagelinkId;
-function loadAlbumPage(folderId, largeLoad) {
+let currentFolderId, currentImagelinkId, islargeLoad;
 
-    islargeLoad = largeLoad;
+function loadAlbumPage(folderId) {
+    islargeLoad = false;
     currentFolderId = folderId;
-    if (islargeLoad)
-        getMultipleAlbumImages(folderId)
-    else {
-        $('#galleryPageLoadingGif').css("height", "11px");
-
-        getGalleryImages(folderId);
-        getSubFolders(folderId);
-        getGalleryPageInfo(folderId);
-    }
-    $('#galleryContentArea').fadeIn();
+    $('#albumPageLoadingGif').css("height", "17px");
+    getAlbumImages(folderId);
+    $('#albumContentArea').fadeIn();
 }
 
 /*-- php -----------------------------------*/
-function getGalleryImages(folderId) {
-    try {
-        $('#galleryPageLoadingGif').show();
-        $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' + folderId+' order by SortOrder', function (data) {
-            $('#galleryPageLoadingGif').hide();
-            $.each(data, function (idx, vLink) {
-                let imgSrc = 'https://common.ogglefiles.com/img/redballon.png';
-                if (!isNullorUndefined(vLink.FileName))
-                    imgSrc = settingsImgRepo + "/" + vLink.FileName.replace(/'/g, '%27');
 
-                $('#imageContainer').append("<div class='albumImageContainer'>" +
-                    "<img id='" + vLink.LinkId + "' class='thumbImage' src='" + imgSrc + "'" +
-                    "onerror='imageError(" + folderId + ",\"" + vLink.LinkId + "\")'\n" +
-                    "oncontextmenu='albumContextMenu(\"Image\",\"" + vLink.LinkId + "\"," + folderId + ",\"" + imgSrc + "\")'" +
-                    "onclick='viewImage(\"" + imgSrc + "\",\"" + vLink.LinkId + "\")'/></div>");
+function getAlbumImages(folderId) {
+    try {
+        $('#albumPageLoadingGif').show();
+        if (islargeLoad) {
+            $.ajax({
+                url: "php/customQuery.php?query=Select * from CategoryFolder where Parent=" + folderId,
+                success: function (data) {
+                    let childFolders = JSON.parse(data);
+                    $.each(childFolders, function (idx, childFolder) {
+                        $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' + childFolder.Id + ' order by SortOrder', function (data) {
+                            loadImageResults(data, childFolder.Id);
+                        });
+                        //getAlbumPageInfo(folderId);
+                        $('#largeLoadButton').hide();
+                        $('#deepSlideshowButton').show();
+                        resizeAlbumPage();
+                    });
+                    $('#albumPageLoadingGif').hide();
+                }
             });
-            resizeGalleryPage();
-        });
+        }
+        else {
+            $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' + folderId + ' order by SortOrder', function (data) {
+                $.each(data, function (idx, vLink) {
+                    loadImageResults(data);
+                });
+                getSubFolders(folderId);
+            });
+        }
     } catch (e) {
-        logCatch("getGalleryImages", e);
+        $('#albumPageLoadingGif').hide();
+        logCatch("getAlbumImages", e);
     }
+}
+function loadImageResults(data, folderId) {
+    $.each(data, function (idx, vLink) {
+        let imgSrc = 'https://common.ogglefiles.com/img/redballon.png';
+        if (!isNullorUndefined(vLink.FileName))
+            imgSrc = settingsImgRepo + "/" + vLink.FileName.replace(/'/g, '%27');
+        $('#imageContainer').append("<div class='intividualImageContainer'>" +
+            "<img id='" + vLink.LinkId + "' class='thumbImage' src='" + imgSrc + "'" +
+            "onerror='imageError(" + folderId + ",\"" + vLink.LinkId + "\")'\n" +
+            "oncontextmenu='albumContextMenu(\"Image\",\"" + vLink.LinkId + "\"," + folderId + ",\"" + imgSrc + "\")'" +
+            "onclick='viewImage(\"" + imgSrc + "\",\"" + vLink.LinkId + "\")'/></div>");
+    });
 }
 
 function getSubFolders(folderId) {
     try {
-        $('#galleryPageLoadingGif').show();
         $.getJSON("php/customQuery.php?query=select * from VwDirTree where Parent=" + folderId +
             " order by SortOrder,FolderName", function (data) {
-                $('#galleryPageLoadingGif').hide();
-            $.each(data, function (index, obj) {
-                let linkId = create_UUID();
-                let folderCounts = "(" + obj.FileCount.toLocaleString() + ")";
-                if (obj.SubFolderCount > 0)
-                    folderCounts = "(" + obj.SubFolderCount + "/" + (obj.FileCount + obj.TotalChildFiles).toLocaleString() + ")";
+                $.each(data, function (index, obj) {
+                    let linkId = create_UUID();
+                    let folderCounts = "(" + Number(obj.FileCount).toLocaleString() + ")";
+                    if (obj.SubFolderCount > 0)
+                        folderCounts = "(" + obj.SubFolderCount + "/" + Number(obj.FileCount + obj.TotalChildFiles).toLocaleString() + ")";
 
-                let imgSrc = 'https://common.ogglefiles.com/img/RenStimpy8.jpg'
-                if (!isNullorUndefined(obj.FolderImage))
-                    imgSrc = settingsImgRepo + "/" + obj.FolderImage.replace(/'/g, '%27');
+                    let imgSrc = 'https://common.ogglefiles.com/img/RenStimpy8.jpg'
+                    if (!isNullorUndefined(obj.FolderImage))
+                        imgSrc = settingsImgRepo + "/" + obj.FolderImage.replace(/'/g, '%27');
 
-                $('#imageContainer').append("<div class='subFolderContainer'\n" +
-                    // " oncontextmenu='albumContextMenu(\"Folder\",\"" + linkId + "\"," + folderId + ",\"" + imgSrc + "\")'\n" +
-                    " onclick='folderClick(" + obj.Id + "," + obj.IsStepChild + ")'>\n" +
-
-                    "<img id='" + linkId + "' class='folderImage' src='" + imgSrc + "'/> " +
-
+                    $('#imageContainer').append("<div class='subFolderContainer'\n" +
+                        // " oncontextmenu='albumContextMenu(\"Folder\",\"" + linkId + "\"," + folderId + ",\"" + imgSrc + "\")'\n" +
+                        " onclick='folderClick(" + obj.Id + "," + obj.IsStepChild + ")'>\n" +
+                        "<img id='" + linkId + "' class='folderImage' src='" + imgSrc + "'/> " +
                         // alt = 'https://common.ogglefiles.com/img/RenStimpy8.jpg' /> " +
                         //"onerror='imageError(\"" + folderId + "\",\"'" + obj.linkId + "\"',\"'" + imgSrc + "\"','\"subFolder\")'/>\n" +
-
                         "<div class='defaultSubFolderImage'>" + obj.FolderName + "</div>\n" +
-                    "<span Id='fc" + obj.FolderId + "'>" + folderCounts + "</span></div>");
-            });
-                resizeGalleryPage();
+                        "<span Id='fc" + obj.FolderId + "'>" + folderCounts + "</span></div>");
+                });
+                getAlbumPageInfo(folderId);
+                resizeAlbumPage();
             });
     } catch (e) {
-        $('#galleryPageLoadingGif').hide();
+        $('#albumPageLoadingGif').hide();
         logCatch("getSubFolders", e);
     }
 }
 
-function getGalleryPageInfo(folderId) {
+function getAlbumPageInfo(folderId) {
     try {
         let infoStart = Date.now();
-        $('#galleryTopRow').show();
-        $('#aboveImageContainerMessageArea').html('loading');
+        $('#largeLoadButton').hide();
+        $('#deepSlideshowButton').hide();
+        $('#albumPageLoadingGif').hide();
+        $('#aboveImageContainerMessageArea').html('loading breadcrumbs');
         $.ajax({
             url: 'php/customQuery.php?query=Select * from CategoryFolder where Id=' + folderId,
             success: function (data) {
@@ -98,39 +114,43 @@ function getGalleryPageInfo(folderId) {
                 switch (catfolder.FolderType) {
                     case "singleModel":
                     case "multiModel":
-                    case "singleChild": $('#galleryBottomfileCount').html(catfolder.Files); break;
+                    case "singleChild": $('#albumBottomfileCount').html(catfolder.Files); break;
                     case "multiFolder":
                     case "singleParent":
-                        if (catfolder.Files > 0) {
-                            $('#galleryBottomfileCount').html(catfolder.Files + "/" + catfolder.SubFolders);
-                        }
-                        else {
-                            $('#galleryBottomfileCount').html(catfolder.TotalSubFolders + "/" + catfolder.TotalChildFiles);
-                        }
+                        $('#largeLoadButton').show();
+                        $('#deepSlideshowButton').show();
+                        if (catfolder.Files > 0) 
+                            $('#albumBottomfileCount').html(catfolder.Files + "/" + catfolder.SubFolders);                        
+                        else
+                            $('#albumBottomfileCount').html(catfolder.TotalSubFolders + "/" + Number(catfolder.TotalChildFiles).toLocaleString());
                         break;
                 }
-                $('#galleryBottomfileCount').show();
-                $('#galleryBottomfileCount').on("click", function () { updateFolderCount(folderId, catfolder.FolderPath) });
+                if (!islargeLoad)
+                    $('#albumTopRow').show();
+
+                $('#albumBottomfileCount').show();
+                $('#albumBottomfileCount').on("click", function () { updateFolderCount(folderId, catfolder.FolderPath) });
 
                 setBreadcrumbs(folderId);
                 $('#feedbackButton').on("click", function () {
                     showFeedbackDialog(folderId, catfolder.FolderName);
                 });
+
+
             },
             error: function (jqXHR) {
+                $('#albumPageLoadingGif').hide();
                 let errMsg = getXHRErrorDetails(jqXHR);
-                alert("getGalleryPageInfo: " + errMsg);
+                alert("getAlbumPageInfo: " + errMsg);
                 //if (!checkFor404(errMsg, folderId, "chargeCredits")) logError("XHR", folderId, errMsg, "chargeCredits");
             }
         });
         let delta = (Date.now() - infoStart) / 1000;
         console.log("getGalleyInfo took: " + delta.toFixed(3));
     } catch (e) {
-        logCatch("getGalleryPageInfo", e);
+        logCatch("getAlbumPageInfo", e);
     }
 }
-
-function getMultipleAlbumImages(parentId) { }
 
 function addBreadcrumb(folderId, folderName, className) {
     return "<div class='" + className + "' onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + folderId + "\"'>" + folderName + "</div>";
@@ -182,6 +202,12 @@ function setBreadcrumbs(folderId) {
     } catch (e) {
         logCatch("setBreadcrumbs", e);
     }
+}
+
+function launchLargeLoad() {
+    islargeLoad = true;
+    $('#imageContainer').html("");
+    getAlbumImages(currentFolderId);
 }
 
 /*-- exploding image view -------------------*/

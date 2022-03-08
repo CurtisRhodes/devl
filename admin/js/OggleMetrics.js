@@ -38,7 +38,7 @@ function GoDeepFolderCounts(folderId) {
             success: function (catInfo) {
                 $.ajax({
                     type: "GET",
-                    url: "php/customQuery.php?query=select * from CategoryImageLinks where ImageCategoryId=" + folderId,
+                    url: "php/customFetchAll.php?query=select * from CategoryImageLinks where ImageCategoryId=" + folderId,
                     success: function (response) {
 
                         //let fileLinkCount = db.CategoryImageLinks.Where(l => l.ImageCategoryId == folderId).Count();

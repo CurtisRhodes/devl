@@ -99,29 +99,18 @@ function intervalBody(pageContext) {
             if ((carouselRows.length - imageIndex++) < 2) {
                 if (confirm("imageIndex: " + imageIndex + "  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
                     loadImages(pageContext);
-                    imageIndex = Math.floor(Math.random() * 5);
+                    imageIndex = Math.floor(Math.random() * carouselRows.length);
                 }
             }
             if (carouselRows.length <= imageIndex) {
                 alert("imageIndex: " + imageIndex + ", carouselRows.length: " + carouselRows.length + "\nresetting carousel loop");
                 imageIndex = 0;
             }
+
             $('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow").load(function () {
                 setLabelLinks(imageIndex);
                 resizeCarousel();
                 intervalReady = true;
-                try {
-                    if (lastImageIndex != imageIndex) {
-                        lastImageIndex = imageIndex;
-                        let carouselImage = document.createElement("img");
-                        carouselImage.src = settingsImgRepo + carouselRows[imageIndex].ImageFileName;
-                        let rgb = averageColor(carouselImage);
-                        console.log("background-color: rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")");
-                        $('#indexMiddleColumn').css("background-color", "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")").fadeIn(4500);
-                    }
-                } catch (e) {
-                    console.error("carouselImage" + e);
-                }
 
                 $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
                 imageHistory.push(imageIndex);
@@ -416,7 +405,7 @@ function assuranceArrowClick(direction) {
     }
 }
 
-function clickViewGallery(labelClick) {
+function clickViewAlbum(labelClick) {
     try {
         event.preventDefault();
         window.event.returnValue = false;
@@ -431,7 +420,7 @@ function clickViewGallery(labelClick) {
         pause();
         window.location.href = "https://ogglefiles.com/beta/album.html?folder=" + clickFolderId;  //  open page in same window
     } catch (e) {
-        logCatch("clickViewGallery", e);
+        logCatch("clickViewAlbum", e);
     }
 }
 
@@ -448,35 +437,45 @@ function carouselContextMenu() {
 }
 
 function imgErrorThrown() {
-    if (lastErrorThrown != imageIndex) {
-        lastErrorThrown = imageIndex;
-        //alert($('#thisCarouselImage').attr('src') + " not found");
-        console.warn(carouselRows[imageIndex].ImageFileName + " not found");
-        logError("ILF", 11, carouselRows[imageIndex].ImageFileName+ " not found", "carousel");
+    try {
+        if (lastErrorThrown != imageIndex) {
+            lastErrorThrown = imageIndex;
 
-        $('#thisCarouselImage').attr('src', "https://common.ogglefiles.com/img/redBallonSmall.png");
-        $('#thisCarouselImage').css('height', window.innerHeight * .5);
+            $('#thisCarouselImage').attr('src', "https://common.ogglefiles.com/img/redBallon.png");
+            $('#thisCarouselImage').css('height', window.innerHeight * .5);
+
+            //alert($('#thisCarouselImage').attr('src') + " not found");
+            console.log(carouselRows[imageIndex].ImageFileName + " not found");
+            logOggleError("ILF", 11, carouselRows[imageIndex].ImageFileName + " not found", "carousel");
+            //logError("ILF", 11, carouselRows[imageIndex].ImageFileName+ " not found", "carousel");
+
+        }
+    } catch (e) {
+        console.error("Ouh");
     }
 }
 
-function carouselHtml() {
-    return "<div id='carouselImageOutterContainer' class='carouselImageContainer flexContainer'>\n" +
-        "       <div Id='carouselImageInnerContainer'>\n" +
-        "           <div id='knownModelLabel' class='categoryTitleLabel' onclick='clickViewGallery(3)'></div>\n" +
-        "           <div id='imageTopLabel' class='categoryTitleLabel' onclick='clickViewGallery(2)'></div>\n" +
-        "           <div id='carouselFooterLabel' class='categoryTitleLabel' onclick='clickViewGallery(4)'></div>\n" +
-        "           <img class='assuranceArrows' onclick='assuranceArrowClick(\"back\")' src='img/leftArrowOpaque02.png'/>\n" +
-        "           <img id='thisCarouselImage' class='carouselImage' src='img/ingranaggi3.gif' " +
-        "               onerror='imgErrorThrown()'" +
-        "               oncontextmenu='carouselContextMenu()'" +
-        "               onclick='clickViewGallery(1)' />\n" +
-        "           <img class='assuranceArrows' onclick='assuranceArrowClick(\"foward\")' src='img/rightArrowOpaque02.png'/>\n" +
+function showCarouselButtonBar() {
         //"           <div id='carouselFooter class='flexContainer' >\n" +
         //"               <img class='speedButton floatLeft' src='img/speedDialSlower.png' title='slower' onclick='clickSpeed(\"slower\")' />\n" +
         //"               <div id='pauseButton' class='pauseButtonArea' onclick='togglePause()'>||</div>\n" +
         //"               <img class='speedButton floatRight' src='img/speedDialFaster.png' title='faster' onclick='clickSpeed(\"faster\")' />\n" +
         ////"             <img class='speedButton floatRight' src='img/Settings-icon.png' title='carousel settings' onclick='showCarouelSettingsDialog()' />\n" +
         //"           </div>\n" +
+}
+
+function carouselHtml() {
+    return "<div id='carouselImageOutterContainer' class='carouselImageContainer flexContainer'>\n" +
+        "       <div Id='carouselImageInnerContainer'>\n" +
+        "           <div id='knownModelLabel' class='categoryTitleLabel' onclick='clickViewAlbum(3)'></div>\n" +
+        "           <div id='imageTopLabel' class='categoryTitleLabel' onclick='clickViewAlbum(2)'></div>\n" +
+        "           <div id='carouselFooterLabel' class='categoryTitleLabel' onclick='clickViewAlbum(4)'></div>\n" +
+        "           <img class='assuranceArrows' onclick='assuranceArrowClick(\"back\")' src='img/leftArrowOpaque02.png'/>\n" +
+        "           <img id='thisCarouselImage' class='carouselImage' src='img/ingranaggi3.gif' " +
+        "               onerror='imgErrorThrown()'" +
+        "               oncontextmenu='carouselContextMenu()'" +
+        "               onclick='clickViewAlbum(1)' />\n" +
+        "           <img class='assuranceArrows' onclick='assuranceArrowClick(\"foward\")' src='img/rightArrowOpaque02.png'/>\n" +
         "       </div>\n" +
         "  </div>\n" +
 

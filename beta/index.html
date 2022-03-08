@@ -9,6 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
     <script src="https://common.ogglefiles.com/js/Common.js"></script>
     <script src="js/OggleBooble.js"></script>
+    <script src="js/IndexPage.js"></script>
     <script src="js/Carousel.js"></script>
 
     <link href="https://common.ogglefiles.com/css/Common.css" rel="stylesheet" />
@@ -55,6 +56,9 @@
                 pageContext = params.spa;
                 pageName = params.spa
             }
+            else {
+                $('body').addClass("oggleBody");
+            }
 
             /*-- login -----------------------------------*/
             //if (localStorage["IsLoggedIn"] == "true") {
@@ -68,6 +72,8 @@
             getLatestUpdatedGalleries(pageContext);
             launchCarousel(pageContext)
             displayFooter(pageContext);
+
+            //promoMessagesContainer
 
             $('#imgLatestUpdate').on("click", function () { getLatestUpdatedGalleries(pageContext) });
             $('#imgRandomGalleries').on("click", function () { getRandomGalleries(pageContext) });

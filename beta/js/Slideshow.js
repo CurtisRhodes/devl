@@ -1,73 +1,103 @@
 const slideShowImgRepo = 'https://ogglefiles.com/danni/';
 const slideShowSpeed = 5000;
 
-let imageArray, imageViewerIndex = 0,
+let imageArray = [], imageViewerIndex = 0,
     albumFolderId = 0,
     spSessionCount = 0,
     slideshowImgSrc = new Image(),
     tempImgSrc = new Image(),
     slideShowButtonsActive = false,
-    islargeLoad = false, spSlideShowRunning, imageViewerIntervalTimer,
-    imageViewerFolderName;
-
-
-/*
-    ssVisitorId;
-*/
+    spSlideShowRunning, imageViewerIntervalTimer,
+    imageViewerFolderName,
+    slideShowAvailable;
 
 function startSlideShow(folderId, startLink, largeLoad) {
     islargeLoad = largeLoad;
     albumFolderId = folderId;
 
     displayFooter("slideshow");
-    $('#galleryContentArea').fadeOut();
+    $('#albumContentArea').fadeOut();
     $('#slideshowContent').show().fadeIn();
+
+    slideShowButtonsActive = true;
     spSessionCount = 0;
-    if (islargeLoad)
-        loadParentSlideshowItems();
-    else
-        loadSlideshowItems(folderId, startLink);
+    loadSlideshowItems(folderId, startLink);
+}
+
+function launchDeepSlideShow() {
+    startSlideShow(currentFolderId, 0, true);
 }
 
 function loadSlideshowItems(folderId, startLink) {
     try {
-        let infoStart = Date.now();
-        $('#galleryTopRow').show();
+        let infoStart = Date.now();        
         $('#aboveImageContainerMessageArea').html('loading');
-        $.ajax({
-            url: 'php/customQuery.php?query=select * from VwLinks where FolderId=' + folderId,
-            success: function (data) {
-                if (data.substring(20).indexOf("error") > 0) {
-                    $('#blogListArea').html(data);
+        let asyncFlag = false;
+        if (islargeLoad) {
+            $.ajax({
+                url: "php/customQuery.php?query=Select * from CategoryFolder where Parent=" + folderId,
+                success: function (data) {
+                    let childFolders = JSON.parse(data);
+                    $.each(childFolders, function (idx, childFolder) {
+                        $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' + childFolder.Id + ' order by SortOrder',
+                            function (data) {
+                                $.each(data, function (idx, obj) {
+                                    imageArray.push(obj);
+
+                                if ((imageArray.length > 10) && (!asyncFlag)) {
+                                    asyncFlag = true;
+                                    imageViewerIndex = 0;
+                                    slideShowAvailable = true;
+                                    slide();
+                                    if (isNullorUndefined(imageViewerIntervalTimer)) {
+                                        imageViewerIntervalTimer = setInterval(function () {
+                                            slide('next');
+                                        }, slideShowSpeed);
+                                    }
+                                    $('#largeLoadButton').hide();
+                                    $('#deepSlideshowButton').hide();
+                                    }
+                                });
+                            });
+                    });
                 }
-                else {
-                    imageArray = JSON.parse(data);
-                    initialExplode(startLink);
+            });
+        }
+        else {
+            $.ajax({
+                url: 'php/customQuery.php?query=select * from VwLinks where FolderId=' + folderId,
+                success: function (data) {
+                    if (data.substring(20).indexOf("error") > 0) {
+                        $('#blogListArea').html(data);
+                    }
+                    else {
+                        imageArray = JSON.parse(data);
+                        initialExplode(startLink);
+                    }
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    alert("getAlbumPageInfo: " + errMsg);
+                    //if (!checkFor404(errMsg, folderId, "chargeCredits")) logError("XHR", folderId, errMsg, "chargeCredits");
                 }
-            },
-            error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                alert("getGalleryPageInfo: " + errMsg);
-                //if (!checkFor404(errMsg, folderId, "chargeCredits")) logError("XHR", folderId, errMsg, "chargeCredits");
-            }
-        });
+            });
+        }
         let delta = (Date.now() - infoStart) / 1000;
         console.log("getGalleyInfo took: " + delta.toFixed(3));
     } catch (e) {
-        logCatch("getGalleryPageInfo", e);
+        logCatch("getAlbumPageInfo", e);
     }
 }
 
 function initialExplode(startLink) {
     imageViewerIndex = imageArray.findIndex(node => node.LinkId == startLink);
-    $('#viewerImage').attr("src", slideShowImgRepo + imageArray[imageViewerIndex].FileName);
-    $('#viewerImage').show();
     getFolderDetails();
+    slideShowAvailable = true;
+    slide();
     imageViewerIntervalTimer = setInterval(function () {
         slide('next');
     }, slideShowSpeed);
     spSlideShowRunning = true;
-    slideShowButtonsActive = true;
 }
 
 function getFolderDetails() {
@@ -80,18 +110,16 @@ function getFolderDetails() {
             }
             else {
                 let thisCatFolder = JSON.parse(data)[0];
-                $('#breadcrumbContainer').html("<span sytle='font-size:19px'>" + thisCatFolder.ParentName +
+                $('#headerBottomRow').html("<span sytle='font-size:19px'>" + thisCatFolder.ParentName +
                     "/" + thisCatFolder.FolderName + "</span>");
             }
         },
         error: function (jqXHR) {
             let errMsg = getXHRErrorDetails(jqXHR);
-            alert("getGalleryPageInfo: " + errMsg);
+            alert("getAlbumPageInfo: " + errMsg);
             //if (!checkFor404(errMsg, folderId, "chargeCredits")) logError("XHR", folderId, errMsg, "chargeCredits");
         }
     });
-
-
 }
 
 function runSlideShow(action) {
@@ -181,101 +209,83 @@ function slideClick(direction) {
 
 function slide(direction) {
     try {
-        if (isNullorUndefined(imageArray[imageViewerIndex]))
-            logError("SLA", albumFolderId, "", "slideshow.slide");
-        else {
-            $('#copycatDiv').hide();
-            let showLoadingGif = true;
-            setTimeout(function () {
-                if (showLoadingGif)
-                    $('#slideshowLoadingGif').show()
-            }, 500);
-
-            tempImgSrc.onload = function () {
-                showLoadingGif = false;
-                $('#slideshowLoadingGif').hide();
-                //setTimeout(function () { $('#albumPageLoadingGif').hide() }, 502);
-                //let startLoadTime = Date.now();
-                //imgSrc.onload = function () {
-
-                $('#viewerImage').css("transform", "translateX(0)");
-                // SLIDE OUT OF VIEW
-                if (direction === 'next') {  // LEFT TO RIGHT OUT THE RIGHT SIDE
-                    $('#viewerImage').css("transform", "translateX(1500px)", slideShowSpeed);
-                }
-                else { // 'prev'        
-                    $('#viewerImage').css("transform", "translateX(-1500px)", slideShowSpeed);
-                }
-                $('.slideshowNavgArrows').css('visibility', 'hidden');
-                $('#slideshowImageLabel').fadeOut();
-                $('#thumbImageContextMenu').fadeOut();
-
+        if (slideShowAvailable) {
+            slideShowAvailable = false;
+            if (isNullorUndefined(imageArray[imageViewerIndex])) {
+                imageViewerIndex = Math.floor(Math.random() * imageArray.length);
+                //logOggleError("SLA", albumFolderId, "", "slideshow.slide");
+            }
+            else {
+                $('#copycatDiv').hide();
+                let showLoadingGif = true;
                 setTimeout(function () {
-                    $('#viewerImage').hide();
-                    if (direction === 'next') {
-                        $('#viewerImage').css("transform", "translateX(-3200px)");
-                    }
-                    else {
-                        $('#viewerImage').css("transform", "translateX(3200px)");
-                    }
-                    setTimeout(function () {
-                        slideshowImgSrc.src = tempImgSrc.src;
-                        $('#viewerImage').attr("src", slideshowImgSrc.src);
-                        $('#viewerImage').show();
-                        $('#viewerImage').css("transform", "translateX(0)", slideShowSpeed);
+                    if (showLoadingGif)
+                        $('#slideshowLoadingGif').show()
+                }, 500);
+                tempImgSrc.onload = function () {
+                    showLoadingGif = false;
+                    slideshowImgSrc.src = tempImgSrc.src;
+                    slideshowImgSrc.onload = function () {
+                        $('#slideshowLoadingGif').hide();
+                        // SLIDE OUT OF VIEW
+                        if (direction == 'next') {  // LEFT TO RIGHT OUT THE RIGHT SIDE
+                            $('#slideshowImage').css("transform", "translateX(5000px)", slideShowSpeed);
+                        }
+                        else { // 'prev'        
+                            $('#slideshowImage').css("transform", "translateX(-5000Px)", slideShowSpeed);
+                        }
+                        $('.slideshowNavgArrows').css('visibility', 'hidden');
+                        $('#slideshowImageLabel').fadeOut();
+                        $('#thumbImageContextMenu').fadeOut();
+                        // SLIDE BVACK INTO VIEW
                         setTimeout(function () {
-                            $('.slideshowNavgArrows').css('visibility', 'visible').fadeIn();
-                        }, 600);
+                            $('#slideshowImage').hide();
+                            if (direction == 'next') {  // RIGHT TO LEFT SLIDE IN FROM THE LEFT SIDE
+                                $('#slideshowImage').css("transform", "translateX(-15000px)");
+                            }
+                            else {
+                                $('#slideshowImage').css("transform", "translateX(5000px)");
+                            }
+                            $('#slideshowImage').attr("src", slideshowImgSrc.src);
+                            $('#slideshowImage').show();
 
-                        if (islargeLoad)
-                            $('#breadcrumbContainer').html(imageViewerFolderName + "/" + imageArray[imageViewerIndex].ImageFolderName).fadeIn();
-                        else {
-                            $('#breadcrumbContainer').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
+                            $('#slideshowImage').css("transform", "translateX(0)", slideShowSpeed);
+
+                            $('.slideshowNavgArrows').css('visibility', 'visible').fadeIn();
+
+                            if (islargeLoad)
+                                $('#headerBottomRow').html(imageViewerFolderName + "/" + imageArray[imageViewerIndex].ImageFolderName).fadeIn();
+                            else {
+                                $('#headerBottomRow').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
+                            }
+
+
                             if (albumFolderId != imageArray[imageViewerIndex].ImageFolderId) {
                                 $('#slideshowImageLabel').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
                             }
-                            //else {
-                            //    if (isInRole("sert", "slide")) {
-                            //        $.ajax({
-                            //            type: "GET",
-                            //            url: settingsArray.ApiServer + "api/Links/GetLinkCount?imageLinkId=" + imageArray[imageViewerIndex].LinkId,
-                            //            success: function (linkCount) {
-                            //                if (linkCount < 2)
-                            //                    $('#copycatDiv').fadeIn();
-                            //            },
-                            //            error: function (jqXHR) {
-                            //                $('#albumPageLoadingGif').hide();
-                            //                let errMsg = getXHRErrorDetails(jqXHR);
-                            //                if (!checkFor404(errMsg, folderId, "getSlideshowItems")) logError("XHR", folderId, errMsg, "getSlideshowItems");
-                            //            }
-                            //        });
-                            //    }
-                            //}
-                        }
-                        $('#headerMessage').html(imageViewerIndex + " / " + imageArray.length);
-                    }, 400);
-                }, 300);
-                resizeSlideshow();
-            };
 
-            if (direction === 'next') {
-                if (++imageViewerIndex >= imageArray.length)
-                    imageViewerIndex = 0;
-            }
-            else {
-                if (--imageViewerIndex < 0)
-                    imageViewerIndex = imageArray.length - 1;
-            }
-            tempImgSrc.src = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
-            spSessionCount++;
-            $('#footerMessage').html("image: " + imageViewerIndex + " of: " + imageArray.length);
-            //$('#headerMessage').html(imageViewerIndex + " / " + imageArray.length);
 
-            //    if (typeof logImageHit === 'function')
-            //        logImageHit(imageArray[imageViewerIndex].LinkId, albumFolderId, false);
-            //    else {
-            //        logSSImageHit(imageArray[imageViewerIndex].LinkId, albumFolderId, false);
-            //    }
+
+                            slideShowAvailable = true;
+
+
+                        }, 400);
+                        resizeSlideshow();
+                    };
+
+                    if (direction === 'next') {
+                        if (++imageViewerIndex >= imageArray.length)
+                            imageViewerIndex = 0;
+                    }
+                    else {
+                        if (--imageViewerIndex < 0)
+                            imageViewerIndex = imageArray.length - 1;
+                    }
+                }
+                tempImgSrc.src = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
+                spSessionCount++;
+                $('#footerMessage').html("image: " + imageViewerIndex + " of: " + imageArray.length);
+            }
         }
     } catch (e) {
         logCatch("slide", e);
@@ -327,9 +337,9 @@ function closeSlideShow() {
     //window.location.href = "/album.html?folder=" + albumFolderId;
     //displayFooter("slideshow");
     $('#slideshowContent').fadeOut();
-    $('#galleryContentArea').fadeIn();
+    $('#AlbumContentArea').fadeIn();
 }
 
 function resizeSlideshow() {
-
+    $('#slideshowImage').css("height", $('#visableArea').height());
 }
