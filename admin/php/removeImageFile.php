@@ -7,14 +7,16 @@
 
         $imageFileId = $_GET['imageFileId'];
 
+        $pdo->beginTransaction();
+
         $sql = "delete from ImageFile where Id=".$imageFileId;
         $stmt= $pdo->prepare($sql);
         $stmt->execute();
-        $pdo->commit();
 
         $sql = "delete from CategoryImageLink where ImageLinkId=".$imageFileId;
         $stmt= $pdo->prepare($sql);
         $stmt->execute();
+
         $pdo->commit();
 
         $success="ok";

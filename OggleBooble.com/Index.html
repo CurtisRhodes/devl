@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+ <head lang="en">
+    <meta charset="utf-8" />
+    <title>OggleBooble.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='shortcut icon' href='favicon.png' type='image/x-icon' />
+ </head>
+ <body>
+    <script>
+        let params = getParams();
+        if (isNullorUndefined(params.folder))
+            window.location.href = "https://ogglefiles.com/beta";
+        else
+            window.location.href = "https://ogglefiles.com/beta/album.html?folder=" + params.folder;
+
+        function getParams() {
+            var params = {},
+                pairs = document.URL.split('?').pop().split('&');
+            for (var i = 0, p; i < pairs.length; i++) {
+                p = pairs[i].split('=');
+                params[p[0]] = p[1];
+            }
+            return params;
+        }
+        function isNullorUndefined(val) {
+            if (val === "")
+                return true;
+            if (val === null)
+                return true;
+            if (val === undefined)
+                return true;
+            return false;
+        }
+  </script>
+ </body>
+</html>

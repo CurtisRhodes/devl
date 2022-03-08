@@ -20,7 +20,9 @@ function getAlbumImages(folderId) {
                     let childFolders = JSON.parse(data);
                     $.each(childFolders, function (idx, childFolder) {
                         $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' + childFolder.Id + ' order by SortOrder', function (data) {
-                            loadImageResults(data, childFolder.Id);
+                            $.each(data, function (idx, vLink) {
+                                loadImageResults(vLink);
+                            });
                         });
                         //getAlbumPageInfo(folderId);
                         $('#largeLoadButton').hide();
@@ -34,7 +36,7 @@ function getAlbumImages(folderId) {
         else {
             $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' + folderId + ' order by SortOrder', function (data) {
                 $.each(data, function (idx, vLink) {
-                    loadImageResults(data);
+                    loadImageResults(vLink);
                 });
                 getSubFolders(folderId);
             });
@@ -44,17 +46,15 @@ function getAlbumImages(folderId) {
         logCatch("getAlbumImages", e);
     }
 }
-function loadImageResults(data, folderId) {
-    $.each(data, function (idx, vLink) {
-        let imgSrc = 'https://common.ogglefiles.com/img/redballon.png';
-        if (!isNullorUndefined(vLink.FileName))
-            imgSrc = settingsImgRepo + "/" + vLink.FileName.replace(/'/g, '%27');
-        $('#imageContainer').append("<div class='intividualImageContainer'>" +
-            "<img id='" + vLink.LinkId + "' class='thumbImage' src='" + imgSrc + "'" +
-            "onerror='imageError(" + folderId + ",\"" + vLink.LinkId + "\")'\n" +
-            "oncontextmenu='albumContextMenu(\"Image\",\"" + vLink.LinkId + "\"," + folderId + ",\"" + imgSrc + "\")'" +
-            "onclick='viewImage(\"" + imgSrc + "\",\"" + vLink.LinkId + "\")'/></div>");
-    });
+function loadImageResults(vLink, folderId) {
+    let imgSrc = 'https://common.ogglefiles.com/img/redballon.png';
+    if (!isNullorUndefined(vLink.FileName))
+        imgSrc = settingsImgRepo + "/" + vLink.FileName.replace(/'/g, '%27');
+    $('#imageContainer').append("<div class='intividualImageContainer'>" +
+        "<img id='" + vLink.LinkId + "' class='thumbImage' src='" + imgSrc + "'" +
+        "onerror='imageError(" + folderId + ",\"" + vLink.LinkId + "\")'\n" +
+        "oncontextmenu='albumContextMenu(\"Image\",\"" + vLink.LinkId + "\"," + folderId + ",\"" + imgSrc + "\")'" +
+        "onclick='viewImage(\"" + imgSrc + "\",\"" + vLink.LinkId + "\")'/></div>");
 }
 
 function getSubFolders(folderId) {
