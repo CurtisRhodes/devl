@@ -41,6 +41,7 @@ function showRepairDialog() {
 
 function performRepairLinks() {
     startTime = Date.now();
+    $('#dashboardFileList').html("");
     repairReport.physcialFilesProcessed = 0;
     repairReport.imageFilesProcessed = 0;
     repairReport.imageFilesAdded = [];
@@ -128,8 +129,8 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
                                                         if (catFolder.FolderType == "singleChild")
                                                             fileNamePrefix = catFolder.ParentName;
                                                         // add new called from rename
-                                                        renameImageFile(objPhyscialimageFileRow.name, fileNamePrefix,
-                                                            rootFolderId, catFolder[0].FolderType, fullPath);
+                                                        renameImageFile(objPhyscialimage.name, fileNamePrefix,
+                                                            rootFolderId, catFolder.FolderType, fullPath);
                                                     }
                                                     else
                                                         repairReport.orphanImageFiles.push(catFolder.FolderName + "   (" + rootFolderId + ")");
