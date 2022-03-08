@@ -20,8 +20,9 @@ function getAlbumImages(folderId) {
                     let childFolders = JSON.parse(data);
                     $.each(childFolders, function (idx, childFolder) {
                         $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' + childFolder.Id + ' order by SortOrder', function (data) {
-                            $.each(data, function (idx, vLink) {
-                                loadImageResults(vLink);
+                            let vlinks = JSON.parse(data);
+                            $.each(vlinks, function (idx, vLink) {
+                                loadImageResults(vLink, childFolder.Id);
                             });
                         });
                         //getAlbumPageInfo(folderId);
@@ -35,8 +36,9 @@ function getAlbumImages(folderId) {
         }
         else {
             $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' + folderId + ' order by SortOrder', function (data) {
+                // let vlinks = JSON.parse(data);
                 $.each(data, function (idx, vLink) {
-                    loadImageResults(vLink);
+                    loadImageResults(vLink, folderId);
                 });
                 getSubFolders(folderId);
             });
@@ -46,10 +48,15 @@ function getAlbumImages(folderId) {
         logCatch("getAlbumImages", e);
     }
 }
+
 function loadImageResults(vLink, folderId) {
     let imgSrc = 'https://common.ogglefiles.com/img/redballon.png';
     if (!isNullorUndefined(vLink.FileName))
         imgSrc = settingsImgRepo + "/" + vLink.FileName.replace(/'/g, '%27');
+
+    if()
+
+
     $('#imageContainer').append("<div class='intividualImageContainer'>" +
         "<img id='" + vLink.LinkId + "' class='thumbImage' src='" + imgSrc + "'" +
         "onerror='imageError(" + folderId + ",\"" + vLink.LinkId + "\")'\n" +

@@ -94,7 +94,7 @@ function dirTreeNode(node, randomId) {
 
             treeNodeTxt = "<div id='" + randomId + "' class='dirTreeNode clickable' style='text-indent:" + dirTreeTab + "px'>\n"
                 + "<span id='TT" + randomId + "' onclick='toggleDirTree(\"" + randomId + "\")'>" + expandMode + "</span>"
-                + "<div class='dirTreeItemName' onclick='commonDirTreeClick(\"" + node.FolderPath + "\"," + node.Id + ")' "
+                + "<div class='" + treeNodeClass + "' onclick='commonDirTreeClick(\"" + node.FolderPath + "\"," + node.Id + ")' "
                 + "\n oncontextmenu='showDirTreeContextMenu(" + node.Id + ")' "
                 + "\n onmouseover='showFolderImage(\"" + folderImage + "\")' "
                 + "\n onmouseout='hideFolderImage()'>" + node.FolderName + "</div>"

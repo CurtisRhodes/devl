@@ -9,11 +9,11 @@
 
         $pdo->beginTransaction();
 
-        $sql = "delete from ImageFile where Id=".$imageFileId;
+        $sql = "delete from ImageFile where Id='".$imageFileId."'";
         $stmt= $pdo->prepare($sql);
         $stmt->execute();
 
-        $sql = "delete from CategoryImageLink where ImageLinkId=".$imageFileId;
+        $sql = "delete from CategoryImageLink where ImageLinkId='".$imageFileId."'";
         $stmt= $pdo->prepare($sql);
         $stmt->execute();
 

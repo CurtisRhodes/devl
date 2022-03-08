@@ -69,12 +69,15 @@ function startCarousel(pageContext, calledFrom) {
         }
         else {
             if (carouselRows.length > 10) {
-                resizeCarousel();
+                $('#footerMessage1').html("started carousel from: " + calledFrom);
                 $('#carouselImageInnerContainer').show();
-                resizeCarousel();
+                $('.categoryTitleLabel').hide();
+
+                intervalReady = true;
+                intervalBody(pageContext);
                 setTimeout(function () {
+                    $('.categoryTitleLabel').show();
                     intervalBody(pageContext);
-                    $('#footerMessage1').html("started carousel from: " + calledFrom);
                     imageIndex = 0; // Math.floor(Math.random() * carouselRows.length);
                     vCarouselInterval = setInterval(function () {
                         intervalBody(pageContext);
@@ -137,9 +140,11 @@ function resizeCarousel() {
 
 function setLabelLinks(llIdx) {
     try {
-        //$("#imageTopLabel").hide();
-        //$('#carouselFooterLabel').hide();
-        //$('#knownModelLabel').hide();
+        //$("#imageTopLabel").fadeOut();
+        //$("#carouselFooterLabel").fadeOut();
+        //$("#knownModelLabel").fadeOut();
+
+
         let carouselItem = carouselRows[llIdx];
         if (carouselItem.pageContext == "centerfold") {
             if (carouselItem.RealRoot == "centerfold")
@@ -220,15 +225,22 @@ function setLabelLinks(llIdx) {
 
         let containerTop = $('#carouselImageInnerContainer').offset().top;
         let containerBottom = $('#thisCarouselImage').height() + $('#carouselImageInnerContainer').offset().top - $('#carouselFooterLabel').height() - 10;
-        $("#imageTopLabel").offset({ top: containerTop, left: $('#carouselImageInnerContainer').offset().left }).fadeIn("slow");
+
+        $("#imageTopLabel").offset({
+            top: containerTop,
+            left: $('#carouselImageInnerContainer').offset().left
+        }).fadeIn("slow");
+
         $('#carouselFooterLabel').offset({
             top: containerBottom,
             left: $('#carouselImageInnerContainer').offset().left
         }).fadeIn("slow");
+
         $('#knownModelLabel').offset({
             top: containerBottom,
             left: $('#carouselImageInnerContainer').offset().left + $('#carouselImageInnerContainer').width() - 100
         }).fadeIn("slow");
+
 
         //$('#headerMessage').html("carouselImageInnerContainer.top: " + $('#carouselImageInnerContainer').offset().top + "  left: " + $('#carouselFooterLabel').offset().left);
     } catch (e) {

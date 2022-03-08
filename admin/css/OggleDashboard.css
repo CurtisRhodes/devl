@@ -47,20 +47,17 @@
     white-space: nowrap;
 }
 
-.dirTreeItemName {
+.treeLabelDiv {
+    display: inline-block;
+    text-indent: 3px;
     color: #9419f5;
-    text-indent: 5px;
 }
 
 .stepchildTreeLabel {
-    display: inline !important;
+    display: inline-block;
+    text-indent: 3px;
     color: #878080;
 }
-
-.treeLabelDiv {
-    display: inline;
-}
-
 
 .dashboardLeftColumn {
     border-right: #decd6f 3px solid;

@@ -18,16 +18,21 @@
         $rootFolder = $catRow[RootFolder];
         $folderPath = $catRow[FolderPath]."/".$newFolderName;
 
-        $stmt = $pdo->prepare("INSERT INTO CategoryFolder (Parent,FolderName,RootFolder,FolderPath,FolderType,SortOrder) VALUES (?,?,?,?,?,?)");
         $pdo->beginTransaction();
+
+        if($catRow[FolderType]=='singleModel') {
+            $stmt = $pdo->prepare("update CategoryFolder FolderType= 'singleParent' where Id=".$parentId);
+            $stmt->execute();
+        }
+
+        $stmt = $pdo->prepare("INSERT INTO CategoryFolder (Parent,FolderName,RootFolder,FolderPath,FolderType,SortOrder) VALUES (?,?,?,?,?,?)");
 
         $stmt->execute([$parentId, $newFolderName, $rootFolder, $folderPath, $folderType, $sortOrder]);
         $pdo->commit();
         $pdo = null;
 
-
         $fullPath = '../../danni/'.$folderPath;
-       
+
         $success = mkdir($fullPath);
 
     }
