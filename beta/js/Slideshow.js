@@ -1,5 +1,5 @@
 const slideShowImgRepo = 'https://ogglefiles.com/danni/';
-const slideShowSpeed = 5000;
+const slideShowSpeed = 5000, transitionSpeed = 250;
 
 let imageArray = [], imageViewerIndex = 0,
     albumFolderId = 0,
@@ -15,7 +15,10 @@ function startSlideShow(folderId, startLink, largeLoad) {
     islargeLoad = largeLoad;
     albumFolderId = folderId;
 
+    displayHeader("slideshow");
     displayFooter("slideshow");
+    showSlideshowHeader();
+
     $('#albumContentArea').fadeOut();
     $('#slideshowContent').show().fadeIn();
 
@@ -229,11 +232,12 @@ function slide(direction) {
                         $('#slideshowLoadingGif').hide();
                         // SLIDE OUT OF VIEW
                         if (direction == 'next') {  // LEFT TO RIGHT OUT THE RIGHT SIDE
-                            $('#slideshowImage').css("transform", "translateX(5000px)", slideShowSpeed);
+                            $('#slideshowImage').css("transform", "translateX(5000px)", transitionSpeed);
                         }
                         else { // 'prev'        
-                            $('#slideshowImage').css("transform", "translateX(-5000Px)", slideShowSpeed);
+                            $('#slideshowImage').css("transform", "translateX(-5000Px)", transitionSpeed);
                         }
+
                         $('.slideshowNavgArrows').css('visibility', 'hidden');
                         $('#slideshowImageLabel').fadeOut();
                         $('#thumbImageContextMenu').fadeOut();
@@ -263,13 +267,8 @@ function slide(direction) {
                             if (albumFolderId != imageArray[imageViewerIndex].ImageFolderId) {
                                 $('#slideshowImageLabel').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
                             }
-
-
-
                             slideShowAvailable = true;
-
-
-                        }, 400);
+                        }, 1400);
                         resizeSlideshow();
                     };
 
@@ -334,10 +333,62 @@ function slideshowContextMenu() {
 }
 
 function closeSlideShow() {
-    //window.location.href = "/album.html?folder=" + albumFolderId;
+    window.location.href = "album.html?folder=" + albumFolderId;
     //displayFooter("slideshow");
     $('#slideshowContent').fadeOut();
     $('#AlbumContentArea').fadeIn();
+}
+
+function showSlideshowHeader() {
+
+    //$('#headerMessage').html("");
+    //$('#breadcrumbContainer').html("");
+    //$('#badgesContainer').html("");
+    //$('#hdrBtmRowSec3').html("");
+    $('#topRowRightContainer').html($('#breadcrumbContainer').html());
+
+    $('#breadcrumbContainer').html(`
+            <div class="flexcontainer">
+            <img id='imgGoHome' class='imgCommentButton' title='home'
+                onclick='window.location.href=\"Index.html\"' src='https://common.ogglefiles.com/img/redballon.png'/>
+            <div class='floatRight clickable' onclick='closeViewer(\"click\");' > <img title='you may use the {esc} key'
+                src='https://common.ogglefiles.com/img/close.png'/> </div>
+            </div>`);
+
+
+
+    //$('#topRowRightContainer').html("");
+
+
+        //"   <div id='viewerButtonsRow' class='imageViewerHeaderRow' > \n" +
+        //    "       <div><</div>\n" +
+        //    "       <div id='ssHeaderCount' class='ssHeaderCount'></div>\n" +
+        //    "       <div><img id='imgComment' class='imgCommentButton' title='comment' onclick='showImageViewerCommentDialog()' src='/Images/comment.png'/></div>\n" +
+        //    "       <div id='imageViewerHeaderTitle' class='imageViewerTitle'></div> \n" +
+        //    "       <div class='floatRight clickable' onclick='runSlideShow(\"faster\");'><img id='fasterSlideshow' title='faster' src='/Images/speedDialFaster.png'/></div>\n" +
+        //    "       <div id='txtStartSlideShow' class='floatRight clickable'style='padding-top:4px' onclick='runSlideShow(\"start\");'>start slideshow</div>\n" +
+        //    "       <div class='floatRight clickable' onclick='runSlideShow(\"slower\");'><img id='slowerSlideShow' title='slower' src='/Images/speedDialSlower.png'/></div>\n" +
+        //    "       <div class='floatRight clickable' onclick='blowupImage()'><img class='popoutBox' title='open image in a new window' src='/Images/expand02.png'/> </div>\n" +
+    //    "       
+        //    "   </div>\n" +
+
+
+
+
+        //$('#badgesContainer').html("len1: " + len1 + " imageIndex: " + imageIndex + "  len2: " + len2 + "  new index: " + popimageIndex);
+        //if (carouselDebugMode) $('#hdrBtmRowSec3').html("indx: " + indx);
+        //alert("indx[" + imageHistory.length + "]: " + indx);
+
+        //$('#thisCarouselImage').attr('src', popimage).load(function () {
+        //    $('#carouselFooter').fadeIn();
+        //    //$('#carouselImageContainer').fadeIn(intervalSpeed, function () { resizeCarousel(); });
+        //    //$('#footerMessage').html("image " + imageIndex.toLocaleString() + " of " + carouselItemArray.length.toLocaleString());
+        //    //alert("image " + imageIndex.toLocaleString() + " of " + carouselItemArray.length.toLocaleString());
+        //});
+        //alert("img1: " + img1 + "\npopimage: " + popimage);
+
+
+
 }
 
 function resizeSlideshow() {

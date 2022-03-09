@@ -54,9 +54,6 @@ function loadImageResults(vLink, folderId) {
     if (!isNullorUndefined(vLink.FileName))
         imgSrc = settingsImgRepo + "/" + vLink.FileName.replace(/'/g, '%27');
 
-    if()
-
-
     $('#imageContainer').append("<div class='intividualImageContainer'>" +
         "<img id='" + vLink.LinkId + "' class='thumbImage' src='" + imgSrc + "'" +
         "onerror='imageError(" + folderId + ",\"" + vLink.LinkId + "\")'\n" +
@@ -285,7 +282,6 @@ function launchLargeLoad() {
     function closeImageViewer() {
         incrementImplodeViewer($("#viewerImage"));
     }
-
     function resizeViewer() {
         if ($('#singleImageOuterContainer').is(":visible")) {
             $("#viewerImage").css("height", visAreaH - viewerOffsetTop);
@@ -300,11 +296,12 @@ function launchLargeLoad() {
     function showSlideshow() {
         try {
             $("#vailShell").hide();
-            closeImageViewer();
-            setTimeout(function () {
-                $('#singleImageOuterContainer').hide();
-                startSlideShow(currentFolderId, currentImagelinkId, islargeLoad)
-            }, 1100);
+            $('#singleImageOuterContainer').hide();
+            $("#divSlideshowButton").hide();
+            $("#viewerCloseButton").hide();
+            $("#vailShell").hide();
+            $('body').off();
+            startSlideShow(currentFolderId, currentImagelinkId, islargeLoad)
         } catch (e) {
             logCatch("showSlideshow", e);
         }
