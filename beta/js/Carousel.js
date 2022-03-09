@@ -451,14 +451,15 @@ function carouselContextMenu() {
 function imgErrorThrown() {
     try {
         if (lastErrorThrown != imageIndex) {
+
             lastErrorThrown = imageIndex;
 
             $('#thisCarouselImage').attr('src', "https://common.ogglefiles.com/img/redBallon.png");
             $('#thisCarouselImage').css('height', window.innerHeight * .5);
 
             //alert($('#thisCarouselImage').attr('src') + " not found");
-            console.log(carouselRows[imageIndex].ImageFileName + " not found");
-            logOggleError("ILF", 11, carouselRows[imageIndex].ImageFileName + " not found", "carousel");
+            //console.log(carouselRows[imageIndex].ImageFileName + " not found");
+            //logOggleError("ILF", 11, carouselRows[imageIndex].ImageFileName + " not found", "carousel");
             //logError("ILF", 11, carouselRows[imageIndex].ImageFileName+ " not found", "carousel");
 
         }

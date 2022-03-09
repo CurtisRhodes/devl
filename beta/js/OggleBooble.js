@@ -306,8 +306,8 @@ function oggleSearchKeyDown(event) {
                 performSearch(searchString);
             }
             else {
-                searchString += String.fromCharCode(ev);                
-                $('#txtSearch').val(searchString);
+                searchString += String.fromCharCode(ev);
+                //$('#txtSearch').val(searchString);
                 performSearch(searchString);
             }
         }
@@ -321,7 +321,7 @@ function oggleSearchKeyDown(event) {
                 $('#searchResultsDiv').children().removeClass('selectedSearchItem');
                 kludge = "li:nth-child(" + ++itemIndex + ")";
                 $('#searchResultsDiv').find(kludge).addClass('selectedSearchItem').focus();
-                // $('#headerMessage').html("down: " + itemIndex);
+                $('#headerMessage').html("down: " + itemIndex);
             }
         }
         if (ev === 38) {  // up arrow
@@ -329,7 +329,7 @@ function oggleSearchKeyDown(event) {
                 $('#searchResultsDiv').children().removeClass('selectedSearchItem');
                 kludge = "li:nth-child(" + --itemIndex + ")";
                 $('#searchResultsDiv').find(kludge).addClass('selectedSearchItem').focus();
-                //   $('#headerMessage').html("up: " + itemIndex);
+                $('#headerMessage').html("up: " + itemIndex);
             }
         }
         if (ev === 13) {  // enter
@@ -346,11 +346,18 @@ function oggleSearchKeyDown(event) {
 
 function performSearch(searchString) {
     if (searchString.length > 2) {
+
+        let sql = `select f.Id, p.FolderName as ParentName, f.FolderName from CategoryFolder f join CategoryFolder p on f.Parent = p.Id
+        where f.FolderName like '`+ searchString + `%' and f.FolderType != "singleChild"
+        union
+        select f.Id, p.FolderName as ParentName, f.FolderName from CategoryFolder f join CategoryFolder p on f.Parent = p.Id
+        where f.FolderName like '%`+ searchString + `%' and f.FolderName not like '` + searchString + `%' and f.FolderType != "singleChild"`;
+
         try {
             $('#divLoginArea').hide();
             $.ajax({
                 type: "GET",
-                url: "php/oggleSearch.php?searchString=" + searchString + "&searchMode=startsWith",
+                url: "php/customFetchAll.php?query=" + sql,
                 success: function (data) {
                     if (data.indexOf("Error") > 0) {
                         alert(data);
@@ -363,39 +370,12 @@ function performSearch(searchString) {
                                 " onclick='jumpToSelected(" + obj.Id + ")'>" +
                                 obj.ParentName + "-" + obj.FolderName + "</li>");
                         });
-
-                        $.ajax({
-                            type: "GET",
-                            url: "php/oggleSearch.php?searchString=" + searchString + "&searchMode=contains",
-                            success: function (data) {
-                                if (data.indexOf("Error") > 0) {
-                                    alert(data);
-                                }
-                                else {
-                                    let fData = JSON.parse(data);
-                                    //$('#searchResultsDiv').html("<ul class='searchResultList>").show();
-                                    $.each(fData, function (idx, obj) {
-                                        $('#searchResultsDiv').append("<li id=" + obj.Id +
-                                            " onclick='jumpToSelected(" + obj.Id + ")'>" +
-                                            obj.ParentName + "-" + obj.FolderName + "</li>");
-                                    });
-                                    $('#searchResultsDiv').append("</ul>").show();
-                                }
-                            },
-                            error: function (jqXHR) {
-                                $('#albumPageLoadingGif').hide();
-                                let errMsg = getXHRErrorDetails(jqXHR);
-                                $('#randomGalleriesContainer').html(errMsg)
-                            }
-                        });
                     }
                 },
                 error: function (jqXHR) {
                     $('#albumPageLoadingGif').hide();
                     let errMsg = getXHRErrorDetails(jqXHR);
                     $('#randomGalleriesContainer').html(errMsg)
-                    //alert("getRandomGalleries: " + errMsg);
-                    // logError("XHR", folderId, errMsg, "get albumImages");
                 }
             });
         } catch (e) {
@@ -563,86 +543,4 @@ function setFolderImage(filinkId, folderId, level) {
     } catch (e) {
         logCatch("set Folder Image", e);
     }
-}
-
-function ww3Canvas(imageElement) {
-    try {
-        var c = document.createElement("canvas");
-        var ctx = c.getContext("2d");
-        ctx.drawImage(imageElement, 0, 0);
-        var imgData = ctx.getImageData(0, 0, c.width, c.height);
-
-        // invert colors
-        var i;
-        for (i = 0; i < imgData.data.length; i += 4) {
-            imgData.data[i] = 255 - imgData.data[i];
-            imgData.data[i + 1] = 255 - imgData.data[i + 1];
-            imgData.data[i + 2] = 255 - imgData.data[i + 2];
-            imgData.data[i + 3] = 255;
-        }
-        ctx.putImageData(imgData, 0, 0);
-    } catch (e) {
-        console.error("ww3Canvas" + e);
-    }
-}
-
-function averageColor(imageElement) {
-    try {
-        if (imageElement.height == 0) {
-            return { r: 222, g: 223, b: 222 };
-        }
-
-        let canvas = document.createElement('canvas');
-        let imgH = imageElement.height;
-        let imgW = imageElement.width;
-
-        let ctx = canvas.getContext && canvas.getContext('2d'), imgData, cWidth, cHeight, length,
-            rgb = { r: 0, g: 0, b: 0 }, count = 0;
-
-        ctx.drawImage(imageElement, 0, 0);
-        imgData = ctx.getImageData(0, 0, imgW, imgH);
-        length = imgData.data.length;
-        for (var i = 0; i < length; i += 4) {
-            rgb.r += imgData.data[i];
-            rgb.g += imgData.data[i + 1];
-            rgb.b += imgData.data[i + 2];
-            count++;
-        }
-
-        rgb.r = giveMeThree(rgb.r / count);
-        rgb.g = giveMeThree(rgb.g / count);
-        rgb.b = giveMeThree(rgb.b / count);
-
-        return rgb;
-    } catch (e) {
-        //logCatch("averageColor", e);
-        console.error("averageColor" + e);
-    }
-}
-
-function giveMeThree(inVal) {
-    //return giveMeTwo(inVal);
-    let outVal = Math.floor(inVal);
-    if (outVal < 99) {
-        if (outVal < 10) 
-            outVal = Math.floor(inVal*100);
-        else
-            outVal = Math.floor(inVal * 10);
-    }
-    if (outVal > 999)
-        outVal = Math.floor(inVal / 10);
-
-    if (outVal > 500)
-        outVal -= 200;
-
-    return outVal;
-}
-
-function giveMeTwo(inVal) {
-    let outVal = Math.floor(inVal);
-    if (outVal < 10)
-        outVal = Math.floor(inVal * 10);
-    if (outVal > 999)
-        outVal = Math.floor(inVal / 10);
-    return outVal;
 }
