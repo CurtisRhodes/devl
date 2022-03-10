@@ -20,7 +20,7 @@ function showBuildDirTreeDialog() {
         "              <option selected='selected' value='3956'>private collection ~(4,000)</option>\n" +
         "              <option selected='selected' value='10326'>Bond Girls	~(5,000)</option>\n" +
         "           </select></div>\n" +
-        "    <div><span>or select start folder</span><input id='txtRoot' class='txtLinkPath roundedInput'></input></div>\n" +
+        "    <div><span>or select start folder </span><input id='txtRoot' class='roundedInput'></input></div>\n" +
         "    <div class='roundendButton' tabindex='0' onclick='performBuildDirTree();dashboardDialogBoxClose(\"showBuildDirTreeDialog click\");')'>Go</div>");
     $('#dashboardDialogBox').draggable().fadeIn();
     $('#dashboardDialogContents').keydown(function (event) {

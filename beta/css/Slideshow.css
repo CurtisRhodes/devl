@@ -14,16 +14,30 @@
     border: solid 6px lime;
 }
 
-.slideshowHeaderButton {
-    height: 111px;
-}
-
 .wideCententer {
     display: inline-block;
-    width: fit-content;
-    border: solid thin rgba(0,0,0,0.4);
-    background-color: #bfbfbf;
+    width: -webkit-fill-available;
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 20px;
     text-align: center;
+}
+.sldeshowHeaderTextContainer {
+    font-size: 16px;
+    padding: 9px;
+    display: inline-block;
+    float: right;
+    white-space: nowrap;
+}
+.slideshowHeaderButtonContainer {
+    display: inline-block;
+    float: right;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.slideshowHeaderButton {
+    height: 31px;
 }
 
 .slideshowButton {
@@ -47,10 +61,6 @@
     cursor: pointer;
     display: none;
     z-index: 21;
-}
-
-.slideshowHeaderButton {
-    height: 31px;
 }
 
 .slideShowVail {

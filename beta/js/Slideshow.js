@@ -6,65 +6,57 @@ let slideShowSpeed = 5000,
     imageViewerIndex = 0,
     albumFolderId = 0,
     spSessionCount = 0,
-    slideshowImgSrc = new Image(),
     tempImgSrc = new Image(),
     slideShowButtonsActive = false,
-    spSlideShowRunning,
     imageViewerIntervalTimer,
-    imageViewerFolderName,
-    slideShowAvailable;
+    slideshowParentName,
+    slideShowAvailable = true;
 
-function startSlideShow(folderId, startLink, largeLoad) {
-    islargeLoad = largeLoad;
+function showSlideshowViewer(folderId, startLink, isLargeLoad) {
     albumFolderId = folderId;
 
     displayFooter("slideshow");
     showSlideshowHeader();
+    getFolderDetails();
 
     $('#albumContentArea').fadeOut();
     $('#slideshowContent').show().fadeIn();
 
     slideShowButtonsActive = true;
     spSessionCount = 0;
-    loadSlideshowItems(folderId, startLink);
+    loadSlideshowItems(folderId, startLink, isLargeLoad);
+    resizeSlideshow();
 }
 
-function loadSlideshowItems(folderId, startLink) {
+function loadSlideshowItems(folderId, startLink, isLargeLoad) {
     try {
-        let infoStart = Date.now();        
-        $('#aboveImageContainerMessageArea').html('loading');
-        let asyncFlag = false;
-        if (islargeLoad) {
+        let infoStart = Date.now();
+        $('#slideshowMessageArea').html('loading');
+        if (isLargeLoad) {
             $.ajax({
-                url: "php/customQuery.php?query=Select * from CategoryFolder where Parent=" + folderId,
+                url: "php/customQuery.php?query=select f.Id, p.FolderName from CategoryFolder f " +
+                    "join CategoryFolder p on f.Parent = p.Id where f.Parent=" + folderId,
                 success: function (data) {
                     let childFolders = JSON.parse(data);
+                    slideshowParentName = childFolders[0].FolderName;
                     $.each(childFolders, function (idx, childFolder) {
-                        $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' + childFolder.Id + ' order by SortOrder',
-                            function (data) {
-                                $.each(data, function (idx, obj) {
-                                    imageArray.push(obj);
+                        $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' +
+                            childFolder.Id + ' order by SortOrder', function (data) {
+                            $.each(data, function (idx, obj) {
+                                imageArray.push(obj);
 
-                                if ((imageArray.length > 10) && (!asyncFlag)) {
-                                    asyncFlag = true;
-                                    imageViewerIndex = 0;
-                                    slideShowAvailable = true;
-                                    slide('next');
-                                    if (isNullorUndefined(imageViewerIntervalTimer)) {
-                                        imageViewerIntervalTimer = setInterval(function () {
-                                            slide('next');
-                                        }, slideShowSpeed);
-                                    }
-                                    $('#largeLoadButton').hide();
-                                    $('#deepSlideshowButton').hide();
-                                    }
-                                });
+                                if (imageArray.length > 10) {
+                                    $('#slideshowImage').attr("src", imageArray[0].FileName);
+                                    $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
+                                }
                             });
+                            $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
+                        });
                     });
                 }
             });
         }
-        else {
+        else { 
             $.ajax({
                 url: 'php/customQuery.php?query=select * from VwLinks where FolderId=' + folderId,
                 success: function (data) {
@@ -73,17 +65,11 @@ function loadSlideshowItems(folderId, startLink) {
                     }
                     else {
                         imageArray = JSON.parse(data);
-                        // initialExplode
                         imageViewerIndex = imageArray.findIndex(node => node.LinkId == startLink);
-                        getFolderDetails();
-                        slideShowAvailable = true;
-                        spSlideShowRunning = true;
+                        $('#slideshowImage').attr("src", slideShowImgRepo + imageArray[imageViewerIndex].FileName);
+                        $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
+                        $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
 
-                        tempImgSrc.src = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
-                        slide('next');
-                        imageViewerIntervalTimer = setInterval(function () {
-                            slide('next');
-                        }, slideShowSpeed);
                     }
                 },
                 error: function (jqXHR) {
@@ -96,10 +82,9 @@ function loadSlideshowItems(folderId, startLink) {
         let delta = (Date.now() - infoStart) / 1000;
         console.log("getGalleyInfo took: " + delta.toFixed(3));
     } catch (e) {
-        logCatch("getAlbumPageInfo", e);
+        logCatch("load slideshow items", e);
     }
 }
-
 
 function getFolderDetails() {
     $.ajax({
@@ -111,7 +96,7 @@ function getFolderDetails() {
             }
             else {
                 let thisCatFolder = JSON.parse(data)[0];
-                $('#headerBottomRow').html("<span sytle='font-size:19px'>" + thisCatFolder.ParentName +
+                $('#slideshowMessageArea').html("<span sytle='font-size:19px'>" + thisCatFolder.ParentName +
                     "/" + thisCatFolder.FolderName + "</span>");
             }
         },
@@ -124,16 +109,6 @@ function getFolderDetails() {
 }
 
 function runSlideShow(action) {
-    //console.log("run slideShow action: " + action + "  txtStartSlideShow: " + $('#txtStartSlideShow').html());
-    //alert("run slideShow action: " + action + "  txtStartSlideShow: " + $('#txtStartSlideShow').html());
-    if (action === 'stop') {
-        if (spSlideShowRunning) {
-            $('#txtStartSlideShow').html("start slideshow");
-            clearInterval(imageViewerIntervalTimer);
-            spSlideShowRunning = false;
-        }
-        return;
-    }
     if (action === 'pause') {
         if (spSlideShowRunning) {
             clearInterval(imageViewerIntervalTimer);
@@ -171,100 +146,70 @@ function adjustSlideshowSpeed(action) {
 
 }
 
-function slideClick(direction) {
-    if (!event.detail || event.detail === 1) {//activate on first click only to avoid hiding again on double clicks
-        if (spSlideShowRunning) {
-            $('#txtStartSlideShow').html("start slideshow");
-            clearInterval(imageViewerIntervalTimer);
-            if (direction === 'next') {
-                runSlideShow('start');
-            }
-            else
-                spSlideShowRunning = false;
-        }
-        else {
-            slide(direction);
-        }
-    }
-}
-
 function slide(direction) {
     try {
         if (slideShowAvailable) {
             slideShowAvailable = false;
-            if (isNullorUndefined(imageArray[imageViewerIndex])) {
-                imageViewerIndex = Math.floor(Math.random() * imageArray.length);
-                //logOggleError("SLA", albumFolderId, "", "slideshow.slide");
+            let showLoadingGif = true;
+            setTimeout(function () {
+                if (showLoadingGif)
+                    $('#slideshowLoadingGif').show()
+            }, 250);
+
+            if (direction == 'next') {
+                if (++imageViewerIndex >= imageArray.length)
+                    imageViewerIndex = 0;
             }
             else {
-                $('#copycatDiv').hide();
-                let showLoadingGif = true;
-                setTimeout(function () {
-                    if (showLoadingGif)
-                        $('#slideshowLoadingGif').show()
-                }, 500);
-                tempImgSrc.onload = function () {
-                    showLoadingGif = false;
-                    slideshowImgSrc.onload = function () {
-                        $('#slideshowLoadingGif').hide();
-                        $('#thumbImageContextMenu').fadeOut();
-                        $('.slideshowNavgArrows').css('visibility', 'hidden');
-                        $('#slideshowImageLabel').fadeOut();
-
-                        // SLIDE OUT OF VIEW
-                        if (direction == 'next') {  // LEFT TO RIGHT OUT THE RIGHT SIDE
-                            $('#slideshowImage').css("transform", "translateX(5000px)", transitionSpeed);
-                        }
-                        else { // 'prev'        
-                            $('#slideshowImage').css("transform", "translateX(-5000Px)", transitionSpeed);
-                        }
-                        // SLIDE BVACK INTO VIEW
-                        setTimeout(function () {
-                            $('#slideshowImage').hide();
-                            if (direction == 'next') {  // RIGHT TO LEFT SLIDE IN FROM THE LEFT SIDE
-                                $('#slideshowImage').css("left", "translateX(-15000px)");
-                                $('#slideshowImage').css("transform", "translateX(-15000px)");
-                            }
-                            else {
-                                $('#slideshowImage').css("transform", "translateX(5000px)");
-                            }
-                            slideshowImgSrc.src = tempImgSrc.src;
-                            $('#slideshowImage').attr("src", slideshowImgSrc.src);
-                            if (direction == 'next')
-                                $('#slideshowImage').css("left", "-5000px");
-                            else
-                                $('#slideshowImage').css("right", "5000px");
-
-                            $('#slideshowImage').css("transform", "translateX(0)", slideShowSpeed);
-                            $('.slideshowNavgArrows').css('visibility', 'visible').fadeIn();
-                            slideShowAvailable = true;
-                            resizeSlideshow();
-                        }, 1400);
-
-                        if (islargeLoad)
-                            $('#headerBottomRow').html(imageViewerFolderName + "/" + imageArray[imageViewerIndex].ImageFolderName).fadeIn();
-                        else {
-                            $('#headerBottomRow').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
-                        }
-
-                        if (albumFolderId != imageArray[imageViewerIndex].ImageFolderId) {
-                            // we have a link
-                            $('#slideshowImageLabel').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
-                        }
-                        if (direction === 'next') {
-                            if (++imageViewerIndex >= imageArray.length)
-                                imageViewerIndex = 0;
-                        }
-                        else {
-                            if (--imageViewerIndex < 0)
-                                imageViewerIndex = imageArray.length - 1;
-                        }
-                        tempImgSrc.src = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
-                    };
-                }
-                spSessionCount++;
-                $('#footerMessage').html("image: " + imageViewerIndex + " of: " + imageArray.length);
+                if (--imageViewerIndex == 0)
+                    imageViewerIndex = imageArray.length;
             }
+
+            tempImgSrc.src = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
+            tempImgSrc.onload = function () {
+                showLoadingGif = false;
+                $('#slideshowLoadingGif').hide();
+                $('#thumbImageContextMenu').fadeOut();
+                $('.slideshowNavgArrows').css('visibility', 'hidden');
+                $('#slideshowImageLabel').fadeOut();
+
+                // 1. slide out of view
+                if (direction == 'next') {
+                    $('#slideshowImage').animate({ right: "5000px" }, "slow");
+                    $('#slideshowImage').css({ left: "-5000px" });
+                }
+                else {
+                    $('#slideshowImage').animate({ left: "-5000px" }, 7000);
+                    $('#slideshowImage').css({ right: "5000px" });
+                }
+
+                $('#slideshowImage').attr("src", tempImgSrc.src);
+
+                setTimeout(function () { // SLIDE BACK INTO VIEW
+                    if (direction == 'next') {
+                        $('#slideshowImage').animate({ left: "0" },2000);
+                    }
+                    else { // 'prev' move image far to the right
+                        $('#slideshowImage').animate({ right: "0" },5000);
+                    }
+                    $('.slideshowNavgArrows').css('visibility', 'visible').fadeIn();
+                    slideShowAvailable = true;
+                    resizeSlideshow();
+                    if (albumFolderId != imageArray[imageViewerIndex].ImageFolderId) {
+                        // we have a link
+                        $('#slideshowImageLabel').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
+                    }
+
+                    //      $('#slideshowMessageArea').html(slideshowParentName + "/" + imageArray[imageViewerIndex].ImageFolderName).fadeIn();
+                    //  else
+                    $('#slideshowMessageArea').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
+
+                    spSessionCount++;
+                    $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
+
+                    $('#footerMessage').html("image: " + imageViewerIndex + " of: " + imageArray.length);
+                }, 450);
+            };
         }
     } catch (e) {
         logCatch("slide", e);
@@ -275,21 +220,21 @@ $(document).keydown(function (event) {
     if (slideShowButtonsActive) {
         switch (event.which) {
             case 27:                        // esc
-                closeSlideShow("escape key");
+                closeSlideShow();
                 break;
             //case 38: scrollTabStrip('foward'); break;
             //case 33: scrollTabStrip('foward'); break;
             case 34:                        // pg down
             case 40:                        // dowm arrow
             case 37:                        // left arrow
-                slideClick('prev');
+                slide('prev');
                 break;
             case 13:                        // enter
             case 38:                        // up arrow
             case 39:                        // right arrow
                 event.preventDefault();
                 window.event.returnValue = false;
-                slideClick('next');
+                slide('next');
                 break;
             //case 122:                       // F11
             //    $('#standardHeader').hide();
@@ -300,6 +245,11 @@ $(document).keydown(function (event) {
         }
     }
 });
+
+$('#rightClickArea').dblclick(function () {
+    startSlideShow();
+});
+
 
 function slideshowContextMenu() {
     runSlideShow("pause");
@@ -313,34 +263,47 @@ function slideshowContextMenu() {
 }
 
 function closeSlideShow() {
-    window.location.href = "album.html?folder=" + albumFolderId;
+    //window.location.href = "album.html?folder=" + albumFolderId;
     //displayFooter("slideshow");
     $('#slideshowContent').fadeOut();
-    $('#AlbumContentArea').fadeIn();
-}
+    $('#albumContentArea').fadeIn();
 
+    displayHeader("oggleIndex");
+    displayFooter("oggleAlbum");
+
+}
 
 function txtSlideShowClick() {
-    if ($('#txtStartSlideShow').html() === "stop slideshow") {
-        spSlideShowRunning = false;
+    if ($('#txtStartSlideShow').html() == "start slideshow") {
+        startSlideShow();
+        $('#txtStartSlideShow').html("stop slideshow");
+    }
+    else {
         clearInterval(imageViewerIntervalTimer);
         $('#txtStartSlideShow').html("start slideshow");
-        return;
-    }
-    if ($('#txtStartSlideShow').html() === "start slideshow") {
-        $('#txtStartSlideShow').html("stop slideshow");
-        if (spSlideShowRunning)
-            slide('next');
-        else {
-            slide('next');
-            imageViewerIntervalTimer = setInterval(function () {
-                slide('next');
-            }, slideShowSpeed);
-            spSlideShowRunning = true;
-        }
     }
 }
 
+function startSlideShow() {
+    if (imageViewerIntervalTimer == null) {
+        imageViewerIntervalTimer = setInterval(function () {
+            slide('next');
+        }, slideShowSpeed);
+    }
+
+    //FolderId	    int(11) 	    NO
+    //Parent	    int(11)	        NO
+    //SrcId	        int(11)	        NO		0
+    //RootFolder	varchar(20)	    NO
+    //LinkId	    varchar(36)	    NO
+    //FileName	    varchar(501)	YES
+    //SrcFolder	    varchar(150)	NO
+    //Orientation	varchar(1)	    NO
+    //IsLink    	int(1)	        NO		0
+    //SortOrder	    int(11)	        NO
+    //Poster    	varchar(600)	YES
+
+}
 
 function explodeImage() {
 
@@ -352,72 +315,57 @@ function showSlideshowHeader() {
     //$('#breadcrumbContainer').html("");
     //$('#badgesContainer').html("");
     //$('#hdrBtmRowSec3').html("");
-    $('#topRowRightContainer').html($('#breadcrumbContainer').html());
+
+    let tempd = document.createElement('div');
+    tempd.innerHTML = $('#breadcrumbContainer').html();
+
     displayHeader("slideshow");
+    $('#topRowRightContainer').html(tempd.innerHTML);
 
     $('#headerBottomRow').html(`
-        <div class='flexbox'>
-            <div class='floatRight clickable' onclick='closeViewer("click");'>
-                <img class='slideshowHeaderButton' title='you may use the {esc} key'
-                    src='https://common.ogglefiles.com/img/close.png'/>
-            </div>
-            <div class='floatRight clickable' onclick='explodeImage();'>
-                <img class='slideshowHeaderButton' title='explode image'
-                    src='https://common.ogglefiles.com/img/close.png'/>
+      <div class="fullWidthFlexContainer">
+        <div id='sldeshowNofN' class='sldeshowHeaderTextContainer'></div>
+
+        <div class='slideshowHeaderButtonContainer' onclick='explodeImage();'>
+            <img class='slideshowHeaderButton' title='explode image'
+                src='https://common.ogglefiles.com/img/expand02.png'/>
+        </div>
+
+        <div id='slideshowMessageArea' class='inline wideCententer'></div>
+
+        <div class='flexContainer'>
+            <div class='inline clickable' onclick='adjustSlideshowSpeed("faster")'>
+                <img id='fasterSlideshow' class='slideshowHeaderButton' title='faster'
+                        src='https://common.ogglefiles.com/img/speedDialFaster.png'/>
             </div>
 
-            <div id='slideshowMessageArea' class='wideCententer'></div>
+            <div id='txtSlideShow' class='sldeshowHeaderTextContainer clickable' onclick='txtSlideShowClick()'>
+                start slideshow
+            </div>
 
-            <div class='slideshowSpeedControls class='floatRight'>
-                <div class='clickable' onclick='runSlideShow("faster")'>
-                    <img id='fasterSlideshow' title='faster' src='https://common.ogglefiles.com/imgspeedDialFaster.png'/>
-                </div>
-                <div id='txtSlideShow' class='clickable' style='padding-top:4px' onclick='txtSlideShowClick();'>start slideshow</div>
-                <div class='clickable' onclick='runSlideShow("slower")'>
-                    <img id='slowerSlideShow' title='slower' src='https://common.ogglefiles.com/img/speedDialSlower.png'/>
-                </div>
+            <div class='clickable' onclick='adjustSlideshowSpeed("slower")'>
+                <img id='slowerSlideShow' class='slideshowHeaderButton' title='slower'
+                        src='https://common.ogglefiles.com/img/speedDialSlower.png'/>
             </div>
-            <div class='floatLeft clickable'>
-                <img id='imgGoHome' class='slideshowHeaderButton' title='home'
-                    onclick='window.location.href="album.html?folder=`+ albumFolderId + `"'
-                    src='https://common.ogglefiles.com/img/redballon.png'/>
-            </div>
-        </div >`
+        </div>
+        <div class='inline floatRight clickable' onclick='closeSlideShow();'>
+            <img class='slideshowHeaderButton' title='you may use the {esc} key'
+                    src='https://common.ogglefiles.com/img/close.png' />
+        </div>
+      </div>`
     );
-
-    //$('#topRowRightContainer').html("");
-
-
-        //"   <div id='viewerButtonsRow' class='imageViewerHeaderRow' > \n" +
-        //    "       <div><</div>\n" +
-        //    "       <div id='ssHeaderCount' class='ssHeaderCount'></div>\n" +
-        //    "       <div><img id='imgComment' class='imgCommentButton' title='comment' onclick='showImageViewerCommentDialog()' src='/Images/comment.png'/></div>\n" +
-        //    "       <div id='imageViewerHeaderTitle' class='imageViewerTitle'></div> \n" +
-        //    "       \n" +
-        //    "       \n" +
-        //    "       <div class='floatRight clickable' onclick='blowupImage()'><img class='popoutBox' title='open image in a new window' src='/Images/expand02.png'/> </div>\n" +
-    //    "       
-        //    "   </div>\n" +
-
-
-
-
-        //$('#badgesContainer').html("len1: " + len1 + " imageIndex: " + imageIndex + "  len2: " + len2 + "  new index: " + popimageIndex);
-        //if (carouselDebugMode) $('#hdrBtmRowSec3').html("indx: " + indx);
-        //alert("indx[" + imageHistory.length + "]: " + indx);
-
-        //$('#thisCarouselImage').attr('src', popimage).load(function () {
-        //    $('#carouselFooter').fadeIn();
-        //    //$('#carouselImageContainer').fadeIn(intervalSpeed, function () { resizeCarousel(); });
-        //    //$('#footerMessage').html("image " + imageIndex.toLocaleString() + " of " + carouselItemArray.length.toLocaleString());
-        //    //alert("image " + imageIndex.toLocaleString() + " of " + carouselItemArray.length.toLocaleString());
-        //});
-        //alert("img1: " + img1 + "\npopimage: " + popimage);
-
-
-
 }
 
 function resizeSlideshow() {
     $('#slideshowImage').css("height", $('#visableArea').height());
+
+    //$('#viewerImage').css('left', ($(window).width() - $('#viewerImage').width()) / 2);
+    //$('#leftClickArea').css('left', 0);
+    $('#rightClickArea').css('left', $(window).width() / 2);
+    //$('#viewerImage').height($(window).height() - 30);
+    $('.slideshowNavgArrows img').height($(window).height() - 30);
+    //$('#slideShowContainer').css('width', "100%");
+    $(window).scrollTop(0);
+
+
 }

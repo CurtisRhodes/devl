@@ -119,7 +119,8 @@ body {
     display: inline-block;
     font-size: var(--normalFont);
     border-radius: 4px;
-    padding: 4px;
+    padding: 2px;
+    margin-top: 4px;
 }
 
 .centeringOuterShell {
@@ -203,15 +204,11 @@ body {
     width: 100%;
 }
 
-.headerTopRow {
+.fullWidthFlexContainer {
+    width: 100%;
     display: flex;
-    width: 100%;
-}
-
-.headerBottomRow {
-    width: 100%;
-    display: inline-block;
     padding-top: 3px;
+    justify-content:  space-between;
 }
 .bottomRowSection1 {
     float: left;

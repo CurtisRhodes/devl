@@ -439,13 +439,15 @@ function logOggleError(errorCode, folderId, errorMessage, calledFrom) {
 function imageError(folderId, linkId) {
     try {
         // let calledFrom = "noneya";
-        console.warn("imageError(linkId: " + linkId + ", folderId: " + folderId + ")");
+        alert("imageError:" + ErrorCode + " folder: " + folderId + // " called from: " + calledFrom +
+            "\n link: "+linkId+
+            "\n" + errorMessage);
 
         $('#' + linkId).attr('src', 'https://common.ogglefiles.com/img/redballonSmall.png');
         // logError("ILF", folderId, "linkId: " + linkId, "gallery");
 
     } catch (e) {
-        logCatch("imageError", e);
+        logCatch("image error", e);
     }
 }
 

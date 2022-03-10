@@ -95,7 +95,7 @@ function intervalBody(pageContext) {
             imageIndex = Math.floor(Math.random() * carouselRows.length);
 
             if (arryItemsShownCount > carouselRows.length) {
-                if (confirm("imageIndex: " + imageIndex + "  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
+                if (confirm("items shown: " + arryItemsShownCount + "  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
                     loadImages(pageContext, false);
                     imageIndex = Math.floor(Math.random() * carouselRows.length);
                 }

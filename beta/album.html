@@ -57,14 +57,14 @@
                 <div id="slideshowContent" class="displayHidden">
                     <div id='leftClickArea' class='hiddenClickArea'
                          oncontextmenu='slideshowContextMenu()'
-                         onclick='slideClick("prev")'>
+                         onclick='slide("prev")'>
                     </div>
                     <div id='rightClickArea' class='hiddenClickArea'
                          oncontextmenu='slideshowContextMenu()'
-                         onclick='slideClick("next")'
-                         ondblclick='runSlideShow("start")'>
+                         onclick='slide("next")'
+                         ondblclick='startSlideShow()'>
                     </div>
-                    <img id='ssLeftwa' class='slideshowLeftWingArrow' src='img/next_left_arrow.png' />
+                    <!--<img id='ssLeftwa' class='slideshowLeftWingArrow' src='img/next_left_arrow.png' />-->
                     <div class='centeringOuterShell'>
                         <div class='centeringInnerShell'>
                             <div id='viewerImageContainer' class='flexContainer'>
@@ -78,7 +78,7 @@
                     <div id='slideshowCtxMenuContainer' class='ogContextMenu' style='z-index: 35;' onmouseleave='$(this).fadeOut()'>
                         <div id='slideshowContextMenuContent'></div>
                     </div>
-                    <div id='slideshowImageLabel' class='slideshowImageLabel displayHidden' onclick='slides()'></div>
+                    <div id='slideshowImageLabel' class='slideshowImageLabel displayHidden' onclick='alert("go")'></div>
                 </div>
             </div>
             <div id="rightColumnArea" class="rightColumn"></div>

@@ -376,8 +376,8 @@ function displayHeader(headerContext) {
             document.title = "OggleBooble : Home of the Big Naturals";
             $('#fancyHeaderTitle').html("OggleBooble");
             $('#topHeaderRow').html("Home of the Big Naturals");
-            $('#topRowRightContainer').append(bannerLink("every playboy centerfold", 3908));
-            $('#topRowRightContainer').append(bannerLink("Bond Girls", 3908));
+            $('#hdrBtmRowSec3').append(bannerLink("every playboy centerfold", 3908));
+            $('#hdrBtmRowSec3').append(bannerLink("Bond Girls", 3908));
             break;
         case "slideshow":
             $('#fancyHeaderTitle').html("OggleBooble");
@@ -670,7 +670,7 @@ function headerHtml() {
         "       <img id='divSiteLogo' title='home' class='siteLogo' src='https://common.ogglefiles.com/img/redballon.png'/>" +
         "   </div>\n" +
         "   <div class='headerBodyContainer'>\n" +
-        "       <div class='headerTopRow'>\n" +
+        "       <div class='flexContainer'>\n" +
         "           <div id='fancyHeaderTitle' onclick='headerTitleClick()' class='calligraphyTitle'></div >\n" +
         "           <div id='topHeaderRow' class='hdrTopRowMenu'></div>" +
         "           <div id='topRowRightContainer'></div>" +
@@ -680,7 +680,7 @@ function headerHtml() {
         "               <div id='searchResultsDiv' class='searchResultsDropdown'></div>\n" +
         "           </div>\n" +
         "       </div>\n" +
-        "       <div class='headerBottomRow'>\n" +
+        "       <div id='headerBottomRow' class='flexContainer'>\n" +
         "           <div class='bottomRowSection1'>\n" +
         "               <div id='headerMessage' class='bottomLeftHeaderArea'></div>\n" +
         "               <div id='breadcrumbContainer' class='breadCrumbArea'></div>\n" +

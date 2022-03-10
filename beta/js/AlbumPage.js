@@ -6,6 +6,8 @@ function loadAlbumPage(folderId, islargeLoad) {
     $('#imageContainer').html("");
     getAlbumImages(folderId, islargeLoad);
     $('#albumContentArea').fadeIn();
+    if (!islargeLoad)
+        $('#albumTopRow').show();
 }
 
 /*-- php -----------------------------------*/
@@ -129,12 +131,12 @@ function getAlbumPageInfo(folderId) {
                             $('#albumBottomfileCount').html(catfolder.TotalSubFolders + "/" + Number(catfolder.TotalChildFiles).toLocaleString());
                         break;
                 }
-                if (!islargeLoad)
-                    $('#albumTopRow').show();
 
-
-                $('#largeLoadButton').click(getAlbumImages(folderId, true));
-                $('#deepSlideshowButton').click(startSlideShow(folderId, 0, true));
+                $('#largeLoadButton').on("click", function () { getAlbumImages(folderId, true) });
+                $('#deepSlideshowButton').on("click", function () {
+                    //slideshowParentName = data
+                    showSlideshowViewer(folderId, 0, true)
+                });
 
                 $('#albumBottomfileCount').show();
                 $('#albumBottomfileCount').on("click", function () { updateFolderCount(folderId, catfolder.FolderPath) });
@@ -299,9 +301,10 @@ function setBreadcrumbs(folderId) {
             $("#viewerCloseButton").hide();
             $("#vailShell").hide();
             $('body').off();
-            startSlideShow(currentFolderId, currentImagelinkId, islargeLoad)
+            
+            showSlideshowViewer(currentFolderId, currentImagelinkId, false)
         } catch (e) {
-            logCatch("showSlideshow", e);
+            logCatch("show slideshow", e);
         }
     }
 }
