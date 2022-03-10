@@ -4,17 +4,15 @@ let carouselFooterHeight = 40, intervalReady = true, initialImageLoad = false, i
     imageIndex = 0, carouselRows = [], imageHistory = [], absolueStartTime,
     vCarouselInterval = null, lastImageIndex = 0, lastErrorThrown = 0,
     mainImageClickId, knownModelLabelClickId, imageTopLabelClickId, footerLabelClickId,
-    jsCarouselSettings, arryItemsShownCount = 0,
+    jsCarouselSettings, arryItemsShownCount = 0, totalArryItemsShownCount = 0,
     cacheSize = 45;
 
 function launchCarousel(pageContext) {
     try {
         absolueStartTime = Date.now();
         window.addEventListener("resize", resizeCarousel);
+
         $('#carouselContainer').html(carouselHtml());
-        if (pageContext == "playboy") {
-            $('#carouselContainer').css("color", "#000");
-        }
         loadFromCache(pageContext);
         resizeCarousel();
         $(window).resize(function () {
@@ -60,7 +58,7 @@ function loadFromCache(pageContext) {
 function startCarousel(pageContext, calledFrom) {
     try {
         if (!initialImageLoad) {
-            loadImages(pageContext);
+            loadImages(pageContext, false);
         }
         if (vCarouselInterval) {
             alert("carousel interval already started. Called from: " + calledFrom);
@@ -71,18 +69,13 @@ function startCarousel(pageContext, calledFrom) {
             if (carouselRows.length > 10) {
                 $('#footerMessage1').html("started carousel from: " + calledFrom);
                 $('#carouselImageInnerContainer').show();
-                $('.categoryTitleLabel').hide();
-
                 intervalReady = true;
+
+                setLabelLinks(imageIndex);
                 intervalBody(pageContext);
-                setTimeout(function () {
-                    $('.categoryTitleLabel').show();
+                vCarouselInterval = setInterval(function () {
                     intervalBody(pageContext);
-                    imageIndex = 0; // Math.floor(Math.random() * carouselRows.length);
-                    vCarouselInterval = setInterval(function () {
-                        intervalBody(pageContext);
-                    }, rotationSpeed);
-                }, 400);
+                }, rotationSpeed);
             }
             else {
                 alert("failed to start carousel. carouselRows.length: " + carouselRows.length);
@@ -99,32 +92,31 @@ function intervalBody(pageContext) {
         //if (!isPaused) {
         if (intervalReady) {
             intervalReady = false;
-            if ((carouselRows.length - imageIndex++) < 2) {
+            imageIndex = Math.floor(Math.random() * carouselRows.length);
+
+            if (arryItemsShownCount > carouselRows.length) {
                 if (confirm("imageIndex: " + imageIndex + "  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
-                    loadImages(pageContext);
+                    loadImages(pageContext, false);
                     imageIndex = Math.floor(Math.random() * carouselRows.length);
                 }
-            }
-            if (carouselRows.length <= imageIndex) {
-                alert("imageIndex: " + imageIndex + ", carouselRows.length: " + carouselRows.length + "\nresetting carousel loop");
-                imageIndex = 0;
+                totalArryItemsShownCount += arryItemsShownCount;
+                arryItemsShownCount = 0;
             }
 
             $('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow").load(function () {
-                setLabelLinks(imageIndex);
                 resizeCarousel();
-                intervalReady = true;
-
+                setLabelLinks(imageIndex);
                 $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
                 imageHistory.push(imageIndex);
                 arryItemsShownCount++;
+                intervalReady = true;
             });
         }
         //  }
         //  else
         //      alert("pauseButton: " + $('#pauseButton').html());
     } catch (e) {
-        logCatch("intervalBody", e);
+        logCatch("interval body", e);
     }
 }
 
@@ -244,11 +236,11 @@ function setLabelLinks(llIdx) {
 
         //$('#headerMessage').html("carouselImageInnerContainer.top: " + $('#carouselImageInnerContainer').offset().top + "  left: " + $('#carouselFooterLabel').offset().left);
     } catch (e) {
-        logCatch("setLabelLinks", e);
+        logCatch("set LabelLinks", e);
     }
 }
 
-function loadImages(pageContext, forceRefresh) {
+function loadImages(pageContext, forceCacheRefresh) {
     try {
         let startTime = Date.now();
         initialImageLoad = true;
@@ -269,25 +261,24 @@ function loadImages(pageContext, forceRefresh) {
                             carouselRows.push(obj);
                         });
                     }
-
                     console.log("added " + newRows.length + " images");
                     if (!vCarouselInterval) {
-                        startCarousel(pageContext, "loadImages");
+                        startCarousel(pageContext, "load Images");
                     }
                     let delta = (Date.now() - startTime) / 1000;
                     console.log("loading images took: " + delta.toFixed(3));
-                    refreshCache(pageContext, forceRefresh);
+                    refreshCache(pageContext, forceCacheRefresh);
                 }
             },
             error: function (jqXHR) {
                 $('#albumPageLoadingGif').hide();
-                let errMsg = getXHRErrorDetails(jqXH);
-                alert("get albumImages: " + errMsg);
+                let errMsg = getXHRErrorDetails(jqXHR);
+                alert("load carousel images: " + errMsg);
                 // logError("XHR", folderId, errMsg, "get albumImages");
             }
         });
     } catch (e) {
-        logCatch("loadImages", e);
+        logCatch("load carousel images", e);
     }
 }
 
@@ -359,6 +350,7 @@ function clickSpeed(speed) {
     vCarouselInterval = null;
     //startCarousel("speed");
 }
+
 function togglePause() {
     if ($('#pauseButton').html() == "||")
         pause();
@@ -366,10 +358,12 @@ function togglePause() {
         resume();
     }
 }
+
 function pause() {
     isPaused = true;
     $('#pauseButton').html(">");
 }
+
 function resume() {
     $('#pauseButton').html("||");
     isPaused = false;
@@ -404,6 +398,7 @@ function showCarouelSettingsDialog() {
 function assuranceArrowClick(direction) {
     if (direction === "foward") {
         resume();
+
     }
     else {
         pause();

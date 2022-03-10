@@ -136,6 +136,9 @@ body {
 .clickable {
     cursor: pointer;
 }
+.underline {
+    text-decoration: underline;
+}
 
 .inline {
     display: inline-block;

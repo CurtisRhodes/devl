@@ -33,11 +33,9 @@
                         <div id='seoPageName' class="albumPageMetaTitle"></div>
                         <div id="aboveImageContainerMessageArea" class="flexboxMiddleSection"></div>
                         <div id="largeLoadButton" class='albumMsgLink'
-                             title='slideshow includes all child folders'
-                             onclick='launchLargeLoad();'>load all folders</div>
+                             title='slideshow includes all child folders'>load all folders</div>
                         <div id="deepSlideshowButton" class='albumMsgLink'
-                             title='album page with all child folder images'
-                             onclick='launchDeepSlideShow();'>Album slideshow</div>
+                             title='album page with all child folder images'>Album slideshow</div>
                     </div>
                     <div id="imageContainer" class="albumContainer"></div>
                     <div id="singleImageOuterContainer" class="explodingImageContainer">
@@ -103,7 +101,7 @@
                 displayHeader(pageName);
                 displayFooter(pageContext);
 
-                loadAlbumPage(albumParamFolderId);
+                loadAlbumPage(albumParamFolderId, false);
 
                 window.addEventListener("resize", callResizeAlbumPage);
                 resizeAlbumPage();

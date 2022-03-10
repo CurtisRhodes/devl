@@ -54,8 +54,8 @@ function performRepairLinks() {
     repairReport.imageRowsRemoved = [];
     repairReport.orphanImages = [];
     repairReport.orphanImageFiles = [];
-    missingPhyscialDirectories = [];
-    missingCatFolderParents = [];
+    repairReport.missingPhyscialDirectories = [];
+    repairReport.missingCatFolderParents = [];
     repairReport.errors = [];
 
     recurr = $("#ckRepairIncludeSubfolders").is(":checked");
@@ -97,8 +97,9 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
                                                 repairReport.errors.push("folder not found: " + fullPath);
                                                 return;
                                             }
-                                            let allDirValues = JSON.parse(scanDirJson);
-                                            let parentDirs = allDirValues.filter(node => node.type == "dir");
+                                            let jParentDirInfo = JSON.parse(parentDirInfo);
+                                            let physcialImageFileDirs = jParentDirInfo.filter(node => node.type == "dir");
+
                                             $.ajax({
                                                 url: "php/getOggleFolder.php?path=" + fullPath + "&folderId=" + rootFolderId,
                                                 success: function (scanDirJson) {
@@ -108,14 +109,11 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
                                                     }
                                                     let allDirValues = JSON.parse(scanDirJson);
                                                     let physcialImageFileRows = allDirValues.filter(node => node.type == "file");
-                                                    //let physcialDirectories = allDirValues.filter(node => node.type == "dir");
-
 
                                                     // COMPARE DATABSE CATEGORYFOLDER ROWS WITH PHYSCIAL DIRECTORIES
                                                     if (jchildFolders.length > 0) {
                                                         $.each(jchildFolders, function (idx, childFolder) {
-                                                            //if(childFolder.FolderName==)
-                                                            let physcialDirectory = parentDirs.
+                                                            let physcialDirectory = physcialImageFileDirs.
                                                                 filter(node => node.name == childFolder.FolderName);
                                                             if (physcialDirectory.length == 0) {
                                                                 repairReport.missingCatFolderParents.push("no physcial folder for: " + childFolder.FolderName);
@@ -124,8 +122,8 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
                                                     }
 
                                                     // COMPARE PHYSCIAL DIRECTORIES WITH DATABSE CATEGORYFOLDER ROWS
-                                                    if (physcialDirectories.length > 0) {
-                                                        $.each(physcialDirectories, function (idx, physcialDirectory) {
+                                                    if (physcialImageFileDirs.length > 0) {
+                                                        $.each(physcialImageFileDirs, function (idx, physcialDirectory) {
                                                             if (physcialDirectory.name == catFolder.FolderName)
                                                                 alert("aa");
                                                             else {
@@ -172,6 +170,7 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
                                                         repairReport.imageFilesProcessed++;
                                                     });
 
+                                                    showRepairReport();
                                                     if (recurr) {
                                                         $.each(jchildFolders, function (idx, childFolder) {
                                                             repairImagesRecurr(childFolder.Id, recurr, addNew, removeOrphans);
@@ -237,6 +236,7 @@ function renameImageFile(physcialimageFileName, desiredFileNamePrefix, folderId,
             if (success == "ok") {
                 if (needsSaving) {
                     repairReport.physcialFilesRenamed.push(physcialimageFileName + " to: " + newFileName);
+                    showRepairReport();
                 }
                 addImageFile(folderId, newFileName, folderType, path);
             }
@@ -271,6 +271,7 @@ function addImageFile(folderId, fileName, folderType, path) {
         success: function (addImageFileSuccess) {
             if (addImageFileSuccess.trim().startsWith("ok")) {
                 repairReport.imageFilesAdded.push("(" + folderId + ")  " + fileName + " " + folderType);
+                showRepairReport();
             }
             else {
                 console.log(addImageFileSuccess);
@@ -293,6 +294,7 @@ function removeImageFile(folderId, imageFileId, fileName) {
             success: function (removeImageFileSuccess) {
                 if (removeImageFileSuccess.trim().startsWith("ok")) {
                     repairReport.imageRowsRemoved.push("(" + folderId + ")  " + fileName);
+                    showRepairReport();
                 }
                 else {
                     console.log(removeImageFileSuccess);
@@ -336,13 +338,13 @@ function showRepairReport() {
         if (repairReport.physcialFilesRenamed.length > 0) {
             $('#dashboardFileList').append("<div>Physcial File Renamed: " + Number(repairReport.physcialFilesRenamed.length).toLocaleString() + "</div>");
             $.each(repairReport.physcialFilesRenamed, function (idx, obj) {
-                $('#dashboardFileList').append("<div style='color:green'>jpg renamed from: " + obj + "</div>");
+                $('#dashboardFileList').append("<div style='color:#448927'>jpg renamed from: " + obj + "</div>");
             })
-            $('#dashboardFileList').append("</div>");
+            $('#dashboardFileList').append("</div><br/>");
         }
 
         if (repairReport.imageRowsRemoved.length > 0) {
-            $('#dashboardFileList').append("<div>Image Files Removed: " + Number(repairReport.imageRowsRemoved.length).toLocaleString() + "</div>");
+            $('#dashboardFileList').append("<div class='underline'>Image Files Removed: " + Number(repairReport.imageRowsRemoved.length).toLocaleString() + "</div>");
             $.each(repairReport.imageRowsRemoved, function (idx, obj) {
                 $('#dashboardFileList').append("<div style='color:blue'>" + obj + "</div>");
             })
@@ -350,7 +352,7 @@ function showRepairReport() {
         }
 
         if (repairReport.orphanImages.length > 0) {
-            $('#dashboardFileList').append("<div>Orphan Physcial Images : " + repairReport.orphanImages.length + "</div><div>");
+            $('#dashboardFileList').append("<div class='underline'>Orphan Physcial Images: " + repairReport.orphanImages.length + "</div><div>");
             $.each(repairReport.orphanImages, function (idx, obj) {
                 $('#dashboardFileList').append("<div>" + obj + "</div>");
             })
@@ -358,7 +360,7 @@ function showRepairReport() {
         }
 
         if (repairReport.orphanImageFiles.length > 0) {
-            $('#dashboardFileList').append("<div>Orphan Image Files : " + repairReport.orphanImageFiles.length + "</div><div>");
+            $('#dashboardFileList').append("<div class='underline'>Orphan Image Files: " + repairReport.orphanImageFiles.length + "</div><div>");
             $.each(repairReport.orphanImageFiles, function (idx, obj) {
                 $('#dashboardFileList').append("<div>" + obj + "</div>");
             })
@@ -367,7 +369,7 @@ function showRepairReport() {
 
 
         if (repairReport.missingPhyscialDirectories.length > 0) {
-            $('#dashboardFileList').append("<div>Orphan Image Files : " + repairReport.missingPhyscialDirectories.length + "</div><div>");
+            $('#dashboardFileList').append("<div class='underline'>Missing Physcial Directories: " + repairReport.missingPhyscialDirectories.length + "</div><div>");
             $.each(repairReport.missingPhyscialDirectories, function (idx, obj) {
                 $('#dashboardFileList').append("<div>" + obj + "</div>");
             })
@@ -375,7 +377,7 @@ function showRepairReport() {
         }
 
         if (repairReport.missingCatFolderParents.length > 0) {
-            $('#dashboardFileList').append("<div>Orphan Image Files : " + repairReport.missingCatFolderParents.length + "</div><div>");
+            $('#dashboardFileList').append("<div class='underline'>Missing ImageFile Parent Rows: " + repairReport.missingCatFolderParents.length + "</div><div>");
             $.each(repairReport.missingCatFolderParents, function (idx, obj) {
                 $('#dashboardFileList').append("<div>" + obj + "</div>");
             })
