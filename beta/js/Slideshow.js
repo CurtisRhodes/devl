@@ -34,13 +34,13 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
         $('#slideshowMessageArea').html('loading');
         if (isLargeLoad) {
             $.ajax({
-                url: "php/customQuery.php?query=select f.Id, p.FolderName from CategoryFolder f " +
+                url: "php/customFetchAll.php?query=select f.Id, p.FolderName from CategoryFolder f " +
                     "join CategoryFolder p on f.Parent = p.Id where f.Parent=" + folderId,
                 success: function (data) {
                     let childFolders = JSON.parse(data);
                     slideshowParentName = childFolders[0].FolderName;
                     $.each(childFolders, function (idx, childFolder) {
-                        $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' +
+                        $.getJSON('php/customFetchAll.php?query=select * from VwLinks where FolderId=' +
                             childFolder.Id + ' order by SortOrder', function (data) {
                             $.each(data, function (idx, obj) {
                                 imageArray.push(obj);
@@ -58,7 +58,7 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
         }
         else { 
             $.ajax({
-                url: 'php/customQuery.php?query=select * from VwLinks where FolderId=' + folderId,
+                url: 'php/customFetchAll.php?query=select * from VwLinks where FolderId=' + folderId,
                 success: function (data) {
                     if (data.substring(20).indexOf("error") > 0) {
                         $('#blogListArea').html(data);
@@ -69,7 +69,6 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                         $('#slideshowImage').attr("src", slideShowImgRepo + imageArray[imageViewerIndex].FileName);
                         $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
                         $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
-
                     }
                 },
                 error: function (jqXHR) {
@@ -88,7 +87,7 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
 
 function getFolderDetails() {
     $.ajax({
-        url: 'php/customQuery.php?query=select f.FolderName, p.FolderName as ParentName ' +
+        url: 'php/customFetchAll.php?query=select f.FolderName, p.FolderName as ParentName ' +
             ' from CategoryFolder f join CategoryFolder p on f.Parent = p.Id where f.Id=' + albumFolderId,
         success: function (data) {
             if (data.substring(20).indexOf("error") > 0) {
@@ -102,7 +101,7 @@ function getFolderDetails() {
         },
         error: function (jqXHR) {
             let errMsg = getXHRErrorDetails(jqXHR);
-            alert("getAlbumPageInfo: " + errMsg);
+            alert("get folder details: " + errMsg);
             //if (!checkFor404(errMsg, folderId, "chargeCredits")) logError("XHR", folderId, errMsg, "chargeCredits");
         }
     });
@@ -146,6 +145,10 @@ function adjustSlideshowSpeed(action) {
 
 }
 
+let imagePos, slideshowImageZeroPos, slideDirection, laps = 0;
+let imageWidth, windowWidth;
+const slideSpeed = 50, slideIncrement = 22;
+
 function slide(direction) {
     try {
         if (slideShowAvailable) {
@@ -156,15 +159,33 @@ function slide(direction) {
                     $('#slideshowLoadingGif').show()
             }, 250);
 
+            // increment/decrement imageViewerIndex
             if (direction == 'next') {
                 if (++imageViewerIndex >= imageArray.length)
                     imageViewerIndex = 0;
+                slideDirection = 'to the right';
             }
             else {
                 if (--imageViewerIndex == 0)
                     imageViewerIndex = imageArray.length;
+                slideDirection = 'to the left';
             }
 
+            imageWidth = slideshowImageZeroPos = $('#slideshowImage').width();
+            windowWidth = $(window).width();
+
+
+
+
+
+            if (direction == 'next') {
+
+                slideDirection = 'from the left';
+                imagePos = 7000;
+            }
+
+
+            imagePos = slideshowImageZeroPos = $('#slideshowImage').css("left");
             tempImgSrc.src = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
             tempImgSrc.onload = function () {
                 showLoadingGif = false;
@@ -173,28 +194,26 @@ function slide(direction) {
                 $('.slideshowNavgArrows').css('visibility', 'hidden');
                 $('#slideshowImageLabel').fadeOut();
 
-                // 1. slide out of view
-                if (direction == 'next') {
-                    $('#slideshowImage').animate({ right: "5000px" }, "slow");
-                    $('#slideshowImage').css({ left: "-5000px" });
-                }
-                else {
-                    $('#slideshowImage').animate({ left: "-5000px" }, 7000);
-                    $('#slideshowImage').css({ right: "5000px" });
-                }
+                slideOutofView(direction);
 
                 $('#slideshowImage').attr("src", tempImgSrc.src);
 
                 setTimeout(function () { // SLIDE BACK INTO VIEW
                     if (direction == 'next') {
-                        $('#slideshowImage').animate({ left: "0" },2000);
+                        $('#slideshowImage').css("left", windowWidth + imageWidth + 100);
+                        slideDirection = 'from the right';
                     }
                     else { // 'prev' move image far to the right
-                        $('#slideshowImage').animate({ right: "0" },5000);
+                        $('#slideshowImage').css("left", -(imageWidth + 100));
+                        slideDirection = 'from the left';
                     }
+                    slideBackIntoView();
+                    
+
                     $('.slideshowNavgArrows').css('visibility', 'visible').fadeIn();
                     slideShowAvailable = true;
                     resizeSlideshow();
+
                     if (albumFolderId != imageArray[imageViewerIndex].ImageFolderId) {
                         // we have a link
                         $('#slideshowImageLabel').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
@@ -215,6 +234,49 @@ function slide(direction) {
         logCatch("slide", e);
     }
 }
+
+function slideOutofView() {
+    if (slideDirection == 'to the right') {
+        if (imagePos < (imageWidth + windowWidth + 100)) {
+            setTimeout(function () {
+                imagePos += slideIncrement;
+                $("#singleImageOuterContainer").css("left", imagePos);
+                slideOutofView();
+            }, slideSpeed);
+        }
+    }
+    else {
+        if (imagePos > -(imageWidth + 100)) {
+            setTimeout(function () {
+                imagePos -= slideIncrement;
+                $("#singleImageOuterContainer").css("left", imagePos);
+                slideOutofView();
+            }, slideSpeed);
+        }
+    }
+}
+
+function slideBackIntoView() {
+    if (slideDirection == 'from the left') {
+        if (imagePos < slideshowImageZeroPos) {
+            setTimeout(function () {
+                imagePos += slideIncrement;
+                $("#singleImageOuterContainer").css("left", imagePos);
+                slideOutofView();
+            }, slideSpeed);
+        }
+    }
+    else {
+        if (imagePos > slideshowImageZeroPos) {
+            setTimeout(function () {
+                imagePos -= slideIncrement;
+                $("#singleImageOuterContainer").css("left", imagePos);
+                slideOutofView();
+            }, slideSpeed);
+        }
+    }
+}
+
 
 $(document).keydown(function (event) {
     if (slideShowButtonsActive) {

@@ -290,7 +290,6 @@ function oggleSearchKeyDown(event) {
             return;
         }
         if (ev === 13) {  // enter
-            alert("enter");
             var selectedItem = $('#searchResultsDiv').find('li:first').prop("id");
             jumpToSelected(selectedItem);
             return;
@@ -396,12 +395,13 @@ function clearSearch() {
 function jumpToSelected(selectedFolderId) {
     //rtpe('SRC', hdrFolderId, searchString, selectedFolderId);
     //logEvent("SRC", selectedFolderId, "jumpToSelected", "searchString: " + searchString);
-    window.open("https://ogglefiles.com/beta/album.html?folder=" + selectedFolderId, "_blank");  // open in new tab
-    clearSearch();
-}
 
-function linkItemKeyDown(event) {
-    alert("linkItemKeyDown");
+    clearSearch();
+
+    window.open("https://ogglefiles.com/beta/album.html?folder=" + selectedFolderId, "_blank");  // open in new tab
+
+    var parentOpener = window.opener; window.opener = null; window.open("https://ogglefiles.com/beta/album.html?folder=" + selectedFolderId, "_blank"); window.opener = parentOpener;
+
 }
 
 /*-- log error -----------------------------------*/
@@ -439,9 +439,8 @@ function logOggleError(errorCode, folderId, errorMessage, calledFrom) {
 function imageError(folderId, linkId) {
     try {
         // let calledFrom = "noneya";
-        alert("imageError:" + ErrorCode + " folder: " + folderId + // " called from: " + calledFrom +
-            "\n link: "+linkId+
-            "\n" + errorMessage);
+        alert("imageError: IMG. folder: " + folderId + 
+            "\n linkId: "+linkId);
 
         $('#' + linkId).attr('src', 'https://common.ogglefiles.com/img/redballonSmall.png');
         // logError("ILF", folderId, "linkId: " + linkId, "gallery");

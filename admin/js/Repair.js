@@ -220,39 +220,34 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
 }
 
 function renameImageFile(physcialimageFileName, desiredFileNamePrefix, folderId, folderType, path) {
-    let newFileName = physcialimageFileName;
-    let needsSaving = false;
-    //if (!physcialimageFileName.startsWith(desiredFileNamePrefix))
-    {
-        let suffix = '.jpg';
-        //suffix = physcialimageFileName.substr(physcialimageFileName.length - 4);
-        newFileName = desiredFileNamePrefix + "_" + create_UUID() + suffix;
-        needsSaving = true;
-    }
-    $.ajax({
-        url: "php/renameFile.php?needsSaving=" + needsSaving + "&path=" + path +
-            "&oldFileName=" + physcialimageFileName + "&newFileName=" + newFileName,
-        success: function (success) {
-            if (success == "ok") {
-                if (needsSaving) {
-                    repairReport.physcialFilesRenamed.push(physcialimageFileName + " to: " + newFileName);
-                    showRepairReport();
-                }
-                addImageFile(folderId, newFileName, folderType, path);
-            }
-            else {
-                if (success == "ok2")
+    if (!physcialimageFileName.startsWith(desiredFileNamePrefix)) {
+        let suffix = physcialimageFileName.substring(physcialimageFileName.length - 4);
+        let newFileName = desiredFileNamePrefix + "_" + create_UUID() + suffix;
+ 
+        $.ajax({
+            url: "php/renameFile.php?path=" + path + "&oldFileName=" + physcialimageFileName + "&newFileName=" + newFileName,
+            success: function (success) {
+                if (success == "ok") {
+                    if (needsSaving) {
+                        repairReport.physcialFilesRenamed.push(physcialimageFileName + " to: " + newFileName);
+                        showRepairReport();
+                    }
                     addImageFile(folderId, newFileName, folderType, path);
-                else
-                    $('#dashboardFileList').append("<div style='color:red'>rename file error: " + success + "</div>");
+                }
+                else {
+                    if (success == "ok2")
+                        addImageFile(folderId, newFileName, folderType, path);
+                    else
+                        $('#dashboardFileList').append("<div style='color:red'>rename file error: " + success + "</div>");
+                }
+            },
+            error: function (jqXHR) {
+                $('#dashBoardLoadingGif').hide();
+                let errMsg = getXHRErrorDetails(jqXHR);
+                $('#dashboardFileList').append("<div style='color:red'>rename file XHR error: " + errMsg + "</div>");
             }
-        },
-        error: function (jqXHR) {
-            $('#dashBoardLoadingGif').hide();
-            let errMsg = getXHRErrorDetails(jqXHR);
-            $('#dashboardFileList').append("<div style='color:red'>rename file XHR error: " + errMsg + "</div>");
-        }
-    });
+        });
+    }
 }
 
 function addImageFile(folderId, fileName, folderType, path) {
@@ -327,20 +322,20 @@ function showRepairReport() {
             $('#dashboardFileList').append("</div>");
         }
 
-        if (repairReport.imageFilesAdded.length > 0) {
-            $('#dashboardFileList').append("<div>Image Files Added: " + Number(repairReport.imageFilesAdded.length).toLocaleString() + "</div>");
-            $.each(repairReport.imageFilesAdded, function (idx, obj) {
-                $('#dashboardFileList').append("<div style='color:green'>" + obj + "</div>");
-            })
-            $('#dashboardFileList').append("</div>");
-        }
-
         if (repairReport.physcialFilesRenamed.length > 0) {
             $('#dashboardFileList').append("<div>Physcial File Renamed: " + Number(repairReport.physcialFilesRenamed.length).toLocaleString() + "</div>");
             $.each(repairReport.physcialFilesRenamed, function (idx, obj) {
                 $('#dashboardFileList').append("<div style='color:#448927'>jpg renamed from: " + obj + "</div>");
             })
             $('#dashboardFileList').append("</div><br/>");
+        }
+
+        if (repairReport.imageFilesAdded.length > 0) {
+            $('#dashboardFileList').append("<div>Image Files Added: " + Number(repairReport.imageFilesAdded.length).toLocaleString() + "</div>");
+            $.each(repairReport.imageFilesAdded, function (idx, obj) {
+                $('#dashboardFileList').append("<div style='color:green'>" + obj + "</div>");
+            })
+            $('#dashboardFileList').append("</div>");
         }
 
         if (repairReport.imageRowsRemoved.length > 0) {

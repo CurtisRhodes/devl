@@ -96,20 +96,23 @@ function intervalBody(pageContext) {
 
             if (arryItemsShownCount > carouselRows.length) {
                 if (confirm("items shown: " + arryItemsShownCount + "  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
-                    loadImages(pageContext, false);
+                    loadImages(pageContext, true);
                     imageIndex = Math.floor(Math.random() * carouselRows.length);
                 }
                 totalArryItemsShownCount += arryItemsShownCount;
                 arryItemsShownCount = 0;
             }
-
+            let loadFunctionHandled = false;
             $('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow").load(function () {
-                resizeCarousel();
-                setLabelLinks(imageIndex);
-                $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
-                imageHistory.push(imageIndex);
-                arryItemsShownCount++;
-                intervalReady = true;
+                if (!loadFunctionHandled) {
+                    loadFunctionHandled = true;
+                    arryItemsShownCount++;
+                    resizeCarousel();
+                    setLabelLinks(imageIndex);
+                    $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
+                    imageHistory.push(imageIndex);
+                    intervalReady = true;
+                }
             });
         }
         //  }
@@ -398,11 +401,10 @@ function showCarouelSettingsDialog() {
 function assuranceArrowClick(direction) {
     if (direction === "foward") {
         resume();
-
     }
     else {
         pause();
-        let popimageIndex = imageHistory[imageHistory.length--];
+        let popimageIndex = imageHistory[imageHistory.length -= 1];
         //imageHistory.pop());
         //alert("imageIndex: " + imageIndex + " popimageIndex: " + popimageIndex);
 
@@ -446,7 +448,6 @@ function carouselContextMenu() {
 function imgErrorThrown() {
     try {
         if (lastErrorThrown != imageIndex) {
-
             lastErrorThrown = imageIndex;
 
             $('#thisCarouselImage').attr('src', "https://common.ogglefiles.com/img/redBallon.png");

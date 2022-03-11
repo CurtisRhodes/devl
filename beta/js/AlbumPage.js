@@ -5,29 +5,29 @@ function loadAlbumPage(folderId, islargeLoad) {
     $('#albumPageLoadingGif').css("height", "27px");
     $('#imageContainer').html("");
     getAlbumImages(folderId, islargeLoad);
+    setBreadcrumbs(folderId);
+    getAlbumPageInfo(folderId);
     $('#albumContentArea').fadeIn();
     if (!islargeLoad)
         $('#albumTopRow').show();
 }
 
 /*-- php -----------------------------------*/
-
 function getAlbumImages(folderId, islargeLoad) {
     try {
         $('#albumPageLoadingGif').show();
         if (islargeLoad) {
             $.ajax({
-                url: "php/customQuery.php?query=Select * from CategoryFolder where Parent=" + folderId,
+                url: "php/customFetchAll.php?query=Select * from CategoryFolder where Parent=" + folderId,
                 success: function (data) {
                     let childFolders = JSON.parse(data);
                     $.each(childFolders, function (idx, childFolder) {
-                        $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' + childFolder.Id + ' order by SortOrder', function (data) {
+                        $.getJSON('php/customFetchAll.php?query=select * from VwLinks where FolderId=' + childFolder.Id + ' order by SortOrder', function (data) {
                             let vlinks = JSON.parse(data);
                             $.each(vlinks, function (idx, vLink) {
                                 loadImageResults(vLink, childFolder.Id);
                             });
                         });
-                        //getAlbumPageInfo(folderId);
                         $('#largeLoadButton').hide();
                         $('#deepSlideshowButton').show();
                         resizeAlbumPage();
@@ -37,7 +37,7 @@ function getAlbumImages(folderId, islargeLoad) {
             });
         }
         else {
-            $.getJSON('php/customQuery.php?query=select * from VwLinks where FolderId=' + folderId + ' order by SortOrder', function (data) {
+            $.getJSON('php/customFetchAll.php?query=select * from VwLinks where FolderId=' + folderId + ' order by SortOrder', function (data) {
                 // let vlinks = JSON.parse(data);
                 $.each(data, function (idx, vLink) {
                     loadImageResults(vLink, folderId);
@@ -65,7 +65,7 @@ function loadImageResults(vLink, folderId) {
 
 function getSubFolders(folderId) {
     try {
-        $.getJSON("php/customQuery.php?query=select * from VwDirTree where Parent=" + folderId +
+        $.getJSON("php/customFetchAll.php?query=select * from VwDirTree where Parent=" + folderId +
             " order by SortOrder,FolderName", function (data) {
                 $.each(data, function (index, obj) {
                     let linkId = create_UUID();
@@ -86,7 +86,6 @@ function getSubFolders(folderId) {
                         "<div class='defaultSubFolderImage'>" + obj.FolderName + "</div>\n" +
                         "<span Id='fc" + obj.FolderId + "'>" + folderCounts + "</span></div>");
                 });
-                getAlbumPageInfo(folderId);
                 resizeAlbumPage();
             });
     } catch (e) {
@@ -101,12 +100,15 @@ function getAlbumPageInfo(folderId) {
         $('#largeLoadButton').hide();
         $('#deepSlideshowButton').hide();
         $('#albumPageLoadingGif').hide();
-        $('#aboveImageContainerMessageArea').html('loading breadcrumbs');
+        if (isNullorUndefined(folderId)) {
+            alert("get AlbumPage info: folderId.isNullorUndefined: " + folderId);
+            return;
+        }
+
         $.ajax({
-            url: 'php/customQuery.php?query=Select * from CategoryFolder where Id=' + folderId,
+            url: 'php/customFetch.php?query=Select * from CategoryFolder where Id=' + folderId,
             success: function (data) {
-                let jdata = JSON.parse(data);
-                let catfolder = jdata[0];
+                let catfolder = JSON.parse(data);
                 $('#aboveImageContainerMessageArea').html('');
                 $('#seoPageName').html(catfolder.FolderName);
 
@@ -141,7 +143,6 @@ function getAlbumPageInfo(folderId) {
                 $('#albumBottomfileCount').show();
                 $('#albumBottomfileCount').on("click", function () { updateFolderCount(folderId, catfolder.FolderPath) });
 
-                setBreadcrumbs(folderId);
                 $('#feedbackButton').on("click", function () {
                     showFeedbackDialog(folderId, catfolder.FolderName);
                 });
@@ -151,25 +152,22 @@ function getAlbumPageInfo(folderId) {
             error: function (jqXHR) {
                 $('#albumPageLoadingGif').hide();
                 let errMsg = getXHRErrorDetails(jqXHR);
-                alert("getAlbumPageInfo: " + errMsg);
+                alert("get AlbumPageInfo: " + errMsg);
                 //if (!checkFor404(errMsg, folderId, "chargeCredits")) logError("XHR", folderId, errMsg, "chargeCredits");
             }
         });
         let delta = (Date.now() - infoStart) / 1000;
-        console.log("getGalleyInfo took: " + delta.toFixed(3));
+        console.log("get AlbumPageInfo took: " + delta.toFixed(3));
     } catch (e) {
-        logCatch("getAlbumPageInfo", e);
+        logCatch("get Album Page Info folderId:", e);
     }
-}
-
-function addBreadcrumb(folderId, folderName, className) {
-    return "<div class='" + className + "' onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + folderId + "\"'>" + folderName + "</div>";
 }
 
 function setBreadcrumbs(folderId) {
     try {
+        $('#aboveImageContainerMessageArea').html('loading breadcrumbs');
         $.ajax({
-            url: "php/customQuery.php?query=Select * from VwDirTree",
+            url: "php/customFetchAll.php?query=Select * from VwDirTree",
             success: function (data) {
                 if (data.indexOf("Fatal error") > 0) {
                     $('#breadcrumbContainer').html(data);
@@ -212,6 +210,10 @@ function setBreadcrumbs(folderId) {
     } catch (e) {
         logCatch("setBreadcrumbs", e);
     }
+}
+
+function addBreadcrumb(folderId, folderName, className) {
+    return "<div class='" + className + "' onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + folderId + "\"'>" + folderName + "</div>";
 }
 
 /*-- exploding image view -------------------*/

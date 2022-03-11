@@ -7,11 +7,11 @@ $query = $_GET['query'];
 
 $cmd = $pdo->query($_GET['query']);
 
-$results = $cmd->fetchAll();
+$result = $cmd->fetch();
 
 $cmd = null;
 $pdo = null;
 
-echo json_encode($results);
+echo json_encode($result);
 
 ?>
