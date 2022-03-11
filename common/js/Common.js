@@ -232,7 +232,7 @@ function rtpe(labelText, calledFromFolderId) {
         switch (labelText) {
             case "every playboy centerfold":
                 eventCode = "EPC";
-                window.location.href = "/playboy.html";
+                window.location.href = "/index.html?spa=playboy";
                 break;
             case "Gent Archive":
                 eventCode = "GNT";
@@ -385,11 +385,11 @@ function displayHeader(headerContext) {
             break;
         case "oggleAlbum":
             $('#fancyHeaderTitle').html("OggleBooble");
-            $('#topRowRightContainer').append(bannerLink("every playboy centerfold", 3908));
-            $('#hdrBtmRowSec3').append(bannerLink("Oggle Porn", 242));
-            $('#hdrBtmRowSec3').append(bannerLink("softcore", 5233));
-            $('#hdrBtmRowSec3').append(bannerLink("Gent Archive", 846));
-            $('#hdrBtmRowSec3').append(bannerLink("Bond Girls", 10326));
+            //$('#topRowRightContainer').append(bannerLink("every playboy centerfold", 3908));
+            //$('#hdrBtmRowSec3').append(bannerLink("Oggle Porn", 242));
+            //$('#hdrBtmRowSec3').append(bannerLink("softcore", 5233));
+            //$('#hdrBtmRowSec3').append(bannerLink("Gent Archive", 846));
+            //$('#hdrBtmRowSec3').append(bannerLink("Bond Girls", 10326));
             //$('#topHeaderRow').html("Home of the Big Naturals");
             break;
         case "Playboy": 

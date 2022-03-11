@@ -67,7 +67,7 @@
                     <!--<img id='ssLeftwa' class='slideshowLeftWingArrow' src='img/next_left_arrow.png' />-->
                     <div class='centeringOuterShell'>
                         <div class='centeringInnerShell'>
-                            <div id='viewerImageContainer' class='flexContainer'>
+                            <div id='slideshowImageContainer' class='flexContainer'>
                                 <div class='slideshowNavgArrows'><img src='img/leftArrowOpaque02.png' /></div>
                                 <img id='slideshowImage' class='slideshowImage' />
                                 <div class='slideshowNavgArrows'><img src='img/rightArrowOpaque02.png' /></div>
@@ -88,8 +88,6 @@
 
         <script>
             $(document).ready(function () {
-                let pageContext = "oggleAlbum";
-                let pageName = "oggleIndex";
                 let params = getParams();
                 if (isNullorUndefined(params.folder)) {
                     window.location.href = "index.html";
@@ -98,8 +96,8 @@
                     albumParamFolderId = params.folder;
                 }
 
-                displayHeader(pageName);
-                displayFooter(pageContext);
+                displayHeader("oggleAlbum");
+                displayFooter("oggleAlbum");
 
                 loadAlbumPage(albumParamFolderId, false);
 

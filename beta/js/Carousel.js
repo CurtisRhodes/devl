@@ -89,35 +89,38 @@ function startCarousel(pageContext, calledFrom) {
 
 function intervalBody(pageContext) {
     try {
-        //if (!isPaused) {
-        if (intervalReady) {
-            intervalReady = false;
-            imageIndex = Math.floor(Math.random() * carouselRows.length);
+        if (!isPaused) {
+            if (intervalReady) {
+                intervalReady = false;
+                imageIndex = Math.floor(Math.random() * carouselRows.length);
 
-            if (arryItemsShownCount > carouselRows.length) {
-                if (confirm("items shown: " + arryItemsShownCount + "  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
-                    loadImages(pageContext, true);
-                    imageIndex = Math.floor(Math.random() * carouselRows.length);
+                if (arryItemsShownCount > carouselRows.length) {
+                    if (confirm("items shown: " + arryItemsShownCount + "  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
+                        loadImages(pageContext, true);
+                        imageIndex = Math.floor(Math.random() * carouselRows.length);
+                    }
+                    totalArryItemsShownCount += arryItemsShownCount;
+                    arryItemsShownCount = 0;
                 }
-                totalArryItemsShownCount += arryItemsShownCount;
-                arryItemsShownCount = 0;
+                let loadFunctionHandled = false;
+                $('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow").load(function () {
+                    if (!loadFunctionHandled) {
+                        loadFunctionHandled = true;
+                        arryItemsShownCount++;
+                        resizeCarousel();
+                        setLabelLinks(imageIndex);
+                        $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
+                        imageHistory.push(imageIndex);
+                        intervalReady = true;
+                    }
+                });
             }
-            let loadFunctionHandled = false;
-            $('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow").load(function () {
-                if (!loadFunctionHandled) {
-                    loadFunctionHandled = true;
-                    arryItemsShownCount++;
-                    resizeCarousel();
-                    setLabelLinks(imageIndex);
-                    $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
-                    imageHistory.push(imageIndex);
-                    intervalReady = true;
-                }
-            });
         }
-        //  }
-        //  else
-        //      alert("pauseButton: " + $('#pauseButton').html());
+        else {
+            $('#pauseButton').html("|");
+            intervalReady = true;
+            setTimeout(function () { $('#pauseButton').html(">") }, 700);
+        }
     } catch (e) {
         logCatch("interval body", e);
     }
@@ -355,15 +358,17 @@ function clickSpeed(speed) {
 }
 
 function togglePause() {
-    if ($('#pauseButton').html() == "||")
-        pause();
-    else {
+    if (isPaused) {
         resume();
+        isPaused = false;
+    }
+    else {
+        pause();
+        isPaused = true;
     }
 }
 
 function pause() {
-    isPaused = true;
     $('#pauseButton').html(">");
 }
 
@@ -403,14 +408,16 @@ function assuranceArrowClick(direction) {
         resume();
     }
     else {
-        pause();
-        let popimageIndex = imageHistory[imageHistory.length -= 1];
-        //imageHistory.pop());
-        //alert("imageIndex: " + imageIndex + " popimageIndex: " + popimageIndex);
+        if (imageHistory.length > 1) {
+            pause();
+            let popimageIndex = imageHistory[imageHistory.length - 1];
+            //imageHistory.pop());
+            //alert("imageIndex: " + imageIndex + " popimageIndex: " + popimageIndex);
 
-        let popimage = settingsImgRepo + carouselRows[popimageIndex].ImageFileName;
-        $('#thisCarouselImage').attr('src', popimage);
-        setLabelLinks(popimageIndex);
+            let popimage = settingsImgRepo + carouselRows[popimageIndex].ImageFileName;
+            $('#thisCarouselImage').attr('src', popimage);
+            setLabelLinks(popimageIndex);
+        }
     }
 }
 
@@ -450,7 +457,7 @@ function imgErrorThrown() {
         if (lastErrorThrown != imageIndex) {
             lastErrorThrown = imageIndex;
 
-            $('#thisCarouselImage').attr('src', "https://common.ogglefiles.com/img/redBallon.png");
+            $('#thisCarouselImage').attr('src', "https://common.ogglefiles.com/img/redballon.png");
             $('#thisCarouselImage').css('height', window.innerHeight * .5);
 
             //alert($('#thisCarouselImage').attr('src') + " not found");
@@ -465,12 +472,6 @@ function imgErrorThrown() {
 }
 
 function showCarouselButtonBar() {
-        //"           <div id='carouselFooter class='flexContainer' >\n" +
-        //"               <img class='speedButton floatLeft' src='img/speedDialSlower.png' title='slower' onclick='clickSpeed(\"slower\")' />\n" +
-        //"               <div id='pauseButton' class='pauseButtonArea' onclick='togglePause()'>||</div>\n" +
-        //"               <img class='speedButton floatRight' src='img/speedDialFaster.png' title='faster' onclick='clickSpeed(\"faster\")' />\n" +
-        ////"             <img class='speedButton floatRight' src='img/Settings-icon.png' title='carousel settings' onclick='showCarouelSettingsDialog()' />\n" +
-        //"           </div>\n" +
 }
 
 function carouselHtml() {

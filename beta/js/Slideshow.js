@@ -145,8 +145,8 @@ function adjustSlideshowSpeed(action) {
 
 }
 
-let imagePos, slideshowImageZeroPos, slideDirection, laps = 0;
-let imageWidth, windowWidth;
+let imagePos, slideshowImageZeroPos, slideDirection, slidingDone = false, laps = 0;
+let slideshowImageDestinationPos;
 const slideSpeed = 50, slideIncrement = 22;
 
 function slide(direction) {
@@ -159,24 +159,9 @@ function slide(direction) {
                     $('#slideshowLoadingGif').show()
             }, 250);
 
-            // increment/decrement imageViewerIndex
-            if (direction == 'next') {
-                if (++imageViewerIndex >= imageArray.length)
-                    imageViewerIndex = 0;
-                slideDirection = 'to the right';
-            }
-            else {
-                if (--imageViewerIndex == 0)
-                    imageViewerIndex = imageArray.length;
-                slideDirection = 'to the left';
-            }
+            incrementIndex(direction);
 
-            imagePos =slideshowImageZeroPos = $('#slideshowImage').position().left;
-            imageWidth = $('#slideshowImage').width();
-            windowWidth = $(window).width();
-
-
-            tempImgSrc.src = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
+            let t1 = tempImgSrc.src;
             tempImgSrc.onload = function () {
                 showLoadingGif = false;
                 $('#slideshowLoadingGif').hide();
@@ -184,42 +169,52 @@ function slide(direction) {
                 $('.slideshowNavgArrows').css('visibility', 'hidden');
                 $('#slideshowImageLabel').fadeOut();
 
+                slidingDone = false;
                 slideOutofView();
 
-                $('#slideshowImage').attr("src", tempImgSrc.src);
+                while (!slidingDone) {
+                    setTimeout(function () {
+                        if ($("#blinker").html("") == "*")
+                            $("#blinker").html("");
+                        else
+                            $("#blinker").html("*");
+                    }, 333);
+                }
+                if (slidingDone)
+                {
+                    $('#slideshowImage').attr("src", tempImgSrc.src);
+                    setTimeout(function () { // SLIDE BACK INTO VIEW
 
-                setTimeout(function () { // SLIDE BACK INTO VIEW
+                        imagePos = $('#slideshowImage').position().left;
+                        if (slideDirection == 'next') {
+                            slideDirection = 'from the right';
+                        }
+                        else { // 'prev' move image far to the right
+                            slideDirection = 'from the left';
+                        }
+                        slideBackIntoView();
 
-                    imagePos = $('#slideshowImage').position().left;
-                    if (direction == 'next') {
-                        $('#slideshowImage').css("left", windowWidth + imageWidth + 100);
-                        slideDirection = 'from the right';
-                    }
-                    else { // 'prev' move image far to the right
-                        $('#slideshowImage').css("left", -(imageWidth + 100));
-                        slideDirection = 'from the left';
-                    }
-                    slideBackIntoView();
-                    
+                        $('.slideshowNavgArrows').css('visibility', 'visible').fadeIn();
+                        slideShowAvailable = true;
+                        resizeSlideshow();
 
-                    $('.slideshowNavgArrows').css('visibility', 'visible').fadeIn();
-                    slideShowAvailable = true;
-                    resizeSlideshow();
+                        if (albumFolderId != imageArray[imageViewerIndex].ImageFolderId) {
+                            // we have a link
+                            $('#slideshowImageLabel').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
+                        }
 
-                    if (albumFolderId != imageArray[imageViewerIndex].ImageFolderId) {
-                        // we have a link
-                        $('#slideshowImageLabel').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
-                    }
+                        //      $('#slideshowMessageArea').html(slideshowParentName + "/" + imageArray[imageViewerIndex].ImageFolderName).fadeIn();
+                        //  else
+                        $('#slideshowMessageArea').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
 
-                    //      $('#slideshowMessageArea').html(slideshowParentName + "/" + imageArray[imageViewerIndex].ImageFolderName).fadeIn();
-                    //  else
-                    $('#slideshowMessageArea').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
+                        spSessionCount++;
+                        $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
 
-                    spSessionCount++;
-                    $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
+                        $('#footerMessage').html("image: " + imageViewerIndex + " of: " + imageArray.length);
 
-                    $('#footerMessage').html("image: " + imageViewerIndex + " of: " + imageArray.length);
-                }, 450);
+
+                    }, 450);
+                }
             };
         }
     } catch (e) {
@@ -229,22 +224,26 @@ function slide(direction) {
 
 function slideOutofView() {
     if (slideDirection == 'to the right') {
-        if (imagePos < (imageWidth + windowWidth + 100)) {
+        if (imagePos < slideshowImageDestinationPos) {
             setTimeout(function () {
                 imagePos += slideIncrement;
-                $("#singleImageOuterContainer").css("left", imagePos);
+                $('#slideshowImageContainer').position.left = imagePos;
                 slideOutofView();
             }, slideSpeed);
         }
+        else
+            slidingDone = true;
     }
     else {
-        if (imagePos > -(imageWidth + 100)) {
+        if (imagePos > slideshowImageDestinationPos) {
             setTimeout(function () {
                 imagePos -= slideIncrement;
-                $("#singleImageOuterContainer").css("left", imagePos);
+                $('#slideshowImageContainer').position.left = imagePos;
                 slideOutofView();
             }, slideSpeed);
         }
+        else
+            slidingDone = true;
     }
 }
 
@@ -253,7 +252,7 @@ function slideBackIntoView() {
         if (imagePos < slideshowImageZeroPos) {
             setTimeout(function () {
                 imagePos += slideIncrement;
-                $("#singleImageOuterContainer").css("left", imagePos);
+                $('#slideshowImageContainer').position.left = imagePos;
                 slideOutofView();
             }, slideSpeed);
         }
@@ -262,13 +261,32 @@ function slideBackIntoView() {
         if (imagePos > slideshowImageZeroPos) {
             setTimeout(function () {
                 imagePos -= slideIncrement;
-                $("#singleImageOuterContainer").css("left", imagePos);
+                $('#slideshowImageContainer').position.left = imagePos;
                 slideOutofView();
             }, slideSpeed);
         }
     }
 }
 
+function incrementIndex(direction) {
+    // increment/decrement imageViewerIndex
+    imagePos = slideshowImageZeroPos = $('#slideshowImage').position().left;
+    let imageWidth = $('#slideshowImageContainer').width();
+    let windowWidth = $(window).width();
+    if (direction == 'next') {
+        if (++imageViewerIndex >= imageArray.length)
+            imageViewerIndex = 0;
+        slideshowImageDestinationPos = imageWidth + windowWidth + 100;
+        slideDirection = 'to the right';
+    }
+    else {
+        if (--imageViewerIndex == 0)
+            imageViewerIndex = imageArray.length;
+        slideshowImageDestinationPos = -100 - imageWidth;
+        slideDirection = 'to the left';
+    }
+    tempImgSrc.src = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
+}
 
 $(document).keydown(function (event) {
     if (slideShowButtonsActive) {
@@ -303,7 +321,6 @@ $(document).keydown(function (event) {
 $('#rightClickArea').dblclick(function () {
     startSlideShow();
 });
-
 
 function slideshowContextMenu() {
     runSlideShow("pause");
@@ -378,6 +395,8 @@ function showSlideshowHeader() {
 
     $('#headerBottomRow').html(`
       <div class="fullWidthFlexContainer">
+
+        <div id='blinker'></div>
         <div id='sldeshowNofN' class='sldeshowHeaderTextContainer'></div>
 
         <div class='slideshowHeaderButtonContainer' onclick='explodeImage();'>

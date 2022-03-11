@@ -25,10 +25,15 @@
     cursor: pointer;
     z-index: 2;
 }
+.carouselControlsContainer {
+    display: flex;
+    position: relative;
+    left: 33%;
+}
 
 .speedButton {
     z-index: 1;
-    height: 37px;
+    height: 25px;
     margin: 2px 5px 3px 0px;
     cursor: pointer;
 }
