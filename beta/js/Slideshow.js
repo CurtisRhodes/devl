@@ -171,21 +171,11 @@ function slide(direction) {
                 slideDirection = 'to the left';
             }
 
-            imageWidth = slideshowImageZeroPos = $('#slideshowImage').width();
+            imagePos =slideshowImageZeroPos = $('#slideshowImage').position().left;
+            imageWidth = $('#slideshowImage').width();
             windowWidth = $(window).width();
 
 
-
-
-
-            if (direction == 'next') {
-
-                slideDirection = 'from the left';
-                imagePos = 7000;
-            }
-
-
-            imagePos = slideshowImageZeroPos = $('#slideshowImage').css("left");
             tempImgSrc.src = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
             tempImgSrc.onload = function () {
                 showLoadingGif = false;
@@ -194,11 +184,13 @@ function slide(direction) {
                 $('.slideshowNavgArrows').css('visibility', 'hidden');
                 $('#slideshowImageLabel').fadeOut();
 
-                slideOutofView(direction);
+                slideOutofView();
 
                 $('#slideshowImage').attr("src", tempImgSrc.src);
 
                 setTimeout(function () { // SLIDE BACK INTO VIEW
+
+                    imagePos = $('#slideshowImage').position().left;
                     if (direction == 'next') {
                         $('#slideshowImage').css("left", windowWidth + imageWidth + 100);
                         slideDirection = 'from the right';
