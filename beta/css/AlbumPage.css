@@ -58,7 +58,9 @@
 
 .flexboxMiddleSection {
     display: inline-block;
-    float: left;
+    position: relative;
+    left: 33%;
+    font-size: large;
     text-align: center;
 }
 

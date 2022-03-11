@@ -19,8 +19,8 @@ function showSlideshowViewer(folderId, startLink, isLargeLoad) {
     showSlideshowHeader();
     getFolderDetails();
 
-    $('#albumContentArea').fadeOut();
-    $('#slideshowContent').show().fadeIn();
+    $('#albumContentArea').fadeOut();        
+    $('#slideshowContent').show();
 
     slideShowButtonsActive = true;
     spSessionCount = 0;
@@ -145,9 +145,12 @@ function adjustSlideshowSpeed(action) {
 
 }
 
-let imagePos, slideshowImageZeroPos, slideDirection, slidingDone = false, laps = 0;
-let slideshowImageDestinationPos;
-const slideSpeed = 50, slideIncrement = 22;
+let imagePos, slideshowImageZeroPos, slideDirection,
+    slidingDone = false,
+    slideshowImageDestinationPos, testPreviousPos,
+    imageWidth, windowWidth;
+
+const slideSpeed = 100, slideIncrement = 122;
 
 function slide(direction) {
     try {
@@ -158,64 +161,78 @@ function slide(direction) {
                 if (showLoadingGif)
                     $('#slideshowLoadingGif').show()
             }, 250);
+            imageWidth = $('#slideshowImageContainer').width();
+            windowWidth = $(window).width();
 
             incrementIndex(direction);
 
-            let t1 = tempImgSrc.src;
+            tempImgSrc.src = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
             tempImgSrc.onload = function () {
                 showLoadingGif = false;
                 $('#slideshowLoadingGif').hide();
                 $('#thumbImageContextMenu').fadeOut();
                 $('.slideshowNavgArrows').css('visibility', 'hidden');
                 $('#slideshowImageLabel').fadeOut();
-
                 slidingDone = false;
+                testPreviousPos = 0;
+                ////////////////////////
                 slideOutofView();
-
-                while (!slidingDone) {
-                    setTimeout(function () {
-                        if ($("#blinker").html("") == "*")
+                ////////////////////////
+                let jsWhile1 = setInterval(function () { //while (sliding) {
+                    if (!slidingDone) {
+                        if ($("#blinker").html() == "*")
                             $("#blinker").html("");
                         else
                             $("#blinker").html("*");
-                    }, 333);
-                }
-                if (slidingDone)
-                {
-                    $('#slideshowImage').attr("src", tempImgSrc.src);
-                    setTimeout(function () { // SLIDE BACK INTO VIEW
+                    }
+                    else {
+                        clearInterval(jsWhile1);
+                        $('#slideshowImage').attr("src", tempImgSrc.src);
+                        $('#slideshowImageContainer').hide();
 
-                        imagePos = $('#slideshowImage').position().left;
                         if (slideDirection == 'next') {
                             slideDirection = 'from the right';
+                            imgagepos = imageWidth + (windowWidth / 2);
                         }
-                        else { // 'prev' move image far to the right
+                        else { 
                             slideDirection = 'from the left';
+                            imgagepos = 0 - imageWidth;
                         }
+                        $('#slideshowImageContainer').css("left", imagePos);
+
+                        slidingDone = false;
+                        /////////////////////////////////
                         slideBackIntoView();
+                        ////////////////////////////////
+                        let jsWhile2 = setInterval(function () {
+                            if (!slidingDone) {
+                                if ($("#blinker").html() == "*")
+                                    $("#blinker").html("");
+                                else
+                                    $("#blinker").html("*");
+                            }
+                            else {
+                                clearInterval(jsWhile2);
+                                $('.slideshowNavgArrows').css('visibility', 'visible').fadeIn();
+                                slideShowAvailable = true;
+                                resizeSlideshow();
 
-                        $('.slideshowNavgArrows').css('visibility', 'visible').fadeIn();
-                        slideShowAvailable = true;
-                        resizeSlideshow();
+                                if (albumFolderId != imageArray[imageViewerIndex].ImageFolderId) {
+                                    // we have a link
+                                    $('#slideshowImageLabel').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
+                                }
+                                //  else
+                                //      $('#slideshowMessageArea').html(slideshowParentName + "/" + imageArray[imageViewerIndex].ImageFolderName).fadeIn();
+                                $('#slideshowMessageArea').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
 
-                        if (albumFolderId != imageArray[imageViewerIndex].ImageFolderId) {
-                            // we have a link
-                            $('#slideshowImageLabel').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
-                        }
-
-                        //      $('#slideshowMessageArea').html(slideshowParentName + "/" + imageArray[imageViewerIndex].ImageFolderName).fadeIn();
-                        //  else
-                        $('#slideshowMessageArea').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
-
-                        spSessionCount++;
-                        $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
-
-                        $('#footerMessage').html("image: " + imageViewerIndex + " of: " + imageArray.length);
-
-
-                    }, 450);
-                }
-            };
+                                spSessionCount++;
+                                $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
+                                $('#footerMessage').html("image: " + imageViewerIndex + " of: " + imageArray.length);
+                            }
+                        }, 450);
+                    }
+                }, 500);
+            }
         }
     } catch (e) {
         logCatch("slide", e);
@@ -227,7 +244,11 @@ function slideOutofView() {
         if (imagePos < slideshowImageDestinationPos) {
             setTimeout(function () {
                 imagePos += slideIncrement;
-                $('#slideshowImageContainer').position.left = imagePos;
+                $('#slideshowImageContainer').css("left", imagePos);
+                if (testPreviousPos == $('#slideshowImageContainer').position().left) {
+                    console.log("position not changing");
+                }
+                testPreviousPos = $('#slideshowImageContainer').position().left;
                 slideOutofView();
             }, slideSpeed);
         }
@@ -238,7 +259,7 @@ function slideOutofView() {
         if (imagePos > slideshowImageDestinationPos) {
             setTimeout(function () {
                 imagePos -= slideIncrement;
-                $('#slideshowImageContainer').position.left = imagePos;
+                $('#slideshowImageContainer').css("left", imagePos);
                 slideOutofView();
             }, slideSpeed);
         }
@@ -252,40 +273,44 @@ function slideBackIntoView() {
         if (imagePos < slideshowImageZeroPos) {
             setTimeout(function () {
                 imagePos += slideIncrement;
-                $('#slideshowImageContainer').position.left = imagePos;
+                $('#slideshowImageContainer').css("left", imagePos);
                 slideOutofView();
             }, slideSpeed);
         }
+        else
+            slidingDone = true;
     }
     else {
         if (imagePos > slideshowImageZeroPos) {
             setTimeout(function () {
                 imagePos -= slideIncrement;
-                $('#slideshowImageContainer').position.left = imagePos;
+                $('#slideshowImageContainer').css("left", imagePos);
                 slideOutofView();
             }, slideSpeed);
         }
+        else
+            slidingDone = true;
     }
 }
 
 function incrementIndex(direction) {
     // increment/decrement imageViewerIndex
-    imagePos = slideshowImageZeroPos = $('#slideshowImage').position().left;
-    let imageWidth = $('#slideshowImageContainer').width();
-    let windowWidth = $(window).width();
+    imagePos = slideshowImageZeroPos = $('#slideshowImageContainer').position().left;
+    imagePos = slideshowImageZeroPos = $('#slideshowImageContainer').position().left;
+    imagePos = slideshowImageZeroPos = $('#slideshowImageContainer').position().left;
+    imagePos = slideshowImageZeroPos = $('#slideshowImageContainer').position().left;
     if (direction == 'next') {
+        slideDirection = 'to the right';
+        slideshowImageDestinationPos = imageWidth + (windowWidth / 2);
         if (++imageViewerIndex >= imageArray.length)
             imageViewerIndex = 0;
-        slideshowImageDestinationPos = imageWidth + windowWidth + 100;
-        slideDirection = 'to the right';
     }
     else {
+        slideDirection = 'to the left';
+        slideshowImageDestinationPos = -100 - imageWidth;
         if (--imageViewerIndex == 0)
             imageViewerIndex = imageArray.length;
-        slideshowImageDestinationPos = -100 - imageWidth;
-        slideDirection = 'to the left';
     }
-    tempImgSrc.src = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
 }
 
 $(document).keydown(function (event) {
@@ -431,14 +456,12 @@ function showSlideshowHeader() {
 
 function resizeSlideshow() {
     $('#slideshowImage').css("height", $('#visableArea').height());
-
-    //$('#viewerImage').css('left', ($(window).width() - $('#viewerImage').width()) / 2);
-    //$('#leftClickArea').css('left', 0);
+    let test0 = $(window).width();
+    let test1 = $(window).width() / 2;
+    let test2 = $('#slideshowImageContainer').width();
+    let test3 = ($(window).width() / 2) - ($('#slideshowImageContainer').width() / 2);
+    $('#slideshowImageContainer').css('left', ($(window).width() / 2) - ($('#slideshowImageContainer').width() / 2));
     $('#rightClickArea').css('left', $(window).width() / 2);
-    //$('#viewerImage').height($(window).height() - 30);
     $('.slideshowNavgArrows img').height($(window).height() - 30);
-    //$('#slideShowContainer').css('width', "100%");
     $(window).scrollTop(0);
-
-
 }

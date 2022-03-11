@@ -5,11 +5,8 @@ function loadAlbumPage(folderId, islargeLoad) {
     $('#albumPageLoadingGif').css("height", "27px");
     $('#imageContainer').html("");
     getAlbumImages(folderId, islargeLoad);
-    setBreadcrumbs(folderId);
-    getAlbumPageInfo(folderId);
+    getAlbumPageInfo(folderId, islargeLoad);
     $('#albumContentArea').fadeIn();
-    if (!islargeLoad)
-        $('#albumTopRow').show();
 }
 
 /*-- php -----------------------------------*/
@@ -28,8 +25,6 @@ function getAlbumImages(folderId, islargeLoad) {
                                 loadImageResults(vLink, childFolder.Id);
                             });
                         });
-                        $('#largeLoadButton').hide();
-                        $('#deepSlideshowButton').show();
                         resizeAlbumPage();
                     });
                     $('#albumPageLoadingGif').hide();
@@ -94,12 +89,9 @@ function getSubFolders(folderId) {
     }
 }
 
-function getAlbumPageInfo(folderId) {
+function getAlbumPageInfo(folderId, islargeLoad) {
     try {
         let infoStart = Date.now();
-        $('#largeLoadButton').hide();
-        $('#deepSlideshowButton').hide();
-        $('#albumPageLoadingGif').hide();
         if (isNullorUndefined(folderId)) {
             alert("get AlbumPage info: folderId.isNullorUndefined: " + folderId);
             return;
@@ -109,7 +101,8 @@ function getAlbumPageInfo(folderId) {
             url: 'php/customFetch.php?query=Select * from CategoryFolder where Id=' + folderId,
             success: function (data) {
                 let catfolder = JSON.parse(data);
-                $('#aboveImageContainerMessageArea').html('');
+                $('#albumPageLoadingGif').hide();
+                $('#albumTopRow').show();
                 $('#seoPageName').html(catfolder.FolderName);
 
                 // resetOggleHeader(folderId, catfolder.RootFolder);
@@ -133,12 +126,14 @@ function getAlbumPageInfo(folderId) {
                             $('#albumBottomfileCount').html(catfolder.TotalSubFolders + "/" + Number(catfolder.TotalChildFiles).toLocaleString());
                         break;
                 }
+                setBreadcrumbs(folderId);
+
+                if (islargeLoad) {
+                    $('#largeLoadButton').hide();
+                }
 
                 $('#largeLoadButton').on("click", function () { getAlbumImages(folderId, true) });
-                $('#deepSlideshowButton').on("click", function () {
-                    //slideshowParentName = data
-                    showSlideshowViewer(folderId, 0, true)
-                });
+                $('#deepSlideshowButton').on("click", function () { showSlideshowViewer(folderId, 0, true) });
 
                 $('#albumBottomfileCount').show();
                 $('#albumBottomfileCount').on("click", function () { updateFolderCount(folderId, catfolder.FolderPath) });
@@ -200,6 +195,7 @@ function setBreadcrumbs(folderId) {
                         }
                     }
                 }
+                $('#aboveImageContainerMessageArea').html('');
             },
             error: function (jqXHR) {
                 $('#albumPageLoadingGif').hide();
@@ -218,21 +214,25 @@ function addBreadcrumb(folderId, folderName, className) {
 
 /*-- exploding image view -------------------*/
 {
-    const viewerOffsetTop = -44, explodeSpeed = 22, heightIncrement = 22;
-    let visAreaH, viewerH, laps = 0;
+    const viewerOffsetTop = 44, explodeSpeed = 22, heightIncrement = 22;
+    let viewerH, viewerMaxH;
 
     function viewImage(imgSrc, linkId) {
         currentImagelinkId = linkId;
-        visAreaH = $(window).height() - $('header').height();
         viewerH = 50;
         let parentPos = $('#visableArea').offset();
         let startLeft = $('#visableArea').width() * .34;
 
-        $("#singleImageOuterContainer").css({ height: viewerH, top: parentPos.top + viewerOffsetTop, left: parentPos.left + startLeft });
+        $("#singleImageOuterContainer").css({
+            height: viewerH,
+            top: parentPos.top - viewerOffsetTop,
+            left: parentPos.left + startLeft
+        });
         $("#viewerImage").css("height", viewerH);
         $("#vailShell").show().on("click", function () { closeImageViewer() });
         $('#viewerImage').attr("src", imgSrc);
         $('#singleImageOuterContainer').show();
+        viewerMaxH = $('#visableArea').height() + viewerOffsetTop - 55;
         incrementExplode();
 
         $('body').keydown(function (event) {
@@ -242,10 +242,9 @@ function addBreadcrumb(folderId, folderName, className) {
     }
 
     function incrementExplode() {
-        if (viewerH + viewerOffsetTop < visAreaH) {
+        if (viewerH < viewerMaxH) {
             setTimeout(function () {
                 viewerH += heightIncrement;
-                laps++;
                 $("#viewerImage").css("height", viewerH);
 
                 let imgleft = $("#singleImageOuterContainer").css("left");
@@ -255,7 +254,7 @@ function addBreadcrumb(folderId, folderName, className) {
             }, explodeSpeed);
         }
         else {
-            $("#viewerImage").css("height", visAreaH - viewerOffsetTop);
+            $("#viewerImage").css("height", viewerMaxH);
             $("#divSlideshowButton").show();
             $("#viewerCloseButton").show();
             let visWidth = $('#visableArea').width();
@@ -286,8 +285,7 @@ function addBreadcrumb(folderId, folderName, className) {
     }
     function resizeViewer() {
         if ($('#singleImageOuterContainer').is(":visible")) {
-            $("#viewerImage").css("height", visAreaH - viewerOffsetTop);
-            $("#singleImageOuterContainer").css("height", visAreaH - viewerOffsetTop);
+            $("#singleImageOuterContainer").css("height", viewerMaxH);
             let visWidth = $('#visableArea').width();
             let imgWidth = $('#viewerImage').width();
             $("#singleImageOuterContainer").css("left", (visWidth / 2) - (imgWidth / 2));

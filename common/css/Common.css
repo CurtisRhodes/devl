@@ -60,9 +60,8 @@ body {
 
 .loadingGif {
     position: absolute;
-    left: 150px;
-    top: 140px;
-    height: 110px;
+    left: 150px;    
+    height: 77px;
     z-index: 31;
     display: none;
 }
