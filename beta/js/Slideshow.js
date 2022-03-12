@@ -25,7 +25,7 @@ function showSlideshowViewer(folderId, startLink, isLargeLoad) {
     slideShowButtonsActive = true;
     spSessionCount = 0;
     loadSlideshowItems(folderId, startLink, isLargeLoad);
-    resizeSlideshow();
+    //resizeSlideshow();
 }
 
 function loadSlideshowItems(folderId, startLink, isLargeLoad) {
@@ -45,9 +45,11 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                             $.each(data, function (idx, obj) {
                                 imageArray.push(obj);
 
-                                if (imageArray.length > 10) {
+                                if (imageArray.length == 10) {
                                     $('#slideshowImage').attr("src", imageArray[0].FileName);
                                     $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
+                                    $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
+                                    $('#slideshowImageContainer').css('left', ($('#slideshowImageContainer').outerWidth() / 2) - ($('#leftClickArea').width() / 2));
                                 }
                             });
                             $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
@@ -65,10 +67,13 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                     }
                     else {
                         imageArray = JSON.parse(data);
+
                         imageViewerIndex = imageArray.findIndex(node => node.LinkId == startLink);
                         $('#slideshowImage').attr("src", slideShowImgRepo + imageArray[imageViewerIndex].FileName);
                         $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
                         $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
+                        $('#slideshowImageContainer').css('left', ($('#slideshowImageContainer').outerWidth() / 2) - ($('#leftClickArea').width() / 2));
+
                     }
                 },
                 error: function (jqXHR) {
@@ -172,9 +177,21 @@ function slide(direction) {
                 $('#slideshowLoadingGif').hide();
                 $('#thumbImageContextMenu').fadeOut();
                 $('.slideshowNavgArrows').css('visibility', 'hidden');
-                $('#slideshowImageLabel').fadeOut();
                 slidingDone = false;
                 testPreviousPos = 0;
+                $('#slideshowImageLabel').fadeOut();
+
+                let centeringOffset = $('#leftClickArea').width();
+                //$('#slideshowImageContainer').css('left', ($('#slideshowImageContainer').outerWidth() / 2) - ($('#leftClickArea').width() / 2));
+                imagePos = slideshowImageZeroPos = $('#slideshowImageContainer').position().left;
+                if (slideDirection == 'next') {
+                    slideDirection = 'to the right';
+                    slideshowImageDestinationPos = windowWidth - slideshowImageZeroPos + imageWidth - centeringOffset;
+                }
+                else {
+                    slideDirection = 'to the left';
+                    slideshowImageDestinationPos = 0 - imageWidth - centeringOffset;
+                }
                 ////////////////////////
                 slideOutofView();
                 ////////////////////////
@@ -192,13 +209,12 @@ function slide(direction) {
 
                         if (slideDirection == 'next') {
                             slideDirection = 'from the right';
-                            imgagepos = imageWidth + (windowWidth / 2);
                         }
                         else { 
                             slideDirection = 'from the left';
-                            imgagepos = 0 - imageWidth;
                         }
                         $('#slideshowImageContainer').css("left", imagePos);
+                        $('#slideshowImageContainer').show();
 
                         slidingDone = false;
                         /////////////////////////////////
@@ -270,35 +286,34 @@ function slideOutofView() {
 
 function slideBackIntoView() {
     if (slideDirection == 'from the left') {
-        if (imagePos < slideshowImageZeroPos) {
+        if (imagePos + slideIncrement <= slideshowImageZeroPos) {
             setTimeout(function () {
                 imagePos += slideIncrement;
                 $('#slideshowImageContainer').css("left", imagePos);
-                slideOutofView();
+                slideBackIntoView();
             }, slideSpeed);
         }
-        else
+        else {
+            $('#slideshowImageContainer').css('left', slideshowImageZeroPos);
             slidingDone = true;
+        }
     }
     else {
-        if (imagePos > slideshowImageZeroPos) {
+        if (imagePos + slideIncrement >= slideshowImageZeroPos) {
             setTimeout(function () {
                 imagePos -= slideIncrement;
                 $('#slideshowImageContainer').css("left", imagePos);
-                slideOutofView();
+                slideBackIntoView();
             }, slideSpeed);
         }
-        else
+        else {
+            $('#slideshowImageContainer').css('left', slideshowImageZeroPos);
             slidingDone = true;
+        }
     }
 }
 
-function incrementIndex(direction) {
-    // increment/decrement imageViewerIndex
-    imagePos = slideshowImageZeroPos = $('#slideshowImageContainer').position().left;
-    imagePos = slideshowImageZeroPos = $('#slideshowImageContainer').position().left;
-    imagePos = slideshowImageZeroPos = $('#slideshowImageContainer').position().left;
-    imagePos = slideshowImageZeroPos = $('#slideshowImageContainer').position().left;
+function incrementIndex(direction) {    
     if (direction == 'next') {
         slideDirection = 'to the right';
         slideshowImageDestinationPos = imageWidth + (windowWidth / 2);
@@ -455,12 +470,8 @@ function showSlideshowHeader() {
 }
 
 function resizeSlideshow() {
+    $('#slideshowImageContainer').css('left', ($('#slideshowImageContainer').outerWidth() / 2) - ($('#leftClickArea').width() / 2));
     $('#slideshowImage').css("height", $('#visableArea').height());
-    let test0 = $(window).width();
-    let test1 = $(window).width() / 2;
-    let test2 = $('#slideshowImageContainer').width();
-    let test3 = ($(window).width() / 2) - ($('#slideshowImageContainer').width() / 2);
-    $('#slideshowImageContainer').css('left', ($(window).width() / 2) - ($('#slideshowImageContainer').width() / 2));
     $('#rightClickArea').css('left', $(window).width() / 2);
     $('.slideshowNavgArrows img').height($(window).height() - 30);
     $(window).scrollTop(0);

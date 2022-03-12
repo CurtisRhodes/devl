@@ -1,5 +1,6 @@
 ﻿body {
     background-color: var(--oggleBackgroundColor);
+    margin: 0;
 }
 
 .albumContainer {
