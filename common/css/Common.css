@@ -54,9 +54,6 @@ body {
     border:solid thin #40767d;
     min-height: 100px;
 }
-.displayHidden {
-    display: none;
-}
 
 .loadingGif {
     position: absolute;

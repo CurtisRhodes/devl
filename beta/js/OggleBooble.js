@@ -439,7 +439,7 @@ function logOggleError(errorCode, folderId, errorMessage, calledFrom) {
 function imageError(folderId, linkId) {
     try {
         // let calledFrom = "noneya";
-        alert("imageError: IMG. folder: " + folderId + 
+        console.error("imageError: IMG. folder: " + folderId +
             "\n linkId: "+linkId);
 
         $('#' + linkId).attr('src', 'https://common.ogglefiles.com/img/redballonSmall.png');

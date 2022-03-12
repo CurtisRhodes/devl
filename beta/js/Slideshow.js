@@ -25,7 +25,7 @@ function showSlideshowViewer(folderId, startLink, isLargeLoad) {
     slideShowButtonsActive = true;
     spSessionCount = 0;
     loadSlideshowItems(folderId, startLink, isLargeLoad);
-    //resizeSlideshow();
+    resizeSlideshow();
 }
 
 function loadSlideshowItems(folderId, startLink, isLargeLoad) {
@@ -49,6 +49,7 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                                     $('#slideshowImage').attr("src", imageArray[0].FileName);
                                     $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
                                     $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
+
                                     $('#slideshowImageContainer').css('left', ($('#slideshowImageContainer').outerWidth() / 2) - ($('#leftClickArea').width() / 2));
                                 }
                             });
@@ -150,11 +151,7 @@ function adjustSlideshowSpeed(action) {
 
 }
 
-let imagePos, slideshowImageZeroPos, slideDirection,
-    slidingDone = false,
-    slideshowImageDestinationPos, testPreviousPos,
-    imageWidth, windowWidth;
-
+let imagePos, slideshowImageZeroPos, slidingDone = false;
 const slideSpeed = 100, slideIncrement = 122;
 
 function slide(direction) {
@@ -166,8 +163,6 @@ function slide(direction) {
                 if (showLoadingGif)
                     $('#slideshowLoadingGif').show()
             }, 250);
-            imageWidth = $('#slideshowImageContainer').width();
-            windowWidth = $(window).width();
 
             incrementIndex(direction);
 
@@ -177,24 +172,25 @@ function slide(direction) {
                 $('#slideshowLoadingGif').hide();
                 $('#thumbImageContextMenu').fadeOut();
                 $('.slideshowNavgArrows').css('visibility', 'hidden');
-                slidingDone = false;
-                testPreviousPos = 0;
                 $('#slideshowImageLabel').fadeOut();
 
+                let windowWidth = $(window).width();
                 let centeringOffset = $('#leftClickArea').width();
+                let imageWidth = $('#slideshowImageContainer').outerWidth();
+
                 //$('#slideshowImageContainer').css('left', ($('#slideshowImageContainer').outerWidth() / 2) - ($('#leftClickArea').width() / 2));
-                imagePos = slideshowImageZeroPos = $('#slideshowImageContainer').position().left;
-                if (slideDirection == 'next') {
-                    slideDirection = 'to the right';
-                    slideshowImageDestinationPos = windowWidth - slideshowImageZeroPos + imageWidth - centeringOffset;
-                }
-                else {
-                    slideDirection = 'to the left';
+                //$('#slideshowImageContainer').css('left', ($('#slideshowImageContainer').outerWidth() / 2) - ($('#leftClickArea').width() / 2));
+
+                imagePosX = (imageWidth / 2) - (centeringOffset / 2);
+
+                imagePos = $('#slideshowImageContainer').position().left;
+
+                let slideshowImageDestinationPos = windowWidth / 2;
+                if (direction == 'prev')
                     slideshowImageDestinationPos = 0 - imageWidth - centeringOffset;
-                }
+
                 ////////////////////////
-                slideOutofView();
-                ////////////////////////
+                slideOutofView(direction, slideshowImageDestinationPos);
                 let jsWhile1 = setInterval(function () { //while (sliding) {
                     if (!slidingDone) {
                         if ($("#blinker").html() == "*")
@@ -204,22 +200,21 @@ function slide(direction) {
                     }
                     else {
                         clearInterval(jsWhile1);
-                        $('#slideshowImage').attr("src", tempImgSrc.src);
-                        $('#slideshowImageContainer').hide();
 
-                        if (slideDirection == 'next') {
-                            slideDirection = 'from the right';
-                        }
-                        else { 
-                            slideDirection = 'from the left';
-                        }
-                        $('#slideshowImageContainer').css("left", imagePos);
-                        $('#slideshowImageContainer').show();
+                        $('#slideshowImage').attr("src", tempImgSrc.src);
+                        $('#slideshowImage').css("height", $('#visableArea').height());
+                        imageWidth = $('#slideshowImage').width();
+                        if (direction == 'next')
+                            imagePos = 0 - imageWidth - centeringOffset;
+                        else
+                            imagePos = windowWidth + imageWidth;
+
+                        $('#slideshowImageContainer').css('left', imagePos);
+                        slideshowImageZeroPos = imageWidth / 2 - centeringOffset / 2;
 
                         slidingDone = false;
                         /////////////////////////////////
-                        slideBackIntoView();
-                        ////////////////////////////////
+                        slideBackIntoView(direction);
                         let jsWhile2 = setInterval(function () {
                             if (!slidingDone) {
                                 if ($("#blinker").html() == "*")
@@ -233,13 +228,30 @@ function slide(direction) {
                                 slideShowAvailable = true;
                                 resizeSlideshow();
 
-                                if (albumFolderId != imageArray[imageViewerIndex].ImageFolderId) {
+                                if (albumFolderId != imageArray[imageViewerIndex].SrcId) {
                                     // we have a link
-                                    $('#slideshowImageLabel').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
+                                    $('#slideshowImageLabel').html(imageArray[imageViewerIndex].SrdFolder).fadeIn()
+                                        .on("click", window.location.href = 'album.html?folderId="+imageArray[imageViewerIndex].SrcId,"_blank"');
+
+
+                                    //FolderId	    int(11) 	    NO
+                                    //Parent	    int(11)	        NO
+                                    //SrcId	        int(11)	        NO		0
+                                    //RootFolder	varchar(20)	    NO
+                                    //LinkId	    varchar(36)	    NO
+                                    //FileName	    varchar(501)	YES
+                                    //SrcFolder	    varchar(150)	NO
+                                    //Orientation	varchar(1)	    NO
+                                    //IsLink    	int(1)	        NO		0
+                                    //SortOrder	    int(11)	        NO
+                                    //Poster    	varchar(600)	YES
+
+
                                 }
-                                //  else
-                                //      $('#slideshowMessageArea').html(slideshowParentName + "/" + imageArray[imageViewerIndex].ImageFolderName).fadeIn();
-                                $('#slideshowMessageArea').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
+                                if (isNullorUndefined(slideshowParentName))
+                                    $('#slideshowMessageArea').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
+                                else
+                                    $('#slideshowMessageArea').html(slideshowParentName + "/" + imageArray[imageViewerIndex].ImageFolderName).fadeIn();
 
                                 spSessionCount++;
                                 $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
@@ -255,17 +267,14 @@ function slide(direction) {
     }
 }
 
-function slideOutofView() {
-    if (slideDirection == 'to the right') {
+function slideOutofView(direction, slideshowImageDestinationPos) {
+
+    if (direction == 'next') {
         if (imagePos < slideshowImageDestinationPos) {
             setTimeout(function () {
                 imagePos += slideIncrement;
                 $('#slideshowImageContainer').css("left", imagePos);
-                if (testPreviousPos == $('#slideshowImageContainer').position().left) {
-                    console.log("position not changing");
-                }
-                testPreviousPos = $('#slideshowImageContainer').position().left;
-                slideOutofView();
+                slideOutofView(direction, slideshowImageDestinationPos);
             }, slideSpeed);
         }
         else
@@ -276,7 +285,7 @@ function slideOutofView() {
             setTimeout(function () {
                 imagePos -= slideIncrement;
                 $('#slideshowImageContainer').css("left", imagePos);
-                slideOutofView();
+                slideOutofView(direction, slideshowImageDestinationPos);
             }, slideSpeed);
         }
         else
@@ -284,13 +293,13 @@ function slideOutofView() {
     }
 }
 
-function slideBackIntoView() {
-    if (slideDirection == 'from the left') {
+function slideBackIntoView(direction) {
+    if (direction == 'next') {
         if (imagePos + slideIncrement <= slideshowImageZeroPos) {
             setTimeout(function () {
                 imagePos += slideIncrement;
                 $('#slideshowImageContainer').css("left", imagePos);
-                slideBackIntoView();
+                slideBackIntoView(direction);
             }, slideSpeed);
         }
         else {
@@ -303,7 +312,7 @@ function slideBackIntoView() {
             setTimeout(function () {
                 imagePos -= slideIncrement;
                 $('#slideshowImageContainer').css("left", imagePos);
-                slideBackIntoView();
+                slideBackIntoView(direction);
             }, slideSpeed);
         }
         else {
@@ -315,14 +324,10 @@ function slideBackIntoView() {
 
 function incrementIndex(direction) {    
     if (direction == 'next') {
-        slideDirection = 'to the right';
-        slideshowImageDestinationPos = imageWidth + (windowWidth / 2);
         if (++imageViewerIndex >= imageArray.length)
             imageViewerIndex = 0;
     }
     else {
-        slideDirection = 'to the left';
-        slideshowImageDestinationPos = -100 - imageWidth;
         if (--imageViewerIndex == 0)
             imageViewerIndex = imageArray.length;
     }
@@ -401,19 +406,6 @@ function startSlideShow() {
             slide('next');
         }, slideShowSpeed);
     }
-
-    //FolderId	    int(11) 	    NO
-    //Parent	    int(11)	        NO
-    //SrcId	        int(11)	        NO		0
-    //RootFolder	varchar(20)	    NO
-    //LinkId	    varchar(36)	    NO
-    //FileName	    varchar(501)	YES
-    //SrcFolder	    varchar(150)	NO
-    //Orientation	varchar(1)	    NO
-    //IsLink    	int(1)	        NO		0
-    //SortOrder	    int(11)	        NO
-    //Poster    	varchar(600)	YES
-
 }
 
 function explodeImage() {
@@ -470,9 +462,8 @@ function showSlideshowHeader() {
 }
 
 function resizeSlideshow() {
-    $('#slideshowImageContainer').css('left', ($('#slideshowImageContainer').outerWidth() / 2) - ($('#leftClickArea').width() / 2));
-    $('#slideshowImage').css("height", $('#visableArea').height());
     $('#rightClickArea').css('left', $(window).width() / 2);
+    $('#slideshowImage').css("height", $('#visableArea').height());
     $('.slideshowNavgArrows img').height($(window).height() - 30);
     $(window).scrollTop(0);
 }

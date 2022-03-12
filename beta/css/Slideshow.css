@@ -46,12 +46,11 @@
 
 .slideshowButton {
     position: absolute;
-    display: none;
     border: solid .5px #ffd800;
-    padding: 9px;
-    border-radius: 8px;
-    background-color: #876d6dc7;
-    color: #d7d91e;
+    padding: 5px;
+    background-color: var(--oggleBackgroundColor);
+    color: #feea7a;
+    border-radius: 4px;
     font-weight: bold;
     cursor: pointer;
     z-index: 21;
