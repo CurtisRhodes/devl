@@ -17,109 +17,111 @@
     <link href="css/AlbumPage.css" rel="stylesheet" />
     <link href="css/Slideshow.css" rel="stylesheet" />
 </head>
-    <body>
-        <header id="oggleHeader" class="stickyHeader"></header>
-        <div id="visableArea" class="threeColumnLayout">
-            <div id="leftColumnArea" class="leftColumn">
-                <div id="promoMessagesContainer" class="promoBox"></div>
-                <img id='folderCommentButton' class='folderCommentButton' title='folder comment' src='https://common.ogglefiles.com/img/comment.png' />
-                <div id="folderCommentContainer"></div>
-            </div>
-            <div class="middleColumn">
-                <div id="divStatusMessage"></div>
-                <img id="albumPageLoadingGif" class='loadingGif' alt='loading' src="https://common.ogglefiles.com/img/loader.gif" />
-                <div id="albumContentArea">
-                    <div id="albumTopRow" class="aboveImageContainerDiv">
-                        <div id='seoPageName' class="albumPageMetaTitle"></div>
-                        <div id="slideShowClick" class="inline clickable" onclick="showSlideshow()">slideshow</div>
-                        <div id="aboveImageContainerMessageArea" class="flexboxMiddleSection"></div>
-                        <div id="largeLoadButton" class='albumMsgLink'
-                             title='slideshow includes all child folders'>load all folders</div>
-                        <div id="deepSlideshowButton" class='albumMsgLink'
-                             title='album page with all child folder images'>Album slideshow</div>
-                    </div>
-                    <div id="imageContainer" class="albumContainer"></div>
-                    <div id="singleImageOuterContainer" class="explodingImageContainer">
-                        <div id="singleImageInnerContainer" class="explodingInnerContainer">
-                            <div id="divSlideshowButton" class="slideshowButton" onclick="showSlideshow()">slideshow</div>
-                            <img id='viewerImage' class='explodingViewerImage' />
-                            <img id='viewerCloseButton' class='floatingCloseButton'
-                                 src="https://common.ogglefiles.com/img/close.png" onclick="closeImageViewer()" />
-                        </div>
-                    </div>
-                    <div class="albumBottomContainer">
-                        <div id="albumBottomfileCount" class="albumBottomContainerRightMostDiv" ></div>
-                    </div>
-                    <div id="trackbackContainer" class="trackbackLinkContainer">
-                        <div>trackback links</div>
-                        <div id="trackbackLinkArea" class="trackbackArea"></div>
-                    </div>
-                </div>
-                <div id="slideshowContent" class="displayHidden">
-                    <div id='leftClickArea' class='hiddenClickArea'
-                         oncontextmenu='slideshowContextMenu()'
-                         onclick='slide("prev")'>
-                    </div>
-                    <div id='rightClickArea' class='hiddenClickArea'
-                         oncontextmenu='slideshowContextMenu()'
-                         onclick='slide("next")'
-                         ondblclick='startSlideShow()'>
-                    </div>
-                    <!--<img id='ssLeftwa' class='slideshowLeftWingArrow' src='img/next_left_arrow.png' />-->
-                    <div id="slideShowCenteringOuterShell" class='centeringOuterShell'>
-                        <div class='centeringInnerShell'>
-                            <div id='slideshowImageContainer' class='moveableflexContainer'>
-                                <div class='slideshowNavgArrows'><img src='img/leftArrowOpaque02.png' /></div>
-                                <img id='slideshowImage' class='slideshowImage' />
-                                <div class='slideshowNavgArrows'><img src='img/rightArrowOpaque02.png' /></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id='slideShowInstructions' class='slideShowVail'></div>
-                    <div id='slideshowCtxMenuContainer' class='ogContextMenu' style='z-index: 35;' onmouseleave='$(this).fadeOut()'>
-                        <div id='slideshowContextMenuContent'></div>
-                    </div>
-                    <div id='slideshowImageLabel' class='slideshowImageLabel displayHidden' onclick='alert("go")'></div>
-                </div>
-            </div>
-            <div id="rightColumnArea" class="rightColumn"></div>
+<body>
+    <header id="oggleHeader" class="stickyHeader"></header>
+    <div id="exploderDiv" class='displayHidden'>
+        <img id="exploderImg" class='exploderImag' />
+        <img id='exploderViewerImage' />
+        <img id='exploderCloseButton' class='floatingCloseButton'
+             src="https://common.ogglefiles.com/img/close.png" onclick="closeExploderDiv()" />
+    </div>
+    <div id="visableArea" class="threeColumnLayout">
+        <div id="leftColumnArea" class="leftColumn">
+            <div id="promoMessagesContainer" class="promoBox"></div>
+            <img id='folderCommentButton' class='folderCommentButton' title='folder comment' src='https://common.ogglefiles.com/img/comment.png' />
+            <div id="folderCommentContainer"></div>
         </div>
+        <div class="middleColumn">
+            <div id="divStatusMessage"></div>
+            <img id="albumPageLoadingGif" class='loadingGif' alt='loading' src="https://common.ogglefiles.com/img/loader.gif" />
+            <div id="albumContentArea">
+                <div id="albumTopRow" class="aboveImageContainerDiv">
+                    <div id='seoPageName' class="albumPageMetaTitle"></div>
+                    <div id="slideShowClick" class="slideShowClickStyle">slideshow</div>
+                    <div id="aboveImageContainerMessageArea" class="flexboxMiddleSection"></div>
+                    <div id="largeLoadButton" class='albumMsgLink'
+                         title='slideshow includes all child folders'>load all folders</div>
+                    <div id="deepSlideshowButton" class='albumMsgLink'
+                         title='album page with all child folder images'>Album slideshow</div>
+                </div>
+                <div id="imageContainer" class="albumContainer"></div>
+                <div id="singleImageOuterContainer" class="explodingImageContainer">
+                    <div id="singleImageInnerContainer" class="explodingInnerContainer">
+                        <div id="divSlideshowButton" class="slideshowButton" onclick="showSlideshow()">slideshow</div>
+                        <img id='viewerImage' class='explodeCusor' />
+                        <img id='viewerCloseButton' class='floatingCloseButton'
+                             src="https://common.ogglefiles.com/img/close.png" onclick="closeImageViewer()" />
+                    </div>
+                </div>
+                <div class="albumBottomContainer">
+                    <div id="albumBottomfileCount" class="albumBottomContainerRightMostDiv"></div>
+                </div>
+                <div id="trackbackContainer" class="trackbackLinkContainer">
+                    <div>trackback links</div>
+                    <div id="trackbackLinkArea" class="trackbackArea"></div>
+                </div>
+            </div>
+            <div id="slideshowContent" class="displayHidden">
+                <div id='leftClickArea' class='hiddenClickArea'></div>
+                <div id='rightClickArea' class='hiddenClickArea'></div>
+                <!--<img id='ssLeftwa' class='slideshowLeftWingArrow' src='img/next_left_arrow.png' />-->
+                <div id="slideShowCenteringOuterShell" class='centeringOuterShell'>
+                    <div class='centeringInnerShell'>
+                        <div id='slideshowImageContainer' class='moveableflexContainer'>
+                            <div class='slideshowNavgArrows'><img src='img/leftArrowOpaque02.png' /></div>
+                            <img id='slideshowImage' class='slideshowImage' />
+                            <div class='slideshowNavgArrows'><img src='img/rightArrowOpaque02.png' /></div>
+                        </div>
+                    </div>
+                </div>
+                <div id='slideShowInstructions' class='slideShowVail'></div>
+                <div id='slideshowCtxMenuContainer' class='ogContextMenu' style='z-index: 35;' onmouseleave='$(this).fadeOut()'>
+                    <div id='slideshowContextMenuContent'></div>
+                </div>
+                <div id='slideshowImageLabel' class='slideshowImageLabel displayHidden' onclick='alert("go")'></div>
+            </div>
+        </div>
+        <div id="rightColumnArea" class="rightColumn"></div>
+    </div>
+    <footer class="ogglefooter"></footer>
 
-        <footer class="ogglefooter"></footer>
+    <div id='contextMenuContainer' class='ogContextMenu' onmouseleave='$(this).fadeOut()'>
+        <div id='contextMenuContent'></div>
+    </div>
 
-        <script>
-            $(document).ready(function () {
-                let params = getParams();
-                if (isNullorUndefined(params.folder)) {
-                    window.location.href = "index.html";
-                }
-                else {
-                    albumParamFolderId = params.folder;
-                }
-
-                displayHeader("oggleAlbum");
-                displayFooter("oggleAlbum");
-
-                loadAlbumPage(albumParamFolderId, false);
-
-                window.addEventListener("resize", callResizeAlbumPage);
-                resizeAlbumPage();
-            });
-
-            function callResizeAlbumPage() {
-                resizeAlbumPage();
+    <script>
+        $(document).ready(function () {
+            let params = getParams();
+            if (isNullorUndefined(params.folder)) {
+                window.location.href = "index.html";
             }
-            function resizeAlbumPage() {
-                let dinky = 18;
-                let visAreaH = ($(window).height() - $('header').height()) - dinky;
-                $('#visableArea').css('height', visAreaH);
-                $('#imageContainer').css('max-height', visAreaH - 52);
-                $('footer').css('width', $(window).width());
-                if (typeof resizeViewer == 'function')
-                    resizeViewer();
-                if (typeof resizeSlideshow == 'function')
-                    resizeSlideshow();
+            else {
+                albumParamFolderId = params.folder;
             }
-        </script>
-    </body>
+
+            displayHeader("oggleAlbum");
+            displayFooter("oggleAlbum");
+
+            loadAlbumPage(albumParamFolderId, false);
+
+            window.addEventListener("resize", callResizeAlbumPage);
+            resizeAlbumPage();
+        });
+
+        function callResizeAlbumPage() {
+            resizeAlbumPage();
+        }
+        function resizeAlbumPage() {
+            let dinky = 18;
+            let visAreaH = ($(window).height() - $('header').height()) - dinky;
+            $('#visableArea').css('height', visAreaH);
+            $('#imageContainer').css('max-height', visAreaH - 52);
+            $('footer').css('width', $(window).width());
+            if (typeof resizeViewer == 'function')
+                resizeViewer();
+            if (typeof resizeSlideshow == 'function')
+                resizeSlideshow();
+        }
+    </script>
+</body>
 </html>

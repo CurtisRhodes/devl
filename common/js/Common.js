@@ -1061,7 +1061,7 @@ function contextMenuHtml() {
         <div id='ctxComment' class='ctxItem' onclick='contextMenuAction(\"comment\")'>Comment</div>
         <div id='ctxExplode' class='ctxItem' onclick='contextMenuAction(\"explode\")'>explode</div>
         <div id='ctxSaveAs' class='ctxItem' onclick='contextMenuAction(\"saveAs\")'>save as</div>
-        <div id='ctxssClose' class='ctxItem' onclick='contextMenuAction(\"closeSlideShow\")'>close slideshow</div>
+        <div id='ctxssClose' class='ctxItem' onclick='contextMenuAction(\"closeSlideshow\")'>close slideshow</div>
           <div id='ctxImageShowLinks' class='ctxItem' onclick='contextMenuAction(\"showLinks\")'>Show Links</div>
           <div id='linkInfoContainer' class='contextMenuInnerContainer'></div>
           <div id='ctxInfo' class='adminLink' onclick='contextMenuAction(\"info\")'>Show Image info</div>`
@@ -1175,7 +1175,7 @@ function contextMenuAction(action) {
             $("#contextMenuContainer").fadeOut();
             break;
         }
-        case "closeSlideShow":
+        case "closeSlideshow":
             closeViewer("context menu");
             break;
         case "openInNewTab": {

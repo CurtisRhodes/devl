@@ -1,36 +1,47 @@
 const slideShowImgRepo = 'https://ogglefiles.com/danni/';
-const transitionSpeed = 250;
+const slideSpeed = 33, slideIncrement = 88;
 
 let slideShowSpeed = 5000,
     imageArray = [],
     imageViewerIndex = 0,
-    albumFolderId = 0,
     spSessionCount = 0,
     tempImgSrc = new Image(),
-    slideShowButtonsActive = false,
+    isPaused = false,
     imageViewerIntervalTimer,
     slideshowParentName,
-    slideShowAvailable = true;
+    isSiding = false;
 
 function showSlideshowViewer(folderId, startLink, isLargeLoad) {
-    albumFolderId = folderId;
 
     displayFooter("slideshow");
     showSlideshowHeader();
-    getFolderDetails();
+    getFolderDetails(folderId);
 
     $('#albumContentArea').fadeOut();        
     $('#slideshowContent').show();
-
-    slideShowButtonsActive = true;
     spSessionCount = 0;
     loadSlideshowItems(folderId, startLink, isLargeLoad);
     resizeSlideshow();
 }
 
+function toggleSlideshow() {
+    if (imageViewerIntervalTimer == null) {
+        slide('next');
+        $('#txtSlideshow').html("stop slideshow");
+        imageViewerIntervalTimer = setInterval(function () {
+            slide('next');
+        }, slideShowSpeed);
+    }
+    else {
+        clearInterval(imageViewerIntervalTimer);
+        $('#txtSlideshow').html("start slideshow");
+    }
+}
+
 function loadSlideshowItems(folderId, startLink, isLargeLoad) {
     try {
         let infoStart = Date.now();
+        $('#albumPageLoadingGif').show();
         $('#slideshowMessageArea').html('loading');
         if (isLargeLoad) {
             $.ajax({
@@ -42,19 +53,19 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                     $.each(childFolders, function (idx, childFolder) {
                         $.getJSON('php/customFetchAll.php?query=select * from VwLinks where FolderId=' +
                             childFolder.Id + ' order by SortOrder', function (data) {
-                            $.each(data, function (idx, obj) {
-                                imageArray.push(obj);
+                                $.each(data, function (idx, obj) {
+                                    imageArray.push(obj);
 
-                                if (imageArray.length == 10) {
-                                    $('#slideshowImage').attr("src", imageArray[0].FileName);
-                                    $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
-                                    $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
+                                    if (imageArray.length == 10) {
+                                        $('#slideshowImage').attr("src", imageArray[0].FileName);
+                                        $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
+                                        $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + imageArray.length);
 
-                                    $('#slideshowImageContainer').css('left', ($('#slideshowImageContainer').outerWidth() / 2) - ($('#leftClickArea').width() / 2));
-                                }
+                                        $('#slideshowImageContainer').css('left', ($('#slideshowImageContainer').outerWidth() / 2) - ($('#leftClickArea').width() / 2));
+                                    }
+                                });
+                                $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + imageArray.length);
                             });
-                            $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
-                        });
                     });
                 }
             });
@@ -68,13 +79,26 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                     }
                     else {
                         imageArray = JSON.parse(data);
+                        if (imageArray.length > 0) {
+                            imageViewerIndex = imageArray.findIndex(node => node.LinkId == startLink);
+                            if (imageViewerIndex < 0)
+                                imageViewerIndex = 0;
+                            $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
+                            $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + imageArray.length);
 
-                        imageViewerIndex = imageArray.findIndex(node => node.LinkId == startLink);
-                        $('#slideshowImage').attr("src", slideShowImgRepo + imageArray[imageViewerIndex].FileName);
-                        $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
-                        $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
-                        $('#slideshowImageContainer').css('left', ($('#slideshowImageContainer').outerWidth() / 2) - ($('#leftClickArea').width() / 2));
-
+                            let ttSrc = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
+                            tempImgSrc.src = ttSrc;
+                            tempImgSrc.onload = function () {
+                                // the magic center
+                                $('#slideshowImage').attr("src", tempImgSrc.src);
+                                let imageWidth = $('#slideshowImageContainer').outerWidth();
+                                $('#slideshowImageContainer').css('left', 0 - imageWidth / 2);
+                                $('#albumPageLoadingGif').hide();
+                            };
+                        }
+                        else {
+                            alert("no images found");
+                        }
                     }
                 },
                 error: function (jqXHR) {
@@ -91,18 +115,34 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
     }
 }
 
-function getFolderDetails() {
+function getFolderDetails(folderId) {
     $.ajax({
-        url: 'php/customFetchAll.php?query=select f.FolderName, p.FolderName as ParentName ' +
-            ' from CategoryFolder f join CategoryFolder p on f.Parent = p.Id where f.Id=' + albumFolderId,
+        url: 'php/customFetch.php?query=select f.FolderName, p.FolderName as ParentName ' +
+            ' from CategoryFolder f join CategoryFolder p on f.Parent = p.Id where f.Id=' + folderId,
         success: function (data) {
             if (data.substring(20).indexOf("error") > 0) {
                 alert(data);
             }
             else {
-                let thisCatFolder = JSON.parse(data)[0];
+                let thisCatFolder = JSON.parse(data);
+
                 $('#slideshowMessageArea').html("<span sytle='font-size:19px'>" + thisCatFolder.ParentName +
                     "/" + thisCatFolder.FolderName + "</span>");
+
+                $('#leftClickArea').on("click", function () {
+                    if (imageViewerIntervalTimer != null) {
+                        clearInterval(imageViewerIntervalTimer);
+                        $('#txtSlideshow').html("start slideshow");
+                    }
+                    slide("prev", folderId);
+                });
+                $('#rightClickArea').on("click", function () { slide("next", folderId) });
+                $('.hiddenClickArea').on("dblclick", function () {
+                    toggleSlideshow();
+                });
+                $('.hiddenClickArea').on("contextmenu", function () { slideshowContextMenu() });
+
+                // $('#btnExplodeImage').on('click', showMaxSizeViewer(slideShowImgRepo + imageArray[imageViewerIndex].FileName, 'slideshow'));
             }
         },
         error: function (jqXHR) {
@@ -111,24 +151,6 @@ function getFolderDetails() {
             //if (!checkFor404(errMsg, folderId, "chargeCredits")) logError("XHR", folderId, errMsg, "chargeCredits");
         }
     });
-}
-
-function runSlideShow(action) {
-    if (action === 'pause') {
-        if (spSlideShowRunning) {
-            clearInterval(imageViewerIntervalTimer);
-            $('#txtStartSlideShow').html("||");
-        }
-    }
-    if (action === 'resume') {
-        if (spSlideShowRunning) {
-            $('#txtStartSlideShow').html("stop slideshow");
-            slide('next');
-            imageViewerIntervalTimer = setInterval(function () {
-                slide('next');
-            }, slideShowSpeed);
-        }
-    }
 }
 
 function adjustSlideshowSpeed(action) {
@@ -147,25 +169,22 @@ function adjustSlideshowSpeed(action) {
     //    clearInterval(imageViewerIntervalTimer);
     //}
     //$('#fasterSlideshow').attr("Title", "slideshow " + 10 - (slideShowSpeed / 1000) + "x");
-    //$('#slowerSlideShow').attr("Title", "slideshow " + 10 - (slideShowSpeed / 1000) + "x");
+    //$('#slowerSlideshow').attr("Title", "slideshow " + 10 - (slideShowSpeed / 1000) + "x");
 
 }
 
-let imagePos, slideshowImageZeroPos, slidingDone = false;
-const slideSpeed = 100, slideIncrement = 122;
-
+let imagePos, slideshowImageZeroPos, slidingDone;
 function slide(direction) {
+    if (isPaused) return;
     try {
-        if (slideShowAvailable) {
-            slideShowAvailable = false;
+        if (!isSiding) {
+            isSiding = true;
             let showLoadingGif = true;
             setTimeout(function () {
                 if (showLoadingGif)
                     $('#slideshowLoadingGif').show()
             }, 250);
-
             incrementIndex(direction);
-
             tempImgSrc.src = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
             tempImgSrc.onload = function () {
                 showLoadingGif = false;
@@ -173,80 +192,61 @@ function slide(direction) {
                 $('#thumbImageContextMenu').fadeOut();
                 $('.slideshowNavgArrows').css('visibility', 'hidden');
                 $('#slideshowImageLabel').fadeOut();
-
-                let windowWidth = $(window).width();
                 let centeringOffset = $('#leftClickArea').width();
                 let imageWidth = $('#slideshowImageContainer').outerWidth();
 
-                //$('#slideshowImageContainer').css('left', ($('#slideshowImageContainer').outerWidth() / 2) - ($('#leftClickArea').width() / 2));
-                //$('#slideshowImageContainer').css('left', ($('#slideshowImageContainer').outerWidth() / 2) - ($('#leftClickArea').width() / 2));
-
-                imagePosX = (imageWidth / 2) - (centeringOffset / 2);
-
-                imagePos = $('#slideshowImageContainer').position().left;
-
-                let slideshowImageDestinationPos = windowWidth / 2;
-                if (direction == 'prev')
-                    slideshowImageDestinationPos = 0 - imageWidth - centeringOffset;
-
-                ////////////////////////
+                let slideshowImageDestinationPos = 0;
+                if (direction == 'next') {
+                    slideshowImageDestinationPos = centeringOffset + imageWidth;
+                }
+                else {  //  direction == 'prev'
+                    slideshowImageDestinationPos = 0 - centeringOffset - imageWidth;
+                } 
+                imagePos = 0 - imageWidth / 2;
+                // tbv
+                $('#slideshowImageContainer').css('left', 0 - imageWidth / 2);
+                slidingDone = false;
+                ////////////////////////////////////////////////////////////
                 slideOutofView(direction, slideshowImageDestinationPos);
+                ////////////////////////////////////////////////////////////
                 let jsWhile1 = setInterval(function () { //while (sliding) {
-                    if (!slidingDone) {
-                        if ($("#blinker").html() == "*")
-                            $("#blinker").html("");
-                        else
-                            $("#blinker").html("*");
-                    }
-                    else {
+                    if (slidingDone) {
                         clearInterval(jsWhile1);
 
                         $('#slideshowImage').attr("src", tempImgSrc.src);
-                        $('#slideshowImage').css("height", $('#visableArea').height());
-                        imageWidth = $('#slideshowImage').width();
-                        if (direction == 'next')
-                            imagePos = 0 - imageWidth - centeringOffset;
-                        else
-                            imagePos = windowWidth + imageWidth;
 
-                        $('#slideshowImageContainer').css('left', imagePos);
-                        slideshowImageZeroPos = imageWidth / 2 - centeringOffset / 2;
+                        $('#slideshowImage').css("height", $('#visableArea').height());
+                        imageWidth = $('#slideshowImageContainer').width();
+                        //let centeringOffset = $('#leftClickArea').width();
+
+                        if (direction == 'next') {
+                            imagePos = -10 - centeringOffset - imageWidth;
+                            $('#slideshowImageContainer').css("left", imagePos);
+                        }
+                        else {
+                            imagePos = 10 + centeringOffset + imageWidth;
+                            $('#slideshowImageContainer').css('left', imagePos);
+                        }
+                        slideshowImageZeroPos = 0 - imageWidth / 2;
 
                         slidingDone = false;
-                        /////////////////////////////////
+                        ////////////////////////////////////////////////////////////
                         slideBackIntoView(direction);
-                        let jsWhile2 = setInterval(function () {
-                            if (!slidingDone) {
-                                if ($("#blinker").html() == "*")
-                                    $("#blinker").html("");
-                                else
-                                    $("#blinker").html("*");
-                            }
-                            else {
-                                clearInterval(jsWhile2);
-                                $('.slideshowNavgArrows').css('visibility', 'visible').fadeIn();
-                                slideShowAvailable = true;
-                                resizeSlideshow();
+                        ////////////////////////////////////////////////////////////
 
-                                if (albumFolderId != imageArray[imageViewerIndex].SrcId) {
+                        let jsWhile2 = setInterval(function () {
+                            if (slidingDone) {
+                                clearInterval(jsWhile2);
+                                $("#blinker").html("");
+                                slidingDone = true;
+
+                                resizeSlideshow();
+                                $('.slideshowNavgArrows').css('visibility', 'visible').fadeIn();
+
+                                if (imageArray[imageViewerIndex].FolderId != imageArray[imageViewerIndex].SrcId) {
                                     // we have a link
                                     $('#slideshowImageLabel').html(imageArray[imageViewerIndex].SrdFolder).fadeIn()
                                         .on("click", window.location.href = 'album.html?folderId="+imageArray[imageViewerIndex].SrcId,"_blank"');
-
-
-                                    //FolderId	    int(11) 	    NO
-                                    //Parent	    int(11)	        NO
-                                    //SrcId	        int(11)	        NO		0
-                                    //RootFolder	varchar(20)	    NO
-                                    //LinkId	    varchar(36)	    NO
-                                    //FileName	    varchar(501)	YES
-                                    //SrcFolder	    varchar(150)	NO
-                                    //Orientation	varchar(1)	    NO
-                                    //IsLink    	int(1)	        NO		0
-                                    //SortOrder	    int(11)	        NO
-                                    //Poster    	varchar(600)	YES
-
-
                                 }
                                 if (isNullorUndefined(slideshowParentName))
                                     $('#slideshowMessageArea').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
@@ -254,12 +254,13 @@ function slide(direction) {
                                     $('#slideshowMessageArea').html(slideshowParentName + "/" + imageArray[imageViewerIndex].ImageFolderName).fadeIn();
 
                                 spSessionCount++;
-                                $('#sldeshowNofN').html(imageViewerIndex + " / " + imageArray.length);
+                                $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + imageArray.length);
                                 $('#footerMessage').html("image: " + imageViewerIndex + " of: " + imageArray.length);
+                                isSiding = false;
                             }
                         }, 450);
                     }
-                }, 500);
+                }, 450);
             }
         }
     } catch (e) {
@@ -295,7 +296,7 @@ function slideOutofView(direction, slideshowImageDestinationPos) {
 
 function slideBackIntoView(direction) {
     if (direction == 'next') {
-        if (imagePos + slideIncrement <= slideshowImageZeroPos) {
+        if (imagePos <= slideshowImageZeroPos) {
             setTimeout(function () {
                 imagePos += slideIncrement;
                 $('#slideshowImageContainer').css("left", imagePos);
@@ -328,16 +329,16 @@ function incrementIndex(direction) {
             imageViewerIndex = 0;
     }
     else {
-        if (--imageViewerIndex == 0)
-            imageViewerIndex = imageArray.length;
+        if (--imageViewerIndex < 0)
+            imageViewerIndex = imageArray.length - 1;
     }
 }
 
 $(document).keydown(function (event) {
-    if (slideShowButtonsActive) {
+    if (!isPaused) {
         switch (event.which) {
             case 27:                        // esc
-                closeSlideShow();
+                closeSlideshow();
                 break;
             //case 38: scrollTabStrip('foward'); break;
             //case 33: scrollTabStrip('foward'); break;
@@ -356,69 +357,38 @@ $(document).keydown(function (event) {
             //case 122:                       // F11
             //    $('#standardHeader').hide();
             //    break;
-            //default:
-            //  $('#expandoBannerText').html("event.which: " + event.which)
-            //  alert("event.which: " + event.which)
         }
     }
 });
 
-$('#rightClickArea').dblclick(function () {
-    startSlideShow();
-});
-
 function slideshowContextMenu() {
-    runSlideShow("pause");
+    isPaused = true;
+    pos = {};
     pos.x = event.clientX;
     pos.y = event.clientY;
-    showContextMenu("Slideshow", pos,
-        slideShowImgRepo + imageViewerArray[imageViewerIndex].FileName,
-        imageViewerArray[imageViewerIndex].LinkId,
-        imageViewerArray[imageViewerIndex].FolderId,
-        imageViewerArray[imageViewerIndex].FolderName);
+//    showContextMenu("Slideshow", pos,
+//        slideShowImgRepo + imageViewerArray[imageViewerIndex].FileName,
+//        imageViewerArray[imageViewerIndex].LinkId,
+//        imageViewerArray[imageViewerIndex].FolderId,
+//        imageViewerArray[imageViewerIndex].FolderName);
 }
 
-function closeSlideShow() {
-    //window.location.href = "album.html?folder=" + albumFolderId;
-    //displayFooter("slideshow");
+function resumeSlideshow() {
+    $('#txtStartSlideshow').html("stop slideshow");
+    slide('next');
+    imageViewerIntervalTimer = setInterval(function () {
+        slide('next');
+    }, slideShowSpeed);
+}
+
+function closeSlideshow() {
     $('#slideshowContent').fadeOut();
     $('#albumContentArea').fadeIn();
-
     displayHeader("oggleIndex");
     displayFooter("oggleAlbum");
-
-}
-
-function txtSlideShowClick() {
-    if ($('#txtStartSlideShow').html() == "start slideshow") {
-        startSlideShow();
-        $('#txtStartSlideShow').html("stop slideshow");
-    }
-    else {
-        clearInterval(imageViewerIntervalTimer);
-        $('#txtStartSlideShow').html("start slideshow");
-    }
-}
-
-function startSlideShow() {
-    if (imageViewerIntervalTimer == null) {
-        imageViewerIntervalTimer = setInterval(function () {
-            slide('next');
-        }, slideShowSpeed);
-    }
-}
-
-function explodeImage() {
-
 }
 
 function showSlideshowHeader() {
-
-    //$('#headerMessage').html("");
-    //$('#breadcrumbContainer').html("");
-    //$('#badgesContainer').html("");
-    //$('#hdrBtmRowSec3').html("");
-
     let tempd = document.createElement('div');
     tempd.innerHTML = $('#breadcrumbContainer').html();
 
@@ -427,33 +397,24 @@ function showSlideshowHeader() {
 
     $('#headerBottomRow').html(`
       <div class="fullWidthFlexContainer">
-
-        <div id='blinker'></div>
         <div id='sldeshowNofN' class='sldeshowHeaderTextContainer'></div>
-
-        <div class='slideshowHeaderButtonContainer' onclick='explodeImage();'>
-            <img class='slideshowHeaderButton' title='explode image'
-                src='https://common.ogglefiles.com/img/expand02.png'/>
-        </div>
-
         <div id='slideshowMessageArea' class='inline wideCententer'></div>
-
         <div class='flexContainer'>
             <div class='inline clickable' onclick='adjustSlideshowSpeed("faster")'>
                 <img id='fasterSlideshow' class='slideshowHeaderButton' title='faster'
                         src='https://common.ogglefiles.com/img/speedDialFaster.png'/>
             </div>
-
-            <div id='txtSlideShow' class='sldeshowHeaderTextContainer clickable' onclick='txtSlideShowClick()'>
-                start slideshow
-            </div>
-
+            <div id='txtSlideshow' class='sldeshowHeaderTextContainer clickable' onclick='toggleSlideshow()'>start slideshow</div>
             <div class='clickable' onclick='adjustSlideshowSpeed("slower")'>
-                <img id='slowerSlideShow' class='slideshowHeaderButton' title='slower'
+                <img id='slowerSlideshow' class='slideshowHeaderButton' title='slower'
                         src='https://common.ogglefiles.com/img/speedDialSlower.png'/>
             </div>
         </div>
-        <div class='inline floatRight clickable' onclick='closeSlideShow();'>
+        <div id='btnExplodeImage' class='slideshowHeaderButtonContainer'>
+            <img class='slideshowHeaderButton' title='explode image'
+                src='https://common.ogglefiles.com/img/expand02.png'/>
+        </div>
+        <div class='slideshowHeaderButtonContainer' onclick='closeSlideshow();'>
             <img class='slideshowHeaderButton' title='you may use the {esc} key'
                     src='https://common.ogglefiles.com/img/close.png' />
         </div>

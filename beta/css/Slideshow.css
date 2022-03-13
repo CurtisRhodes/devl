@@ -36,6 +36,8 @@
 .slideshowHeaderButtonContainer {
     display: inline-block;
     float: right;
+    margin-left: 11px;
+    margin-right: 11px;
     white-space: nowrap;
     cursor: pointer;
 }

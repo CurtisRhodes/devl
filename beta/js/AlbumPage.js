@@ -134,6 +134,7 @@ function getAlbumPageInfo(folderId, islargeLoad) {
 
                 $('#largeLoadButton').on("click", function () { getAlbumImages(folderId, true) });
                 $('#deepSlideshowButton').on("click", function () { showSlideshowViewer(folderId, 0, true) });
+                $('#slideShowClick').on("click", function () { showSlideshowViewer(folderId, 0, false) });
 
                 $('#albumBottomfileCount').show();
                 $('#albumBottomfileCount').on("click", function () { updateFolderCount(folderId, catfolder.FolderPath) });
@@ -209,7 +210,9 @@ function setBreadcrumbs(folderId) {
 }
 
 function addBreadcrumb(folderId, folderName, className) {
-    return "<div class='" + className + "' onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + folderId + "\"'>" + folderName + "</div>";
+    return "<div class='" + className +
+        "' onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + folderId +
+        "\"'>" + folderName + "</div>";
 }
 
 /*-- exploding image view -------------------*/
@@ -234,6 +237,8 @@ function addBreadcrumb(folderId, folderName, className) {
         $('#singleImageOuterContainer').show();
         viewerMaxH = $('#visableArea').height() + viewerOffsetTop - 55;
         incrementExplode();
+
+        $('#viewerImage').on('click', showMaxSizeViewer(imgSrc, 'album'));
 
         $('body').keydown(function (event) {
             if (event.keyCode === 27)
@@ -283,6 +288,7 @@ function addBreadcrumb(folderId, folderName, className) {
     function closeImageViewer() {
         incrementImplodeViewer($("#viewerImage"));
     }
+
     function resizeViewer() {
         if ($('#singleImageOuterContainer').is(":visible")) {
             $("#singleImageOuterContainer").css("height", viewerMaxH);
@@ -292,7 +298,6 @@ function addBreadcrumb(folderId, folderName, className) {
         }
     }
 
-    /*-- slideshow needs variables passed to viewer  -------------------*/
     function showSlideshow() {
         try {
             $("#vailShell").hide();

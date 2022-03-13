@@ -508,19 +508,29 @@ function getSingleImageDetails(linkId, folderId) {
     }
 }
 
-function explodeImage() {
+function showMaxSizeViewer(imgSrc, calledFrom) {
     //logEvent("EXP", pFolderId, pFolderName, pLinkId);
-    //    if (pMenuType === "Slideshow") {
-    //        slideShowButtonsActive = false;
-    //        $("#slideshowCtxMenuContainer").hide();
-    //    }
-    //    else {
-    //        $("#imageContextMenu").hide();
-    //        $("#contextMenuContainer").hide();
-    //        //replaceFullPage(pImgSrc);
-    //        viewImage(imgSrc, linkId)
-    //    }
+    //showMaxSizeViewer()
+    if (calledFrom == 'slideshow') {
+        $("#slideshowCtxMenuContainer").hide();
+    }
+    else {
+        $("#imageContextMenu").hide();
+        $('#viewerImage').attr("src", imgSrc);
+    }
+    $("#vailShell").show().on("click", function () { closeExploderDiv() });
+    $('#singleImageOuterContainer').show();
+
+    //replaceFullPage(pImgSrc);
 }
+
+function closeExploderDiv() {
+    $('#exploderDiv').hide();
+    //$("#divSlideshowButton").hide();
+    //$("#viewerCloseButton").hide();
+    $("#vailShell").hide();
+}
+
 
 function setFolderImage(filinkId, folderId, level) {
     try {

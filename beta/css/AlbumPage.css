@@ -39,7 +39,13 @@
     white-space: nowrap;
     color: var(--oggleTitleColor);
 }
-
+.slideShowClickStyle {
+    display: inline-block;
+    white-space: nowrap;
+    cursor: pointer;
+    margin-left: 55px;
+    text-decoration: underline;
+}
 .back2gallery {
     font-size: 19px;
     padding-left: 16px;

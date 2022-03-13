@@ -161,6 +161,10 @@ body {
     display: flex;
 }
 
+.explodeCusor {
+    cursor: zoom-out;
+}
+
 /*-- Header -----------------------------------*/
 .stickyHeader {
     position: sticky;
