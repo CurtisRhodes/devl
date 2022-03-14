@@ -75,7 +75,7 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
                 let catFolder = JSON.parse(result);
                 // GET SUBFOLDERS AS PER DATABASE
                 $.ajax({
-                    url: "php/customFetchAll.php?query=select * from CategoryFolder where Parent = " + rootFolderId,
+                    url: 'php/getSubFolderFolders.php?rootFolderId=' + rootFolderId,
                     success: function (childFolders) {
                         if (childFolders.indexOf('Error') > -1) {
                             $('#dashboardFileList').append("<div>Error: folder not found: " + fullPath + "</div>");
@@ -151,7 +151,7 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
                                                                 renameImageFile(objPhyscialimage.name, fileNamePrefix,
                                                                     rootFolderId, catFolder.FolderType, fullPath);
                                                             }
-                                                            else 
+                                                            else
                                                                 repairReport.orphanImageFiles.push(catFolder.FolderName +
                                                                     "physcialFile missing a data record :" +
                                                                     objPhyscialimage.name + "(" + rootFolderId + ")");

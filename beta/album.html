@@ -85,8 +85,21 @@
     </div>
     <footer class="ogglefooter"></footer>
 
+
     <div id='contextMenuContainer' class='ogContextMenu' onmouseleave='$(this).fadeOut()'>
         <div id='contextMenuContent'></div>
+    </div>
+
+    <div id="writeAfantasyContainer" class='writeAfantasyContainer'>
+        <div id='divStatusMessage'></div>
+        <div class='center'><img id='commentDialogImage' class='commentDialogImage' /></div>
+        <div><input id='txtCommentTitle' class='roundedInput commentTitleText' tabindex='1' placeholder='Give your comment a title' /></div>
+        <div id='imageCommentEditor' tabindex='2'></div>
+        <div class='folderDialogFooter'>
+            <div id='divSaveFantasy' class='roundendButton clickable commentDialogButton inline' onclick='saveComment()'>save</div>
+            <div id='divCloseFantasy' class='roundendButton clickable commentDialogButton inline' onclick='closeImageCommentDialog()'>cancel</div>
+            <div id='commentInstructions' class='commentDialogInstructions inline'>log in to view comments</div>
+        </div>
     </div>
 
     <script>

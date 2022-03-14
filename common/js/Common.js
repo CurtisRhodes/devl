@@ -734,6 +734,7 @@ function headerHtml() {
 
 // -------- Dialog boxes in header -----------
 
+
 function centeredDialogEnterDragMode() {
     //$('#headerMessage').html("entering drag mode");
     $('#centeredDialogContents').draggable({ disabled: false });
@@ -1013,33 +1014,6 @@ function showContextMenu(menuType, pos, imgSrc, linkId, folderId) {
         $('#contextMenuContainer').fadeIn();
         $('#contextMenuContent').html(contextMenuHtml())
 
-        $('#ctxMdlName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='https://common.ogglefiles.com/img/loader.gif'/>");
-        if (menuType === "Folder")
-            getFolderctxMenuDetails();
-        else
-            getSingleImageDetails(linkId);
-
-        $('#ctxComment').show();
-        $('#ctxExplode').show();
-        if (menuType === "Carousel") {
-            $('#ctxNewTab').show();
-        }
-        //ctxSeeMore
-        //ctxNewTab
-        //ctxComment
-        //ctxExplode
-        //ctxSaveAs
-        //ctxssClose
-        //ctxImageShowLinks
-        if (menuType === "Slideshow") {
-            $('#ctxssClose').show();
-        }
-
-        $('.adminLink').show();
-        //if (isInRole("admin", "context menu"))
-        //    $('.adminLink').show();
-        //else
-        //    $('.adminLink').hide();
 
     } catch (e) {
         logCatch("show ContextMenu", e);
@@ -1047,62 +1021,7 @@ function showContextMenu(menuType, pos, imgSrc, linkId, folderId) {
 }
 
 function contextMenuHtml() {
-    let content= `<div id='ctxMdlName' class='ctxItem' onclick='contextMenuAction(\"showDialog\")'>model name</div>
-        <div id='ctxSeeMore' class='ctxItem' onclick='contextMenuAction(\"see more\")'>see more of her</div>
-        <div id='ctxNewTab'  class='ctxItem' onclick='contextMenuAction(\"openInNewTab\")'>Open in new tab</div>
-        <div id='ctxComment' class='ctxItem' onclick='contextMenuAction(\"comment\")'>Comment</div>
-        <div id='ctxExplode' class='ctxItem' onclick='contextMenuAction(\"explode\")'>explode</div>
-        <div id='ctxSaveAs'  class='ctxItem' onclick='contextMenuAction(\"saveAs\")'>save as</div>
-        <div id='ctxssClose' class='ctxItem' onclick='contextMenuAction(\"closeSlideshow\")'>close slideshow</div>
-        <div id='ctxImageShowLinks' class='ctxItem' onclick='contextMenuAction(\"showLinks\")'>Show Links</div>
-        <div id='linkInfoContainer' class='contextMenuInnerContainer'></div>
-        <div id='ctxInfo'    class='adminLink' onclick='contextMenuAction(\"info\")'>Show Image info</div>`
-        +
-        `<div id='imageInfoContainer' class='contextMenuInnerContainer'>
-            <div><span class='ctxItem'>file name</span><span id='imageInfoFileName' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>folder path</span><span id='imageInfoFolderPath' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>link id</span><input id='imageInfoLinkId'></input></div>
-            <div>
-                <span class='ctxItem'>height</span><span id='imageInfoHeight' class='ctxInfoValue'></span>" +
-                <span class='ctxItem'>width</span><span id='imageInfoWidth' class='ctxInfoValue'></span>" +
-                <span class='ctxItem'>size</span><span id='imageInfoSize' class='ctxInfoValue'></span>
-            </div>
-            <div><span class='ctxItem'>last modified</span><span id='imageInfoLastModified' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>external link</span><span id='imageInfoExternalLink' class='ctxInfoValue'></span></div>
-        </div>
-        <div id='folderInfoContainer' class='contextMenuInnerContainer'>
-            <div><span class='ctxItem'>file name</span><span id='folderInfoFileName' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>folder id</span><span id='folderInfoId' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>folder path</span><span id='folderInfoPath' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>files</span><span id='folderInfoFileCount' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>subfolders</span><span id='folderInfoSubDirsCount' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>last modified</span><span id='folderInfoLastModified' class='ctxInfoValue'></span></div>
-        </div>
-        <div id='ctxDownLoad' onclick='contextMenuAction(\"download\")'>download folder</div>
-        <div id='ctxShowAdmin' class='adminLink' onclick='$(\"#linkAdminContainer\").toggle()'>Admin</div>`
-        +
-        `<div id='linkAdminContainer' class='contextMenuInnerContainer'>
-            <div onclick='oggleCtxMenuAction(\"archive\")'>Archive</div>
-            <div onclick='oggleCtxMenuAction(\"copy\")'>Copy Link</div>
-            <div onclick='oggleCtxMenuAction(\"move\")'>Move Image</div>
-            <div onclick='oggleCtxMenuAction(\"remove\")'>Remove Link</div>
-            <div onclick='oggleCtxMenuAction(\"reject\")'>Move to Rejects</div>
-            <div onclick='oggleCtxMenuAction(\"delete\")'>Delete Image</div>
-            <div onclick='oggleCtxMenuAction(\"setF\")'>Set as Folder Image</div>
-            <div onclick='oggleCtxMenuAction(\"setC\")'>Set as Category Image</div>
-        </div>`;
     return content;
-}
-
-function ctxGetFolderDetails() {
-    $('#ctxMdlName').html("folder info");
-    $('#ctxInfo').html("folder details");
-    $('#ctxTags').html("folder tags");
-    $('#ctxSeeMore').hide();
-    $('#ctxNewTab').hide();
-    $('#ctxImageShowLinks').hide();
-    $('#ctxExplode').hide();
-    $('#ctxSaveAs').hide();
 }
 
 function contextMenuAction(action) {
