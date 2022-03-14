@@ -11,9 +11,15 @@ let slideShowSpeed = 5000,
     slideshowParentName,
     isSiding = false;
 
+
+
 function showSlideshowViewer(folderId, startLink, isLargeLoad) {
 
     displayFooter("slideshow");
+    //displayFooter("slideshow");
+    //displayFooter("slideshow");
+    //displayFooter("slideshow");
+    //displayFooter("slideshow");
     showSlideshowHeader();
     getFolderDetails(folderId);
 
@@ -134,7 +140,8 @@ function getFolderDetails(folderId) {
                         clearInterval(imageViewerIntervalTimer);
                         $('#txtSlideshow').html("start slideshow");
                     }
-                    slide("prev", folderId);
+                    else
+                        slide("prev", folderId);
                 });
                 $('#rightClickArea').on("click", function () { slide("next", folderId) });
                 $('.hiddenClickArea').on("dblclick", function () {
@@ -366,11 +373,11 @@ function slideshowContextMenu() {
     pos = {};
     pos.x = event.clientX;
     pos.y = event.clientY;
-//    showContextMenu("Slideshow", pos,
-//        slideShowImgRepo + imageViewerArray[imageViewerIndex].FileName,
-//        imageViewerArray[imageViewerIndex].LinkId,
-//        imageViewerArray[imageViewerIndex].FolderId,
-//        imageViewerArray[imageViewerIndex].FolderName);
+    showContextMenu("slideshow", pos,
+        slideShowImgRepo + imageViewerArray[imageViewerIndex].FileName,
+        imageViewerArray[imageViewerIndex].LinkId,
+        imageViewerArray[imageViewerIndex].FolderId,
+        imageViewerArray[imageViewerIndex].FolderName);
 }
 
 function resumeSlideshow() {

@@ -161,7 +161,8 @@ function getAlbumPageInfo(folderId, islargeLoad) {
 
 function setBreadcrumbs(folderId) {
     try {
-        $('#aboveImageContainerMessageArea').html('loading breadcrumbs');
+        //$('#aboveImageContainerMessageArea').html('loading breadcrumbs');
+        $('#breadcrumbContainer').html("<img style='height:27px' src='https://common.ogglefiles.com/img/loader.gif'/>");
         $.ajax({
             url: "php/customFetchAll.php?query=Select * from VwDirTree",
             success: function (data) {
@@ -196,7 +197,6 @@ function setBreadcrumbs(folderId) {
                         }
                     }
                 }
-                $('#aboveImageContainerMessageArea').html('');
             },
             error: function (jqXHR) {
                 $('#albumPageLoadingGif').hide();

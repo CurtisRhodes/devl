@@ -2,7 +2,7 @@
     $success = "ono";
     try
     {
-        include('settings.php');
+        include('yagdrassel.php');
         $pdo = pdoConn();
 
         $folderImage = $_GET['folderImage'];

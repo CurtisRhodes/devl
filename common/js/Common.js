@@ -271,11 +271,10 @@ function logEvent(eventCode, calledFromFolderId) {
     }
 }
 
-function bannerLink(labelText, calledFromFolderId) {
+function bannerLink(labelText, href) {
     return "<div class='headerBannerButton'>" +
-            "<div class='clickable' onclick='rtpe(\"" + labelText + "\"," + calledFromFolderId + ")'>" + labelText + "</div>\n" +
-           "</div>\n";
-    //"<div class='clickable' onclick='rtpe(\"" + labelText + "\"," + calledFromFolderId + ")'>" + labelText + "</div></div>\n";
+        "<div class='clickable' onclick='window.location.href='" + href + "'>" + labelText + "</div>\n" +
+        "</div>\n";
 }
 
 // -------- Cookies -----------
@@ -376,8 +375,8 @@ function displayHeader(headerContext) {
             document.title = "OggleBooble : Home of the Big Naturals";
             $('#fancyHeaderTitle').html("OggleBooble");
             $('#topHeaderRow').html("Home of the Big Naturals");
-            $('#hdrBtmRowSec3').append(bannerLink("every playboy centerfold", 3908));
-            $('#hdrBtmRowSec3').append(bannerLink("Bond Girls", 3908));
+            $('#hdrBtmRowSec3').append(bannerLink('every playboy centerfold','index.html?spa=playboy'));
+            $('#hdrBtmRowSec3').append(bannerLink('Bond Girls','album.html?folderId=3908'));
             break;
         case "slideshow":
             $('#fancyHeaderTitle').html("OggleBooble");
@@ -713,14 +712,14 @@ function headerHtml() {
         "               <div id='centeredDialogTitle' class='floatingDialogTitle'></div>" +
         "               <div id='centeredDialogCloseButton' class='dialogCloseButton'>" +
         "               <img src='https://common.ogglefiles.com/img/close.png' onclick='centeringDialogClose()'/></div>\n" +
-        "           </div>\n"+
-        "           <div id='centeredDialogContents' class='floatingDialogContents'></div>\n"+
-        "      </div>\n"+
-        "   </div>\n"+
-        "</div>\n"+
-                
-        "<div id='floatingDialogBox' class='floatingDialogContainer displayHidden'>\n"+
-        "    <div class='floatingDialogHeader'>\n"+
+        "           </div>\n" +
+        "           <div id='centeredDialogContents' class='floatingDialogContents'></div>\n" +
+        "      </div>\n" +
+        "   </div>\n" +
+        "</div>\n" +
+
+        "<div id='floatingDialogBox' class='floatingDialogContainer displayHidden'>\n" +
+        "    <div class='floatingDialogHeader'>\n" +
         "        <div \id='floatingDialogBoxTitle' class='floatingDialogTitle'></div>\n" +
         "        <div class='dialogCloseButton'><img src='https://common.ogglefiles.com/img/close.png' onclick='$(\"#floatingDialogBox\").hide()'/></div>\n" +
         "    </div>\n" +
@@ -730,12 +729,7 @@ function headerHtml() {
         "<div id='customDirTreeContainer' class='dirTreeImageContainer floatingDirTreeImage'>\n" +
         "   <img class='customDirTreeImage' src='https://common.ogglefiles.com/img/close.png'/>\n" +
         "</div>\n" +
-
-        "<div id='vailShell' class='modalVail'></div>\n" +
-
-        "<div id='contextMenuContainer' class='ogContextMenu' onmouseleave='$(this).fadeOut()'>" +
-        "   <div id='contextMenuContent'></div>\n" +
-        "</div>\n";
+        "<div id='vailShell' class='modalVail'></div>\n";
 }
 
 // -------- Dialog boxes in header -----------
@@ -1006,8 +1000,6 @@ function showContextMenu(menuType, pos, imgSrc, linkId, folderId) {
         event.preventDefault();
         window.event.returnValue = false;
         if (typeof pause === 'function') pause();
-
-
         //logEvent("CXM", folderId, menuType, "show-ContextMenu");
         console.log("context menu opened: " + menuType);
         pMenuType = menuType;
@@ -1015,21 +1007,11 @@ function showContextMenu(menuType, pos, imgSrc, linkId, folderId) {
         pImgSrc = imgSrc;
         pFolderId = folderId;
 
-        if (menuType === "Slideshow") {
-            $('#ctxssClose').show();
-            $('#slideshowCtxMenuContainer').css("top", pos.y);
-            $('#slideshowCtxMenuContainer').css("left", pos.x);
-            $('#slideshowCtxMenuContainer').fadeIn();
-            $('#slideshowContextMenuContent').html(contextMenuHtml())
-            //$('#ctxMenuType').html(menuType).show();
-        }
-        else {
-            let y = pos.y - $(window).scrollTop();
-            $('#contextMenuContainer').css("top", y);
-            $('#contextMenuContainer').css("left", pos.x);
-            $('#contextMenuContainer').fadeIn();
-            $('#contextMenuContent').html(contextMenuHtml())
-        }
+        let y = pos.y - $(window).scrollTop();
+        $('#contextMenuContainer').css("top", y);
+        $('#contextMenuContainer').css("left", pos.x);
+        $('#contextMenuContainer').fadeIn();
+        $('#contextMenuContent').html(contextMenuHtml())
 
         $('#ctxMdlName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='https://common.ogglefiles.com/img/loader.gif'/>");
         if (menuType === "Folder")
@@ -1041,6 +1023,16 @@ function showContextMenu(menuType, pos, imgSrc, linkId, folderId) {
         $('#ctxExplode').show();
         if (menuType === "Carousel") {
             $('#ctxNewTab').show();
+        }
+        //ctxSeeMore
+        //ctxNewTab
+        //ctxComment
+        //ctxExplode
+        //ctxSaveAs
+        //ctxssClose
+        //ctxImageShowLinks
+        if (menuType === "Slideshow") {
+            $('#ctxssClose').show();
         }
 
         $('.adminLink').show();
@@ -1057,14 +1049,14 @@ function showContextMenu(menuType, pos, imgSrc, linkId, folderId) {
 function contextMenuHtml() {
     let content= `<div id='ctxMdlName' class='ctxItem' onclick='contextMenuAction(\"showDialog\")'>model name</div>
         <div id='ctxSeeMore' class='ctxItem' onclick='contextMenuAction(\"see more\")'>see more of her</div>
-        <div id='ctxNewTab' class='ctxItem' onclick='contextMenuAction(\"openInNewTab\")'>Open in new tab</div>
+        <div id='ctxNewTab'  class='ctxItem' onclick='contextMenuAction(\"openInNewTab\")'>Open in new tab</div>
         <div id='ctxComment' class='ctxItem' onclick='contextMenuAction(\"comment\")'>Comment</div>
         <div id='ctxExplode' class='ctxItem' onclick='contextMenuAction(\"explode\")'>explode</div>
-        <div id='ctxSaveAs' class='ctxItem' onclick='contextMenuAction(\"saveAs\")'>save as</div>
+        <div id='ctxSaveAs'  class='ctxItem' onclick='contextMenuAction(\"saveAs\")'>save as</div>
         <div id='ctxssClose' class='ctxItem' onclick='contextMenuAction(\"closeSlideshow\")'>close slideshow</div>
-          <div id='ctxImageShowLinks' class='ctxItem' onclick='contextMenuAction(\"showLinks\")'>Show Links</div>
-          <div id='linkInfoContainer' class='contextMenuInnerContainer'></div>
-          <div id='ctxInfo' class='adminLink' onclick='contextMenuAction(\"info\")'>Show Image info</div>`
+        <div id='ctxImageShowLinks' class='ctxItem' onclick='contextMenuAction(\"showLinks\")'>Show Links</div>
+        <div id='linkInfoContainer' class='contextMenuInnerContainer'></div>
+        <div id='ctxInfo'    class='adminLink' onclick='contextMenuAction(\"info\")'>Show Image info</div>`
         +
         `<div id='imageInfoContainer' class='contextMenuInnerContainer'>
             <div><span class='ctxItem'>file name</span><span id='imageInfoFileName' class='ctxInfoValue'></span></div>
@@ -1090,55 +1082,16 @@ function contextMenuHtml() {
         <div id='ctxShowAdmin' class='adminLink' onclick='$(\"#linkAdminContainer\").toggle()'>Admin</div>`
         +
         `<div id='linkAdminContainer' class='contextMenuInnerContainer'>
-            <div onclick='contextMenuAction(\"archive\")'>Archive</div>
-            <div onclick='contextMenuAction(\"copy\")'>Copy Link</div>
-            <div onclick='contextMenuAction(\"move\")'>Move Image</div>
-            <div onclick='contextMenuAction(\"remove\")'>Remove Link</div>
-            <div onclick='contextMenuAction(\"reject\")'>Move to Rejects</div>
-            <div onclick='contextMenuAction(\"delete\")'>Delete Image</div>
-            <div onclick='contextMenuAction(\"setF\")'>Set as Folder Image</div>
-            <div onclick='contextMenuAction(\"setC\")'>Set as Category Image</div>
+            <div onclick='oggleCtxMenuAction(\"archive\")'>Archive</div>
+            <div onclick='oggleCtxMenuAction(\"copy\")'>Copy Link</div>
+            <div onclick='oggleCtxMenuAction(\"move\")'>Move Image</div>
+            <div onclick='oggleCtxMenuAction(\"remove\")'>Remove Link</div>
+            <div onclick='oggleCtxMenuAction(\"reject\")'>Move to Rejects</div>
+            <div onclick='oggleCtxMenuAction(\"delete\")'>Delete Image</div>
+            <div onclick='oggleCtxMenuAction(\"setF\")'>Set as Folder Image</div>
+            <div onclick='oggleCtxMenuAction(\"setC\")'>Set as Category Image</div>
         </div>`;
     return content;
-}
-
-function getImageFileDetalis() {
-    try {
-        $.ajax({
-            type: "GET",
-            url: 'https://common.ogglefiles.com/php/customQuery.php?query=select * from ImageFile where Id=' + folderId,
-            //url: settingsArray.ApiServer + "api/Image/getFullImageDetails?folderId=" + pFolderId + "&linkId=" + pLinkId,
-            success: function (imageInfo) {
-                if (imageInfo.Success === "ok") {
-
-
-                    if (!jQuery.isEmptyObject(imageInfo.InternalLinks)) {
-                        $('#ctxImageShowLinks').show();
-                        $.each(imageInfo.InternalLinks, function (idx, obj) {
-                            $('#linkInfoContainer').append("<div><a href='/album.html?folder=" + idx + "' target='_blank'>" + obj + "</a></div>");
-                        });
-                    }
-
-                    var delta = Date.now() - start;
-                    var minutes = Math.floor(delta / 60000);
-                    var seconds = (delta % 60000 / 1000).toFixed(0);
-                    console.log("getFullImageDetails: " + minutes + ":" + (seconds < 10 ? '0' : '') + seconds);
-                }
-                else {
-                    logError("AJX", pFolderId, imageInfo.Success, "getFullImageDetails");
-                }
-            },
-            error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                if (!checkFor404(errMsg, folderId, "getFullImageDetails")) {
-                    if (document.domain == "localhost") alert("getFullImageDetails: " + errMsg);
-                    logError("XHR", pFolderId, errMsg, "getFullImageDetails");
-                }
-            }
-        });
-    } catch (e) {
-
-    }
 }
 
 function ctxGetFolderDetails() {
@@ -1154,92 +1107,8 @@ function ctxGetFolderDetails() {
 
 function contextMenuAction(action) {
     switch (action) {
-        case "saveAs":
-            document.execCommand("SaveAs", null, "file.csv");
-            break;
-        case "download":
-            if (localStorage["IsLoggedIn"] == "true")
-                alert("still working on this feature. Send site developer an email to request folder");
-            else
-                alert("You must be logged in to download an album");
-            break;
-        case "showDialog": {
-            if ($('#ctxMdlName').html() === "unknown model") {
-                showUnknownModelDialog(pMenuType, pImgSrc, pLinkId, pFolderId);
-            }
-            else
-                if (isNullorUndefined(pModelFolderId))
-                    showFolderInfoDialog(pFolderId, "img ctx");
-                else
-                    showFolderInfoDialog(pModelFolderId, "img ctx");
-            $("#contextMenuContainer").fadeOut();
-            break;
-        }
-        case "closeSlideshow":
-            closeViewer("context menu");
-            break;
-        case "openInNewTab": {
-            rtpe("ONT", "context menu", pFolderName, pFolderId);
-            break;
-        }
-        case "see more": {
-            rtpe("SEE", pFolderId, pFolderName, pModelFolderId);
-            break;
-        }
-        case "comment": {
-            showImageCommentDialog(pLinkId, pImgSrc, pFolderId, pMenuType);
-            $("#contextMenuContainer").fadeOut();
-            break;
-        }
-        case "explode": {
-            explodeImage();
-            break;
-        }
-        case "Image tags":
-        case "folder tags":
-            openMetaTagDialog(pFolderId, pLinkId);
-            break;
-        case "info":
-            if (pMenuType === "Folder")
-                $('#folderInfoContainer').toggle();
-            else
-                $('#imageInfoContainer').toggle();
-            break;
-        case "showLinks":
-            $('#linkInfoContainer').toggle();
-            break;
-        case "archive":
-            showArchiveLinkDialog(pLinkId, pFolderId, pImgSrc, pMenuType);
-            break;
-        case "copy":
-            //alert("contextMenuAction/copy (pLinkId: " + pLinkId + ", pFolderId: " + pFolderId + ", pImgSrc: " + pImgSrc);
-            showCopyLinkDialog(pLinkId, pMenuType, pImgSrc);
-            $("#imageContextMenu").fadeOut();
-            break;
-        case "move":
-            showMoveLinkDialog(pLinkId, pFolderId, pMenuType, pImgSrc);
-            $("#imageContextMenu").fadeOut();
-            break;
-        case "remove":
-            $("#imageContextMenu").fadeOut();
-            attemptRemoveLink(pLinkId, pFolderId, pImgSrc);
-            break;
-        case "delete":
-            $("#imageContextMenu").fadeOut();
-            deleteLink(pLinkId, pFolderId, pImgSrc);
-            break;
-        case "reject":
-            $("#imageContextMenu").fadeOut();
-            showMoveImageToRejectsDialog(pMenuType, pLinkId, pFolderId, pImgSrc, "single link");
-            break;
-        case "setF":
-            setFolderImage(pLinkId, pFolderId, "folder");
-            break;
-        case "setC":
-            setFolderImage(pLinkId, pFolderId, "parent");
-            break;
         default: {
-            logError("SWT", pFolderId, "action: " + action, "contextMenuAction");
+            logError("SWT", pFolderId, "action: " + action, "context MenuAction");
         }
     }
 }

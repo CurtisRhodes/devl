@@ -151,8 +151,11 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
                                                                 renameImageFile(objPhyscialimage.name, fileNamePrefix,
                                                                     rootFolderId, catFolder.FolderType, fullPath);
                                                             }
-                                                            else
-                                                                repairReport.orphanImageFiles.push(catFolder.FolderName + "   (" + rootFolderId + ")");
+                                                            else 
+                                                                repairReport.orphanImageFiles.push(catFolder.FolderName +
+                                                                    "physcialFile missing a data record :" +
+                                                                    objPhyscialimage.name + "(" + rootFolderId + ")");
+                                                            showRepairReport();
                                                         }
                                                         repairReport.physcialFilesProcessed++;
                                                     });

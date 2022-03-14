@@ -72,10 +72,7 @@
 }
 
 .folderCommentButton {
-    position: relative;
-    display: none;
-    top: 120px;
-    left: 15px;
+    margin-top: 41px;
     height: 31px;
     cursor: pointer;
 }
@@ -199,14 +196,12 @@
 }
 
 .albumBottomContainer {
-    position: absolute;
-    bottom: 32px;  
+    display: inline-block;
     width: 100%;
 }
 .albumBottomContainerRightMostDiv {
-    display: inline-block;
     float: right;
-    margin-right: 44px;
+    margin-right: 74px;
 }
 
 .viewerImageNav {

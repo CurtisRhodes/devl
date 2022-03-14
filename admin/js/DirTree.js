@@ -21,6 +21,9 @@ function buildDirTree(startNode) {
             largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer'>";
             $('#dirTreeContainer').html(dirTreeArray[0].treeNodeTxt);
 
+            $('#txtCurrentActiveFolder').val(rootNode.FolderPath);
+            $('#txtActiveFolderId').val(rootNode.Id);
+
             traverseDirTree(rootNode);
 
             largetxtstring += "</div>";
@@ -188,7 +191,7 @@ function commonDirTreeClick(danniPath, folderId) {
             default:
         }
     } catch (e) {
-        logError("CAT", folderId, e, "commonDirTreeClick");
+        logError("CAT", folderId, e, "common DirTreeClick");
     }
 }
 

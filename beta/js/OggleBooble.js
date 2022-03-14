@@ -1,9 +1,6 @@
-﻿let settingsImgRepo = 'https://ogglefiles.com/danni/';
-var busy = false;
-var searchString = "";
-var itemIndex = -1;
-var listboxActive = false;
-let limit = 11, skip = 0;
+﻿const settingsImgRepo = 'https://ogglefiles.com/danni/';
+const messageBoxSlideSpeed = 66;
+let busy = false, searchString = "", itemIndex = -1, listboxActive = false, limit = 11, skip = 0;
 
 /*-- click events -----------------------------------*/
 function addPgLinkButton(folderId, labelText) {
@@ -194,8 +191,30 @@ function addPgLinkButton(folderId, labelText) {
         "</div>\n";
 }
 
-// REPORT THEN PERFORM EVENT
+/*-- Search -----------------------------------*/
+function showMaxSizeViewer(imgSrc, calledFrom) {
+    //logEvent("EXP", pFolderId, pFolderName, pLinkId);
+    //showMaxSizeViewer()
+    if (calledFrom == 'slideshow') {
+        $("#slideshowCtxMenuContainer").hide();
+    }
+    else {
+        $("#imageContextMenu").hide();
+        $('#viewerImage').attr("src", imgSrc);
+    }
+    $("#vailShell").show().on("click", function () { closeExploderDiv() });
+    $('#singleImageOuterContainer').show();
 
+    //replaceFullPage(pImgSrc);
+}
+function closeExploderDiv() {
+    $('#exploderDiv').hide();
+    //$("#divSlideshowButton").hide();
+    //$("#viewerCloseButton").hide();
+    $("#vailShell").hide();
+}
+
+// REPORT THEN PERFORM EVENT
 function performEvent(eventCode, eventDetail, folderId) {
 //        if (eventCode === "PRN") {
 //            //  setUserPornStatus(pornType);
@@ -403,7 +422,6 @@ function jumpToSelected(selectedFolderId) {
     var parentOpener = window.opener; window.opener = null; window.open("https://ogglefiles.com/beta/album.html?folder=" + selectedFolderId, "_blank"); window.opener = parentOpener;
 
 }
-
 /*-- log error -----------------------------------*/
 function logOggleError(errorCode, folderId, errorMessage, calledFrom) {
     try {
@@ -452,11 +470,107 @@ function imageError(folderId, linkId) {
 
 /*--  context menu --------------------------------------*/
 function albumContextMenu(menuType, linkId, folderId, imgSrc) {
-    //alert("$(window).scrollTop(): " + $(window).scrollTop() + " event.clientY: " + event.clientY);    
+    event.preventDefault();
+    window.event.returnValue = false;
     pos = {};
     pos.x = event.clientX;
     pos.y = event.clientY + $(window).scrollTop();
-    showContextMenu(menuType, pos, imgSrc, linkId, folderId);
+    $('#contextMenuContent').html(oggleContextMenuHtml());
+    $('#contextMenuContainer').css("top", pos.y);
+    $('#contextMenuContainer').css("left", pos.x);
+    $('#contextMenuContainer').show();
+}
+
+function oggleCtxMenuAction(action) {
+    switch (action) {
+        case "saveAs":
+            document.execCommand("SaveAs", null, "file.csv");
+            break;
+        case "download":
+            if (localStorage["IsLoggedIn"] == "true")
+                alert("still working on this feature. Send site developer an email to request folder");
+            else
+                alert("You must be logged in to download an album");
+            break;
+        case "showDialog": {
+            if ($('#ctxMdlName').html() === "unknown model") {
+                showUnknownModelDialog(pMenuType, pImgSrc, pLinkId, pFolderId);
+            }
+            else
+                if (isNullorUndefined(pModelFolderId))
+                    showFolderInfoDialog(pFolderId, "img ctx");
+                else
+                    showFolderInfoDialog(pModelFolderId, "img ctx");
+            $("#contextMenuContainer").fadeOut();
+            break;
+        }
+        case "closeSlideshow":
+            closeViewer("context menu");
+            break;
+        case "openInNewTab": {
+            rtpe("ONT", "context menu", pFolderName, pFolderId);
+            break;
+        }
+        case "see more": {
+            rtpe("SEE", pFolderId, pFolderName, pModelFolderId);
+            break;
+        }
+        case "comment": {
+            showImageCommentDialog(pLinkId, pImgSrc, pFolderId, pMenuType);
+            $("#contextMenuContainer").fadeOut();
+            break;
+        }
+        case "explode": {
+            explodeImage();
+            break;
+        }
+        case "Image tags":
+        case "folder tags":
+            openMetaTagDialog(pFolderId, pLinkId);
+            break;
+        case "info":
+            if (pMenuType === "Folder")
+                $('#folderInfoContainer').toggle();
+            else
+                $('#imageInfoContainer').toggle();
+            break;
+        case "showLinks":
+            $('#linkInfoContainer').toggle();
+            break;
+        case "archive":
+            showArchiveLinkDialog(pLinkId, pFolderId, pImgSrc, pMenuType);
+            break;
+        case "copy":
+            //alert("oggleCtxMenuAction/copy (pLinkId: " + pLinkId + ", pFolderId: " + pFolderId + ", pImgSrc: " + pImgSrc);
+            showCopyLinkDialog(pLinkId, pMenuType, pImgSrc);
+            $("#imageContextMenu").fadeOut();
+            break;
+        case "move":
+            showMoveLinkDialog(pLinkId, pFolderId, pMenuType, pImgSrc);
+            $("#imageContextMenu").fadeOut();
+            break;
+        case "remove":
+            $("#imageContextMenu").fadeOut();
+            attemptRemoveLink(pLinkId, pFolderId, pImgSrc);
+            break;
+        case "delete":
+            $("#imageContextMenu").fadeOut();
+            deleteLink(pLinkId, pFolderId, pImgSrc);
+            break;
+        case "reject":
+            $("#imageContextMenu").fadeOut();
+            showMoveImageToRejectsDialog(pMenuType, pLinkId, pFolderId, pImgSrc, "single link");
+            break;
+        case "setF":
+            setFolderImage(pLinkId, pFolderId, "folder");
+            break;
+        case "setC":
+            setFolderImage(pLinkId, pFolderId, "parent");
+            break;
+        default: {
+            logError("SWT", pFolderId, "action: " + action, "oggleCtxMenuAction");
+        }
+    }
 }
 
 function getSingleImageDetails(linkId, folderId) {
@@ -464,7 +578,8 @@ function getSingleImageDetails(linkId, folderId) {
         let getSingleImageDetailsStart = Date.now();
         $.ajax({
             type: "GET",
-            url: "php/getContextMenuSingle.php?linkId=" + linkId,
+            url: "php/customFetch.php?query=select p.FolderName as ParentFolderName, i.*, f.* from ImageFile i " +
+                "join CategoryFolder f on i.FolderId=f.Id join CategoryFolder p on f.Parent=p.Id where i.id ='" + linkId + "'",
             success: function (data) {
                 let imgData = JSON.parse(data);
                 pFolderName = imgData.FolderName;
@@ -508,30 +623,8 @@ function getSingleImageDetails(linkId, folderId) {
     }
 }
 
-function showMaxSizeViewer(imgSrc, calledFrom) {
-    //logEvent("EXP", pFolderId, pFolderName, pLinkId);
-    //showMaxSizeViewer()
-    if (calledFrom == 'slideshow') {
-        $("#slideshowCtxMenuContainer").hide();
-    }
-    else {
-        $("#imageContextMenu").hide();
-        $('#viewerImage').attr("src", imgSrc);
-    }
-    $("#vailShell").show().on("click", function () { closeExploderDiv() });
-    $('#singleImageOuterContainer').show();
 
-    //replaceFullPage(pImgSrc);
-}
-
-function closeExploderDiv() {
-    $('#exploderDiv').hide();
-    //$("#divSlideshowButton").hide();
-    //$("#viewerCloseButton").hide();
-    $("#vailShell").hide();
-}
-
-
+/*--  context menu actions ------------------------------*/
 function setFolderImage(filinkId, folderId, level) {
     try {
         $.ajax({
@@ -553,5 +646,139 @@ function setFolderImage(filinkId, folderId, level) {
         });
     } catch (e) {
         logCatch("set Folder Image", e);
+    }
+}
+function showMoveImageToRejectsDialog(menuType, linkId, folderId, imgSrc, errMsg) {
+    if (errMsg === "single link") {
+        $('#centeredDialogTitle').html("move image to rejects");
+        $('#centeredDialogContents').html(
+            "<form id='frmReject>'\n" +
+            "    <div class='inline'><img id='linkManipulateImage' class='copyDialogImage' src='" + imgSrc + "'/></div>\n" +
+            "    <div><input type='radio' value='DUP' name='rdoRejectImageReasons' checked='checked'></input>  duplicate</div>\n" +
+            "    <div><input type='radio' value='BAD' name='rdoRejectImageReasons'></input>  bad link</div>\n" +
+            "    <div><input type='radio' value='LOW' name='rdoRejectImageReasons'></input>  low quality</div>\n" +
+            "    <div class='roundendButton' onclick='performMoveImageToRejects(\"" + menuType + "\",\"" + linkId + "\"," + folderId + ")'>ok</div>\n" +
+            "</form>");
+    }
+    if (errMsg === "home folder Link") {
+        $('#centeredDialogTitle').html("Remove Home Folder Link");
+        $('#centeredDialogContents').html("<div class='oggleDialogWindow'>\n" +
+            "    <div class='inline'><img id='linkManipulateImage' class='copyDialogImage' src='" + imgSrc + "'/></div>\n" +
+            "    <div>Are you sure you want to remove the home folder Link</div>\n" +
+            "    <div class='roundendButton' onclick='removeHomeFolderLink(\"" + linkId + "\)'>confirm</div>\n" +
+            "</div>\n");
+    }
+    $('#centeredDialogContainer').fadeIn();
+}
+
+    function performMoveImageToRejects(menuType, linkId, folderId) {
+        let rejectReason = $('input[name="rdoRejectImageReasons"]:checked').val();
+        //alert("rejectReason: " + rejectReason + " link: " + linkId);
+        if (menuType == "Image") {
+            $('#albumPageLoadingGif').show();
+        }
+
+        $.ajax({
+            type: "PUT",
+            url: settingsArray.ApiServer + "api/Links/MoveImageToRejects?linkId=" + linkId,
+            success: function (success) {
+                $('#albumPageLoadingGif').hide();
+                if (success === "single link" || success === "home folder Link") {
+                    showConfirmDeteteImageDialog(menuType, linkId, folderId, imgSrc, success);
+                }
+                else {
+                    if (success === "ok") {
+                        if (viewerShowing) {
+                            // TODO: remove image from slideshow array
+                            slide("next");
+                        }
+                        // TODO: include reason radio button
+                        getAlbumImages(folderId);
+                        centeringDialogClose();
+                        slideShowDialogClose();
+                        displayStatusMessage("ok", "link moved to rejects" + linkId);
+                        logDataActivity({
+                            VisitorId: getCookieValue("VisitorId", "perform MoveImageToRejects"),
+                            ActivityCode: "REJ",
+                            FolderId: folderId,
+                            Details: "reason: " + $('input[name=rdoRejectImageReasons]:checked', '#frmReject').val() + "link moved to rejects" + linkId
+                        });
+                    }
+                    else {
+                        logError("AJX", 3908, success, "perform MoveImageToRejects");
+                    }
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
+                if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", pSelectedTreeId, errMsg, functionName);
+            }
+        });
+    }
+
+
+
+function oggleContextMenuHtml() {
+    return `<div id='ctxMdlName' class='ctxItem' onclick='oggleCtxMenuAction(\"showDialog\")'>model name</div>
+        <div id='ctxSeeMore' class='ctxItem' onclick='oggleCtxMenuAction(\"see more\")'>see more of her</div>
+        <div id='ctxNewTab'  class='ctxItem' onclick='oggleCtxMenuAction(\"openInNewTab\")'>Open in new tab</div>
+        <div id='ctxComment' class='ctxItem' onclick='oggleCtxMenuAction(\"comment\")'>Comment</div>
+        <div id='ctxExplode' class='ctxItem' onclick='oggleCtxMenuAction(\"explode\")'>explode</div>
+        <div id='ctxSaveAs'  class='ctxItem' onclick='oggleCtxMenuAction(\"saveAs\")'>save as</div>
+        <div id='ctxssClose' class='ctxItem' onclick='oggleCtxMenuAction(\"closeSlideshow\")'>close slideshow</div>
+        <div id='ctxImageShowLinks' class='ctxItem' onclick='oggleCtxMenuAction(\"showLinks\")'>Show Links</div>
+        <div id='linkInfoContainer' class='contextMenuInnerContainer'></div>
+        <div id='ctxInfo'    class='adminLink' onclick='oggleCtxMenuAction(\"info\")'>Show Image info</div>`
+        +
+        `<div id='imageInfoContainer' class='contextMenuInnerContainer'>
+            <div><span class='ctxItem'>file name</span><span id='imageInfoFileName' class='ctxInfoValue'></span></div>
+            <div><span class='ctxItem'>folder path</span><span id='imageInfoFolderPath' class='ctxInfoValue'></span></div>
+            <div><span class='ctxItem'>link id</span><input id='imageInfoLinkId'></input></div>
+            <div>
+                <span class='ctxItem'>height</span><span id='imageInfoHeight' class='ctxInfoValue'></span>" +
+                <span class='ctxItem'>width</span><span id='imageInfoWidth' class='ctxInfoValue'></span>" +
+                <span class='ctxItem'>size</span><span id='imageInfoSize' class='ctxInfoValue'></span>
+            </div>
+            <div><span class='ctxItem'>last modified</span><span id='imageInfoLastModified' class='ctxInfoValue'></span></div>
+            <div><span class='ctxItem'>external link</span><span id='imageInfoExternalLink' class='ctxInfoValue'></span></div>
+        </div>
+        <div id='folderInfoContainer' class='contextMenuInnerContainer'>
+            <div><span class='ctxItem'>file name</span><span id='folderInfoFileName' class='ctxInfoValue'></span></div>
+            <div><span class='ctxItem'>folder id</span><span id='folderInfoId' class='ctxInfoValue'></span></div>
+            <div><span class='ctxItem'>folder path</span><span id='folderInfoPath' class='ctxInfoValue'></span></div>
+            <div><span class='ctxItem'>files</span><span id='folderInfoFileCount' class='ctxInfoValue'></span></div>
+            <div><span class='ctxItem'>subfolders</span><span id='folderInfoSubDirsCount' class='ctxInfoValue'></span></div>
+            <div><span class='ctxItem'>last modified</span><span id='folderInfoLastModified' class='ctxInfoValue'></span></div>
+        </div>
+        <div id='ctxDownLoad' onclick='oggleCtxMenuAction(\"download\")'>download folder</div>
+        <div id='ctxShowAdmin' class='adminLink' onclick='$(\"#linkAdminContainer\").toggle()'>Admin</div>`
+        +
+        `<div id='linkAdminContainer' class='contextMenuInnerContainer'>
+            <div onclick='oggleCtxMenuAction(\"archive\")'>Archive</div>
+            <div onclick='oggleCtxMenuAction(\"copy\")'>Copy Link</div>
+            <div onclick='oggleCtxMenuAction(\"move\")'>Move Image</div>
+            <div onclick='oggleCtxMenuAction(\"remove\")'>Remove Link</div>
+            <div onclick='oggleCtxMenuAction(\"reject\")'>Move to Rejects</div>
+            <div onclick='oggleCtxMenuAction(\"delete\")'>Delete Image</div>
+            <div onclick='oggleCtxMenuAction(\"setF\")'>Set as Folder Image</div>
+            <div onclick='oggleCtxMenuAction(\"setC\")'>Set as Category Image</div>
+        </div>`;
+}
+
+/*--  message slide out ---------------------------------*/
+let currPos, destPos;
+function messageSideOut(messageId) {
+    currPos = -500;
+    $('#messageSlideOut').css("left", currPos);
+    $('#messageSlideOutContents').html('test message');
+}
+function sideOut() {
+    if (currPos < destPos) {
+        setTimeout(function () {
+            currPos += 14;
+            $('#messageSlideOut').css("left", currPos);
+            sideOut();
+        }, messageBoxSlideSpeed);
     }
 }

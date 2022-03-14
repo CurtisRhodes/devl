@@ -251,9 +251,17 @@ function loadImages(pageContext, forceCacheRefresh) {
         let startTime = Date.now();
         initialImageLoad = true;
         let limit = 600;
+        let sql = "select * from VwCarouselImages where Width > Height and RootFolder='" +
+            pageContext + "' order by rand() limit " + limit;
+        //let sql = "select * from VwCarouselImages where Width > Height and RootFolder='" +
+        //    pageContext + "' order by rand() limit " + limit;
+        //let sql = "select * from VwCarouselImages where Width > Height and RootFolder='" +
+        //    pageContext + "' order by rand() limit " + limit;
+        //let sql = "select * from VwCarouselImages where Width > Height and RootFolder='" +
+        //    pageContext + "' order by rand() limit " + limit;
         $.ajax({
             type: "GET",
-            url: "php/getCarouselImages.php?pageContext=" + pageContext + "&limit=" + limit,
+            url: "php/customFetchAll.php?query=" + sql,
             success: function (data) {
                 if (data.indexOf("Fatal error") > 0) {
                     $('#carouselContainer').html(data);
