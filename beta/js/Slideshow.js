@@ -1,17 +1,8 @@
 const slideShowImgRepo = 'https://ogglefiles.com/danni/';
 const slideSpeed = 33, slideIncrement = 88;
 
-let slideShowSpeed = 5000,
-    imageArray = [],
-    imageViewerIndex = 0,
-    spSessionCount = 0,
-    tempImgSrc = new Image(),
-    isPaused = false,
-    imageViewerIntervalTimer,
-    slideshowParentName,
-    isSiding = false;
-
-
+let slideShowSpeed = 5000, imageArray = [], imageViewerIndex = 0, spSessionCount = 0, tempImgSrc = new Image(),
+    isPaused = false, imageViewerIntervalTimer = null, slideshowParentName, isSiding = false;
 
 function showSlideshowViewer(folderId, startLink, isLargeLoad) {
 
@@ -31,7 +22,7 @@ function showSlideshowViewer(folderId, startLink, isLargeLoad) {
 }
 
 function toggleSlideshow() {
-    if (imageViewerIntervalTimer == null) {
+    if (isNullorUndefined(imageViewerIntervalTimer)) {
         slide('next');
         $('#txtSlideshow').html("stop slideshow");
         imageViewerIntervalTimer = setInterval(function () {
@@ -40,6 +31,7 @@ function toggleSlideshow() {
     }
     else {
         clearInterval(imageViewerIntervalTimer);
+        imageViewerIntervalTimer = null;
         $('#txtSlideshow').html("start slideshow");
     }
 }
@@ -136,17 +128,14 @@ function getFolderDetails(folderId) {
                     "/" + thisCatFolder.FolderName + "</span>");
 
                 $('#leftClickArea').on("click", function () {
-                    if (imageViewerIntervalTimer != null) {
-                        clearInterval(imageViewerIntervalTimer);
-                        $('#txtSlideshow').html("start slideshow");
-                    }
-                    else
+                    if (isNullorUndefined(imageViewerIntervalTimer))
                         slide("prev", folderId);
+                    else
+                        toggleSlideshow();
                 });
+
                 $('#rightClickArea').on("click", function () { slide("next", folderId) });
-                $('.hiddenClickArea').on("dblclick", function () {
-                    toggleSlideshow();
-                });
+                $('.hiddenClickArea').on("dblclick", function () { toggleSlideshow(); });
                 $('.hiddenClickArea').on("contextmenu", function () { slideshowContextMenu() });
 
                 // $('#btnExplodeImage').on('click', showMaxSizeViewer(slideShowImgRepo + imageArray[imageViewerIndex].FileName, 'slideshow'));
@@ -170,14 +159,10 @@ function adjustSlideshowSpeed(action) {
     if (action === "slower") {
         slideShowSpeed += 1000;
     }
-    //if (slideShowSpeed <= 0) {
-    //    $('#showSlideshow').attr("Title", "start slideshow");
-    //    slideShowRunning = false;
-    //    clearInterval(imageViewerIntervalTimer);
-    //}
-    //$('#fasterSlideshow').attr("Title", "slideshow " + 10 - (slideShowSpeed / 1000) + "x");
-    //$('#slowerSlideshow').attr("Title", "slideshow " + 10 - (slideShowSpeed / 1000) + "x");
-
+    if (slideShowSpeed <= 0) {
+        if (!isNullorUndefined(imageViewerIntervalTimer))
+            toggleSlideshow();
+    }
 }
 
 let imagePos, slideshowImageZeroPos, slidingDone;
@@ -262,6 +247,7 @@ function slide(direction) {
 
                                 spSessionCount++;
                                 $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + imageArray.length);
+                                $('#txtSlideshow').focus();
                                 $('#footerMessage').html("image: " + imageViewerIndex + " of: " + imageArray.length);
                                 isSiding = false;
                             }
@@ -381,11 +367,7 @@ function slideshowContextMenu() {
 }
 
 function resumeSlideshow() {
-    $('#txtStartSlideshow').html("stop slideshow");
-    slide('next');
-    imageViewerIntervalTimer = setInterval(function () {
-        slide('next');
-    }, slideShowSpeed);
+    toggleSlideshow();
 }
 
 function closeSlideshow() {
@@ -411,7 +393,8 @@ function showSlideshowHeader() {
                 <img id='fasterSlideshow' class='slideshowHeaderButton' title='faster'
                         src='https://common.ogglefiles.com/img/speedDialFaster.png'/>
             </div>
-            <div id='txtSlideshow' class='sldeshowHeaderTextContainer clickable' onclick='toggleSlideshow()'>start slideshow</div>
+            <div id='txtSlideshow' class='sldeshowHeaderTextContainer clickable'
+                title='double click toggles slideshow' onclick='toggleSlideshow()'>start slideshow</div>
             <div class='clickable' onclick='adjustSlideshowSpeed("slower")'>
                 <img id='slowerSlideshow' class='slideshowHeaderButton' title='slower'
                         src='https://common.ogglefiles.com/img/speedDialSlower.png'/>

@@ -253,12 +253,6 @@ function loadImages(pageContext, forceCacheRefresh) {
         let limit = 600;
         let sql = "select * from VwCarouselImages where Width > Height and RootFolder='" +
             pageContext + "' order by rand() limit " + limit;
-        //let sql = "select * from VwCarouselImages where Width > Height and RootFolder='" +
-        //    pageContext + "' order by rand() limit " + limit;
-        //let sql = "select * from VwCarouselImages where Width > Height and RootFolder='" +
-        //    pageContext + "' order by rand() limit " + limit;
-        //let sql = "select * from VwCarouselImages where Width > Height and RootFolder='" +
-        //    pageContext + "' order by rand() limit " + limit;
         $.ajax({
             type: "GET",
             url: "php/customFetchAll.php?query=" + sql,

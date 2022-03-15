@@ -713,7 +713,7 @@ function closeExploderDiv() {
             }
         });
     }
-    function showCopyLinkDialog(pLinkId, pMenuType, pImgSrc); {
+    function showCopyLinkDialog(pLinkId, pMenuType, pImgSrc) {
     }
     function showImageCommentDialog(linkId, imgSrc, folderId, calledFrom) {
         if (typeof pause === 'function') pause();
