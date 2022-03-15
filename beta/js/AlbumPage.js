@@ -113,9 +113,6 @@ function getAlbumPageInfo(folderId, islargeLoad) {
                     document.title = catfolder.FolderName + " : OggleBooble";
 
                 switch (catfolder.FolderType) {
-                    case "singleModel":
-                    case "multiModel":
-                    case "singleChild": $('#albumBottomfileCount').html(catfolder.Files); break;
                     case "multiFolder":
                     case "singleParent":
                         $('#largeLoadButton').show();
@@ -124,6 +121,13 @@ function getAlbumPageInfo(folderId, islargeLoad) {
                             $('#albumBottomfileCount').html(catfolder.Files + "/" + catfolder.SubFolders);                        
                         else
                             $('#albumBottomfileCount').html(catfolder.TotalSubFolders + "/" + Number(catfolder.TotalChildFiles).toLocaleString());
+                        break;
+                    case "singleModel":
+                    case "multiModel":
+                    case "singleChild":
+                        $('#largeLoadButton').hide();
+                        $('#deepSlideshowButton').hide();
+                        $('#albumBottomfileCount').html(catfolder.Files);
                         break;
                 }
                 setBreadcrumbs(folderId);
