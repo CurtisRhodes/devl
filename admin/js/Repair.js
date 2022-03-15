@@ -67,6 +67,12 @@ function performRepairLinks() {
     repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans);
 }
 
+function isGuid(value) {
+    var regex = /[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}/i;
+    var match = regex.exec(value);
+    return match != null;
+}
+
 function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
     try {
         $.ajax({
@@ -215,22 +221,26 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
 }
 
 function renameImageFile(physcialimageFileName, desiredFileNamePrefix, folderId, folderType, path) {
-    if (!physcialimageFileName.startsWith(desiredFileNamePrefix)) {
+    let guidOk = true;
+    let guidPart = physcialimageFileName.substr(physcialimageFileName.indexOf("_") + 1, 36);
+
+    if (!isGuid(guidPart)) {
+        guidOk = false;
+        guidPart = create_UUID();
+    }
+    if (!physcialimageFileName.startsWith(desiredFileNamePrefix) || !guidOk) {
         let suffix = physcialimageFileName.substring(physcialimageFileName.length - 4);
-        let newFileName = desiredFileNamePrefix + "_" + create_UUID() + suffix;
- 
+        let newFileName = desiredFileNamePrefix + "_" + guidPart + suffix;
         $.ajax({
             url: "php/renameFile.php?path=" + path + "&oldFileName=" + physcialimageFileName + "&newFileName=" + newFileName,
             success: function (success) {
                 if (success == "ok") {
-                    if (needsSaving) {
-                        repairReport.physcialFilesRenamed.push(physcialimageFileName + " to: " + newFileName);
-                        showRepairReport();
-                    }
+                    repairReport.physcialFilesRenamed.push(physcialimageFileName + " to: " + newFileName);
+                    showRepairReport();
                     addImageFile(folderId, newFileName, folderType, path);
                 }
                 else {
-                    $('#dashboardFileList').append("<div style='color:red'>rename file error: " + success + "</div>");
+                    repairReport.errors.push("<div style='color:red'>rename file error: " + success + "</div>");
                 }
             },
             error: function (jqXHR) {
@@ -242,7 +252,6 @@ function renameImageFile(physcialimageFileName, desiredFileNamePrefix, folderId,
     }
     else
         addImageFile(folderId, physcialimageFileName, folderType, path);
-
 }
 
 function addImageFile(folderId, fileName, folderType, path) {

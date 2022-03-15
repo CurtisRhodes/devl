@@ -1,5 +1,5 @@
 <?php
-    $success = "ono";
+    $success = "ok";
     try
     {
         $path = $_GET['path'];
@@ -7,24 +7,18 @@
         $newFileName = $_GET['newFileName'];
 
         $files = preg_grep('/^([^.])/', scandir($path));
-        if($files !== false)
-        {
-            $fileCount = count($files);
-
-            $success = $oldFileName." not found. FileCount: ".$fileCount;
-            foreach ($files as $file) {
-                if($file == $oldFileName) {
-                    $success = "found but";
-                    if($file.rename($path.'/'.$file, $path.'/'.$newFileName) == true)
-                        $success = "ok";
-                    else {
-                        $success = "rename fail  :".$path.'/'.$file;
-                    }
-                }
-            }  
+        if($files == false){
+            $success = "scannDir fail. Path: [".$path."]";
         }
         else {
-            $success = "scannDir fail. Path: [".$path."]";
+	        // $fileCount = count($files);
+            foreach ($files as $file) {
+                if($success == "ok")
+                if($file == $oldFileName) {
+                    if($file.rename($path.'/'.$file, $path.'/'.$newFileName) != true)
+                        $success = "rename fail  :".$path.'/'.$file;
+                }
+            }  
         }
     }
     catch(Exception $e) {

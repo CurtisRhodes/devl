@@ -6,23 +6,30 @@
         $pdo = pdoConn();
 
         $Id = $_POST['Id'];
+        $path = $_POST['path'];
         $fileName = $_POST['fileName'];
         $folderId = $_POST['folderId'];
         $folderType = $_POST['folderType'];
+        $width = 0;
+        $height = 0;
+        $fileSize = 0;
 
-
-        $success = 'unable aquire size data';
         $files = preg_grep('/^([^.])/', scandir($path));
-        foreach ($files as $file) {
-            if(trim($file) == $fileName) {
-                $success = 'file found but';                
-                $image_info = getimagesize($path.'/'.$fileName);
-                $width = $image_info[0];
-                $height = $image_info[1];
-                $fileSize = filesize($path.'/'.$fileName);
-                $success = 'file data ok';
+        //if($files.length == 0){
+        //    $success = .$path." not found";
+        //}
+        //else {
+	        $success = 'unable aquire size data';
+            foreach ($files as $file) {
+                if(trim($file) == $fileName) {
+                    $image_info = getimagesize($path.'/'.$fileName);
+                    $width = $image_info[0];
+                    $height = $image_info[1];
+                    $fileSize = filesize($path.'/'.$fileName);
+                    $success = 'file data ok';
+                }
             }
-        }
+        //}
 
         if($success == 'file data ok'){
             $now = date('Y-m-d H:i:s');
