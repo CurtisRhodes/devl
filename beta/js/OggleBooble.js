@@ -312,17 +312,16 @@ function closeExploderDiv() {
     function performSearch(searchString) {
         if (searchString.length > 2) {
 
-            let sql = `select f.Id, p.FolderName as ParentName, f.FolderName from CategoryFolder f join CategoryFolder p on f.Parent = p.Id
-        where f.FolderName like '`+ searchString + `%' and f.FolderType != "singleChild"
-        union
-        select f.Id, p.FolderName as ParentName, f.FolderName from CategoryFolder f join CategoryFolder p on f.Parent = p.Id
-        where f.FolderName like '%`+ searchString + `%' and f.FolderName not like '` + searchString + `%' and f.FolderType != "singleChild"`;
+            let sql = "select f.Id, p.FolderName as ParentName, f.FolderName from CategoryFolder f join CategoryFolder p on f.Parent = p.Id " +
+                "where (f.FolderName like '`" + searchString + "`%') and (f.FolderType !='singleChild') union " +
+                "select f.Id, p.FolderName as ParentName, f.FolderName from CategoryFolder f join CategoryFolder p on f.Parent = p.Id " +
+                "where f.FolderName like '%" + searchString + "%' and (f.FolderName not like '" + searchString + "%') and (f.FolderType != 'singleChild');";
 
             try {
                 $('#divLoginArea').hide();
                 $.ajax({
                     type: "GET",
-                    url: "php/customFetchAll.php?query=" + sql,
+                    url: "php/oggleSearch.php?searchString=" + searchString,
                     success: function (data) {
                         if (data.indexOf("Error") > 0) {
                             alert(data);

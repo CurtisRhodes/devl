@@ -811,7 +811,7 @@ function displayFooter(footerContext) {
                     <div class='clickable' onclick='footerItemClick(1)'>test 5</div>\n`
                 );
                 $('#footerCol6').append(`
-                    <div class='clickable' onclick='window.open(\"index.html?spa=3910\")'>dashboard</div>\n`
+                    <div class='clickable' onclick='window.open(\"https://ogglefiles.com/admin/OggleDashboard.html")'>dashboard</div>\n`
                 );
                 $('#footerCol7').html(`
                     <div class='clickable' onclick='footerItemClick(1)'>Category List</div>\n`
