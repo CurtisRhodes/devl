@@ -7,7 +7,8 @@
 
         $Id = $_POST['Id'];
         $path = $_POST['path'];
-        $fileName = $_POST['fileName'];
+        $oldFileName = $_POST['oldFileName'];
+        $newFileName = $_POST['newFileName'];
         $folderId = $_POST['folderId'];
         $width = 0;
         $height = 0;
@@ -16,11 +17,11 @@
         $files = preg_grep('/^([^.])/', scandir($path));
 	    $success = 'unable aquire size data';
         foreach ($files as $file) {
-            if(trim($file) == $fileName) {
-                $image_info = getimagesize($path.'/'.$fileName);
+            if(trim($file) == $oldFileName) {
+                $image_info = getimagesize($path.'/'.$oldFileName);
                 $width = $image_info[0];
                 $height = $image_info[1];
-                $fileSize = filesize($path.'/'.$fileName);
+                $fileSize = filesize($path.'/'.$oldFileName);
                 $success = 'file data ok';
             }
         }
@@ -33,7 +34,7 @@
             $pdo->beginTransaction();
 
             $sql = "insert into ImageFile (Id,FileName,FolderId,ExternalLink,Width,Height,Size,Acquired) ".
-                "values ('".$Id."','".$fileName."','".$folderId."','".$externalLink."',".$width.",".$height.",".$fileSize.",'".$now."')";
+                "values ('".$Id."','".$newFileName."','".$folderId."','".$externalLink."',".$width.",".$height.",".$fileSize.",'".$now."')";
             $stmt1 = $pdo->prepare($sql);
             $stmt1->execute();
 

@@ -199,7 +199,7 @@ function updateFolderCounts() {
                 if (returnObject[0] == "ok") {
                     // $returnObject = ['ok', $ChangesMade, $FoldersProcessed, $TestChangesMade];
 
-                    $('#dataifyInfo').html("ok.  folders processed: " + returnObject[1] + "  changes made: " + returnObject[2] + "null changes: " + returnObject[3]).show();
+                    $('#dataifyInfo').html("ok.  folders processed: " + returnObject[1] + "  changes made: " + returnObject[2]).show();
                     let delta = (Date.now() - sStart);
                     if (delta > 150)
                         $('#dataifyInfo').append("  .Took: " + (delta / 1000).toFixed(3));
