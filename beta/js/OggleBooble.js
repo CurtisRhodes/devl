@@ -1,10 +1,8 @@
 ﻿const settingsImgRepo = 'https://ogglefiles.com/danni/';
 const messageBoxSlideSpeed = 66;
-let busy = false, searchString = "", itemIndex = -1, listboxActive = false, limit = 11, skip = 0;
+let busy = false,, itemIndex = -1, listboxActive = false, limit = 11, skip = 0;
 
 /*-- click events -----------------------------------*/
-
-
 function resetOggleHeader(folderId, rootFolder) {
     hdrFolderId = folderId;
     hdrRootFolder = rootFolder;
@@ -210,30 +208,128 @@ function setFolderImage(filinkId, folderId, level) {
     }
 }
 
-/*-- Search -----------------------------------*/
-function showMaxSizeViewer(imgSrc, calledFrom) {
-    //logEvent("EXP", pFolderId, pFolderName, pLinkId);
-    //showMaxSizeViewer()
-    if (calledFrom == 'slideshow') {
-        $("#slideshowCtxMenuContainer").hide();
+/*-- exploding image view -------------------*/{
+    const viewerOffsetTop = 44, explodeSpeed = 22, heightIncrement = 22;
+    let viewerH, viewerMaxH;
+
+    function showMaxSizeViewer(imgSrc, calledFrom) {
+        //logEvent("EXP", pFolderId, pFolderName, pLinkId);
+        //showMaxSizeViewer()
+        if (calledFrom == 'slideshow') {
+            $("#slideshowCtxMenuContainer").hide();
+        }
+        else {
+            $("#imageContextMenu").hide();
+            $('#viewerImage').attr("src", imgSrc);
+        }
+        $("#vailShell").show().on("click", function () { closeExploderDiv() });
+        $('#singleImageOuterContainer').show();
+
+        //replaceFullPage(pImgSrc);
     }
-    else {
-        $("#imageContextMenu").hide();
+
+    function viewImage(imgSrc, linkId) {
+        currentImagelinkId = linkId;
+        viewerH = 50;
+        let parentPos = $('#visableArea').offset();
+        let startLeft = $('#visableArea').width() * .34;
+
+        $("#singleImageOuterContainer").css({
+            height: viewerH,
+            top: parentPos.top - viewerOffsetTop,
+            left: parentPos.left + startLeft
+        });
+        $("#viewerImage").css("height", viewerH);
+        $("#vailShell").show().on("click", function () { closeImageViewer() });
         $('#viewerImage').attr("src", imgSrc);
+        $('#singleImageOuterContainer').show();
+        viewerMaxH = $('#visableArea').height() + viewerOffsetTop - 55;
+        incrementExplode();
+
+        $('#viewerImage').on('click', showMaxSizeViewer(imgSrc, 'album'));
+
+        $('body').keydown(function (event) {
+            if (event.keyCode === 27)
+                closeImageViewer();
+        });
     }
-    $("#vailShell").show().on("click", function () { closeExploderDiv() });
-    $('#singleImageOuterContainer').show();
 
-    //replaceFullPage(pImgSrc);
-}
-function closeExploderDiv() {
-    $('#exploderDiv').hide();
-    //$("#divSlideshowButton").hide();
-    //$("#viewerCloseButton").hide();
-    $("#vailShell").hide();
-}
+    function incrementExplode() {
+        if (viewerH < viewerMaxH) {
+            setTimeout(function () {
+                viewerH += heightIncrement;
+                $("#viewerImage").css("height", viewerH);
 
-/*-- Search -----------------------------------*/{
+                let imgleft = $("#singleImageOuterContainer").css("left");
+
+                $("#singleImageOuterContainer").css("left", imgleft - (heightIncrement / 2));
+                incrementExplode();
+            }, explodeSpeed);
+        }
+        else {
+            $("#viewerImage").css("height", viewerMaxH);
+            $("#divSlideshowButton").show();
+            $("#viewerCloseButton").show();
+            let visWidth = $('#visableArea').width();
+            let imgWidth = $('#viewerImage').width();
+            $("#singleImageOuterContainer").css("left", (visWidth / 2) - (imgWidth / 2));
+        }
+    }
+
+    function incrementImplodeViewer(divObject) {
+        let viewerH = divObject.height();
+        if (viewerH > 0) {
+            setTimeout(function () {
+                divObject.css("height", viewerH - heightIncrement);
+                incrementImplodeViewer(divObject);
+            }, explodeSpeed);
+        }
+        else {
+            $('#singleImageOuterContainer').hide();
+            $("#divSlideshowButton").hide();
+            $("#viewerCloseButton").hide();
+            $("#vailShell").hide();
+            $('body').off();
+        }
+    }
+
+    function closeImageViewer() {
+        incrementImplodeViewer($("#viewerImage"));
+    }
+
+    function resizeViewer() {
+        if ($('#singleImageOuterContainer').is(":visible")) {
+            $("#singleImageOuterContainer").css("height", viewerMaxH);
+            let visWidth = $('#visableArea').width();
+            let imgWidth = $('#viewerImage').width();
+            $("#singleImageOuterContainer").css("left", (visWidth / 2) - (imgWidth / 2));
+        }
+    }
+
+    function showSlideshow() {
+        try {
+            $("#vailShell").hide();
+            $('#singleImageOuterContainer').hide();
+            $("#divSlideshowButton").hide();
+            $("#viewerCloseButton").hide();
+            $("#vailShell").hide();
+            $('body').off();
+
+            showSlideshowViewer(currentFolderId, currentImagelinkId, false)
+        } catch (e) {
+            logCatch("show slideshow", e);
+        }
+    }
+    function closeExploderDiv() {
+        $('#exploderDiv').hide();
+        //$("#divSlideshowButton").hide();
+        //$("#viewerCloseButton").hide();
+        $("#vailShell").hide();
+    }
+}
+/*-- Search --------------------------------------------*/{
+    let searchString = "";
+
     function oggleSearchKeyDown(event) {
         var ev = event.keyCode;
         if (!listboxActive) {
@@ -369,7 +465,7 @@ function closeExploderDiv() {
 
     }
 }
-/*-- log error -----------------------------------*/{
+/*-- log error -----------------------------------------*/{
     function logOggleError(errorCode, folderId, errorMessage, calledFrom) {
         try {
             let visitorId = getCookieValue("VisitorId", calledFrom + "/logError");
@@ -415,7 +511,7 @@ function closeExploderDiv() {
         }
     }
 }
-/*--  context menu --------------------------------------*/{
+/*-- context menu --------------------------------------*/{
     let menuType, linkId, folderId, imgSrc;
     function albumContextMenu(pmenuType, plinkId, pfolderId, pimgSrc) {
         event.preventDefault();
@@ -751,23 +847,6 @@ function closeExploderDiv() {
         };
     }
 }
-/*--  message slide out ---------------------------------*/
-let currPos, destPos;
-function messageSideOut(messageId) {
-    currPos = -500;
-    $('#messageSlideOut').css("left", currPos);
-    $('#messageSlideOutContents').html('test message');
-}
-function sideOut() {
-    if (currPos < destPos) {
-        setTimeout(function () {
-            currPos += 14;
-            $('#messageSlideOut').css("left", currPos);
-            sideOut();
-        }, messageBoxSlideSpeed);
-    }
-}
-
 
 // REPORT THEN PERFORM EVENT
 function XXperformEvent(eventCode, eventDetail, folderId) {

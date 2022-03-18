@@ -1,5 +1,5 @@
 
-/*-- php -----------------------------------*/
+/*-- php -------------------------------------------*/
 function getLatestUpdatedGalleries(spaType) {
     try {
         $.ajax({
@@ -84,14 +84,35 @@ function getRandomGalleries(pageContext) {
     }
 }
 
-function testConnection() {
-    $.ajax({    //create an ajax request to display.php
-        type: "GET",
-        url: "php/validateConnection.php",
-        dataType: "html",   //expect html to be returned                
-        success: function (response) {
-            $("#carouselContainer").html(response);
+/*-- message box -----------------------------------*/
+
+/*-- message slide out -----------------------------*/{
+    let currPos, destPos;
+    function messageSideOut(messageId) {
+        currPos = -500;
+        $('#messageSlideOut').css("left", currPos);
+        $('#messageSlideOutContents').html('test message');
+    }
+    function sideOut() {
+        if (currPos < destPos) {
+            setTimeout(function () {
+                currPos += 14;
+                $('#messageSlideOut').css("left", currPos);
+                sideOut();
+            }, messageBoxSlideSpeed);
         }
-    });
+    }
+}
+
+
+function testConnection() {
+    //    $.ajax({    //create an ajax request to display.php
+    //        type: "GET",
+    //        url: "php/validateConnection.php",
+    //        dataType: "html",   //expect html to be returned                
+    //        success: function (response) {
+    //            $("#carouselContainer").html(response);
+    //        }
+    //    });
 }
 
