@@ -6,10 +6,11 @@ let repairReport = {
     physcialFilesRenamed: [],
     imageFilesAdded: [],
     imageRowsRemoved: [],
-    orphanImages:[],
+    orphanImages: [],
     orphanImageFiles: [],
-    missingPhyscialDirectories: [],    
+    missingPhyscialDirectories: [],
     missingParents: [],
+    comparisonProblems: 0,
     errors: []
 };
 let abandon = false;
@@ -27,6 +28,7 @@ function showRepairDialog() {
     repairReport.orphanImageFiles = [];
     repairReport.missingPhyscialDirectories = [];
     repairReport.missingParents = [];
+    repairReport.comparisonProblems = 0;
     repairReport.errors = [];
 
     if (isNullorUndefined($('#txtCurrentActiveFolder').val())) {
@@ -343,7 +345,7 @@ function addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows, data
             rowsProcessed++;
             let rowOk = false;
             databaseImageFilesRows.every(v => {
-                if (v.FileName == physcialImageFile.name) {
+                if (encodeURI(v.FileName) == encodeURI(physcialImageFile.name)) {
                     rowOk = true;
                     return false;
                 }
@@ -380,7 +382,8 @@ function addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows, data
                             else {
                                 switch (addImageFileSuccess.trim()) {
                                     case '23000':
-                                        repairReport.errors.push("Insert failed (" + folderId + ") Id: " + guidPart + " already exists");
+                                        repairReport.comparisonProblems++;
+                                        //repairReport.errors.push("Insert failed (" + folderId + ") Id: " + guidPart + " already exists");
                                         break;
                                     case '42000':
                                         repairReport.errors.push("Insert failed (" + folderId + ") unhandled exception " +
@@ -432,11 +435,18 @@ function showRepairReport() {
         $('#dashboardFileList').append("<div>Physcial Files Processed:" + Number(repairReport.physcialFilesProcessed).toLocaleString() + "</div>");
         $('#dashboardFileList').append("<div>Image Files Processed:" + Number(repairReport.imageFilesProcessed).toLocaleString() + "</div>");
 
-
         if (repairReport.errors.length > 0) {
             $('#dashboardFileList').append("<div>" + repairReport.errors.length + " Errors</div>");
             $.each(repairReport.errors, function (idx, obj) {
                 $('#dashboardFileList').append("<div style='color:red'>" + obj + "</div>");
+            })
+            $('#dashboardFileList').append("</div>");
+        }
+
+        if (repairReport.imageFilesAdded.length > 0) {
+            $('#dashboardFileList').append("<div>Image Files Added: " + Number(repairReport.imageFilesAdded.length).toLocaleString() + "</div>");
+            $.each(repairReport.imageFilesAdded, function (idx, obj) {
+                $('#dashboardFileList').append("<div style='color:#00802b'>" + obj + "</div>");
             })
             $('#dashboardFileList').append("</div>");
         }
@@ -465,14 +475,6 @@ function showRepairReport() {
             $('#dashboardFileList').append("</div><br/>");
         }
 
-        if (repairReport.imageFilesAdded.length > 0) {
-            $('#dashboardFileList').append("<div>Image Files Added: " + Number(repairReport.imageFilesAdded.length).toLocaleString() + "</div>");
-            $.each(repairReport.imageFilesAdded, function (idx, obj) {
-                $('#dashboardFileList').append("<div style='color:#00802b'>" + obj + "</div>");
-            })
-            $('#dashboardFileList').append("</div>");
-        }
-
         if (repairReport.imageRowsRemoved.length > 0) {
             $('#dashboardFileList').append("<div class='underline'>Image Files Removed: " + Number(repairReport.imageRowsRemoved.length).toLocaleString() + "</div>");
             $.each(repairReport.imageRowsRemoved, function (idx, obj) {
@@ -496,6 +498,10 @@ function showRepairReport() {
             })
             $('#dashboardFileList').append("</div>");
         }
+
+        if (repairReport.comparisonProblems > 0)
+            $('#dashboardFileList').append("<div>comparison problems:" + Number(repairReport.comparisonProblems).toLocaleString() + "</div>");
+
 
         //$('#dataifyInfo').append(", Links: " + repairReport.LinkRecordsProcessed);
         //$('#dataifyInfo').append(", Image rows: " + repairReport.ImageFilesProcessed);

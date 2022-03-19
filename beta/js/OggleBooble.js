@@ -1,6 +1,5 @@
 ﻿const settingsImgRepo = 'https://ogglefiles.com/danni/';
 const messageBoxSlideSpeed = 66;
-let busy = false,, itemIndex = -1, listboxActive = false, limit = 11, skip = 0;
 
 /*-- click events -----------------------------------*/
 function resetOggleHeader(folderId, rootFolder) {
@@ -184,36 +183,13 @@ function addPgLinkButton(folderId, labelText) {
         "   <div class='clickable' onclick='rtpe(\"HB2\",\"" + hdrRootFolder + "\"," + hdrFolderId + "," + folderId + ")'>" + labelText + "</div>" +
         "</div>\n";
 }
-function setFolderImage(filinkId, folderId, level) {
-    try {
-        $.ajax({
-            type: "GET",
-            url: "php/updateFolderImage.php?folderImage='" + filinkId + "'&folderId=" + folderId + "&level=" + level,
-            success: function (success) {
-                if (success.trim().startsWith("ok")) {
-                    displayStatusMessage("ok", level + " image set for " + folderId);
-                    $("#imageContextMenu").fadeOut();
-                }
-                else {
-                    logError("AJX", folderId, success, "setFolderImage");
-                }
-            },
-            error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                alert("setFolderImage: " + errMsg);
-            }
-        });
-    } catch (e) {
-        logCatch("set Folder Image", e);
-    }
-}
 
 /*-- exploding image view -------------------*/{
     const viewerOffsetTop = 44, explodeSpeed = 22, heightIncrement = 22;
     let viewerH, viewerMaxH;
 
     function showMaxSizeViewer(imgSrc, calledFrom) {
-        //logEvent("EXP", pFolderId, pFolderName, pLinkId);
+        //logEvent("EXP", folderId, pFolderName, linkId);
         //showMaxSizeViewer()
         if (calledFrom == 'slideshow') {
             $("#slideshowCtxMenuContainer").hide();
@@ -225,7 +201,7 @@ function setFolderImage(filinkId, folderId, level) {
         $("#vailShell").show().on("click", function () { closeExploderDiv() });
         $('#singleImageOuterContainer').show();
 
-        //replaceFullPage(pImgSrc);
+        //replaceFullPage(imgSrc);
     }
 
     function viewImage(imgSrc, linkId) {
@@ -327,9 +303,9 @@ function setFolderImage(filinkId, folderId, level) {
         $("#vailShell").hide();
     }
 }
-/*-- Search --------------------------------------------*/{
-    let searchString = "";
 
+/*-- Search --------------------------------------------*/{
+    let searchString = "", itemIndex = -1, listboxActive = false;
     function oggleSearchKeyDown(event) {
         var ev = event.keyCode;
         if (!listboxActive) {
@@ -465,6 +441,7 @@ function setFolderImage(filinkId, folderId, level) {
 
     }
 }
+
 /*-- log error -----------------------------------------*/{
     function logOggleError(errorCode, folderId, errorMessage, calledFrom) {
         try {
@@ -511,6 +488,7 @@ function setFolderImage(filinkId, folderId, level) {
         }
     }
 }
+
 /*-- context menu --------------------------------------*/{
     let menuType, linkId, folderId, imgSrc;
     function albumContextMenu(pmenuType, plinkId, pfolderId, pimgSrc) {
@@ -662,11 +640,11 @@ function setFolderImage(filinkId, folderId, level) {
                 break;
             case "showDialog": {
                 if ($('#ctxTxtModelName').html() === "unknown model") {
-                    showUnknownModelDialog(pMenuType, pImgSrc, pLinkId, pFolderId);
+                    showUnknownModelDialog(menuType, imgSrc, pLinkId, folderId);
                 }
                 else
                     if (isNullorUndefined(pModelFolderId))
-                        showFolderInfoDialog(pFolderId, "img ctx");
+                        showFolderInfoDialog(folderId, "img ctx");
                     else
                         showFolderInfoDialog(pModelFolderId, "img ctx");
                 $("#contextMenuContainer").fadeOut();
@@ -676,15 +654,17 @@ function setFolderImage(filinkId, folderId, level) {
                 closeViewer("context menu");
                 break;
             case "openInNewTab": {
-                rtpe("ONT", "context menu", pFolderName, pFolderId);
+                //rtpe("ONT", "context menu", pFolderName, folderId);
+                window.open("/album.html?folder=" + folderId, "_blank");  // open in new tab
                 break;
             }
             case "see more": {
-                rtpe("SEE", pFolderId, pFolderName, pModelFolderId);
+                window.open("/album.html?folder=" + folderId, "_blank");  // open in new tab
+                //rtpe("SEE", folderId, pFolderName, pModelFolderId);
                 break;
             }
             case "comment": {
-                showImageCommentDialog(pLinkId, pImgSrc, pFolderId, pMenuType);
+                showImageCommentDialog(linkId, imgSrc, folderId, menuType);
                 $("#contextMenuContainer").fadeOut();
                 break;
             }
@@ -694,10 +674,10 @@ function setFolderImage(filinkId, folderId, level) {
             }
             case "Image tags":
             case "folder tags":
-                openMetaTagDialog(pFolderId, pLinkId);
+                openMetaTagDialog(folderId, linkId);
                 break;
             case "info":
-                if (pMenuType === "Folder")
+                if (menuType === "Folder")
                     $('#folderInfoContainer').toggle();
                 else
                     $('#imageInfoContainer').toggle();
@@ -706,110 +686,137 @@ function setFolderImage(filinkId, folderId, level) {
                 $('#linkInfoContainer').toggle();
                 break;
             case "archive":
-                showArchiveLinkDialog(pLinkId, pFolderId, pImgSrc, pMenuType);
+                showArchiveLinkDialog(linkId, folderId, imgSrc, menuType);
                 break;
             case "copy":
-                showCopyLinkDialog(pLinkId, pMenuType, pImgSrc);
+                showCopyLinkDialog(linkId, menuType, imgSrc);
                 $("#imageContextMenu").fadeOut();
                 break;
             case "move":
-                showMoveLinkDialog(pLinkId, pFolderId, pMenuType, pImgSrc);
+                showMoveLinkDialog(linkId, folderId, menuType, imgSrc);
                 $("#imageContextMenu").fadeOut();
                 break;
             case "remove":
                 $("#imageContextMenu").fadeOut();
-                attemptRemoveLink(pLinkId, pFolderId, pImgSrc);
+                attemptRemoveLink(linkId, folderId, imgSrc);
                 break;
             case "delete":
                 $("#imageContextMenu").fadeOut();
-                deleteLink(pLinkId, pFolderId, pImgSrc);
+                deleteLink(linkId, folderId, imgSrc);
                 break;
             case "reject":
                 $("#imageContextMenu").fadeOut();
-                showMoveImageToRejectsDialog(pMenuType, pLinkId, pFolderId, pImgSrc, "single link");
+                showRejectsDialog(linkId, folderId, imgSrc);
                 break;
             case "setF":
-                setFolderImage(pLinkId, pFolderId, "folder");
+                setFolderImage(linkId, folderId, "folder");
                 break;
             case "setC":
-                setFolderImage(pLinkId, pFolderId, "parent");
+                setFolderImage(linkId, folderId, "parent");
                 break;
             default: {
-                logError("SWT", pFolderId, "action: " + action, "oggleCtxMenuAction");
+                logError("SWT", folderId, "action: " + action, "oggleCtxMenuAction");
             }
         }
     }
     /*--  context menu actions ---------------------------------*/
-    function showMoveImageToRejectsDialog(menuType, linkId, folderId, imgSrc, errMsg) {
-        if (errMsg === "single link") {
-            $('#centeredDialogTitle').html("move image to rejects");
-            $('#centeredDialogContents').html(
-                "<form id='frmReject>'\n" +
-                "    <div class='inline'><img id='linkManipulateImage' class='copyDialogImage' src='" + imgSrc + "'/></div>\n" +
-                "    <div><input type='radio' value='DUP' name='rdoRejectImageReasons' checked='checked'></input>  duplicate</div>\n" +
-                "    <div><input type='radio' value='BAD' name='rdoRejectImageReasons'></input>  bad link</div>\n" +
-                "    <div><input type='radio' value='LOW' name='rdoRejectImageReasons'></input>  low quality</div>\n" +
-                "    <div class='roundendButton' onclick='performMoveImageToRejects(\"" + menuType + "\",\"" + linkId + "\"," + folderId + ")'>ok</div>\n" +
-                "</form>");
-        }
-        if (errMsg === "home folder Link") {
-            $('#centeredDialogTitle').html("Remove Home Folder Link");
-            $('#centeredDialogContents').html("<div class='oggleDialogWindow'>\n" +
-                "    <div class='inline'><img id='linkManipulateImage' class='copyDialogImage' src='" + imgSrc + "'/></div>\n" +
-                "    <div>Are you sure you want to remove the home folder Link</div>\n" +
-                "    <div class='roundendButton' onclick='removeHomeFolderLink(\"" + linkId + "\)'>confirm</div>\n" +
-                "</div>\n");
-        }
-        $('#centeredDialogContainer').fadeIn();
-    }
-    function performMoveImageToRejects(menuType, linkId, folderId) {
-
-        let rejectReason = $('input[name="rdoRejectImageReasons"]:checked').val();
-        $('#albumPageLoadingGif').show();
-        $.ajax({
-            type: "PUT",
-            url: 'php/moveToRejects',
-            data: {
-                rejectReason: rejectReason,
-                linkId: linkId
-            },
-            success: function (success) {
-                $('#albumPageLoadingGif').hide();
-                if (success === "single link" || success === "home folder Link") {
-                    showConfirmDeteteImageDialog(menuType, linkId, folderId, imgSrc, success);
-                }
-                else {
-                    if (success === "ok") {
-                        if (viewerShowing) {
-                            // TODO: remove image from slideshow array
-                            slide("next");
-                        }
-                        // TODO: include reason radio button
-                        getAlbumImages(folderId);
-                        centeringDialogClose();
-                        slideShowDialogClose();
-                        displayStatusMessage("ok", "link moved to rejects" + linkId);
-                        logDataActivity({
-                            VisitorId: getCookieValue("VisitorId", "perform MoveImageToRejects"),
-                            ActivityCode: "REJ",
-                            FolderId: folderId,
-                            Details: "reason: " + $('input[name=rdoRejectImageReasons]:checked', '#frmReject').val() + "link moved to rejects" + linkId
-                        });
+    function setFolderImage(filinkId, folderId, level) {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "php/updateFolderImage.php?folderImage='" + filinkId + "'&folderId=" + folderId + "&level=" + level,
+                success: function (success) {
+                    if (success.trim().startsWith("ok")) {
+                        displayStatusMessage("ok", level + " image set for " + folderId);
+                        $("#imageContextMenu").fadeOut();
                     }
                     else {
-                        logError("AJX", 3908, success, "perform MoveImageToRejects");
+                        logError("AJX", folderId, success, "setFolderImage");
                     }
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    alert("setFolderImage: " + errMsg);
+                }
+            });
+        } catch (e) {
+            logCatch("set Folder Image", e);
+        }
+    }
+
+    function showRejectsDialog(linkId, folderId, imgSrc) {
+        $('#centeredDialogTitle').html("move image to rejects");
+        $('#centeredDialogContents').html(
+            "<form id='frmReject>'\n" +
+            "    <div class='inline'><img id='linkManipulateImage' class='ctxDialogImage' src='" + imgSrc + "'/></div>\n" +
+            "    <div><input type='radio' value='DUP' name='rdoRejectImageReasons' checked='checked'></input>  duplicate</div>\n" +
+            "    <div><input type='radio' value='BAD' name='rdoRejectImageReasons'></input>  bad link</div>\n" +
+            "    <div><input type='radio' value='LOW' name='rdoRejectImageReasons'></input>  low quality</div>\n" +
+            "    <div class='roundendButton' onclick='performMoveImageToRejects(\"" + linkId + "\"," + folderId + ")'>ok</div>\n" +
+            "</form>");
+        $('#centeredDialogContainer').draggable().fadeIn();
+    }
+    function performMoveImageToRejects(linkId, folderId) {
+
+        //let rejectReason = $('input[name="rdoRejectImageReasons"]:checked').val();
+        $('#albumPageLoadingGif').show();
+        $.ajax({
+            url: 'php/moveToRejects.php?imageFileId=' + linkId,
+            success: function (success) {
+                $('#albumPageLoadingGif').hide();
+                if (success.trim() == "ok") {
+                    //messageBoxSlideSpeed
+                }
+                else {
+                    alert("move to rejects: " + success);
+                    //logError("AJX", 3908, success, "perform MoveImageToRejects");
                 }
             },
             error: function (jqXHR) {
                 let errMsg = getXHRErrorDetails(jqXHR);
-                let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
-                if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", pSelectedTreeId, errMsg, functionName);
+                alert("move to rejects: " + errMsg);
             }
         });
     }
-    function showCopyLinkDialog(pLinkId, pMenuType, pImgSrc) {
+
+    function showCopyLinkDialog(linkId, menuType, imgSrc) {
+
+        slideShowButtonsActive = false;
+        //showDirTreeDialog(imgSrc, menuType, "Caterogize Link");
+        $('#linkManipulateClick').html("<div class='roundendButton' onclick='perfomCopyLink(\"" + linkId + "\")'>Caterogize</div>");
     }
+    function showDirTreeDialog(imgSrc, menuType, title) {
+        //alert("showDirTreeDialog.  menuType: " + menuType);
+        slideShowButtonsActive = false;
+        let dirTreeDialogHtml = `<div>
+                   <div class='inline'><img id='linkManipulateImage' class='copyDialogImage' src='" + imgSrc + "'/></div>
+                   <div id='dirTreeResults' class='pusedoTextBox'></div>
+                   <div class='inline'><img class='dialogDirTreeButton' src='/Images/caretDown.png' "
+                       onclick='$(\"#linkManipulateDirTree\").toggle()'/></div>
+                   <div id='linkManipulateClick'></div>
+                   <div id='linkManipulateDirTree' class='hideableDropDown'><img class='ctxloadingGif' title='loading gif' alt='' src='Images/loader.gif' /></div>
+               </div>`;
+
+        $('#centeredDialogContents').html(dirTreeDialogHtml);
+        $('#centeredDialogTitle').html(title);
+        $('#centeredDialogContainer').css("top", 33); 
+        $('#centeredDialogContainer').draggable().fadeIn();
+
+        if (isNullorUndefined(tempDirTree)) {
+            showHtmlDirTree("linkManipulateDirTree");
+            tempDirTree = $("linkManipulateDirTree").html();
+            //loadDirectoryTree(1, "linkManipulateDirTree", false);
+        }
+        else {
+            $('#dashBoardLoadingGif').show();
+            $("linkManipulateDirTree").html(tempDirTree);
+            $('#dashBoardLoadingGif').hide();
+            //console.log("loaded linkManipulateDirTree from temp");
+        }
+        //var winH = $(window).height();
+        //var dlgH = $('#centeredDialog').height();
+    }
+
     function showImageCommentDialog(linkId, imgSrc, folderId, calledFrom) {
         if (typeof pause === 'function') pause();
         //logEvent("SID", folderId, calledFrom, "LinkId: " + linkId);
@@ -819,7 +826,6 @@ function setFolderImage(filinkId, folderId, level) {
         $('#centeredDialogContainer').css("top", $('.oggleHeader').height() + 50);
         $('#centeredDialogTitle').html("Write a fantasy about this image");
         $('#commentDialogImage').attr("src", imgSrc);
-
         //$('#imageCommentEditor').summernote({
         //    height: 200,
         //    dialogsInBody: true,
@@ -846,7 +852,25 @@ function setFolderImage(filinkId, folderId, level) {
             FolderId: folderId
         };
     }
+
+    function writeAfantasy() {
+        $('#centeredDialogTitle').html("move image to rejects");
+        $('#centeredDialogContents').html(
+         `  <div class='center'><img id='commentDialogImage' class='commentDialogImage' /></div>
+            <div><input id='txtCommentTitle' class='roundedInput commentTitleText' tabindex='1' placeholder='Give your comment a title' /></div>
+            <div id='imageCommentEditor' tabindex='2'>
+
+            </div>
+            <div class='folderDialogFooter'>
+                <div id='divSaveFantasy' class='roundendButton clickable commentDialogButton inline' onclick='saveComment()'>save</div>
+                <div id='divCloseFantasy' class='roundendButton clickable commentDialogButton inline' onclick='closeImageCommentDialog()'>cancel</div>
+                <div id='commentInstructions' class='commentDialogInstructions inline'>log in to view comments</div>
+            </div>`);
+        $('#centeredDialogContainer').draggable().fadeIn();
+    }
 }
+
+
 
 // REPORT THEN PERFORM EVENT
 function XXperformEvent(eventCode, eventDetail, folderId) {

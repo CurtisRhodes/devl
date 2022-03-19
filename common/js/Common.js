@@ -1070,41 +1070,5 @@ function logPageHit(folderName, appName) {
 }
 }
 /* -------- Context Menu -----------*/{
-    let pMenuType, pLinkId, pImgSrc, pFolderId, pFolderName;
-    function showContextMenu(menuType, pos, imgSrc, linkId, folderId) {
-        try {
-            event.preventDefault();
-            window.event.returnValue = false;
-            if (typeof pause === 'function') pause();
-            //logEvent("CXM", folderId, menuType, "show-ContextMenu");
-            console.log("context menu opened: " + menuType);
-            pMenuType = menuType;
-            pLinkId = linkId;
-            pImgSrc = imgSrc;
-            pFolderId = folderId;
-
-            let y = pos.y - $(window).scrollTop();
-            $('#contextMenuContainer').css("top", y);
-            $('#contextMenuContainer').css("left", pos.x);
-            $('#contextMenuContainer').fadeIn();
-            $('#contextMenuContent').html(contextMenuHtml())
-
-
-        } catch (e) {
-            logCatch("show ContextMenu", e);
-        }
-    }
-
-    function contextMenuHtml() {
-        return content;
-    }
-
-    function contextMenuAction(action) {
-        switch (action) {
-            default: {
-                logError("SWT", pFolderId, "action: " + action, "context MenuAction");
-            }
-        }
-    }
 }
 

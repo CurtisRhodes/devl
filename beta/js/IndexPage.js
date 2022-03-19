@@ -1,20 +1,22 @@
+const updatedGalleriesSize = 12;
+let updatedGalleriesSkip = 0;
 
 /*-- php -------------------------------------------*/
 function getLatestUpdatedGalleries(spaType) {
     try {
         $.ajax({
             type: "GET",
-            url: "php/getLatestUpdated.php?spaType=" + spaType + "&limit=" + limit,
+            url: "php/getLatestUpdated.php?spaType=" + spaType + "&limit=" + updatedGalleriesSize,
             success: function (data) {
                 if (data.indexOf("error") > 0) {
                     alert("getLatestUpdatedGalleries: " + data);
                 }
                 else {
-                    if (skip == 0) {
+                    if (updatedGalleriesSkip == 0) {
                         $('#latestUpdatesContainer').html('');
                     }
                     let jdata = JSON.parse(data);
-                    for (i = skip; i < limit; i++) {
+                    for (i = updatedGalleriesSkip; i < updatedGalleriesSize; i++) {
                         let thisItemSrc = settingsImgRepo + jdata[i].ImageFile;
                         $('#latestUpdatesContainer').append("<div class='latestContentBox'>" +
                             "<div class='latestContentBoxLabel'>" + jdata[i].FolderName + "</div>" +
@@ -24,8 +26,6 @@ function getLatestUpdatedGalleries(spaType) {
                             "<div class='latestContentBoxDateLabel'>updated: " + dateString2(jdata[i].Acquired) + "</span></div>" +
                             "</div>");
                     }
-                    skip += limit;
-                    limit += skip;
                 }
             },
             error: function (jqXHR) {

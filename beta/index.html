@@ -83,7 +83,11 @@
 
             //promoMessagesContainer
 
-            $('#imgLatestUpdate').on("click", function () { getLatestUpdatedGalleries(pageContext) });
+            $('#imgLatestUpdate').on("click", function () {
+                updatedGalleriesSkip += updatedGalleriesSize;
+                getLatestUpdatedGalleries(pageContext)
+            });
+
             $('#imgRandomGalleries').on("click", function () { getRandomGalleries(pageContext) });
             resizePage();
             $(window).resize(function () {

@@ -5,18 +5,11 @@
         include('yagdrassel.php');
         $pdo = pdoConn();
 
-        $folderId = $_GET['folderId'];
-        $level = $_GET['level'];
+        $imageFileId = $_GET['imageFileId'];
+        $rejectFolderId = -6;
 
-        if($level == 'folder') {
-            $sql = "UPDATE CategoryFolder SET FolderImage=".$folderImage." WHERE Id=".$folderId;
+            $sql = "update ImageFile set FolderId=".$rejectFolderId.", RootFolder='reject' where Id=".$imageFileId;
         }
-        if($level == 'parent') {
-            $cmd = $pdo->query("select Parent from CategoryFolder where Id = ".$folderId);
-            $catRow = $cmd->fetch();
-            $sql = "UPDATE CategoryImageLink SET FolderImage=".$folderImage." WHERE  Id=".$catRow[Id];
-        }
-
         $stmt= $pdo->prepare($sql);
         $stmt->execute();
 
