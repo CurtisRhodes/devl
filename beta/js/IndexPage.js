@@ -88,6 +88,14 @@ function getRandomGalleries(pageContext) {
 
 /*-- message slide out -----------------------------*/{
     let currPos, destPos;
+
+    function showMessages() {
+
+        $('#messageSlideOut').css("top", 555);
+        $('#messageSlideOut').css("left", 55);
+        $('#messageSlideOut').show();
+
+    }
     function messageSideOut(messageId) {
         currPos = -500;
         $('#messageSlideOut').css("left", currPos);

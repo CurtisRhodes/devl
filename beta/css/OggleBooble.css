@@ -18,9 +18,16 @@ body {
 }
 
 .leftSideSlider {
+    display: none;
+    position: absolute;
+    min-height: 200px;
+    min-width: 300px;
+    border: solid 10px #f58080;
+    border-radius: 9px;
+    background-color: #ebcaca;
 }
 
-.redSlideOutContents {
+.leftSSlideOutContents {
 }
 
 .latestContentBox {
