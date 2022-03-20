@@ -1,6 +1,6 @@
 ﻿
-const rotationSpeed = 7000, carouselDebugMode = false;
-let carouselFooterHeight = 40, intervalReady = true, initialImageLoad = false, isPaused = false,
+let rotationSpeed = 7000, carouselDebugMode = false,
+    carouselFooterHeight = 40, intervalReady = true, initialImageLoad = false, isPaused = false,
     imageIndex = 0, carouselRows = [], imageHistory = [], absolueStartTime,
     vCarouselInterval = null, lastImageIndex = 0, lastErrorThrown = 0,
     mainImageClickId, knownModelLabelClickId, imageTopLabelClickId, footerLabelClickId,

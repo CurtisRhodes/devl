@@ -1,7 +1,7 @@
 ﻿// let settingsImgRepo = 'https ://img.brucheum.com/';
 // let settingsImgRepo = 'st21569.ispot.cc/danni/';
 let settingsImgRepo = 'https://ogglefiles.com/danni/';
-
+let startRoot;
 
 // LOAD DIR TREE
 function showBuildDirTreeDialog() {
@@ -30,14 +30,16 @@ function showBuildDirTreeDialog() {
         }
     });
     $('#dashboardDialogBox').css("top", "150px");
-    $('#dashboardDialogBox').css("left", "250px");
-    $('#txtRoot').focus();
+    $('#dashboardDialogBox').css("left", "250px");    
+    $('#txtRoot').val(startRoot).focus();
 }
 
 function performBuildDirTree() {
-    let startRoot = $('#txtRoot').val();
-    if ((startRoot === "0") || (isNullorUndefined(startRoot)))
+    startRoot = $('#txtRoot').val();
+    if ((startRoot === "0") || (isNullorUndefined(startRoot))) {
         startRoot = $('#selDirTreeRoot').val();
+
+    }
     if ((startRoot === "0") || (isNullorUndefined(startRoot)))
         startRoot = 10326
     buildDirTree(startRoot);
