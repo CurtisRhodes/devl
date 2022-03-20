@@ -1,4 +1,6 @@
+const settingsImgRepo = 'https://ogglefiles.com/danni/';
 let blogObject = {};
+
 function displayBlogList(commentType) {
     try {
         $.ajax({
@@ -114,8 +116,7 @@ function editBlogEntry(blogId) {
                     $('#txtPosted').val(blogComment.Created);
                     $('#summernoteContainer').val(blogComment.CommentText);
                     $('#txtLink').val(blogComment.JogImage);
-                    $('#imgBlogLink').css("src", blogComment.JogImage);
-                    
+                    $('#imgBlogLink').css("src", settingsImgRepo + blogComment.JogImage);
                 }
             },
             error: function (jqXHR) {
@@ -169,7 +170,10 @@ function loadSingleBlogEntry(blogItemId, editMode) {
                         $('#summernoteContainer').summernote('code', model.CommentText);
                         $('#txtPosted').val(model.Pdate); //.datepicker();
                         $('#txtLink').val(model.ImageLink);
+
                         $('#summernoteContainer').summernote('code', model.CommentText);
+                        
+                        $('#imgBlogLink').attr("src", settingsImgRepo + model.ImgSrc);
 
                         $('#txtBlogId').val(blogObject.Id);
 
@@ -179,6 +183,7 @@ function loadSingleBlogEntry(blogItemId, editMode) {
                     else {
                         $('#blogPageTitle').html(model.CommentTitle);
                         $('#blogPageBody').html(model.CommentText);
+                        
                         $('#blogPageImage').attr("src", settingsImgRepo + model.ImgSrc);
                     }
                 }

@@ -41,6 +41,9 @@
     width: 200px;
 }
 
+.blogEditImage {
+    height: 200px;
+}
 
 .blogEditButton {
     margin-left: 44px;
@@ -55,11 +58,13 @@
 }
 
 .blogEditSection {
-    margin-top: 80px;
-    margin-left: 44px;
+    border: solid thin black;
+    border-radius: 5px;
+    display: flex;
+    background-color: #c9d76e;
 }
 
-.crudRow {
+.xxcrudRow {
     border: solid thin #808080;
     padding: 7px;
     border-radius: 6px;

@@ -5,15 +5,19 @@ let carouselFooterHeight = 40, intervalReady = true, initialImageLoad = false, i
     vCarouselInterval = null, lastImageIndex = 0, lastErrorThrown = 0,
     mainImageClickId, knownModelLabelClickId, imageTopLabelClickId, footerLabelClickId,
     jsCarouselSettings, arryItemsShownCount = 0, totalArryItemsShownCount = 0,
-    cacheSize = 45;
+    cacheSize = 45, carouselRoot;
 
 function launchCarousel(pageContext) {
     try {
+        carouselRoot = pageContext;
+        if (pageContext == "oggleIndex")
+            carouselRoot = "boobs";
+
         absolueStartTime = Date.now();
         window.addEventListener("resize", resizeCarousel);
 
         $('#carouselContainer').html(carouselHtml());
-        loadFromCache(pageContext);
+        loadFromCache();
         resizeCarousel();
         $(window).resize(function () {
             resizeCarousel();
@@ -23,42 +27,42 @@ function launchCarousel(pageContext) {
     }    //settingsImgRepo = settingsArray.ImageRepo;
 }
 
-function loadFromCache(pageContext) {
+function loadFromCache() {
     try {
         let cacheArray = [];
         if (isNullorUndefined(window.localStorage)) {
-            loadImages(pageContext, false);
+            loadImages(false);
             console.warn("window.localStorage undefined");
             return;
         }
-        if (isNullorUndefined(window.localStorage[pageContext])) {
-            loadImages(pageContext, true);
-            displayStatusMessage("error", "no " + pageContext + " cache found. Please wait...");
-            console.log("no " + pageContext + " cache found");
+        if (isNullorUndefined(window.localStorage[carouselRoot])) {
+            loadImages(true);
+            displayStatusMessage("error", "no " + carouselRoot + " cache found. Please wait...");
+            console.log("no " + carouselRoot + " cache found");
             return;
         }
-        cacheArray = JSON.parse(window.localStorage[pageContext]);
+        cacheArray = JSON.parse(window.localStorage[carouselRoot]);
         if (isNullorUndefined(cacheArray)) {
-            loadImages(pageContext, true);
+            loadImages(true);
             console.log("cache may be corrupt");
             alert("cache may be corrupt");
             return;
         }
 
         carouselRows = cacheArray;
-        startCarousel(pageContext, " cache");
-        //alert("loaded " + carouselRows.length + " from " + pageContext + " cache");
-        console.log("loaded " + carouselRows.length + " from " + pageContext + " cache");
+        startCarousel("cache");
+        //alert("loaded " + carouselRows.length + " from " + carouselRoot + " cache");
+        console.log("loaded " + carouselRows.length + " from " + carouselRoot + " cache");
     }
     catch (e) {
         logCatch("loadFromCache", e);
     }
 }
 
-function startCarousel(pageContext, calledFrom) {
+function startCarousel(calledFrom) {
     try {
         if (!initialImageLoad) {
-            loadImages(pageContext, false);
+            loadImages(false);
         }
         if (vCarouselInterval) {
             alert("carousel interval already started. Called from: " + calledFrom);
@@ -72,9 +76,9 @@ function startCarousel(pageContext, calledFrom) {
                 intervalReady = true;
 
                 setLabelLinks(imageIndex);
-                intervalBody(pageContext);
+                intervalBody();
                 vCarouselInterval = setInterval(function () {
-                    intervalBody(pageContext);
+                    intervalBody();
                 }, rotationSpeed);
             }
             else {
@@ -87,7 +91,7 @@ function startCarousel(pageContext, calledFrom) {
     }
 }
 
-function intervalBody(pageContext) {
+function intervalBody() {
     try {
         if (!isPaused) {
             if (intervalReady) {
@@ -96,7 +100,7 @@ function intervalBody(pageContext) {
 
                 if (arryItemsShownCount > carouselRows.length) {
                     if (confirm("items shown: " + arryItemsShownCount + "  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
-                        loadImages(pageContext, true);
+                        loadImages(true);
                         imageIndex = Math.floor(Math.random() * carouselRows.length);
                     }
                     totalArryItemsShownCount += arryItemsShownCount;
@@ -126,16 +130,6 @@ function intervalBody(pageContext) {
     }
 }
 
-function resizeCarousel() {
-    try {
-        $('#thisCarouselImage').css('height', window.innerHeight * .62);
-        let marginOffsetWidth = ($('#carouselImageOutterContainer').width() / 2) - ($('#carouselImageInnerContainer').width() / 2);
-        $('#carouselImageInnerContainer').css('margin-left', marginOffsetWidth);
-    } catch (e) {
-        logCatch("resizeCarousel", e);
-    }
-}
-
 function setLabelLinks(llIdx) {
     try {
         //$("#imageTopLabel").fadeOut();
@@ -144,7 +138,7 @@ function setLabelLinks(llIdx) {
 
 
         let carouselItem = carouselRows[llIdx];
-        if (carouselItem.pageContext == "centerfold") {
+        if (carouselItem.carouselRoot == "centerfold") {
             if (carouselItem.RealRoot == "centerfold")
                 $('#imageTopLabel').html("Playboy Playmate: " + carouselItem.PlayboyYear);
             else {
@@ -220,24 +214,7 @@ function setLabelLinks(llIdx) {
                 }
             }
         }
-
-        let containerTop = $('#carouselImageInnerContainer').offset().top;
-        let containerBottom = $('#thisCarouselImage').height() + $('#carouselImageInnerContainer').offset().top - $('#carouselFooterLabel').height() - 10;
-
-        $("#imageTopLabel").offset({
-            top: containerTop,
-            left: $('#carouselImageInnerContainer').offset().left
-        }).fadeIn("slow");
-
-        $('#carouselFooterLabel').offset({
-            top: containerBottom,
-            left: $('#carouselImageInnerContainer').offset().left
-        }).fadeIn("slow");
-
-        $('#knownModelLabel').offset({
-            top: containerBottom,
-            left: $('#carouselImageInnerContainer').offset().left + $('#carouselImageInnerContainer').width() - 100
-        }).fadeIn("slow");
+        setLabelLinksPositions()
 
 
         //$('#headerMessage').html("carouselImageInnerContainer.top: " + $('#carouselImageInnerContainer').offset().top + "  left: " + $('#carouselFooterLabel').offset().left);
@@ -246,13 +223,33 @@ function setLabelLinks(llIdx) {
     }
 }
 
-function loadImages(pageContext, forceCacheRefresh) {
+function setLabelLinksPositions() {
+    let containerTop = $('#carouselImageInnerContainer').offset().top;
+    let containerBottom = $('#thisCarouselImage').height() + $('#carouselImageInnerContainer').offset().top - $('#carouselFooterLabel').height() - 10;
+
+    $("#imageTopLabel").offset({
+        top: containerTop,
+        left: $('#carouselImageInnerContainer').offset().left
+    }).fadeIn("slow");
+
+    $('#carouselFooterLabel').offset({
+        top: containerBottom,
+        left: $('#carouselImageInnerContainer').offset().left
+    }).fadeIn("slow");
+
+    $('#knownModelLabel').offset({
+        top: containerBottom,
+        left: $('#carouselImageInnerContainer').offset().left + $('#carouselImageInnerContainer').width() - 100
+    }).fadeIn("slow");
+}
+
+function loadImages(forceCacheRefresh) {
     try {
         let startTime = Date.now();
         initialImageLoad = true;
         let limit = 600;
         let sql = "select * from VwCarouselImages where Width > Height and RootFolder='" +
-            pageContext + "' order by rand() limit " + limit;
+            carouselRoot + "' order by rand() limit " + limit;
         $.ajax({
             type: "GET",
             url: "php/customFetchAll.php?query=" + sql,
@@ -271,11 +268,11 @@ function loadImages(pageContext, forceCacheRefresh) {
                     }
                     console.log("added " + newRows.length + " images");
                     if (!vCarouselInterval) {
-                        startCarousel(pageContext, "load Images");
+                        startCarousel("load Images");
                     }
                     let delta = (Date.now() - startTime) / 1000;
                     console.log("loading images took: " + delta.toFixed(3));
-                    refreshCache(pageContext, forceCacheRefresh);
+                    refreshCache(forceCacheRefresh);
                 }
             },
             error: function (jqXHR) {
@@ -290,7 +287,7 @@ function loadImages(pageContext, forceCacheRefresh) {
     }
 }
 
-function refreshCache(pageContext, forceRefresh) {
+function refreshCache(forceRefresh) {
     try {
         if ((isNullorUndefined(window.localStorage)) && (isNullorUndefined(window.localStorage))) {
             logError("SST", 1222, "this user should be flaged", "refresh carousle cache"); // NO SESSION STATE AVAILABLE
@@ -298,12 +295,12 @@ function refreshCache(pageContext, forceRefresh) {
             return;
         }
         let doit = forceRefresh;
-        if (isNullorUndefined(window.localStorage[pageContext + "lastCacheRefreshDate"])) {
-            window.localStorage[pageContext + "lastCacheRefreshDate"] = todayString();
+        if (isNullorUndefined(window.localStorage[carouselRoot + "lastCacheRefreshDate"])) {
+            window.localStorage[carouselRoot + "lastCacheRefreshDate"] = todayString();
             doit = true;
         }
         else {
-            let lastCacheRefreshDate = window.localStorage[pageContext + "lastCacheRefreshDate"];
+            let lastCacheRefreshDate = window.localStorage[carouselRoot + "lastCacheRefreshDate"];
             const d2 = new Date(lastCacheRefreshDate);
             //$('#headerMessage').html("is valid date: " + (d2 instanceof Date && !isNaN(d2.valueOf())));
 
@@ -312,11 +309,11 @@ function refreshCache(pageContext, forceRefresh) {
             let d1T = d1.getTime();
             let difference_In_Time = (d1T - d2T) / (1000 * 3600 * 24);
             if (difference_In_Time > 1.1) {
-                window.localStorage[pageContext + "lastCacheRefreshDate"] = todayString();
+                window.localStorage[carouselRoot + "lastCacheRefreshDate"] = todayString();
                 doit = true;
             }
         }
-        if (isNullorUndefined(window.localStorage[pageContext]))
+        if (isNullorUndefined(window.localStorage[carouselRoot]))
             doit = true;
 
         if (doit) {
@@ -326,9 +323,9 @@ function refreshCache(pageContext, forceRefresh) {
                 let r = Math.floor(Math.random() * carouselRows.length);
                 cacheArray.push(carouselRows[r]);
             };
-            window.localStorage[pageContext] = JSON.stringify(cacheArray);
-            console.log("refreshed " + pageContext + " cache");
-            $('#footerMessage2').html("refreshed " + pageContext + " cache");
+            window.localStorage[carouselRoot] = JSON.stringify(cacheArray);
+            console.log("refreshed " + carouselRoot + " cache");
+            $('#footerMessage2').html("refreshed " + carouselRoot + " cache");
         }
     } catch (e) {
         logCatch("loadFromCache", e);
@@ -473,7 +470,15 @@ function imgErrorThrown() {
     }
 }
 
-function showCarouselButtonBar() {
+function resizeCarousel() {
+    try {
+        $('#thisCarouselImage').css('height', window.innerHeight * .62);
+        let marginOffsetWidth = ($('#carouselImageOutterContainer').width() / 2) - ($('#carouselImageInnerContainer').width() / 2);
+        $('#carouselImageInnerContainer').css('margin-left', marginOffsetWidth);
+        setLabelLinksPositions();
+    } catch (e) {
+        logCatch("resizeCarousel", e);
+    }
 }
 
 function carouselHtml() {

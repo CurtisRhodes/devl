@@ -1,5 +1,4 @@
 ﻿const settingsImgRepo = 'https://ogglefiles.com/danni/';
-const messageBoxSlideSpeed = 66;
 
 /*-- click events -----------------------------------*/
 function resetOggleHeader(folderId, rootFolder) {
@@ -765,8 +764,7 @@ function addPgLinkButton(folderId, labelText) {
             success: function (success) {
                 $('#albumPageLoadingGif').hide();
                 if (success.trim() == "ok") {
-                    //messageBoxSlideSpeed
-                }
+                    displayStatusMessage("ok", "image moved to rejects");                }
                 else {
                     alert("move to rejects: " + success);
                     //logError("AJX", 3908, success, "perform MoveImageToRejects");

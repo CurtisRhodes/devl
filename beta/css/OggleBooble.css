@@ -22,6 +22,7 @@ body {
     position: absolute;
     min-height: 200px;
     min-width: 300px;
+    padding: 15px;
     border: solid 10px #f58080;
     border-radius: 9px;
     background-color: #ebcaca;
@@ -60,6 +61,7 @@ body {
 }
 
 .refrehIcon {
+    display: none;
     height: 20px;
     cursor: pointer;
 }

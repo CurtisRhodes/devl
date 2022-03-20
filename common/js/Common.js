@@ -442,19 +442,25 @@ function displayHeader(headerContext) {
     $('#badgesContainer').html("");
     $('#hdrBtmRowSec3').html("");
     switch (headerContext) {
+        case "oggleIndex":
+            document.title = "OggleBooble : Home of the Big Naturals";
+            $('#fancyHeaderTitle').html("OggleBooble");
+            $('#topHeaderRow').html("Home of the Big Naturals");
+            $('#hdrBtmRowSec3').append(bannerLink('every playboy centerfold', 'index.html?spa=playboy'));
+            $('#hdrBtmRowSec3').append(bannerLink('Bond Girls', 'album.html?folderId=3908'));
+            break;
+        case "playboy":
+            $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
+            $('#fancyHeaderTitle').html("every playboy centerfold");
+            document.title = "Every Playboy Centerfold : OggleBooble";
+            changeFavoriteIcon("playboy");
+            break;
         case "brucheum":
             $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/house.gif");
             $('#fancyHeaderTitle').html("The Brucheum");
             $('#topHeaderRow').html("");
             $('#searchBox').hide();
             showLogin(false);
-            break;
-        case "oggleIndex":
-            document.title = "OggleBooble : Home of the Big Naturals";
-            $('#fancyHeaderTitle').html("OggleBooble");
-            $('#topHeaderRow').html("Home of the Big Naturals");
-            $('#hdrBtmRowSec3').append(bannerLink('every playboy centerfold','index.html?spa=playboy'));
-            $('#hdrBtmRowSec3').append(bannerLink('Bond Girls','album.html?folderId=3908'));
             break;
         case "slideshow":
             $('#fancyHeaderTitle').html("OggleBooble");
@@ -468,12 +474,6 @@ function displayHeader(headerContext) {
             //$('#hdrBtmRowSec3').append(bannerLink("Gent Archive", 846));
             //$('#hdrBtmRowSec3').append(bannerLink("Bond Girls", 10326));
             //$('#topHeaderRow').html("Home of the Big Naturals");
-            break;
-        case "Playboy": 
-            $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
-            $('#fancyHeaderTitle').html("every playboy centerfold");
-            document.title = "Every Playboy Centerfold : OggleBooble";
-            changeFavoriteIcon("playboy");
             break;
         case "OggleDashboard":
             $('#fancyHeaderTitle').html("OggleBooble.com");
@@ -835,7 +835,7 @@ function headerHtml() {
             "       <div class='clickable' onclick='showFeedbackDialog()'>Feedback</div>\n" +
             "    </div>\n" +
             "    <div id='footerCol2' class='footerCol'>\n" + // column 2
-            "       <div class='clickable' onclick='window.location.href=\"index.html?spa=blog\", \"_blank\"'>Blog</div>\n" +
+            "       <div class='clickable' onclick='window.location.href=\"https://ogglefiles.com/blog\", \"_blank\"'>Blog</div>\n" +
             "    </div>\n" +
             "    <div id='footerCol3' class='footerCol'>\n" + // column 3
             "       <div class='clickable' onclick='mailMe()'>email site developer</div>\n" +
@@ -869,7 +869,7 @@ function headerHtml() {
             switch (footerContext) {
                 case "oggleAlbum":
                 case "gallery":
-                case "boobs":
+                case "oggleIndex":
                 case "slideshow":
                     $('#footerCol2').append(`
                     <div class='clickable' onclick='footerItemClick(1)'>Sitemap</div>\n

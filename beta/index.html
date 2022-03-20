@@ -19,10 +19,7 @@
 <body>
     <header id="oggleHeader" class="stickyHeader"></header>
     <div id="visableArea" class="threeColumnLayout">
-        <div id="leftColumnArea" class="leftColumn">
-            <div id="promoMessagesContainer" class="promoBox"></div>
-            <div class="clickable" onclick="showMessages()" >reformt hard drive</div>
-        </div>
+        <div id="leftColumnArea" class="leftColumn"></div>
         <div class="middleColumn">
             <div id="divStatusMessage"></div>
             <div id="dots"></div>
@@ -40,56 +37,38 @@
                 </div>
             </div>
             <div id="randomGalleriesContainer" class="indexPageContainer"></div>
-            <div class="sectionLabel">latest updates<img id="imgLatestUpdate" 
-                class="refrehIcon" src="img/refresh02.png" title="add more recently updated galleries" />
+            <div class="sectionLabel">
+                latest updates
+                <img id="imgLatestUpdate" class="refrehIcon" src="img/refresh02.png" title="add more recently updated galleries" />
             </div>
             <div id="latestUpdatesContainer" class="indexPageContainer"></div>
         </div>
         <div id="rightColumnArea" class="rightColumn"></div>
     </div>
     <footer></footer>
-    <div id="messageSlideOut" class="leftSideSlider">
-        <div id="messageSlideOutContents" class="redSlideOutContents"></div>
+
+    <div id="promoMessagesContainer" class="leftSideSlider">
+        <div id="promoMessageHeader" class="floatingDialogHeader">
+            <div id="promoMessageTitle" class="floatingDialogTitle"></div>
+            <div id='centeredDialogCloseButton' class='dialogCloseButton'>
+                <img src='https://common.ogglefiles.com/img/close.png' onclick='promoMessageClose()' />
+            </div>
+        </div>
+        <div id="promoMessagesContents" class="redSlideOutContents"></div>
     </div>
+    <div id="betaMessage" class="floatingButton"></div>
+
     <script>
         $(document).ready(function () {
-            let pageContext = "boobs";
-            let pageName = "oggleIndex";
+            let pageContext = "oggleIndex";
             let params = getParams();
             if (!isNullorUndefined(params.spa)) {
-
                 console.log("params.spa: " + params.spa);
                 pageContext = params.spa;
-                pageName = params.spa
             }
 
-            if (pageContext == "playboy") {
-                $('body').addClass("oggleBody");
+            launchIndexPage(pageContext);
 
-                $('#carouselContainer').css("color", "#000");
-            }
-
-            /*-- login -----------------------------------*/
-            //if (localStorage["IsLoggedIn"] == "true") {
-            //    getCookieValue("IsLoggedIn", "reset OggleHeader") == "true") {
-            //    $('#spnUserName').html(getCookieValue("UserName", "reset OggleHeader"));
-
-            displayHeader(pageName);
-            showLogin(false);
-            getRandomGalleries(pageContext);
-            $('#latestUpdatesContainer').html('<img class="tinyloadingGif" src="img/loader.gif"/>');
-            getLatestUpdatedGalleries(pageContext);
-            launchCarousel(pageContext)
-            displayFooter(pageContext);
-
-            //promoMessagesContainer
-
-            $('#imgLatestUpdate').on("click", function () {
-                updatedGalleriesSkip += updatedGalleriesSize;
-                getLatestUpdatedGalleries(pageContext)
-            });
-
-            $('#imgRandomGalleries').on("click", function () { getRandomGalleries(pageContext) });
             resizePage();
             $(window).resize(function () {
                 resizePage();

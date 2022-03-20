@@ -48,6 +48,7 @@ body {
 
     .threeColumnLayout .rightColumn {
         float: left;
+        min-width: 9%;
     }
 
 .dataArea {
@@ -157,12 +158,27 @@ body {
     display: none;
 }
 
+.inlineFlex {
+    display: inline-flex;
+}
 .flexContainer {
     display: flex;
 }
 
 .explodeCusor {
     cursor: zoom-out;
+}
+
+.severityOk {
+    background-color: rgba(80, 206, 83, 0.71);
+}
+
+.severityWarning {
+    background-color: #e6de3b;
+}
+
+.severityError {
+    background-color: #c64e4e;
 }
 
 /*-- Header -----------------------------------*/
@@ -392,6 +408,13 @@ body {
     border: solid 2px var(--oggleBorderColor);
     background-color: var(--oggleBackgroundColor);
     display: none;
+}
+
+.floatingButton {
+    display: none;
+    position: absolute;
+    cursor: pointer;
+    text-decoration: underline;
 }
 
 .floatingDialogContents {
