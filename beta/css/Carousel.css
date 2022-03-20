@@ -27,9 +27,11 @@
 }
 .carouselControlsContainer {
     display: flex;
-    position: relative;
-    left: 33%;
+    position: absolute;    
 }
+    .carouselControlsContainer img {
+        height: 24px;
+    }
 
 .speedButton {
     z-index: 1;
@@ -42,7 +44,7 @@
     display: inline-block;
     width: 100%;
     text-align: center;
-    font-size: 23px;
+    font-size: 20px;
     color: #000;
     font-weight: bold;
     cursor: pointer;

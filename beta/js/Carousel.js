@@ -475,6 +475,13 @@ function resizeCarousel() {
         $('#thisCarouselImage').css('height', window.innerHeight * .62);
         let marginOffsetWidth = ($('#carouselImageOutterContainer').width() / 2) - ($('#carouselImageInnerContainer').width() / 2);
         $('#carouselImageInnerContainer').css('margin-left', marginOffsetWidth);
+
+        if (typeof carouselImageInnerContainer === 'object') {
+            $('#carouselControls').css({ "width": $('#carouselImageInnerContainer').width() - 100, "left": marginOffsetWidth + 50 }).show();
+        }
+        else
+            $('#carouselControls').hide();
+
         setLabelLinksPositions();
     } catch (e) {
         logCatch("resizeCarousel", e);
