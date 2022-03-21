@@ -12,6 +12,8 @@ function launchCarousel(pageContext) {
         carouselRoot = pageContext;
         if (pageContext == "oggleIndex")
             carouselRoot = "boobs";
+        if (pageContext == "playboy")
+            carouselRoot = "centerfold";
 
         absolueStartTime = Date.now();
         window.addEventListener("resize", resizeCarousel);
@@ -24,7 +26,7 @@ function launchCarousel(pageContext) {
         });
     } catch (e) {
         logCatch("launchCarousel", e);
-    }    //settingsImgRepo = settingsArray.ImageRepo;
+    }
 }
 
 function loadFromCache() {
@@ -459,8 +461,6 @@ function imgErrorThrown() {
             $('#thisCarouselImage').attr('src', "https://common.ogglefiles.com/img/redballon.png");
             $('#thisCarouselImage').css('height', window.innerHeight * .5);
 
-            //alert($('#thisCarouselImage').attr('src') + " not found");
-            //console.log(carouselRows[imageIndex].ImageFileName + " not found");
             //logOggleError("ILF", 11, carouselRows[imageIndex].ImageFileName + " not found", "carousel");
             //logError("ILF", 11, carouselRows[imageIndex].ImageFileName+ " not found", "carousel");
 
@@ -472,10 +472,15 @@ function imgErrorThrown() {
 
 function resizeCarousel() {
     try {
-        $('#thisCarouselImage').css('height', window.innerHeight * .62);
-        let marginOffsetWidth = ($('#carouselImageOutterContainer').width() / 2) - ($('#carouselImageInnerContainer').width() / 2);
-        $('#carouselImageInnerContainer').css('margin-left', marginOffsetWidth);
-        setLabelLinksPositions();
+        if (typeof carouselImageInnerContainer == "object") {
+            $('#thisCarouselImage').css('height', window.innerHeight * .62);
+            let marginOffsetWidth = ($('#carouselImageOutterContainer').width() / 2) - ($('#carouselImageInnerContainer').width() / 2);
+            $('#carouselImageInnerContainer').css('margin-left', marginOffsetWidth);
+
+            $('#carouselControls').css('width', $('#carouselImageInnerContainer').width() - 100);
+            $('#carouselControls').css('margin-left', marginOffsetWidth + 50);
+            setLabelLinksPositions();
+        }
     } catch (e) {
         logCatch("resizeCarousel", e);
     }

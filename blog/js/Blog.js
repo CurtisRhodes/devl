@@ -1,8 +1,14 @@
-const settingsImgRepo = 'https://ogglefiles.com/danni/';
+// const settingsImgRepo = 'https: //ogglefiles.com/danni/';
 let blogObject = {};
 
-function displayBlogList(commentType) {
+function displayBlogList() {
     try {
+
+        let commentType = $('#ddCommentType').val();
+        if (isNullorUndefined(commentType)) {
+            commentType = 'PBE';
+        }
+
         $.ajax({
             type: "GET",
             url: "php/getBlogItems.php?commentType=" + commentType,
@@ -37,7 +43,7 @@ function displayBlogList(commentType) {
             error: function (jqXHR) {
                 $('#albumPageLoadingGif').hide();
                 let errMsg = getXHRErrorDetails(jqXHR);
-                alert("displayBlogList: " + errMsg);
+                alert("display blogList: " + errMsg);
                 // logError("XHR", folderId, errMsg, "get albumImages");
             }
         });
@@ -70,7 +76,7 @@ function loadCommentTypesDD(ddObject) {
 
                 ddObject.change(function () {
                     blogObject.CommentType = $('#ddCommentType').val()
-                    displayBlogList($('#ddCommentType').val());
+                    displayBlogList();
                 });
             }
         },
@@ -114,15 +120,17 @@ function editBlogEntry(blogId) {
                     $('#txtCommentTitle').val(blogComment.CommentTitle);
                     loadCommentTypesDD($('#selBlogEditCommentType'));
                     $('#txtPosted').val(blogComment.Created);
-                    $('#summernoteContainer').val(blogComment.CommentText);
-                    $('#txtLink').val(blogComment.JogImage);
-                    $('#imgBlogLink').css("src", settingsImgRepo + blogComment.JogImage);
+                    $('#summernoteContainer').summernote('code', blogComment.CommentText);
+                   // $('#txtLink').val(blogComment.JogImage);
+
+
+                    $('#imgBlogLink').attr("src", blogComment.JogImage);
                 }
             },
             error: function (jqXHR) {
                 $('#albumPageLoadingGif').hide();
                 let errMsg = getXHRErrorDetails(jqXHR);
-                alert("displayBlogList: " + errMsg);
+                alert("display blogList: " + errMsg);
                 // logError("XHR", folderId, errMsg, "get albumImages");
             }
         });
@@ -166,15 +174,11 @@ function loadSingleBlogEntry(blogItemId, editMode) {
                     if (editMode == "edit") {
                         $('#txtCommentTitle').val(model.CommentTitle);
                         $('#txtLink').val(model.Link);
-                        $('#imgBlogLink').attr("src", settingsImgRepo + model.ImgSrc);
+                        $('#imgBlogLink').attr("src", model.ImgSrc);
                         $('#summernoteContainer').summernote('code', model.CommentText);
                         $('#txtPosted').val(model.Pdate); //.datepicker();
                         $('#txtLink').val(model.ImageLink);
-
-                        $('#summernoteContainer').summernote('code', model.CommentText);
-                        
-                        $('#imgBlogLink').attr("src", settingsImgRepo + model.ImgSrc);
-
+                        $('#imgBlogLink').attr("src", model.ImgSrc);
                         $('#txtBlogId').val(blogObject.Id);
 
                         $('#btnAddEdit').html("Update");
@@ -184,7 +188,7 @@ function loadSingleBlogEntry(blogItemId, editMode) {
                         $('#blogPageTitle').html(model.CommentTitle);
                         $('#blogPageBody').html(model.CommentText);
                         
-                        $('#blogPageImage').attr("src", settingsImgRepo + model.ImgSrc);
+                        $('#blogPageImage').attr("src", model.ImgSrc);
                     }
                 }
                 else {
@@ -303,7 +307,7 @@ function loadImage() {
         type: "GET",
         url: settingsArray.ApiServer + "api/OggleBlog/GetImageLink?linkId=" + $('#txtLink').val(),
         success: function (imageAddress) {
-            $('#imgBlogLink').attr("src", settingsImgRepo + imageAddress);
+            $('#imgBlogLink').attr("src", imageAddress);
             blogObject.ImageLink = $('#txtLink').val();
         },
         error: function (jqXHR) {

@@ -146,6 +146,11 @@ body {
     float: left;
 }
 
+.forceRight {
+    position: absolute;
+    right: 0;
+}
+
 .floatRight {
     float: right;
 }
@@ -158,9 +163,11 @@ body {
     display: none;
 }
 
-.inlineFlex {
-    display: inline-flex;
+.inlineFull {
+    display: inline-block;
+    width: 100%;
 }
+
 .flexContainer {
     display: flex;
 }
@@ -519,13 +526,6 @@ footer {
     footer .footerFooterMessage {
         padding-left: 12px;
     }
-
-    footer .copyrightPush {
-        margin-left: 65%;
-    }
-        footer .copyrightPush a:visited {
-            color: #eee;
-        }
 
 /*-- context menu -----------------------------------*/
 
