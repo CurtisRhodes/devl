@@ -48,7 +48,6 @@ body {
 
     .threeColumnLayout .rightColumn {
         float: left;
-        min-width: 9%;
     }
 
 .dataArea {

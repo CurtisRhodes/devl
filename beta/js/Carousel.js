@@ -320,7 +320,7 @@ function refreshCache(forceRefresh) {
 
         if (doit) {
             let cacheArray = [];
-            window.localStorage.clear();
+            //window.localStorage.clear();
             for (i = 0; i < cacheSize; i++) {
                 let r = Math.floor(Math.random() * carouselRows.length);
                 cacheArray.push(carouselRows[r]);
@@ -472,15 +472,21 @@ function imgErrorThrown() {
 
 function resizeCarousel() {
     try {
-        if (typeof carouselImageInnerContainer == "object") {
-            $('#thisCarouselImage').css('height', window.innerHeight * .62);
-            let marginOffsetWidth = ($('#carouselImageOutterContainer').width() / 2) - ($('#carouselImageInnerContainer').width() / 2);
-            $('#carouselImageInnerContainer').css('margin-left', marginOffsetWidth);
+        $('#thisCarouselImage').css('height', window.innerHeight * .62);
+        let marginOffsetWidth = ($('#carouselImageOutterContainer').width() / 2) - ($('#carouselImageInnerContainer').width() / 2);
+        $('#carouselImageInnerContainer').css('margin-left', marginOffsetWidth);
 
-            $('#carouselControls').css('width', $('#carouselImageInnerContainer').width() - 100);
-            $('#carouselControls').css('margin-left', marginOffsetWidth + 50);
-            setLabelLinksPositions();
+        if (typeof carouselImageInnerContainer === 'object') {
+            $('#carouselControls').css({
+                "width": $('#carouselImageInnerContainer').width() - 100,
+                "left": marginOffsetWidth + 50
+            }).show();
         }
+        else
+            $('#carouselControls').hide();
+
+        setLabelLinksPositions();
+
     } catch (e) {
         logCatch("resizeCarousel", e);
     }

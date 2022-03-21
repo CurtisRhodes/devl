@@ -448,13 +448,18 @@ function mailMe() {
                 $('#fancyHeaderTitle').html("OggleBooble");
                 $('#topHeaderRow').html("Home of the Big Naturals");
                 $('#hdrBtmRowSec3').append(bannerLink('every playboy centerfold', 'index.html?spa=playboy'));
-                $('#hdrBtmRowSec3').append(bannerLink('Bond Girls', 'album.html?folderId=3908'));
+                $('#hdrBtmRowSec3').append(bannerLink('Bond Girls', 'album.html?folder=10326'));
                 break;
             case "playboy":
                 $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/playboyBallon.png");
                 $('#fancyHeaderTitle').html("every playboy centerfold");
                 document.title = "Every Playboy Centerfold : OggleBooble";
+                $('#hdrBtmRowSec3').append(bannerLink('back to OggleBooble', 'index.html'));
+                $('#hdrBtmRowSec3').append(bannerLink('Bond Girls', 'album.html?folder=10326'));
+
+
                 changeFavoriteIcon("playboy");
+                $('#oggleHeader').css({ "background-color": "#000", "color": "#fff" });
                 break;
             case "brucheum":
                 $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/house.gif");

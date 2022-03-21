@@ -3,38 +3,28 @@ let updatedGalleriesSkip = 0;
 
 function launchIndexPage(pageContext) {
 
-    /*-- login -----------------------------------*/
-    //if (localStorage["IsLoggedIn"] == "true") {
-    //    getCookieValue("IsLoggedIn", "reset OggleHeader") == "true") {
-    //    $('#spnUserName').html(getCookieValue("UserName", "reset OggleHeader"));
-
     showLogin(false);
 
     displayHeader(pageContext);
     displayFooter(pageContext);
+    //promoMessagesContainer
+
+    if (pageContext == "playboy") {
+        $('body').css({ "background-color": "#000", "color": "#fff" });
+        $('#carouselContainer').css("background-color", "#000");
+    }
+    if (pageContext == "porn") {
+        $('body').addClass("oggleBody");
+        $('#carouselContainer').css("color", "#000");
+    }
 
     launchCarousel(pageContext);
-
     getRandomGalleries(pageContext);
     getLatestUpdatedGalleries(pageContext);
 
-    //promoMessagesContainer
     $('#betaMessage').html("reformat hard drive")
         .css({ "top": 111, "left": 50 })
         .on("click", function () { showMessageContainer() }).show();
-
-    if (pageContext == "playboy") {
-        $('body').css("color", "#000");
-        $('#carouselContainer').css("color", "#000");
-    }
-
-    if (pageContext == "porn") {
-
-        $('body').addClass("oggleBody");
-
-        $('#carouselContainer').css("color", "#000");
-    }
-
 }
 
 /*-- php -------------------------------------------*/
@@ -133,6 +123,11 @@ function getRandomGalleries(pageContext) {
 }
 
 /*-- message box -----------------------------------*/
+/*-- login -----------------------------------*/
+    //if (localStorage["IsLoggedIn"] == "true") {
+    //    getCookieValue("IsLoggedIn", "reset OggleHeader") == "true") {
+    //    $('#spnUserName').html(getCookieValue("UserName", "reset OggleHeader"));
+
 
 /*-- message slide out -----------------------------*/{
     const messageBoxSlideSpeed = 50, messageBoxTop = 222;
