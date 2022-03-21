@@ -355,6 +355,9 @@ function addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows, data
             //let correspondingDbRow = databaseImageFilesRows.filter(db => encodeURI(db.FileName) == encodeURI(physcialImageFile.name));
             //if (correspondingDbRow.length == 0) {
             if (!rowOk) {
+
+                // verify file exists.  Whet if it's a link?
+
                 let guidPart = physcialImageFile.name.substr(physcialImageFile.name.indexOf("_") + 1, 36);
                 if (!isGuid(guidPart)) {
                     repairReport.errors.push("improper file name (" + folderId + ") " + physcialImageFile.name);

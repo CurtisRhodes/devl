@@ -18,10 +18,12 @@ function launchIndexPage(pageContext) {
     getRandomGalleries(pageContext);
     getLatestUpdatedGalleries(pageContext);
 
-    //promoMessagesContainer
+    //promoMessages
     $('#betaMessage').html("reformat hard drive")
         .css({ "top": 111, "left": 50 })
         .on("click", function () { showMessageContainer() }).show();
+
+
 
     if (pageContext == "playboy") {
         $('body').css("color", "#000");
@@ -132,7 +134,20 @@ function getRandomGalleries(pageContext) {
     }
 }
 
-/*-- message box -----------------------------------*/
+/*-- verify user -----------------------------------*/
+function verifyUser() {
+    if (isNullorUndefined(window.localStorage["visitorId"])) {
+        lookupIpAddress();
+    }
+    else {
+
+        //if (isNullorUndefined(window.localStorage["lastVisit"])) {
+    }
+
+    let visitorId = Storage["visitorId"];
+
+
+}
 
 /*-- message slide out -----------------------------*/{
     const messageBoxSlideSpeed = 50, messageBoxTop = 222;
