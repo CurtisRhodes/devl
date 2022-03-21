@@ -14,8 +14,10 @@ let repairReport = {
     errors: []
 };
 let abandon = false;
+let addImageRows = 0;
 let recurr, addNew, removeOrphans, repairStartTime;
-
+let asyncBlock1 = null;
+let testing = true;
 function showRepairDialog() {
     $('#dashboardFileList').html("");
     repairReport.FoldersProcessed = 0;
@@ -30,7 +32,7 @@ function showRepairDialog() {
     repairReport.missingParents = [];
     repairReport.comparisonProblems = 0;
     repairReport.errors = [];
-
+    addImageRows = 0;
     if (isNullorUndefined($('#txtCurrentActiveFolder').val())) {
         alert("select a folder");
         return;
@@ -49,13 +51,11 @@ function showRepairDialog() {
             <div><span>remove orphan ImageFiles </span><input id='ckRemoveOrphans'
                 class='adminCheckbox' type='checkbox' checked='checked'></input></div>\n
             <div class='roundendButton' onclick='performRepairLinks()'>Run</div>`);
-
     $('#dashboardDialogContents').keydown(function (event) {
         if (event.keyCode === 13) {
             performRepairLinks();
         }
     });
-
     $('#txtFolderToRepair').val($('#txtCurrentActiveFolder').val());
     $('#dashboardDialogBox').css("top", "212px");
     $('#dashboardDialogBox').css("left", "250px");
@@ -71,6 +71,8 @@ function showRepairDialog() {
 function performRepairLinks() {
     repairStartTime = Date.now();
     abandon = false;
+    asyncBlock1 = null;
+
     showRepairReport();
     recurr = $("#ckRepairIncludeSubfolders").is(":checked");
     addNew = $("#ckAddNewImages").is(":checked");
@@ -115,17 +117,19 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
                                         let jallFiles = JSON.parse(allFiles);
                                         //let physcialDirFiles = jallFiles.filter(node => node.type == "dir");
                                         let physcialImageFileRows = jallFiles.filter(node => node.type == "file");
-                                        let removeOrphansStatus = addNewStatus = renameImagesStatus = "done";
+                                        let removeOrphansStatus = renameImagesStatus = addMissingStatus = "done";
                                         if (physcialImageFileRows.length > 0) {
+                                            let removeOrphansStatus = renameImagesStatus = addMissingStatus = "not started";
                                             let desiredFileNamePrefix = catFolder.actualFolderName;
                                             if (catFolder.FolderType == "singleChild")
                                                 desiredFileNamePrefix = catFolder.ParentName;
 
 
                                             // 1. REMOVE ORPHANS
-                                            removeOrphansStatus = "running";
-                                            removeOrphansStatus = removeOrphanImageRows(physcialImageFileRows, databaseImageFilesRows, rootFolderId);
-
+                                            if (removeOrphansStatus == "not started") {
+                                                removeOrphansStatus = "running";
+                                                removeOrphansStatus = removeOrphanImageRows(physcialImageFileRows, databaseImageFilesRows, rootFolderId);
+                                            }
 
                                             // 2. RENAME
                                             let renameInterval = setInterval(function () {
@@ -136,13 +140,13 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
                                                 }
                                             }, 50);
 
-                                            // 2. ADD
+                                            // 2. ADD MISSING
                                             let addMissingInterval = setInterval(function () {
                                                 if (removeOrphansStatus == "done")
                                                     if (renameImagesStatus == "done") {
                                                         clearInterval(addMissingInterval);
                                                         addMissingStatus = "running";
-                                                        addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows,
+                                                        addMissingStatus = addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows,
                                                             databaseImageFilesRows, rootFolderId, fullPath);
                                                     }
                                             }, 50);
@@ -161,16 +165,20 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
                                         }
                                         repairReport.FoldersProcessed++;
                                         let recurrInterval = setInterval(function () {
-                                            if (removeOrphansStatus == "done")
-                                                if (addNewStatus = renameImagesStatus == "done")
-                                                    if (addNewStatus = renameImagesStatus == "done")
-                                                        if (renameImagesStatus == "done")
-                                                            clearInterval(recurrInterval);
-                                                            if (recurr) {
-                                                                $.each(jchildDirs, function (idx, childFolder) {
-                                                                    repairImagesRecurr(childFolder.Id, recurr, addNew, removeOrphans);
-                                                                });
-                                                            }
+                                            if (removeOrphansStatus == "done") {
+                                                if (renameImagesStatus == "done") {
+                                                    if (addMissingStatus == "done") {
+                                                        clearInterval(recurrInterval);
+                                                        if (recurr)
+                                                            $.each(jchildDirs, function (idx, childFolder) {
+                                                                repairImagesRecurr(childFolder.Id, recurr, addNew, removeOrphans);
+                                                            });
+                                                    }
+                                                    else console.log("add missing status: " + addMissingStatus);
+                                                }
+                                                else console.log("rename images status: " + renameImagesStatus);
+                                            }
+                                            else console.log("remove orphan status: " + removeOrphansStatus);
                                         }, 500);
 
                                         //alert("and done");  //    $('body').off();       
@@ -219,54 +227,64 @@ function removeOrphanImageRows(physcialImageFileRows, databaseImageFilesRows, ro
     let timer1 = Date.now();
     let rowsProcessed = 0;
     let rowsTpProcess = databaseImageFilesRows.length;
-    let asyncBlock1 = setInterval(function () {
-        if (abandon) return;
-        $.each(databaseImageFilesRows, function (idx, databaseImageFile) {
-            let physcialFileRow = physcialImageFileRows.filter(node => encodeURI(node.name) == encodeURI(databaseImageFile.FileName));
-            if (physcialFileRow.length == 0) {
-                // we have a data record with no physcial file
-                if (removeOrphans)
-                    $.ajax({
-                        type: "GET",
-                        url: "php/removeImageFile.php?imageFileId=" + databaseImageFile.Id,
-                        success: function (removeImageFileSuccess) {
-                            if (removeImageFileSuccess.trim().startsWith("ok")) {
-                                repairReport.imageRowsRemoved.push("(" + rootFolderId + ")  " + databaseImageFile.FileName);
+    if (asyncBlock1 == null) {
+
+        let asyncBlock1 = setInterval(function () {
+            if (abandon) return;
+            $.each(databaseImageFilesRows, function (idx, databaseImageFile) {
+                let physcialFileRow = physcialImageFileRows.filter(node => encodeURI(node.name) == encodeURI(databaseImageFile.FileName));
+                if (physcialFileRow.length == 0) {
+                    // we have a data record with no physcial file
+                    if (removeOrphans)
+                        $.ajax({
+                            type: "GET",
+                            url: "php/removeImageFile.php?imageFileId=" + databaseImageFile.Id,
+                            success: function (removeImageFileSuccess) {
+                                if (removeImageFileSuccess.trim().startsWith("ok")) {
+                                    repairReport.imageRowsRemoved.push("(" + rootFolderId + ")  " + databaseImageFile.FileName);
+                                }
+                                else {
+                                    console.log(removeImageFileSuccess);
+                                    repairReport.errors.push("<div style='color:red'>add image file error: " + removeImageFileSuccess + "</div>");
+                                }
+                                showRepairReport();
+                                rowsProcessed++;
+                            },
+                            error: function (jqXHR) {
+                                let errMsg = getXHRErrorDetails(jqXHR)
+                                repairReport.errors.push("<div style='color:red'>add image file XHR error: " + errMsg + "</div>");
+                                showRepairReport();
+                                rowsProcessed++;
                             }
-                            else {
-                                console.log(removeImageFileSuccess);
-                                repairReport.errors.push("<div style='color:red'>add image file error: " + removeImageFileSuccess + "</div>");
-                            }
-                            showRepairReport();
-                            rowsProcessed++;
-                        },
-                        error: function (jqXHR) {
-                            let errMsg = getXHRErrorDetails(jqXHR)
-                            repairReport.errors.push("<div style='color:red'>add image file XHR error: " + errMsg + "</div>");
-                            showRepairReport();
-                            rowsProcessed++;
-                        }
-                    });
+                        });
+                    else {
+                        repairReport.orphanImages.push("unneeded imageFile row: (" + rootFolderId + ") " + imageFile.FileName);
+                        showRepairReport();
+                        rowsProcessed++;
+                    }
+                }
                 else {
-                    repairReport.orphanImages.push("unneeded imageFile row: (" + rootFolderId + ") " + imageFile.FileName);
-                    showRepairReport();
                     rowsProcessed++;
                 }
-            }
-            else
-            rowsProcessed++;
-            let delta = Date.now() - timer1;
-            if (delta > 5001) {
+                if (!testing) {
+                    let delta = Date.now() - timer1;
+                    if (delta > 5001) {
+                        if (clearInterval != null) {
+                            clearInterval(asyncBlock1);
+                            asyncBlock1 = null;
+                            //alert("remove orphans process taking too long")
+                        }
+                    }
+                }
+                repairReport.physcialFilesProcessed++;
+            });
+            if (rowsProcessed >= rowsTpProcess) {
                 clearInterval(asyncBlock1);
-                //alert("remove orphans process taking too long")
+                asyncBlock1 = null;
+                showRepairReport();
             }
-            repairReport.physcialFilesProcessed++;
-        });
-        if (rowsProcessed == rowsTpProcess) {
-            clearInterval(asyncBlock1);
-            showRepairReport();
-        }
-    }, 200);
+        }, 820);
+    }
     return "done";
 }
 
@@ -321,10 +339,12 @@ function renameImageFiles(desiredFileNamePrefix, path, physcialImageFileRows) {
             }
             else
                 rowsProcessed++;
-            let delta = Date.now() - timer2;
-            if (delta > 5001) {
-                clearInterval(asyncBlock2);
-                //alert("rename process taking too long")
+            if (!testing) {
+                let delta = Date.now() - timer2;
+                if (delta > 5001) {
+                    clearInterval(asyncBlock2);
+                    //alert("rename process taking too long")
+                }
             }
         });
         if (rowsProcessed == rowsTpProcess) {
@@ -339,6 +359,7 @@ function addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows, data
     let timer5 = Date.now();
     let rowsProcessed = 0;
     let rowsTpProcess = physcialImageFileRows.length;
+    addImageRows = 0;
     let asyncBlock5 = setInterval(function () {
         $.each(physcialImageFileRows, function (idx, physcialImageFile) {
             if (abandon) return;
@@ -357,7 +378,6 @@ function addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows, data
             if (!rowOk) {
 
                 // verify file exists.  Whet if it's a link?
-
                 let guidPart = physcialImageFile.name.substr(physcialImageFile.name.indexOf("_") + 1, 36);
                 if (!isGuid(guidPart)) {
                     repairReport.errors.push("improper file name (" + folderId + ") " + physcialImageFile.name);
@@ -381,6 +401,7 @@ function addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows, data
                             if (addImageFileSuccess.trim().startsWith("ok")) {
                                 repairReport.imageFilesAdded.push("(" + folderId + ")  " + newFileName);
                                 showRepairReport();
+                                addImageRows++;
                             }
                             else {
                                 switch (addImageFileSuccess.trim()) {
@@ -406,17 +427,19 @@ function addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows, data
                     });
                 }
             }
-            let delta = Date.now() - timer5;
-            if (delta > 5001) {
-                clearInterval(asyncBlock5);
-                //alert("rename process taking too long")
+            if (!testing) {
+                let delta = Date.now() - timer5;
+                if (delta > 5001) {
+                    clearInterval(asyncBlock5);
+                    //alert("rename process taking too long")
+                }
             }
         });
-        if (rowsProcessed == rowsTpProcess) {
+        if (rowsProcessed >= rowsTpProcess) {
             clearInterval(asyncBlock5);
             showRepairReport();
         }
-    }, 200);
+    }, 520);
     return "done";
 }
 

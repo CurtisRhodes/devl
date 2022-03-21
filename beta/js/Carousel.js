@@ -477,8 +477,11 @@ function resizeCarousel() {
         $('#carouselImageInnerContainer').css('margin-left', marginOffsetWidth);
 
         if (typeof carouselImageInnerContainer === 'object') {
+
+            let imageW = $('#carouselImageInnerContainer').width();
+
             $('#carouselControls').css({
-                "width": $('#carouselImageInnerContainer').width() - 100,
+                "width": imageW - 100,
                 "left": marginOffsetWidth + 50
             }).show();
         }
