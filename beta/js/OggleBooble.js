@@ -306,30 +306,35 @@ function addPgLinkButton(folderId, labelText) {
 /*-- Search --------------------------------------------*/{
     let searchString = "", itemIndex = -1, listboxActive = false;
     function oggleSearchKeyDown(event) {
+        event.preventDefault();
         var ev = event.keyCode;
         if (!listboxActive) {
 
             if (ev === 9 || ev === 40) {  //  tab
-                event.preventDefault();
-                itemIndex = 1;
-                listboxActive = true;
-                $('#searchResultsDiv').find('li:first').addClass('selectedSearchItem').focus();
+
+                let firstlistItem = $('#searchResultsDiv').find('li:first');
+                if (isNullorUndefined(firstlistItem)) {
+                    console.error("not working");
+                    itemIndex = 1;
+                    listboxActive = true;
+                    $('#searchResultsDiv').find('li:first').addClass('selectedSearchItem').focus();
+                }
                 return false;
             }
             if (ev === 27) {  //  escape
                 clearSearch();
-                return;
+                return false;
             }
             if (ev === 8) {  //  backspace
                 if (searchString.length > 0)
                     searchString = searchString.substring(0, searchString.length - 1);
                 performSearch(searchString);
-                return;
+                return false;
             }
             if (ev === 13) {  // enter
                 var selectedItem = $('#searchResultsDiv').find('li:first').prop("id");
                 jumpToSelected(selectedItem);
-                return;
+                return false;
             }
 
             if (ev !== 46 && ev > 31 && (ev < 48 || ev > 57)) {
@@ -346,6 +351,7 @@ function addPgLinkButton(folderId, labelText) {
                     //$('#txtSearch').val(searchString);
                     performSearch(searchString);
                 }
+                return false;
             }
         }
         else {
@@ -375,8 +381,8 @@ function addPgLinkButton(folderId, labelText) {
             }
             if (ev === 27) {  //  escape
                 clearSearch();
-                return;
             }
+            return false;
         }
     }
 
@@ -398,13 +404,15 @@ function addPgLinkButton(folderId, labelText) {
                             alert(data);
                         }
                         else {
-                            let fData = JSON.parse(data);
-                            $('#searchResultsDiv').html("<ul class='searchResultList>").show();
-                            $.each(fData, function (idx, obj) {
-                                $('#searchResultsDiv').append("<li id=" + obj.Id +
-                                    " onclick='jumpToSelected(" + obj.Id + ")'>" +
-                                    obj.ParentName + "-" + obj.FolderName + "</li>");
-                            });
+                            if (!isNullorUndefined(data.trim())) {
+                                let fData = JSON.parse(data);
+                                $('#searchResultsDiv').html("<ul class='searchResultList>").show();
+                                $.each(fData, function (idx, obj) {
+                                    $('#searchResultsDiv').append("<li id=" + obj.Id +
+                                        " onclick='jumpToSelected(" + obj.Id + ")'>" +
+                                        obj.ParentName + "-" + obj.FolderName + "</li>");
+                                });
+                            }
                         }
                     },
                     error: function (jqXHR) {
