@@ -1,6 +1,6 @@
 ﻿
-let rotationSpeed = 7000, carouselDebugMode = false,
-    carouselFooterHeight = 40, intervalReady = true, initialImageLoad = false, isPaused = false,
+const rotationSpeed = 7000, carouselDebugMode = false;
+let carouselFooterHeight = 40, intervalReady = true, initialImageLoad = false, isPaused = false,
     imageIndex = 0, carouselRows = [], imageHistory = [], absolueStartTime,
     vCarouselInterval = null, lastImageIndex = 0, lastErrorThrown = 0,
     mainImageClickId, knownModelLabelClickId, imageTopLabelClickId, footerLabelClickId,
@@ -12,6 +12,8 @@ function launchCarousel(pageContext) {
         carouselRoot = pageContext;
         if (pageContext == "oggleIndex")
             carouselRoot = "boobs";
+        if (pageContext == "playboy")
+            carouselRoot = "centerfold";
 
         absolueStartTime = Date.now();
         window.addEventListener("resize", resizeCarousel);
@@ -24,7 +26,7 @@ function launchCarousel(pageContext) {
         });
     } catch (e) {
         logCatch("launchCarousel", e);
-    }    //settingsImgRepo = settingsArray.ImageRepo;
+    }
 }
 
 function loadFromCache() {
@@ -318,7 +320,7 @@ function refreshCache(forceRefresh) {
 
         if (doit) {
             let cacheArray = [];
-            window.localStorage.clear();
+            //window.localStorage.clear();
             for (i = 0; i < cacheSize; i++) {
                 let r = Math.floor(Math.random() * carouselRows.length);
                 cacheArray.push(carouselRows[r]);
@@ -459,8 +461,6 @@ function imgErrorThrown() {
             $('#thisCarouselImage').attr('src', "https://common.ogglefiles.com/img/redballon.png");
             $('#thisCarouselImage').css('height', window.innerHeight * .5);
 
-            //alert($('#thisCarouselImage').attr('src') + " not found");
-            //console.log(carouselRows[imageIndex].ImageFileName + " not found");
             //logOggleError("ILF", 11, carouselRows[imageIndex].ImageFileName + " not found", "carousel");
             //logError("ILF", 11, carouselRows[imageIndex].ImageFileName+ " not found", "carousel");
 
@@ -477,12 +477,16 @@ function resizeCarousel() {
         $('#carouselImageInnerContainer').css('margin-left', marginOffsetWidth);
 
         if (typeof carouselImageInnerContainer === 'object') {
-            $('#carouselControls').css({ "width": $('#carouselImageInnerContainer').width() - 100, "left": marginOffsetWidth + 50 }).show();
+            $('#carouselControls').css({
+                "width": $('#carouselImageInnerContainer').width() - 100,
+                "left": marginOffsetWidth + 50
+            }).show();
         }
         else
             $('#carouselControls').hide();
 
         setLabelLinksPositions();
+
     } catch (e) {
         logCatch("resizeCarousel", e);
     }

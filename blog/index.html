@@ -40,27 +40,29 @@
             <div id='blogPageTitle' class='blogPageSubHeader'></div>
 
             <div id="blogEditArea" class='blogSection'>
-                <div>
-                        <div id='blogCrudBox' class='inline'>
-                            <div class='crudRow'>
-                                <div class='crudLabel inline'>Title</div>
-                                <input id='txtCommentTitle' class='oggleInput' />
-                            </div>
-                            <div class='crudRow'>
-                                <div class='crudLabel inline'>Type</div>
-                                <select id='selBlogEditCommentType' class='oggleInput'></select>
-                            </div>
-                            <div class='crudRow'>
-                                <div class='crudLabel inline'>Link</div>
-                                <input id='txtLink' class='oggleInput' onBlur='loadImage()' />
-                            </div>
-                            <div class='crudRow'>
-                                <div class='crudLabel inline'>Date</div>
-                                <input id='txtPosted' class='oggleInput' />
-                            </div>
+                <div class="flexContainer">
+                        <div id='blogCrudBox' class='inlineFull'>
+                            <table>
+                                <tr>
+                                    <td>Title</td>
+                                    <td><input id='txtCommentTitle' /></td>
+                                </tr>
+                                <tr>
+                                    <td>Type</td>
+                                    <td><select id='selBlogEditCommentType'></select></td>
+                                </tr>
+                                <tr>
+                                    <td>Link</td>
+                                    <td><input id='txtLink' type="file" onBlur='loadImage()'/></td>
+                                </tr>
+                                <tr>
+                                    <td>Date</td>
+                                    <td><input id='txtPosted' class='oggleInput'/></td>
+                                </tr>
+                            </table>
                         </div>
-                        <div class="inline">                        
-                            <img id='imgBlogLink' src="https://common.ogglefiles.com/img/redballon.png" class='blogEditImage' />
+                        <div class="inline">
+                            <img id='imgBlogLink' alt='' class='blogEditImage' />
                         </div>
                 </div>
                 <div>
@@ -105,7 +107,7 @@
             $('#summernoteContainer').summernote();
             $('#blogListArea').show();
 
-            displayBlogList("PBE");
+            displayBlogList();
 
             displayFooter("welcome");
 

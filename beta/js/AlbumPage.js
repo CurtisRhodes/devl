@@ -107,10 +107,31 @@ function getAlbumPageInfo(folderId, islargeLoad) {
 
                 // resetOggleHeader(folderId, catfolder.RootFolder);
 
-                if (catfolder.RootFolder == "porn")
-                    document.title = catfolder.FolderName + " : OgglePorn";
-                else
-                    document.title = catfolder.FolderName + " : OggleBooble";
+                switch (catfolder.RootFolder) {
+                    case "playboy":
+                    case "centerfold":
+                    case "cybergirl":
+                    case "magazine":
+                    case "muses":
+                    case "plus":
+                        displayHeader("playboy");
+                        displayFooter("playboy");
+
+                        $('body').css({ "background-color": "#000", "color": "#fff" });
+                        $('#carouselContainer').css("background-color", "#000");
+                        break;
+                    case "bond":
+                    case "porn":
+                    case "sluts":
+                        document.title = catfolder.FolderName + " : OgglePorn";
+                        break;
+                    case "soft":
+                        document.title = catfolder.FolderName + " : OgglePorn";
+                        break;
+                    default:
+                        document.title = catfolder.FolderName + " : OggleBooble";
+                }
+
 
                 switch (catfolder.FolderType) {
                     case "multiFolder":
