@@ -46,22 +46,28 @@ function performBuildDirTree() {
 }
 
 // CREATE NEW FOLDER
+
 function showCreateNewFolderDialog() {
     $('#dashboardDialogBoxTitle').html("Create New Folder");
-    $('#dashboardDialogContents').html(
-        "       <div><span>parent</span><input id='txtCreateFolderParent' class='txtLinkPath inlineInput roundedInput' readonly='readonly'></input></div>\n" +
-        "       <div><span>title</span><input id='txtNewFolderTitle' class='inlineInput roundedInput'></input></div>\n" +
-        "       <div><span>type</span><select id='ddNewFolderType' class='inlineInput roundedInput'>\n" +
-        "              <option value='singleChild'>singleChild</option>\n" +
-        "              <option value='singleModel'>singleModel</option>\n" +
-        "              <option value='singleParent'>singleParent</option>\n" +
-        "              <option value='multiModel'>multiModel</option>\n" +
-        "              <option value='multiFolder'>multiFolder</option>\n" +
-        "          </select></div>\n" +
-        "       <div><span>sort order</span><input id='txtSortOrder' class='inlineInput roundedInput'></input></div>\n" +
-        "       <div class='roundendButton' onclick='performCreateNewFolder()'>Create Folder</div>\n");
-    $("#txtSortOrder").val("0");
+    $('#dashboardDialogContents').html(`
+        <div><span>parent</span><input id='txtCreateFolderParent' class='txtLinkPath inlineInput roundedInput' readonly='readonly'></input></div>\n
+        <div><span>title</span><input id='txtNewFolderTitle' class='inlineInput roundedInput'></input></div>\n
+        <div><span>type</span><select id='ddNewFolderType' class='inlineInput roundedInput'>\n
+               <option value='singleChild'>singleChild</option>\n
+               <option value='singleModel'>singleModel</option>\n
+               <option value='singleParent'>singleParent</option>\n
+               <option value='multiModel'>multiModel</option>\n
+               <option value='multiFolder'>multiFolder</option>\n
+           </select></div>\n
+        <div class='float'>
+            <div class='inline'><span>sort order</span><input id='txtSortOrder' class='roundedInput'/></div>\n
+            <div class='inline'><span>auto create</span><input id='txtNumAutoCreate' class='roundedInput'/></div>\n
+        </div>
+            <div class='inline roundendButton' onclick='callPerformCreateNewFolder()'>Create Folder</div>\n
+            <div class='inline roundendButton' onclick='performAutoCreateNewFolders()'>Auto Create multiple folders</div>\n`);
 
+    $("#txtSortOrder").val("0");
+    $("#txtNumAutoCreate").val("10");
     let cp = $('#txtCurrentActiveFolder').val();
     $("#txtCreateFolderParent").val(cp);
     $("#txtNewFolderTitle").val(cp.substr(cp.lastIndexOf("/") + 1));
@@ -76,42 +82,68 @@ function showCreateNewFolderDialog() {
     $('#dashboardDialogBox').css("left", "250px");
     $('#dashboardDialogBox').draggable().fadeIn();
 }
-function performCreateNewFolder() {
+
+function performAutoCreateNewFolders() {
+    let numNewFolder = Number($('#txtNumAutoCreate').val());
+    alert("auto create " + numNewFolder + " new folders");
+    let newFolderName = $('#txtNewFolderTitle').val();
+    let loopCounter = 0;
+    $('#dataifyInfo').html("creating new folder");
+    let mySlowLoop = setInterval(function () {
+        loopCounter++;
+        let folderName = newFolderName + "00" + loopCounter;
+        if (loopCounter > 9)
+            folderName = newFolderName + "0" + loopCounter;
+
+        performCreateNewFolder(folderName);
+
+        if (loopCounter == numNewFolder) {
+            clearInterval(mySlowLoop);
+            $('#dataifyInfo').html("ok. " + numNewFolder + " new folders created");
+        }
+        else
+            $('#dataifyInfo').html("creating new folder " + folderName);
+    }, 1300);
+}
+
+function callPerformCreateNewFolder() {
+    performCreateNewFolder($('#txtNewFolderTitle').val(), $('#txtSortOrder').val());
+}
+
+function performCreateNewFolder(newFolderName, sortOrder) {
     try {
+        let sStart = Date.now();
+        $('#dashBoardLoadingGif').show();
+        $('#dataifyInfo').show().html("saving changes");
 
-       // if (makeDirectory()) {
+        let folderPath = $('#txtCurrentActiveFolder').val() + "/" + $('#txtNewFolderTitle').val();
 
-            let sStart = Date.now();
-            $('#dashBoardLoadingGif').show();
-            $('#dataifyInfo').show().html("saving changes");
 
-            let folderPath = $('#txtCurrentActiveFolder').val() + "/" + $('#txtNewFolderTitle').val();
-
-            $.ajax({
-                type: "POST",
-                url: "php/createNewFolder.php",
-                data: {
-                    parentId: $('#txtActiveFolderId').val(),
-                    folderPath: folderPath,
-                    newFolderName: $('#txtNewFolderTitle').val(),
-                    folderType: $('#ddNewFolderType').val(),
-                    rootfolder: 'archive',
-                    sortOrder: $('#txtSortOrder').val()
-                },
-                success: function (success) {
-                    $('#dataifyInfo').html(success);
-                    $('#dashBoardLoadingGif').hide();
-                    let delta = (Date.now() - sStart);
-                    if (delta > 150)
-                        $('#dataifyInfo').append("  saving changes took: " + (delta / 1000).toFixed(3));
-                },
-                error: function (jqXHR) {
-                    $('#dashBoardLoadingGif').hide();
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    logError("AJX", $('#txtActiveFolderId').val(), errMsg, "create New Folder");
-                }
-            });
-        
+        $.ajax({
+            type: "POST",
+            url: "php/createNewFolder.php",
+            data: {
+                parentId: $('#txtActiveFolderId').val(),
+                folderPath: folderPath,
+                //newFolderName: $('#txtNewFolderTitle').val(),
+                newFolderName: newFolderName,
+                folderType: $('#ddNewFolderType').val(),
+                rootfolder: 'archive',
+                sortOrder: sortOrder
+            },
+            success: function (success) {
+                $('#dataifyInfo').html(success);
+                $('#dashBoardLoadingGif').hide();
+                let delta = (Date.now() - sStart);
+                if (delta > 150)
+                    $('#dataifyInfo').append("  saving changes took: " + (delta / 1000).toFixed(3));
+            },
+            error: function (jqXHR) {
+                $('#dashBoardLoadingGif').hide();
+                let errMsg = getXHRErrorDetails(jqXHR);
+                logError("AJX", $('#txtActiveFolderId').val(), errMsg, "create New Folder");
+            }
+        });
     } catch (e) {
         $('#dashBoardLoadingGif').hide();
         logCatch("CreateNewFolder", e);
@@ -130,11 +162,10 @@ function showImportDialog() {
     $("#txtFolderToRepair").val(pSelectedTreeFolderPath);
     $('#dashboardDialog').fadeIn();
 }
+
 function importNewImages() {
     // select Parent folder using dir tree
     // 
-
-
 }
 
 // PHP DISK OPERATIONS
