@@ -1,7 +1,7 @@
 ﻿// let settingsImgRepo = 'https ://img.brucheum.com/';
 // let settingsImgRepo = 'st21569.ispot.cc/danni/';
 let settingsImgRepo = 'https://ogglefiles.com/danni/';
-let startRoot;
+let startRoot = 10326;
 
 // LOAD DIR TREE
 function showBuildDirTreeDialog() {
@@ -35,13 +35,14 @@ function showBuildDirTreeDialog() {
 }
 
 function performBuildDirTree() {
-    startRoot = $('#txtRoot').val();
-    if ((startRoot === "0") || (isNullorUndefined(startRoot))) {
-        startRoot = $('#selDirTreeRoot').val();
-
+    if ($('#txtActiveFolderId').val() != "") {
+        if ($('#selDirTreeRoot').val() != $('#txtActiveFolderId').val()) {
+            startRoot = $('#txtActiveFolderId').val();
+        }
+        else {
+            startRoot = $('#txtRoot').val();
+        }
     }
-    if ((startRoot === "0") || (isNullorUndefined(startRoot)))
-        startRoot = 10326
     buildDirTree(startRoot);
 }
 
@@ -85,7 +86,7 @@ function showCreateNewFolderDialog() {
 
 function performAutoCreateNewFolders() {
     let numNewFolder = Number($('#txtNumAutoCreate').val());
-    alert("auto create " + numNewFolder + " new folders");
+    //alert("auto create " + numNewFolder + " new folders");
     let newFolderName = $('#txtNewFolderTitle').val();
     let loopCounter = 0;
     $('#dataifyInfo').html("creating new folder");
@@ -94,7 +95,10 @@ function performAutoCreateNewFolders() {
         let folderName = newFolderName + "00" + loopCounter;
         if (loopCounter > 9)
             folderName = newFolderName + "0" + loopCounter;
+        if (loopCounter > 99)
+            folderName = newFolderName + loopCounter;
 
+        $('#dataifyInfo').show().html("creating new folders");
         performCreateNewFolder(folderName);
 
         if (loopCounter == numNewFolder) {
@@ -103,7 +107,7 @@ function performAutoCreateNewFolders() {
         }
         else
             $('#dataifyInfo').html("creating new folder " + folderName);
-    }, 1300);
+    }, 770);
 }
 
 function callPerformCreateNewFolder() {
@@ -113,12 +117,7 @@ function callPerformCreateNewFolder() {
 function performCreateNewFolder(newFolderName, sortOrder) {
     try {
         let sStart = Date.now();
-        $('#dashBoardLoadingGif').show();
-        $('#dataifyInfo').show().html("saving changes");
-
         let folderPath = $('#txtCurrentActiveFolder').val() + "/" + $('#txtNewFolderTitle').val();
-
-
         $.ajax({
             type: "POST",
             url: "php/createNewFolder.php",
@@ -132,11 +131,9 @@ function performCreateNewFolder(newFolderName, sortOrder) {
                 sortOrder: sortOrder
             },
             success: function (success) {
-                $('#dataifyInfo').html(success);
-                $('#dashBoardLoadingGif').hide();
-                let delta = (Date.now() - sStart);
-                if (delta > 150)
-                    $('#dataifyInfo').append("  saving changes took: " + (delta / 1000).toFixed(3));
+                if (success.trim() != "ok") {
+                    $('#dataifyInfo').html("error creating new folder: " + success);
+                }
             },
             error: function (jqXHR) {
                 $('#dashBoardLoadingGif').hide();

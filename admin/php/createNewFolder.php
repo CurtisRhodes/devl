@@ -15,30 +15,37 @@
          $cmd = $pdo->query("select * from CategoryFolder where Id = ".$parentId);
             $catRow = $cmd->fetch();
 
+         $cmd = $pdo->query("select max(Id)+1 from CategoryFolder");
+            $nextId = $cmd->fetch()[0];
+
         $rootFolder = $catRow[RootFolder];
         $folderPath = $catRow[FolderPath]."/".$newFolderName;
 
-        $pdo->beginTransaction();
+        //if($catRow[FolderType]=='singleModel') {
+        //    $stmt = $pdo->prepare("update CategoryFolder FolderType='singleParent' where Id=".$parentId);
+        //    $stmt->execute();
+        //}
 
-        if($catRow[FolderType]=='singleModel') {
-            $stmt = $pdo->prepare("update CategoryFolder FolderType= 'singleParent' where Id=".$parentId);
-            $stmt->execute();
+        $sql = "insert into CategoryFolder (Id,Parent,FolderName,RootFolder,FolderPath,FolderType,SortOrder) values(?,?,?,?,?,?,?)");
+        $stmt1 = $pdo->prepare($sql);
+        $stmt1->execute([$nextId, $parentId, $newFolderName, $rootFolder, $folderPath, $folderType, $sortOrder]);
+
+        $stmt1Success = $stmt1->errorCode();
+        if($stmt1Success == '00000') {
+            $success = 'ok';
+        }
+        else {
+            $success = "error ". $stmt1Success." nextId: ".$nextId;
         }
 
-        $stmt = $pdo->prepare("INSERT INTO CategoryFolder (Parent,FolderName,RootFolder,FolderPath,FolderType,SortOrder) VALUES (?,?,?,?,?,?)");
-
-        $stmt->execute([$parentId, $newFolderName, $rootFolder, $folderPath, $folderType, $sortOrder]);
-        $pdo->commit();
         $pdo = null;
 
         $fullPath = '../../danni/'.$folderPath;
-
-        $success = mkdir($fullPath);
+        $mkdirSuccess = mkdir($fullPath);
 
     }
     catch(PDOException $e) {
         $success = $e->getMessage();
-        $pdo->rollback();
     }
     echo $success;
 ?>
