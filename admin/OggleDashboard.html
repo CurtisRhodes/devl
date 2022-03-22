@@ -53,7 +53,6 @@
                     <div id="dashboardFileListHeader" class="dashboardFileListHeader">
                         <div id="dashboardFileListHeaderTitle">ffff</div>
                         <img height="31" title='you may use the {esc} key'
-                             class="dashboardFileListHeaderCloseButton"
                              src='https://common.ogglefiles.com/img/close.png'
                              onclick="closeDashboardFileList()" />
                     </div>
@@ -87,8 +86,8 @@
                             </div>
                         </div>
                         <!--<div class='workAreaCloseButton'>
-                <img style='height:25px' src='https://common.ogglefiles.com/img/close.png' onclick='showDefaultWorkArea()'>
-            </div>-->
+                    <img style='height:25px' src='https://common.ogglefiles.com/img/close.png' onclick='showDefaultWorkArea()'>
+                </div>-->
                     </div>
                     <div id='mmDirTreeContainer' class='floatingDirTreeContainer'></div>
                     <div id='moveManyImageArea' class='workAreaDisplayContainer'></div>
@@ -122,15 +121,14 @@
                             <div onclick="moveFolder()">Create New Folder</div>
                             <div onclick='showSortTool()'>Sort Folder</div>
                             <div onclick='showRepairDialog()'>Repair Links</div>
-                            <div onclick='changeFolderName()'>test Connection</div>
+                            <div onclick='testHitConnection()'>test Connection</div>
                             <div onclick='throwAnError()'>throw an error</div>
                             <div onclick='showMoveFolderDialog()'>Move Folder</div>
                             <div onclick='showAddStepChildFolderDialog()'>Copy Folder</div>
                             <div onclick="showRenameFolderDialog()">Rename Folder</div>
                         </div>
-                        <div class="inline dataArea">
-                            <img height="31" class="dashboardFileListHeaderCloseButton"
-                                 src='https://common.ogglefiles.com/img/close.png' onclick="$('#sqlSandboxSection').show();"/>
+                        <div class="dashboardSection">
+                            <img class="dashboardSectionCloseButton" src='https://common.ogglefiles.com/img/close.png' onclick="$('#sqlSandboxSection').hide();" />
                             <div id="rightSideWorkarea">
                                 right side workarea
                             </div>
@@ -139,27 +137,27 @@
                 </div>
 
 
-                    <div id='reportsSection' class='fullScreenSection displayHidden flexbox'>
-                        <div id='reportsLeftColumn' class='dashboardContainerColumn'>
-                            <div id='reportsLeftMenu' class='oggleVerticalMenu'></div>
-                        </div>
-                        <div id='reportsMiddleColumn' class='dashboardContainerColumn'>
-                            <div class='workAreaContainer'>
-                                <div id='reportsHeader' class='workAreaHeader'>
-                                    <div class='workAreaHeaderArea'>
-                                        <div id='reportsHeaderTitle' class='workAreaHeaderTitle'>Reports</div>
-                                        <div class='reportsHeaderDetailRow'></div>
-                                    </div>
-                                    <div class='workAreaCloseButton'><img style='height:25px' src='https://common.ogglefiles.com/img/close.png' onclick='showDefaultWorkArea()'></div>
-                                </div>
-                                <div id='reportsContentArea' class='workAreaDisplayContainer'></div>
-                                <div id='reportsFooter' class='workareaFooter'></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="dataifyInfo" class="infoLine" onclick='$("#dataifyInfo").hide()'></div>
+            <div id='reportsSection' class='fullScreenSection displayHidden flexbox'>
+                <div id='reportsLeftColumn' class='dashboardContainerColumn'>
+                    <div id='reportsLeftMenu' class='oggleVerticalMenu'></div>
                 </div>
+                <div id='reportsMiddleColumn' class='dashboardContainerColumn'>
+                    <div class='workAreaContainer'>
+                        <div id='reportsHeader' class='workAreaHeader'>
+                            <div class='workAreaHeaderArea'>
+                                <div id='reportsHeaderTitle' class='workAreaHeaderTitle'>Reports</div>
+                                <div class='reportsHeaderDetailRow'></div>
+                            </div>
+                            <div class='workAreaCloseButton'><img style='height:25px' src='https://common.ogglefiles.com/img/close.png' onclick='showDefaultWorkArea()'></div>
+                        </div>
+                        <div id='reportsContentArea' class='workAreaDisplayContainer'></div>
+                        <div id='reportsFooter' class='workareaFooter'></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dataifyInfo" class="infoLine" onclick='$("#dataifyInfo").hide()'></div>
+        </div>
             </div>
         <div class="rightColumn">
             <div id="dirTreeContainer" class="dirTreeArea"></div>

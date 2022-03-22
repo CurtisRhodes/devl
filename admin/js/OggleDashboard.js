@@ -23,6 +23,10 @@ function showBuildDirTreeDialog() {
         "    <div><span>or select start folder </span><input id='txtRoot' class='roundedInput'></input></div>\n" +
         "    <div class='roundendButton' tabindex='0' onclick='performBuildDirTree();dashboardDialogBoxClose(\"showBuildDirTreeDialog click\");')'>Go</div>");
     $('#dashboardDialogBox').draggable().fadeIn();
+    $('#selDirTreeRoot').on("change", function () {
+        $('#txtRoot').val($(this).val());
+    });
+    
     $('#dashboardDialogContents').keydown(function (event) {
         if (event.keyCode === 13) {
             performBuildDirTree();
@@ -39,9 +43,9 @@ function performBuildDirTree() {
         if ($('#selDirTreeRoot').val() != $('#txtActiveFolderId').val()) {
             startRoot = $('#txtActiveFolderId').val();
         }
-        else {
+        if ($('#txtRoot').val() != startRoot) {
             startRoot = $('#txtRoot').val();
-        }
+        }        
     }
     buildDirTree(startRoot);
 }
@@ -91,7 +95,6 @@ function performAutoCreateNewFolders() {
     let loopCounter = 0;
     $('#dataifyInfo').html("creating new folder");
     let mySlowLoop = setInterval(function () {
-        loopCounter++;
         let folderName = newFolderName + "00" + loopCounter;
         if (loopCounter > 9)
             folderName = newFolderName + "0" + loopCounter;
@@ -99,7 +102,7 @@ function performAutoCreateNewFolders() {
             folderName = newFolderName + loopCounter;
 
         $('#dataifyInfo').show().html("creating new folders");
-        performCreateNewFolder(folderName);
+        performCreateNewFolder(folderName, loopCounter++);
 
         if (loopCounter == numNewFolder) {
             clearInterval(mySlowLoop);
@@ -119,8 +122,8 @@ function performCreateNewFolder(newFolderName, sortOrder) {
         let sStart = Date.now();
         let folderPath = $('#txtCurrentActiveFolder').val() + "/" + $('#txtNewFolderTitle').val();
         $.ajax({
-            type: "POST",
             url: "php/createNewFolder.php",
+            type: "POST",
             data: {
                 parentId: $('#txtActiveFolderId').val(),
                 folderPath: folderPath,
@@ -439,14 +442,13 @@ function logLocalError(errorCode, folderId, errorMessage, calledFrom) {
     });
 }
 
-function testConnection() {
-    alert("url: php/validateHITConnection.php")
+function testHitConnection() {
+    //alert("url: php/validateConnection.php")
     $.ajax({    //create an ajax request to display.php
         type: "GET",
-        url: "php/validateHITConnection.php",
-        dataType: "html",   //expect html to be returned                
+        url: "php/validateConnection.php",
         success: function (response) {
-            $("#dashboardContainer").html(response);
+            $("#rightSideWorkarea").html(response);
             console.log(response);
         },
         error: function (jqXHR) {

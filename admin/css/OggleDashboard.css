@@ -172,12 +172,6 @@ flexbox {
 }
 
 .linkImage {
-    /*
-            float:right;
-        height: 430px;
-        min-width: 520px;
-
-        */
     max-width: 80%;
     border: solid .5px #555;
 }
@@ -187,6 +181,14 @@ flexbox {
     width: 95%;
     margin-right: 6px;
 }
+.dashboardSection {
+    display: inline-block;
+    width: 100%;
+}
+.dashboardSectionCloseButton {
+    float: right;
+    height: 31px;
+}
 
 .sortButton {
     margin-top: 3px;
@@ -194,7 +196,7 @@ flexbox {
     border: solid 1px #111;
     border-radius: 3px;
     display: inline-block;
-    cursor:pointer;
+    cursor: pointer;
 }
 
 
