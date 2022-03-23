@@ -65,8 +65,9 @@ function showCreateNewFolderDialog() {
                <option value='multiFolder'>multiFolder</option>\n
            </select></div>\n
         <div class='float'>
-            <div class='inline'><span>sort order</span><input id='txtSortOrder' class='roundedInput'/></div>\n
-            <div class='inline'><span>auto create</span><input id='txtNumAutoCreate' class='roundedInput'/></div>\n
+            <div class='inline'><span>sort order </span><input id='txtSortOrder' class='roundedInput digit'/></div>\n
+            <div class='inline'><span>number to create </span><input id='txtNumAutoCreate' class='roundedInput digit'/></div>\n
+            <div class='inline'><span>start at </span><input id='txtNumStartAutoAt' class='roundedInput digit'/></div>\n
         </div>
             <div class='inline roundendButton' onclick='callPerformCreateNewFolder()'>Create Folder</div>\n
             <div class='inline roundendButton' onclick='performAutoCreateNewFolders()'>Auto Create multiple folders</div>\n`);
@@ -89,10 +90,11 @@ function showCreateNewFolderDialog() {
 }
 
 function performAutoCreateNewFolders() {
-    let numNewFolder = Number($('#txtNumAutoCreate').val());
+    let startNumber = Number($('#txtNumStartAutoAt').val());
+    let numNewFolder = startNumber + Number($('#txtNumAutoCreate').val());
     //alert("auto create " + numNewFolder + " new folders");
     let newFolderName = $('#txtNewFolderTitle').val();
-    let loopCounter = 0;
+    let loopCounter = startNumber;
     $('#dataifyInfo').html("creating new folder");
     let mySlowLoop = setInterval(function () {
         let folderName = newFolderName + "00" + loopCounter;

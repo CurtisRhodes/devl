@@ -960,14 +960,9 @@ function mailMe() {
     }
 }
 /* -------- Hit Counter ------------*/{
-function logVisit() {
-
-    //var x = getCookie("path");
-    //alert("cookie path: " + x);
-
-
+function logVisit(visitorId) {
     //if ((ipAddress === "68.203.90.183") || (ipAddress === "50.62.160.105")) return "ok";
-    var logVisitUserName = getCookie("User");
+    // r logVisitUserName = getCookie("User");
     //if (logVisitUserName !== "") {    }
      //alert("logVisit UserName: " + logVisitUserName);0
 

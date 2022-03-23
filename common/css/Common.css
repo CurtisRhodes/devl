@@ -130,13 +130,16 @@ body {
     left: -50%;
     margin: 0;
 }
+
 .clickable {
     cursor: pointer;
 }
 .underline {
     text-decoration: underline;
 }
-
+.digit {
+    width: 36px;
+}
 .inline {
     display: inline-block;
 }

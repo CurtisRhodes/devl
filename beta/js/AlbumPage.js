@@ -2,21 +2,21 @@ let currentFolderId, currentImagelinkId;
 
 function loadAlbumPage(folderId, islargeLoad) {
     currentFolderId = folderId;
-    $('#albumPageLoadingGif').css("height", "27px");
-    $('#imageContainer').html("");
     getAlbumImages(folderId, islargeLoad);
     getAlbumPageInfo(folderId, islargeLoad);
-    $('#albumContentArea').fadeIn();
 }
 
 /*-- php -----------------------------------*/
 function getAlbumImages(folderId, islargeLoad) {
     try {
+        $('#albumPageLoadingGif').css("height", "27px");
         $('#albumPageLoadingGif').show();
+        $('#imageContainer').html("");
         if (islargeLoad) {
             $.ajax({
                 url: "php/customFetchAll.php?query=Select * from CategoryFolder where Parent=" + folderId,
                 success: function (data) {
+                    $('#albumContentArea').fadeIn();
                     let childFolders = JSON.parse(data);
                     $.each(childFolders, function (idx, childFolder) {
                         $.getJSON('php/customFetchAll.php?query=select * from VwLinks where FolderId=' + childFolder.Id + ' order by SortOrder', function (data) {
