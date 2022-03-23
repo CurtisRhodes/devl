@@ -464,11 +464,11 @@ function addPgLinkButton(folderId, labelText) {
                     ErrorMessage: errorMessage
                 },
                 success: function (success) {
-                    if (success == "!ok") {
-                        console.log(addImageFileSuccess);
+                    if (success.trim() == "ok") {
+                        console.log(errorCode + " error logged from: " + calledFrom);
                     }
                     else {
-                        console.error("log oggle error fail: " + success);
+                        console.log("log oggleerror fail: " + success);
                     }
                 },
                 error: function (jqXHR) {
@@ -481,14 +481,13 @@ function addPgLinkButton(folderId, labelText) {
         }
     }
 
-    function imageError(folderId, linkId) {
+    function imageError(folderId, linkId, calledFrom) {
         try {
             // let calledFrom = "noneya";
-            console.error("imageError: IMG. folder: " + folderId +
-                "\n linkId: " + linkId);
+            console.log("imageError: IMG. folder: " + folderId + ", linkId: " + linkId + ", calledFrom: " + calledFrom);
 
             $('#' + linkId).attr('src', 'https://common.ogglefiles.com/img/redballonSmall.png');
-            // logError("ILF", folderId, "linkId: " + linkId, "gallery");
+            logOggleError("ILF", folderId, "linkId: " + linkId, calledFrom);
 
         } catch (e) {
             logCatch("image error", e);
@@ -508,13 +507,39 @@ function addPgLinkButton(folderId, labelText) {
         $('#contextMenuContent').html(oggleContextMenuHtml());
         $('#contextMenuContainer').css("top", pos.y);
         $('#contextMenuContainer').css("left", pos.x);
-        $('#contextMenuContainer').show();
 
         if (menuType === "Folder")
             getFolderctxMenuDetails();
         else
             getSingleImageDetails(linkId);
+
+        $('#contextMenuContainer').draggable().show();
+
+
+        $("#contextMenuContainer").mousemove(function (event) {
+            $("#hdrBtmRowSec3").html('');
+            let ctxLeft = $("#contextMenuContainer").offset().left;
+            let ctxTop = $("#contextMenuContainer").offset().top;
+            let ctxRight = $("#contextMenuContainer").offset().left + $("#contextMenuContainer").width() + 22;
+            let ctxBott = $("#contextMenuContainer").offset().top + $("#contextMenuContainer").height() + 22;
+
+            //$("#hdrBtmRowSec3").html("ctxTop: " + ctxTop + ", ctxBott: " + ctxBott + ", ctxLeft: " + ctxLeft +
+            //    ", ctxRight: " + ctxRight + ", x: " + event.pageX + ", y: " + event.pageY);
+
+            if (event.pageY <= ctxTop) $("#hdrBtmRowSec3").html('past top');
+            if (event.pageY >= ctxBott) $("#hdrBtmRowSec3").html('past bott');
+            if (event.pageX <= ctxLeft) $("#hdrBtmRowSec3").html('past left');
+            if (event.pageX >= ctxRight) $("#hdrBtmRowSec3").html('past right');
+
+            if ((event.pageY <= ctxTop) ||
+                (event.pageY >= ctxBott) ||
+                (event.pageX <= ctxLeft) ||
+                (event.pageX >= ctxRight)) {
+                $('#contextMenuContainer').fadeOut();
+            }
+        });
     }
+
     function getSingleImageDetails(linkId, folderId) {
         try {
             let getSingleImageDetailsStart = Date.now();
@@ -586,6 +611,7 @@ function addPgLinkButton(folderId, labelText) {
             logCatch("getSingle ImageDetails", e);
         }
     }
+
     function oggleContextMenuHtml() {
         return `<div id='ctxTxtModelName' class='ctxItem' onclick='oggleCtxMenuAction(\"showDialog\")'>model name</div>
         <div id='ctxSeeMore' class='ctxItem' onclick='oggleCtxMenuAction(\"see more\")'>see more of her</div>

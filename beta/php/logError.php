@@ -1,29 +1,34 @@
 <?php
-    $success = "ono";
     try
     {
         include('registro.php');
         $pdo = pdoConn();
-//
-        $ErrorCode = $_POST['errorCode'];
-        $FolderId = $_POST['folderId'];
-        $VisitorId = $_POST['visitorId'];
-        $CalledFrom = $_POST['calledFrom'];
-        $ErrorMessage = $_POST['errorMessage'];
+  
+        $ErrorCode = $_POST['ErrorCode'];
+        $FolderId = $_POST['FolderId'];
+        $VisitorId = $_POST['VisitorId'];
+        $CalledFrom = $_POST['CalledFrom'];
+        $ErrorMessage = $_POST['ErrorMessage'];
         $Occured = date('Y-m-d H:i:s');
 
-        $success = 'null';
+        $pdo->beginTransaction();
 
-        $sql = "INSERT INTO ErrorLog (ErrorCode,FolderId,VisitorId,CalledFrom,ErrorMessage,Occured) ".
-               "VALUES ('".$ErrorCode."',".$FolderId.",'".$VisitorId."','".$CalledFrom."',".$ErrorMessage."','".$Occured."')";
+        $sql = "insert into ErrorLog (ErrorCode,FolderId,VisitorId,CalledFrom,ErrorMessage,Occured) ".
+               "values ('".$ErrorCode."',".$FolderId.",'".$VisitorId."','".$CalledFrom."','".$ErrorMessage."','".$Occured."')";
 
         $stmt1 = $pdo->prepare($sql);
         $stmt1->execute();
 
-        $success = 'ok  error code: '.$ErrorCode;
+        $pdo->commit();
 
-
-       $pdo = null;
+        $stmt1Success = $stmt1->errorCode();
+        if($stmt1Success == '00000') {
+            $success = 'ok';
+        }
+        else {
+            $success = $stmt1Success.' .$sql; '.$sql;;
+        }
+        $pdo = null;
     }
     catch(Exception $e) {
         $success = $e->getMessage();

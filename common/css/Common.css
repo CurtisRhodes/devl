@@ -534,16 +534,19 @@ footer {
 .ctxloadingGif {
     height: 27px;
 }
-
-.ogContextMenu {
+.ogContextMenuFocusShell {
     position: absolute;
+    padding: 22px;
+    background-color: #c4c6ae21;
+    display: none;
+    z-index: 500;
+}
+.ogContextMenu {
     background: var(--oggleDialogBackgroundColor);
     border: solid 2px #923c76;
     padding: 8px 10px;
-    display: none;
     z-index: 520;
 }
-
     .ogContextMenu div {
         padding: 8px;
         margin: 2px;

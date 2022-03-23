@@ -58,7 +58,8 @@ let tanBlueMenuSnippet, bookPanelSnippet;
     function getXHRErrorDetails(jqXHR) {
         var msg = '';
         if (jqXHR.status === 0) {
-            msg = 'Not connect.\n Verify Network.';
+            //msg = 'Not connect.\n Verify Network.';
+            msg = 'jqXHR.status: ' + jqXHR.status + ", responseText: " + jqXHR.responseText;
         } else if (jqXHR.status === 404) {
             msg = 'Requested page not found. [404]';
         } else if (jqXHR.status === 500) {
@@ -182,7 +183,7 @@ function mailMe() {
         let visitorId = getCookieValue("VisitorId", calledFrom + "/logError");
         $.ajax({
             type: "POST",
-            url: 'https://common.ogglefiles.com/php/addErrorLog.php',
+            url: 'https://common.ogglefiles.com/php/logError.php',
             data: {
                 ErrorCode: errorCode,
                 FolderId: folderId,
@@ -191,14 +192,21 @@ function mailMe() {
                 ErrorMessage: errorMessage
             },
             success: function (success) {
-                if (success == "!ok") {
+                if (success.trim() != "ok") {
                     console.log(success);
-                    $('#dashboardFileList').append("<div style='color:red'>add image file error: " + success + "</div>");
                 }
             },
             error: function (jqXHR) {
                 let errMsg = getXHRErrorDetails(jqXHR);
                 alert("Error log error: " + errMsg);
+
+
+                /*
+                 * Access to XMLHttpRequest at 'https://common.ogglefiles.com/php/logError.php' from origin 'https://ogglefiles.com' 
+                 * has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+                 * POST https://common.ogglefiles.com/php/logError.php net::ERR_FAILED 200
+                 */
+
             }
         });
     }

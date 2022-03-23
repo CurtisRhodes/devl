@@ -52,9 +52,9 @@ function loadImageResults(vLink, folderId) {
         imgSrc = settingsImgRepo + "/" + vLink.FileName.replace(/'/g, '%27');
 
     $('#imageContainer').append("<div class='intividualImageContainer'>" +
-        "<img id='" + vLink.LinkId + "' class='thumbImage' src='" + imgSrc + "'" +
-        "onerror='imageError(" + folderId + ",\"" + vLink.LinkId + "\")'\n" +
-        "oncontextmenu='albumContextMenu(\"Image\",\"" + vLink.LinkId + "\"," + folderId + ",\"" + imgSrc + "\")'" +
+        "<img id='" + vLink.LinkId + "' class='thumbImage' src='" + imgSrc + "' \n" +
+        "onerror='imageError(" + folderId + ",\"" + vLink.LinkId + "\",\"album\")' \n" +
+        "oncontextmenu='albumContextMenu(\"Image\",\"" + vLink.LinkId + "\"," + folderId + ",\"" + imgSrc + "\")' \n" +
         "onclick='viewImage(\"" + imgSrc + "\",\"" + vLink.LinkId + "\")'/></div>");
 }
 
