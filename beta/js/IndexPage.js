@@ -22,32 +22,12 @@ function launchIndexPage(pageContext) {
     getRandomGalleries(pageContext);
     getLatestUpdatedGalleries(pageContext);
 
-    verifyUser();
+    verifyUser("index page");
 
 //    $('#betaMessage').html("reformat hard drive")
 //        .css({ "top": 111, "left": 50 })
 //        .on("click", function () { showMessageContainer() }).show();
 }
-
-function verifyUser() {
-    if (isNullorUndefined(localStorage["VisitorId"])) {
-
-
-    }
-    else {
-
-        if (isNullorUndefined(sessionStorage["VisitLogged"])) {
-            logVisit();
-        }
-
-        let visitorId = localStorage["VisitorId"];
-
-
-    }
-
-}
-
-
 
 /*-- php -------------------------------------------*/{
     function getLatestUpdatedGalleries(spaType) {

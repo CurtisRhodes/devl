@@ -420,8 +420,8 @@ function addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows, data
                             showRepairReport();
                         },
                         error: function (jqXHR) {
-                            let errMsg = getXHRErrorDetails(jqXHR);
-                            repairReport.errors.push("<div style='color:red'>add image file XHR error: " + errMsg + "</div>");
+                            // let errMsg = getXHRErrorDetails(jqXHR);
+                            repairReport.errors.push("<div style='color:red'>(" + folderId + ") " + idx + " missing image: " + physcialImageFile.name + "</div>");
                             showRepairReport();
                         }
                     });
