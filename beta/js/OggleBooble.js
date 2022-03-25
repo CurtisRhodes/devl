@@ -904,25 +904,31 @@ function addPgLinkButton(folderId, labelText) {
 }
 
 /*-- verify user -----------------------------------*/{
-    function verifyUser() {
+    function verifyUser(calledFrom) {
+        let visitorId;
+
         if (isNullorUndefined(localStorage["VisitorId"])) {
-            let visitorId = getCookieValue("VisitorId", "verifyUser");
+            visitorId = getCookieValue("VisitorId", "verifyUser");
 
             if (isNullorUndefined(visitorId)) {
-
-                lookupIpAddress();
-
+                lookupIpAddress("verify user");
             }
-
-            localStorage["VisitorId"] = visitorId;
+            else {
+                if (isNullorUndefined(sessionStorage["VisitorIdVerifier"])) {
+                    verifyVisitorId(visitorId);
+                }
+            }
         }
 
         if (isNullorUndefined(sessionStorage["VisitLogged"])) {
-            logVisit();
+            if (calledFrom == "album") {
+                // new visitor comming in from an external link
+            }
+            logVisit("verify");
         }
     }
 
-    function lookupIpAddress() {
+    function lookupIpAddress(calledFrom) {
         try {
             $.ajax({
                 type: "GET",
@@ -934,7 +940,7 @@ function addPgLinkButton(folderId, labelText) {
                         //ifyUpdate(visitorId, ipifyRtrnTxt, folderId, calledFrom);
                     }
                     else {
-                        checkVisitor(ipResponse.ip);
+                        checkVisitor(ipifyRtrnTxt, calledFrom);
                     }
                 },
                 error: function (jqXHR) {
@@ -953,7 +959,59 @@ function addPgLinkButton(folderId, labelText) {
         }
     }
 
-    function performIpLookup() {
+    function checkVisitor(ipAddress, calledFrom) {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "php/registroFetch.php?query=Select * from Visitor where IpAddress='" + ipAddress + "'",
+                success: function (data) {
+                    if (data == "false") {
+                        if (calledFrom == "verify user")
+                            performIpLookup(ipAddress);
+                        else {  //  calledFrom == "verify visitorId" 
+
+
+                        }
+                    }
+                    else {
+                        let visitorRow = JSON.parse(data);
+                        localStorage["VisitorId"] = visitorRow.VisitorId;
+                    }
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    alert("perform IpLookup: " + errMsg);
+                }
+            });
+        } catch (e) {
+            logCatch("perform IpLookup", e);
+        }
+    }
+
+    function verifyVisitorId(visitorId) {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "php/registroFetch.php?query=Select * from Visitor where VisitorId='" + visitorId + "'",
+                success: function (data) {
+                    if (data == "false") {
+                        lookupIpAddress(visitorId, "verify visitorId");
+                    }
+                    else {
+                        sessionStorage["VisitorIdVerifier"] = "ok";
+                    }
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    alert("perform IpLookup: " + errMsg);
+                }
+            });
+        } catch (e) {
+            logCatch("perform IpLookup", e);
+        }
+    }
+
+    function performIpLookup(ipAddress) {
         try {
             //logActivity2(visitorId, "I0D", folderId, "ipAddress: " + ipAddress); // entering IpInfo
             $.ajax({
@@ -961,13 +1019,10 @@ function addPgLinkButton(folderId, labelText) {
                 url: "https://ipinfo.io/" + ipAddress + "?token=ac5da086206dc4",
                 success: function (ipResponse) {
                     if (isNullorUndefined(ipResponse)) {
-
                         console.log("ipInfo empty response");
-
-                        //logActivity2(visitorId, "I0E", folderId, "ipResponse.ip: " + ipResponse.ip); // ipInfo empty response
                     }
                     else {
-                        checkVisitor(ipResponse.ip);
+                        addVisitor(ipResponse);
                     }
                 },
                 error: function (jqXHR) {
@@ -981,93 +1036,125 @@ function addPgLinkButton(folderId, labelText) {
             //logError2(visitorId, "CAT", folderId, e, "getIpInfo3/" + calledFrom);
         }
     }
+}
 
-    function checkVisitor(ipAddress) {
+/* -------- Hit Counter ------------*/{
+    function logVisit(calledFrom) {
         try {
-            //logActivity2(visitorId, "I0D", folderId, "ipAddress: " + ipAddress); // entering IpInfo
+            let visitorId = getCookieValue("VisitorId", "verifyUser");
             $.ajax({
-                type: "GET",
-                url: "php/customFetch.php?query=Select * from Visitor where IpAddress=" + ipAddress,
-                success: function (data) {
-                    alert(data);
+                type: "POST",
+                url: "php/logVisit.php",
+                data: {
+                    visitorId: visitorId,
+                    appName: "OggleBooble"
                 },
-                error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("perform IpLookup: " + errMsg);
+                success: function (success) {
+                    if (success.trim() == "ok") {
+                        if (calledFrom == "new visitor")
+                            displayStatusMessage("ok", "Welcome New Visitor");
+                        else
+                            displayStatusMessage("ok", "Welcome back ");
+                    }
+                    else {
+                        switch (success.trim()) {
+                            case '23000':
+                                //logError("",)
+                                break;
+                            case '42000':
+                            default:
+                                alert("logVisit: " + success);
+                        }
+                    }
+                    sessionStorage["VisitLogged"] = "yes";
+                },
+                error: function (jqXHR, exception) {
+                    alert("LogVisit jqXHR : " + getXHRErrorDetails(jqXHR, exception));
                 }
             });
         } catch (e) {
-            logCatch("perform IpLookup", e);
+            logCatch("log visit", e);
         }
     }
-}
 
-
-/* -------- Hit Counter ------------*/{
-
-    function logVisit(visitorId) {
-        //if ((ipAddress === "68.203.90.183") || (ipAddress === "50.62.160.105")) return "ok";
-        // r logVisitUserName = getCookie("User");
-        //if (logVisitUserName !== "") {    }
-        //alert("logVisit UserName: " + logVisitUserName);0
-
-        $('#footerMessage1').html("logging visit userName: " + logVisitUserName);
-        setLoginHeader(logVisitUserName);
-        if (logVisitUserName === "") logVisitUserName = "unknown";
+    function logPageHit(folderId) {
+        //$('#footerMessage1').html("logging page hit");
+        visitorId = getCookieValue("VisitorId", "log pageHit");
         $.ajax({
             type: "POST",
-            url: settingsArray.ApiServer + "api/logVisit?userName=" + logVisitUserName + "&appName=Ogglebooble",
-            success: function (successModel) {
-                if (successModel.Success === "ok") {
-                    $('#footerMessage1').html("");
-                    if (successModel.ReturnValue !== "") {
-                        $('#headerMessage').html(successModel.ReturnValue);
+            url: "php/logPageHit.php",
+            data: {
+                visitorId: visitorId,
+                pageId: folderId
+            },
+            success: function (success) {
+                if (success.trim() != "ok") {
+                    switch (success.trim()) {
+                        case '23000':
+                            //logError("",);  // duplicate page hit
+                            break;
+                        case '42000':
+                        default:
+                            //alert("logVisit: php error code: " + success);
                     }
                 }
-                else
-                    alert(successModel.Success);
-            },
-            error: function (jqXHR, exception) {
-                $('#blogLoadingGif').hide();
-                alert("LogVisit jqXHR : " + getXHRErrorDetails(jqXHR, exception));
-            }
-        });
-    }
-
-    function logPageHit(folderName, appName) {
-        //alert("logPageHit(" + folderName + "," + appName + ")");
-        logVisit();
-        $('#footerMessage1').html("logging page hit");
-        var userName = getCookie("User");
-        if (userName === "")
-            userName = "unknown";
-        else {
-            setLoginHeader(userName);
-        }
-        //if ((ipAddress === "68.203.90.183") || (ipAddress === "50.62.160.105")) return "ok";
-        var hitCounterModel = {
-            AppId: appName,
-            PageName: folderName,
-            UserName: userName
-        };
-        $.ajax({
-            type: "PUT",
-            url: settingsArray.ApiServer + "api/HitCounter/LogPageHit",
-            data: hitCounterModel,
-            success: function (successModel) {
-                if (successModel.Success === "ok") {
-                    if (userName === "unknown")
-                        $('#footerMessage1').html("logPageHit: " + successModel.ReturnValue);
-                    else
-                        $('#footerMessage1').html("");
-                }
-                else
-                    alert("logPageHit: " + successModel.Success);
             },
             error: function (jqXHR, exception) {
                 alert("logPageHit error: " + getXHRErrorDetails(jqXHR, exception));
             }
         });
+    }
+
+    function addVisitor(ipResponse) {
+        visitorId = create_UUID();
+
+//        alert("visitorId:" + visitorId + "  $city: " + ipResponse.city + ", $region: " + ipResponse.region +
+//            "\ncountry: " + ipResponse.country + "  loc: " + ipResponse.loc + " ip: " + ipResponse.ip);
+
+
+        $.ajax({
+            type: "POST",
+            url: "php/addVisitor.php",
+            data: {
+                visitorId: visitorId,
+                ip: ipResponse.ip,
+                city: ipResponse.city,
+                region: ipResponse.region,
+                country: ipResponse.country,
+                loc: ipResponse.loc
+            },
+            success: function (success) {
+                if (success.trim() == "ok") {
+                    logVisit("new visitor")
+                }
+                else {
+                    switch (success.trim()) {
+                        case '23000':
+                            //logError("",);  // duplicate page hit
+                            break;
+                        case '42000':
+                        default:
+                            alert("logVisit: php error code: " + success);
+                    }
+                }
+            },
+            error: function (jqXHR, exception) {
+                alert("logPageHit error: " + getXHRErrorDetails(jqXHR, exception));
+            }
+        });
+
+        //addVisitor({
+        //    city: "Dallas",
+        //    country: "US",
+        //    hostname: "072-190-028-092.res.spectrum.com",
+        //    ip: "72.190.28.92",
+        //    loc: "32.9322,-96.8353",
+        //    org: "AS11427 Charter Communications Inc",
+        //    postal: "75244",
+        //    region: "Texas",
+        //    timezone: "America/Chicago",
+        //    [[Prototype]]: Object
+        //});
     }
 }
 

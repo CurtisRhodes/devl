@@ -169,7 +169,11 @@ function getAlbumPageInfo(folderId, islargeLoad) {
                     showFeedbackDialog(folderId, catfolder.FolderName);
                 });
 
-
+                logPageHit(folderId);
+                //logPageHit(folderId);
+                //logPageHit(folderId);
+                //logPageHit(folderId);
+                //logPageHit(folderId);
             },
             error: function (jqXHR) {
                 $('#albumPageLoadingGif').hide();
@@ -265,4 +269,3 @@ function folderClick(folderId, isStepChild) {
         logCatch("folderClick", e);
     }
 }
-
