@@ -157,7 +157,7 @@ function sendEmail(to, from, subject, message) {
             }
         });
     } catch (e) {
-        logCatch("send email", e);
+        console.log("CATCH send email: " + e);
     }
 }
 
@@ -167,115 +167,6 @@ function showFeedbackDialog() {
 
 function mailMe() {
     //rtpe(\"FLC\",\"mailme\",\"mailme\"," + folderId + ")
-}
-
-/* -------- activity logs -----------*/{
-
-    function logCatch(calledFrom, errorMessage) {
-        console.log("catch error in: " + calledFrom + "\n\n" + errorMessage);
-        alert("catch error in: " + calledFrom + "\n\n" + errorMessage);
-
-    }
-
-    function logError(errorCode, folderId, errorMessage, calledFrom) {
-        //alert("errorCode: " + errorCode + ", folderId: " + folderId + "\n errorMessage: " + errorMessage + "\ncalledFrom: " + calledFrom);
-
-        let visitorId = getCookieValue("VisitorId", calledFrom + "/logError");
-        $.ajax({
-            type: "POST",
-            url: 'https://common.ogglefiles.com/php/logError.php',
-            data: {
-                ErrorCode: errorCode,
-                FolderId: folderId,
-                VisitorId: visitorId,
-                CalledFrom: calledFrom,
-                ErrorMessage: errorMessage
-            },
-            success: function (success) {
-                if (success.trim() != "ok") {
-                    console.log(success);
-                }
-            },
-            error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                alert("Error log error: " + errMsg);
-
-
-                /*
-                 * Access to XMLHttpRequest at 'https://common.ogglefiles.com/php/logError.php' from origin 'https://ogglefiles.com' 
-                 * has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-                 * POST https://common.ogglefiles.com/php/logError.php net::ERR_FAILED 200
-                 */
-
-            }
-        });
-    }
-
-    function logActivity(eventCode, calledFrom) {
-        try {
-            visitorId = getCookieValue("VisitorId", "logActivity");
-            console.log("logActivity  visitorId: " + visitorId + "  eventCode: " + eventCode + "  calledFrom: " + calledFrom);
-            //        if (success === "ok")
-            //            displayStatusMessage("ok", "add image logged");
-            //        else
-            //            alert("ChangeLog: " + success);
-            //    error: function (xhr) {
-            //        $('#dashBoardLoadingGif').hide();
-            //        alert("ChangeLog xhr error: " + getXHRErrorDetails(xhr));
-            //    }
-            //    let visitorId = getCookieValue("VisitorId", calledFrom + "log Event/" + eventCode);
-            //        $.getJSON('php/logEvent.php?eventCode=' + EventCode + '&folderId=' + folderId + '&details=' + details + '&calledFrom=' + calledFrom + '&visitorId=' + visitorId,
-            //            function (data) {
-            //                console.log(data);
-            //            });
-        } catch (e) {
-            logCatch("log activity", e);
-        }
-    }
-
-    function rtpe(labelText, calledFromFolderId) {
-        try {
-            let eventCode;
-            switch (labelText) {
-                case "every playboy centerfold":
-                    eventCode = "EPC";
-                    window.location.href = "/index.html?spa=playboy";
-                    break;
-                case "Gent Archive":
-                    eventCode = "GNT";
-                    window.location.href = "/album.html?folder=846";
-                    break;
-                case "Bond Girls":
-                    eventCode = "BND";
-                    window.location.href = "/album.html?folder=10326";
-                    break;
-                case "Oggle Porn":
-                    eventCode = "PRN";
-                    window.location.href = "/album.html?folder=242";
-                    break;
-                case "softcore":
-                    eventCode = "SFT";
-                    window.location.href = "/album.html?folder=846";
-                    break;
-            }
-            logEvent(eventCode, calledFromFolderId);
-        }
-        catch (e) {
-            logCatch("rtpe", e);
-        }
-    }
-
-    function logEvent(eventCode, calledFromFolderId) {
-        try {
-            console.log("logEvent: " + eventCode + " calledFrom: " + calledFromFolderId);
-            //let visitorId = getCookieValue("VisitorId", "log Event/" + eventCode);
-            //$.getJSON('php/logEvent.php?eventCode=' + eventCode + '&folderId=' + calledFromFolderId + '&visitorId=' + visitorId, function (data) {
-            //    console.log(data);
-            //});
-        } catch (e) {
-            logCatch("logEvent", e);
-        }
-    }
 }
 
 /* -------- Cookies ----------------*/{
@@ -302,37 +193,11 @@ function mailMe() {
                 if (!isNullorUndefined(localStorage[itemName])) {
                     returnValue = localStorage[itemName];
                     rebuildCookie();
-                    if (itemName == "VisitorId")
-                        logActivity("CK1", calledFrom); // local storage bypass
-                    else
-                        logActivity("CK2", calledFrom);
-                }
-                else {
-                    if (itemName == "VisitorId") {
-                        if (calledFrom != "verify session") {
-                            let newVisId = create_UUID();
-                            localStorage["VisitorId"] = newVisId;
-                            rebuildCookie();
-                            addVisitor(newVisId, 1111, "cookie not found");
-                            returnValue = newVisId;
-                            logError("CK2", 217731, "navigator.cookieEnabled: " + navigator.cookieEnabled, calledFrom + "/GET CookieValue");
-                        }
-                    }
-                    else {
-                        if (itemName == "IsLoggedIn") {
-                            localStorage["IsLoggedIn"] = "false";
-                            returnValue = "false";
-                            rebuildCookie();
-                        }
-                        else {
-                            logError("CK3", 217731, "navigator.cookieEnabled: " + navigator.cookieEnabled, calledFrom + "/GET CookieValue");
-                        }
-                    }
                 }
             }
         }
-        catch (ex) {
-            logCatch("getCookieValue", e);
+        catch (e) {
+            console.log("CATCH getCookieValue: " + e);
         }
         finally {
             return returnValue;
@@ -346,7 +211,7 @@ function mailMe() {
             document.cookie = "IsLoggedIn=" + localStorage["IsLoggedIn"];
 
         } catch (e) {
-            logCatch("rebuildCookie", e);
+            console.log("CATCH rebuild cookie: " + e);
         }
     }
 }
@@ -604,7 +469,7 @@ function mailMe() {
             }
             document.getElementsByTagName('head')[0].appendChild(link);
         } catch (e) {
-            logCatch("changeFavoriteIcon", e);
+            console.log("CATCH change Favorites Icon: " + e);
         }
     }
 
@@ -857,7 +722,7 @@ function mailMe() {
                 }
             }
         } catch (e) {
-            logCatch("display footer", e);
+            console.log("CATCH display footer: " + e);
         }
     }
 

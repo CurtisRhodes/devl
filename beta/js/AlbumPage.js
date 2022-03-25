@@ -42,7 +42,7 @@ function getAlbumImages(folderId, islargeLoad) {
         }
     } catch (e) {
         $('#albumPageLoadingGif').hide();
-        logCatch("getAlbumImages", e);
+        logOggleError("CAT", folderId, e, "getAlbumImages");
     }
 }
 
@@ -85,7 +85,7 @@ function getSubFolders(folderId) {
             });
     } catch (e) {
         $('#albumPageLoadingGif').hide();
-        logCatch("getSubFolders", e);
+        logOggleError("CAT", folderId, e, "get subFolders");
     }
 }
 
@@ -170,10 +170,6 @@ function getAlbumPageInfo(folderId, islargeLoad) {
                 });
 
                 logPageHit(folderId);
-                //logPageHit(folderId);
-                //logPageHit(folderId);
-                //logPageHit(folderId);
-                //logPageHit(folderId);
             },
             error: function (jqXHR) {
                 $('#albumPageLoadingGif').hide();
@@ -185,7 +181,7 @@ function getAlbumPageInfo(folderId, islargeLoad) {
         let delta = (Date.now() - infoStart) / 1000;
         console.log("get AlbumPageInfo took: " + delta.toFixed(3));
     } catch (e) {
-        logCatch("get Album Page Info folderId:", e);
+        logOggleError("CAT", folderId, e, "get albumPage info");
     }
 }
 
@@ -246,7 +242,7 @@ function setBreadcrumbs(folderId, rootFolder) {
             }
         });
     } catch (e) {
-        logCatch("setBreadcrumbs", e);
+        logOggleError("CAT", folderId, e, "set breadcrumbs");
     }
 }
 
@@ -266,6 +262,6 @@ function folderClick(folderId, isStepChild) {
         }
         //" onclick='rtpe(\"SUB\",\"called from: " + folderId + "\",\"" + folder.DirectoryName + "\"," + folder.FolderId + ")'>\n" +
     } catch (e) {
-        logCatch("folderClick", e);
+        logOggleError("CAT", folderId, e, "folder click");
     }
 }

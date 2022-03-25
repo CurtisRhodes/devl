@@ -213,7 +213,7 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
         });
     } catch (e) {
         $('#dashBoardLoadingGif').hide();
-        logCatch("repair ImagesRecurr CAT", e);
+        logOggleError("CAT", folderId, e, "repair ImagesRecurr");
     }
 }
 

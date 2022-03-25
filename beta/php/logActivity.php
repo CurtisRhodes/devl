@@ -4,11 +4,15 @@
         include('registro.php');
         $pdo = pdoConn();
   
+        $activityCode = $_POST['activityCode'];
+        $folderId = $_POST['folderId'];
         $visitorId = $_POST['visitorId'];
-        $pageId = $_POST['pageId'];
-        $occured = date('Y-m-d');
+        $calledFrom = $_POST['calledFrom'];
 
-        $sql = "insert into PageHit (VisitorId, PageId, Occured) values ('".$visitorId."','".$pageId."','".$occured."')";
+        $Occured = date('Y-m-d H:i:s');
+
+        $sql = "insert into ActivityLog (ActivityCode, FolderId, VisitorId, CalledFrom, Occured) ".
+               "values ('".$activityCode."',".$folderId.",'".$visitorId."','".$calledFrom."','".$Occured."')";
 
         $stmt1 = $pdo->prepare($sql);
         $stmt1->execute();
@@ -18,7 +22,7 @@
             $success = 'ok';
         }
         else {
-            $success = $stmt1Success;
+            $success = $stmt1Success.' .$sql; '.$sql;;
         }
         $pdo = null;
     }

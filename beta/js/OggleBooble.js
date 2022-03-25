@@ -292,7 +292,7 @@ function addPgLinkButton(folderId, labelText) {
 
             showSlideshowViewer(currentFolderId, currentImagelinkId, false)
         } catch (e) {
-            logCatch("show slideshow", e);
+            logOggleError("CAT", -874, e, "show slideshow")
         }
     }
     function closeExploderDiv() {
@@ -478,7 +478,7 @@ function addPgLinkButton(folderId, labelText) {
                 }
             });
         } catch (e) {
-            console.error("logOggle error not working: " + e);
+            console.log("logOggle error not working: " + e);
         }
     }
 
@@ -491,9 +491,48 @@ function addPgLinkButton(folderId, labelText) {
             logOggleError("ILF", folderId, "linkId: " + linkId, calledFrom);
 
         } catch (e) {
-            logCatch("image error", e);
+            logOggleError("CAT", folderId, e, "image error")
         }
     }
+
+    function logOggleActivity(activityCode, folderId, calledFrom) {
+        try {
+            visitorId = getCookieValue("VisitorId", "log Activity");
+            try {
+                let visitorId = getCookieValue("VisitorId", calledFrom + "/logError");
+                $.ajax({
+                    type: "POST",
+                    url: "php/logActivity.php",
+                    data: {
+                        activityCode: activityCode,
+                        folderId: folderId,
+                        visitorId: visitorId,
+                        calledFrom: calledFrom
+                    },
+                    success: function (success) {
+                        if (success.trim() == "ok") {
+                            console.log("activity logged.  VisitorId: " + visitorId + "  Code: " + activityCode + "  calledFrom: " + calledFrom);
+                        }
+                        else {
+                            console.log("log OggleActivity fail: " + success);
+                            logOggleError("AJX", folderId, success, "log OggleActivity");
+                        }
+                    },
+                    error: function (jqXHR) {
+                        let errMsg = getXHRErrorDetails(jqXHR);
+                        logOggleError("XHR", folderId, errMsg,"log OggleActivity")
+                        alert("Error log error: " + errMsg);
+                    }
+                });
+            } catch (e) {
+                console.error("logOggle error not working: " + e);
+            }
+
+        } catch (e) {
+            logOggleError("CAT", folderId, e, "log OggleActivity")
+        }
+    }
+
 }
 
 /*-- context menu --------------------------------------*/{
@@ -609,7 +648,7 @@ function addPgLinkButton(folderId, labelText) {
                 }
             });
         } catch (e) {
-            logCatch("getSingle ImageDetails", e);
+            logOggleError("CAT", folderId, e, "getSingle ImageDetails")
         }
     }
 
@@ -774,7 +813,7 @@ function addPgLinkButton(folderId, labelText) {
                 }
             });
         } catch (e) {
-            logCatch("set Folder Image", e);
+            logOggleError("CAT", folderId, e, "set Folder Image")
         }
     }
 
@@ -906,11 +945,9 @@ function addPgLinkButton(folderId, labelText) {
 /*-- verify user -----------------------------------*/{
     function verifyUser(calledFrom) {
         let visitorId;
-
         if (isNullorUndefined(localStorage["VisitorId"])) {
             visitorId = getCookieValue("VisitorId", "verifyUser");
-
-            if (isNullorUndefined(visitorId)) {
+            if (visitorId == "cookie not found") {
                 lookupIpAddress("verify user");
             }
             else {
@@ -919,7 +956,6 @@ function addPgLinkButton(folderId, labelText) {
                 }
             }
         }
-
         if (isNullorUndefined(sessionStorage["VisitLogged"])) {
             if (calledFrom == "album") {
                 // new visitor comming in from an external link
@@ -953,9 +989,7 @@ function addPgLinkButton(folderId, labelText) {
             });
         }
         catch (e) {
-            logCatch("perform IpLookup", e);
-            //  logActivity2(create_UUID(), "I0C", 621240, "get IpIfyIpInfo/" + calledFrom); // IP catch error
-            //  logError2(create_UUID(), "CAT", 621241, e, "get IpIfyIpInfo/" + calledFrom);
+            logOggleError("CAT", folderId, e, "verify User")
         }
     }
 
@@ -966,16 +1000,23 @@ function addPgLinkButton(folderId, labelText) {
                 url: "php/registroFetch.php?query=Select * from Visitor where IpAddress='" + ipAddress + "'",
                 success: function (data) {
                     if (data == "false") {
-                        if (calledFrom == "verify user")
-                            performIpLookup(ipAddress);
-                        else {  //  calledFrom == "verify visitorId" 
-
-
-                        }
+                        performIpInfoLookup(ipAddress);
                     }
                     else {
-                        let visitorRow = JSON.parse(data);
-                        localStorage["VisitorId"] = visitorRow.VisitorId;
+                        if (calledFrom == "verify user") {
+                            let visitorRow = JSON.parse(data);
+                            localStorage["VisitorId"] = visitorRow.VisitorId;
+                        }
+                        else {
+                            // special case calledFrom == "verify visitorId"
+                            // Ip found but is this the right visitorId
+                            let visitorRow = JSON.parse(data);
+                            //if(localStorage["VisitorId"] = visitorRow.VisitorId;
+                            if (calledFrom != visitorRow.VisitorId) {
+
+
+                            }
+                        }
                     }
                 },
                 error: function (jqXHR) {
@@ -984,7 +1025,7 @@ function addPgLinkButton(folderId, labelText) {
                 }
             });
         } catch (e) {
-            logCatch("perform IpLookup", e);
+            logOggleError("CAT", folderId, e, "check Visitor")
         }
     }
 
@@ -995,7 +1036,8 @@ function addPgLinkButton(folderId, labelText) {
                 url: "php/registroFetch.php?query=Select * from Visitor where VisitorId='" + visitorId + "'",
                 success: function (data) {
                     if (data == "false") {
-                        lookupIpAddress(visitorId, "verify visitorId");
+                        // special case. calledFrom = VisitorId 
+                        lookupIpAddress(visitorId);
                     }
                     else {
                         sessionStorage["VisitorIdVerifier"] = "ok";
@@ -1007,33 +1049,35 @@ function addPgLinkButton(folderId, labelText) {
                 }
             });
         } catch (e) {
-            logCatch("perform IpLookup", e);
+            logOggleError("CAT", folderId, e, "verify VisitorId")
         }
     }
 
-    function performIpLookup(ipAddress) {
+    function performIpInfoLookup(ipAddress) {
         try {
-            //logActivity2(visitorId, "I0D", folderId, "ipAddress: " + ipAddress); // entering IpInfo
+            let folderId = -212;
             $.ajax({
                 type: "GET",
                 url: "https://ipinfo.io/" + ipAddress + "?token=ac5da086206dc4",
                 success: function (ipResponse) {
                     if (isNullorUndefined(ipResponse)) {
+                        logOggleActivity("IPI", folderId, "null response");  // IpInfo call burned
                         console.log("ipInfo empty response");
                     }
                     else {
                         addVisitor(ipResponse);
+                        logOggleActivity("IPI", folderId, "success Ip: " + ipResponse.ip);
                     }
                 },
                 error: function (jqXHR) {
                     let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("perform IpLookup: " + errMsg);
+                    logOggleActivity("IPI", folderId, "XHR error: " + errMsg);
+                    logOggleError("XHR", folderId, errMsg, "perform IpLookup");
                 }
             });
         } catch (e) {
-            logCatch("perform IpLookup", e);
-            //logActivity2(visitorId, "I0C", folderId, "getIpInfo3/" + calledFrom); // catch error
-            //logError2(visitorId, "CAT", folderId, e, "getIpInfo3/" + calledFrom);
+            logOggleActivity("IPI", folderId, "CAT error: " + e);
+            logOggleError("CAT", folderId, e, "perform IpLookup");
         }
     }
 }
@@ -1073,7 +1117,7 @@ function addPgLinkButton(folderId, labelText) {
                 }
             });
         } catch (e) {
-            logCatch("log visit", e);
+            logOggleError("Cat", folderId, e, "log visit")
         }
     }
 
@@ -1100,7 +1144,7 @@ function addPgLinkButton(folderId, labelText) {
                 }
             },
             error: function (jqXHR, exception) {
-                alert("logPageHit error: " + getXHRErrorDetails(jqXHR, exception));
+                alert("log PageHit error: " + getXHRErrorDetails(jqXHR, exception));
             }
         });
     }
@@ -1125,7 +1169,8 @@ function addPgLinkButton(folderId, labelText) {
             },
             success: function (success) {
                 if (success.trim() == "ok") {
-                    logVisit("new visitor")
+                    localStorage["VisitorId"] = visitorId;
+                    logVisit("new visitor");
                 }
                 else {
                     switch (success.trim()) {
@@ -1139,7 +1184,7 @@ function addPgLinkButton(folderId, labelText) {
                 }
             },
             error: function (jqXHR, exception) {
-                alert("logPageHit error: " + getXHRErrorDetails(jqXHR, exception));
+                alert("log PageHit error: " + getXHRErrorDetails(jqXHR, exception));
             }
         });
 

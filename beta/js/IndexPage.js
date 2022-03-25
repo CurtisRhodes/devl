@@ -73,7 +73,7 @@ function launchIndexPage(pageContext) {
                 }
             });
         } catch (e) {
-            logCatch("get Latest Updated Galleries", e);
+            logOggleError("CAT", folderId, e, "get updated galleries");
         }
     }
 
