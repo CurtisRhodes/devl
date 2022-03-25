@@ -12,7 +12,9 @@ function launchIndexPage(pageContext) {
     if (pageContext == "playboy") {
         $('body').css({ "background-color": "#000", "color": "#fff" });
         $('#carouselContainer').css("background-color", "#000");
+        $('#topHeaderRow').css("color", "#f2e289");
     }
+
     if (pageContext == "porn") {
         $('body').addClass("oggleBody");
         $('#carouselContainer').css("color", "#000");

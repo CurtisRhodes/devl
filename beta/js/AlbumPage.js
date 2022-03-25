@@ -104,6 +104,7 @@ function getAlbumPageInfo(folderId, islargeLoad) {
                 $('#albumPageLoadingGif').hide();
                 $('#albumTopRow').show();
                 $('#seoPageName').html(catfolder.FolderName);
+                setBreadcrumbs(folderId, catfolder.RootFolder);
 
                 // resetOggleHeader(folderId, catfolder.RootFolder);
 
@@ -118,6 +119,8 @@ function getAlbumPageInfo(folderId, islargeLoad) {
                         displayFooter("playboy");
 
                         $('body').css({ "background-color": "#000", "color": "#fff" });
+                        $('#topHeaderRow').css("color", "#f2e289");
+                        $('#activeBreadCrumb').css("color", "#f2e289");
                         $('#carouselContainer').css("background-color", "#000");
                         break;
                     case "bond":
@@ -131,7 +134,6 @@ function getAlbumPageInfo(folderId, islargeLoad) {
                     default:
                         document.title = catfolder.FolderName + " : OggleBooble";
                 }
-
 
                 switch (catfolder.FolderType) {
                     case "multiFolder":
@@ -151,7 +153,6 @@ function getAlbumPageInfo(folderId, islargeLoad) {
                         $('#albumBottomfileCount').html(catfolder.Files);
                         break;
                 }
-                setBreadcrumbs(folderId);
 
                 if (islargeLoad) {
                     $('#largeLoadButton').hide();
@@ -184,7 +185,7 @@ function getAlbumPageInfo(folderId, islargeLoad) {
     }
 }
 
-function setBreadcrumbs(folderId) {
+function setBreadcrumbs(folderId, rootFolder) {
     try {
         //$('#aboveImageContainerMessageArea').html('loading breadcrumbs');
         $('#breadcrumbContainer').html("<img style='height:27px' src='https://common.ogglefiles.com/img/loader.gif'/>");
@@ -221,6 +222,17 @@ function setBreadcrumbs(folderId) {
                             }
                         }
                     }
+                    switch (rootFolder) {
+                        case "playboy":
+                        case "centerfold":
+                        case "cybergirl":
+                        case "magazine":
+                        case "muses":
+                        case "plus":
+                            $('.activeBreadCrumb').css("color", "#f2e289");
+                            break;
+                    }
+
                 }
             },
             error: function (jqXHR) {

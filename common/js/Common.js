@@ -353,12 +353,6 @@ function mailMe() {
 /* -------- Header -----------------*/{
     // let hdrFolderId, hdrRootFolder;
 
-    function bannerLink(labelText, href) {
-        return "<div class='headerBannerButton'>" +
-            "<div class='clickable' onclick='window.location.href=\"https://beta.ogglefiles.com/" +
-            href + "\"'>" + labelText + "</div>\n</div>\n";
-    }
-
     function displayHeader(headerContext) {
         $('header').html(headerHtml());
 
@@ -489,8 +483,8 @@ function mailMe() {
                     "<span onclick='headerMenuClick(\"boobs\",136)'> positions,</span>\n" +
                     "<span onclick='headerMenuClick(\"boobs\",159)'> topics,</span>\n" +
                     "<span onclick='headerMenuClick(\"boobs\",199)'> shape,</span>\n" +
-                    "<span onclick='headerMenuClick(\"boobs\",241)'> size,</span>\n" +
-                    "<span onclick='headerMenuClick(\"boobs\",4010)'> tit play</span>\n");
+                    "<span onclick='headerMenuClick(\"boobs\",241)'> size,</span>\n");
+                    //"<span onclick='headerMenuClick(\"boobs\",4010)'> tit play</span>\n");
                 break;
             }
             case "OggleDashboard": {
@@ -637,12 +631,28 @@ function mailMe() {
         location.href = "album.html?folder=" + folderId;
     }
 
+    function bannerLink(labelText, href) {
+        return "<div class='headerBannerButton'>" +
+            "<div class='clickable' onclick='window.location.href=\"https://beta.ogglefiles.com/" +
+            href + "\"'>" + labelText + "</div>\n</div>\n";
+    }
+
     function topLogoClick() {
         let logoImage = $('#divSiteLogo').prop("src").substr($('#divSiteLogo').prop("src").lastIndexOf("/") + 1);
         switch (logoImage) {
             case "redballon.png": location.href = "index.html"; break;
             case "redwoman.png": window.open("index.html?folder=440"); break;
-            case "playboyBallon.png": window.location.href = "Index.html?spa=72"; break;
+
+            case "playboyBallon.png":
+                window.location.href = "https://beta.ogglefiles.com/index.html?spa=playboy";
+            //case "playboyBallon.png":
+            //    window.location.href = "https://beta.ogglefiles.com/index.html?spa=playboy";
+            //case "playboyBallon.png":
+            //    window.location.href = "https://beta.ogglefiles.com/index.html?spa=playboy";
+            //case "playboyBallon.png":
+            //    window.location.href = "https://beta.ogglefiles.com/index.html?spa=playboy";
+
+                break;
             case "csLips02.png": window.location.href = "Index.html?spa=3909"; break;
             default:
                 alert("topLogoClick: " + logoImage + " not handled");
