@@ -1003,18 +1003,13 @@ function addPgLinkButton(folderId, labelText) {
                         performIpInfoLookup(ipAddress);
                     }
                     else {
-                        if (calledFrom == "verify user") {
+                        if (calledFrom != "verify user") {
                             let visitorRow = JSON.parse(data);
-                            localStorage["VisitorId"] = visitorRow.VisitorId;
-                        }
-                        else {
-                            // special case calledFrom == "verify visitorId"
-                            // Ip found but is this the right visitorId
-                            let visitorRow = JSON.parse(data);
-                            //if(localStorage["VisitorId"] = visitorRow.VisitorId;
-                            if (calledFrom != visitorRow.VisitorId) {
-
-
+                            if (localStorage["VisitorId"] = visitorRow.VisitorId) {
+                                if (calledFrom != visitorRow.VisitorId) {
+                                    localStorage["VisitorId"] = visitorRow.VisitorId;
+                                    logOggleActivity("XXX", -888, calledFrom);
+                                }
                             }
                         }
                     }
@@ -1124,29 +1119,34 @@ function addPgLinkButton(folderId, labelText) {
     function logPageHit(folderId) {
         //$('#footerMessage1').html("logging page hit");
         visitorId = getCookieValue("VisitorId", "log pageHit");
-        $.ajax({
-            type: "POST",
-            url: "php/logPageHit.php",
-            data: {
-                visitorId: visitorId,
-                pageId: folderId
-            },
-            success: function (success) {
-                if (success.trim() != "ok") {
-                    switch (success.trim()) {
-                        case '23000':
-                            //logError("",);  // duplicate page hit
-                            break;
-                        case '42000':
-                        default:
+        if (visitorId == "cookie not found") {
+            lookupIpAddress("log pageHit");
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "php/logPageHit.php",
+                data: {
+                    visitorId: visitorId,
+                    pageId: folderId
+                },
+                success: function (success) {
+                    if (success.trim() != "ok") {
+                        switch (success.trim()) {
+                            case '23000':
+                                //logError("",);  // duplicate page hit
+                                break;
+                            case '42000':
+                            default:
                             //alert("logVisit: php error code: " + success);
+                        }
                     }
+                },
+                error: function (jqXHR, exception) {
+                    alert("log PageHit error: " + getXHRErrorDetails(jqXHR, exception));
                 }
-            },
-            error: function (jqXHR, exception) {
-                alert("log PageHit error: " + getXHRErrorDetails(jqXHR, exception));
-            }
-        });
+            });
+        }
     }
 
     function addVisitor(ipResponse) {

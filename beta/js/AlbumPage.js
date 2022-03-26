@@ -1,4 +1,5 @@
 let currentFolderId, currentImagelinkId;
+const posterFolder = 'https://ogglefiles.com/danni/posters/';
 
 function loadAlbumPage(folderId, islargeLoad) {
     currentFolderId = folderId;
@@ -51,11 +52,28 @@ function loadImageResults(vLink, folderId) {
     if (!isNullorUndefined(vLink.FileName))
         imgSrc = settingsImgRepo + "/" + vLink.FileName.replace(/'/g, '%27');
 
-    $('#imageContainer').append("<div class='intividualImageContainer'>" +
-        "<img id='" + vLink.LinkId + "' class='thumbImage' src='" + imgSrc + "' \n" +
-        "onerror='imageError(" + folderId + ",\"" + vLink.LinkId + "\",\"album\")' \n" +
-        "oncontextmenu='albumContextMenu(\"Image\",\"" + vLink.LinkId + "\"," + folderId + ",\"" + imgSrc + "\")' \n" +
-        "onclick='viewImage(\"" + imgSrc + "\",\"" + vLink.LinkId + "\")'/></div>");
+    if (vLink.FileName.endsWith("mpg") || vLink.FileName.endsWith("mp4")) {
+        $('#imageContainer').append(
+            "<div class='intividualImageContainer'" +
+            "' oncontextmenu='albumContextMenu(\"Video\",\"" + vLink.LinkId + "\"," +
+            vLink.FolderId + ",\"" + posterFolder + vLink.Poster + "\")'>" +
+            "<video id='" + vLink.LinkId + "' controls='controls' class='thumbImage' " +
+            " poster='" + posterFolder + vLink.Poster + "' >" +
+            "   <source src='" + imgSrc + "' type='video/mp4' label='label'>" +
+            "</video></div>");
+    }
+    else {
+
+        $('#imageContainer').append("<div class='intividualImageContainer'>" +
+            "<img id='" + vLink.LinkId + "' class='thumbImage' src='" + imgSrc + "' \n" +
+            "onerror='imageError(" + folderId + ",\"" + vLink.LinkId + "\",\"album\")' \n" +
+            "oncontextmenu='albumContextMenu(\"Image\",\"" + vLink.LinkId + "\"," + folderId + ",\"" + imgSrc + "\")' \n" +
+            "onclick='viewImage(\"" + imgSrc + "\",\"" + vLink.LinkId + "\")'/></div>");
+
+        if (vLink.FolderId !== vLink.SrcId)
+            imageHtml += "<div class='knownModelIndicator'><img src='images/foh01.png' title='" +
+                vLink.SrcFolder + "' onclick='rtpe(\"SEE\",\"abc\",\"detail\"," + vLink.SrcId + ")' /></div>\n";
+    }
 }
 
 function getSubFolders(folderId) {
