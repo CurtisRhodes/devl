@@ -254,7 +254,7 @@ function loadImages(forceCacheRefresh) {
             carouselRoot + "' order by rand() limit " + limit;
         $.ajax({
             type: "GET",
-            url: "php/customFetchAll.php?query=" + sql,
+            url: "php/yagdrasselFetchAll.php?query=" + sql,
             success: function (data) {
                 if (data.indexOf("Fatal error") > 0) {
                     $('#carouselContainer').html(data);

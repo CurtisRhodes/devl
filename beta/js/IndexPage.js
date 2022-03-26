@@ -1,5 +1,4 @@
 const updatedGalleriesCount = 11, randomGalleriesCount = 11;
-let updatedGalleriesSkip = 0;
 
 function launchIndexPage(pageContext) {
 
@@ -42,34 +41,25 @@ function launchIndexPage(pageContext) {
                 type: "GET",
                 url: "php/getLatestUpdated.php?spaType=" + spaType + "&limit=" + updatedGalleriesCount,
                 success: function (data) {
-                    if (data.indexOf("error") > 0) {
-                        alert("getLatestUpdatedGalleries: " + data);
+                    $('#latestUpdatesContainer').html('');
+                    let jdata = JSON.parse(data);
+                    for (i = 0; i < updatedGalleriesCount; i++) {
+                        let thisItemSrc = settingsImgRepo + jdata[i].ImageFile;
+                        $('#latestUpdatesContainer').append("<div class='latestContentBox'>" +
+                            "<div class='latestContentBoxLabel'>" + jdata[i].FolderName + "</div>" +
+                            "<img id='lt" + jdata[i].FolderId + "' class='latestContentBoxImage' alt='img/redballon.png' \nsrc='" + thisItemSrc + "' \n" +
+                            " onerror='imageError(\"" + jdata[i].FolderId + "\",\"" + thisItemSrc + "\",'LatestUpdatedGalleries'\")'\n" +
+                            "\nonclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + jdata[i].FolderId + "\" ' />" +
+                            "<div class='latestContentBoxDateLabel'>updated: " + dateString2(jdata[i].Acquired) + "</span></div>" +
+                            "</div>");
                     }
-                    else {
-                        if (updatedGalleriesSkip == 0) {
-                            $('#latestUpdatesContainer').html('');
-                        }
-                        let jdata = JSON.parse(data);
-                        for (i = updatedGalleriesSkip; i < updatedGalleriesCount; i++) {
-                            let thisItemSrc = settingsImgRepo + jdata[i].ImageFile;
-                            $('#latestUpdatesContainer').append("<div class='latestContentBox'>" +
-                                "<div class='latestContentBoxLabel'>" + jdata[i].FolderName + "</div>" +
-                                "<img id='lt" + jdata[i].FolderId + "' class='latestContentBoxImage' alt='img/redballon.png' \nsrc='" + thisItemSrc + "' \n" +
-                                " onerror='imageError(\"" + jdata[i].FolderId + "\",\"" + thisItemSrc + "\",'LatestUpdatedGalleries'\")'\n" +
-                                "\nonclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + jdata[i].FolderId + "\" ' />" +
-                                "<div class='latestContentBoxDateLabel'>updated: " + dateString2(jdata[i].Acquired) + "</span></div>" +
-                                "</div>");
-                        }
-                        $('#imgLatestUpdate').on("click", function () {
-                            updatedGalleriesSkip += updatedGalleriesCount;
-                            getLatestUpdatedGalleries(pageContext)
-                        }).show();
-
-                    }
+                    $('#imgLatestUpdate').on("click", function () {
+                        updatedGalleriesCount += 11;
+                        getLatestUpdatedGalleries(spaType);
+                    }).show();
                 },
                 error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("setFolderImage: " + errMsg);
+                    logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "get updated galleries");
                 }
             });
         } catch (e) {
@@ -115,14 +105,11 @@ function launchIndexPage(pageContext) {
                 },
                 error: function (jqXHR) {
                     $('#albumPageLoadingGif').hide();
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    $('#randomGalleriesContainer').html(errMsg)
-                    //alert("getRandomGalleries: " + errMsg);
-                    // logError("XHR", folderId, errMsg, "get albumImages");
+                    logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "get random  galleries");
                 }
             });
         } catch (e) {
-            alert("getRandomGalleries catch: " + e);
+            logOggleError("CAT", folderId, e, "get random  galleries");
         }
     }
 }

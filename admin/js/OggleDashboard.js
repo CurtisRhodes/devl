@@ -277,7 +277,7 @@ function updateFolderCounts() {
 
         //imgLinks.Links = db.VwLinks.Where(l => l.FolderId == folderId).OrderBy(l => l.SortOrder).ToList();
         $.ajax({
-            url: "php/customFetchAll.php?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val() + " order by SortOrder",
+            url: "php/yagdrasselFetchAll.php?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val() + " order by SortOrder",
             success: function (imgLinks) {
                 $('#dashBoardLoadingGif').hide();
                 if (imgLinks.indexOf("error") > -1)
@@ -463,7 +463,7 @@ function testHitConnection() {
 function testGetCatFolder() {
     $.ajax({
         type: "GET",
-        url: "php/customFetch.php?query=select * from CategoryFolder where Id = 411",
+        url: "php/yagdrasselFetch.php?query=select * from CategoryFolder where Id = 411",
         dataType: "html",
         success: function (response) {
             $("#outputArea").html(response);
@@ -588,7 +588,7 @@ function folderCountTest() {
 
         //imgLinks.Links = db.VwLinks.Where(l => l.FolderId == folderId).OrderBy(l => l.SortOrder).ToList();
         $.ajax({
-            url: "php/customFetchAll.php?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val() + " order by SortOrder",
+            url: "php/yagdrasselFetchAll.php?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val() + " order by SortOrder",
             success: function (imgLinks) {
                 $('#dashBoardLoadingGif').hide();
                 if (imgLinks.indexOf("error") > -1)
@@ -626,7 +626,7 @@ function folderCountTest() {
         $.ajax({
             type: "GET",
             //db.VwLinks.Where(l => (l.FolderId == folderId) && (l.FolderId == l.SrcId)).OrderBy(l => l.SortOrder).ToList();
-            url: "php/customFetchAll?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val(),
+            url: "php/yagdrasselFetchAll?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val(),
             success: function (imgLinks) {
                 $('#dashBoardLoadingGif').hide();
                 if (imgLinks != "error") {

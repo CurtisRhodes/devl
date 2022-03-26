@@ -87,12 +87,12 @@ function performRepairLinks() {
 function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
     try {
         $.ajax({
-            url: "php/customFetch.php?query=select f.Id, f.FolderType, f.FolderPath, f.SecretNote as actualFolderName, p.FolderName as ParentName from CategoryFolder f join CategoryFolder p on p.Id = f.Parent where f.Id=" + rootFolderId,
+            url: "php/yagdrasselFetch.php?query=select f.Id, f.FolderType, f.FolderPath, f.SecretNote as actualFolderName, p.FolderName as ParentName from CategoryFolder f join CategoryFolder p on p.Id = f.Parent where f.Id=" + rootFolderId,
             success: function (result) {
                 let catFolder = JSON.parse(result);
                 // GET SUBFOLDERS AS PER DATABASE
                 $.ajax({
-                    url: 'php/customFetchAll.php?query=select Id, FolderName, SecretNote as actualFolderName, FolderPath from CategoryFolder where Parent=' + rootFolderId,
+                    url: 'php/yagdrasselFetchAll.php?query=select Id, FolderName, SecretNote as actualFolderName, FolderPath from CategoryFolder where Parent=' + rootFolderId,
                     success: function (childDirs) {
                         if (childDirs.indexOf('Error') > -1) {
                             repairReport.errors.push("<div>Error: db error</div>");
@@ -101,7 +101,7 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
                         let jchildDirs = JSON.parse(childDirs);
                         // GET IMAGEFILE ROWS FROM DATABASE
                         $.ajax({
-                            url: "php/customFetchAll.php?query=select * from ImageFile where FolderId=" + rootFolderId,
+                            url: "php/yagdrasselFetchAll.php?query=select * from ImageFile where FolderId=" + rootFolderId,
                             success: function (imageFiles) {
                                 let databaseImageFilesRows = JSON.parse(imageFiles);
                                 let fullPath = "../../danni/" + catFolder.FolderPath;

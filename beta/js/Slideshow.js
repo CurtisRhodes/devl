@@ -43,13 +43,13 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
         $('#slideshowMessageArea').html('loading');
         if (isLargeLoad) {
             $.ajax({
-                url: "php/customFetchAll.php?query=select f.Id, p.FolderName from CategoryFolder f " +
+                url: "php/yagdrasselFetchAll.php?query=select f.Id, p.FolderName from CategoryFolder f " +
                     "join CategoryFolder p on f.Parent = p.Id where f.Parent=" + folderId,
                 success: function (data) {
                     let childFolders = JSON.parse(data);
                     slideshowParentName = childFolders[0].FolderName;
                     $.each(childFolders, function (idx, childFolder) {
-                        $.getJSON('php/customFetchAll.php?query=select * from VwLinks where FolderId=' +
+                        $.getJSON('php/yagdrasselFetchAll.php?query=select * from VwLinks where FolderId=' +
                             childFolder.Id + ' order by SortOrder', function (data) {
                                 $.each(data, function (idx, obj) {
                                     imageArray.push(obj);
@@ -70,7 +70,7 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
         }
         else { 
             $.ajax({
-                url: 'php/customFetchAll.php?query=select * from VwLinks where FolderId=' + folderId,
+                url: 'php/yagdrasselFetchAll.php?query=select * from VwLinks where FolderId=' + folderId,
                 success: function (data) {
                     if (data.substring(20).indexOf("error") > 0) {
                         $('#blogListArea').html(data);
@@ -115,7 +115,7 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
 
 function getFolderDetails(folderId) {
     $.ajax({
-        url: 'php/customFetch.php?query=select f.FolderName, p.FolderName as ParentName ' +
+        url: 'php/yagdrasselFetch.php?query=select f.FolderName, p.FolderName as ParentName ' +
             ' from CategoryFolder f join CategoryFolder p on f.Parent = p.Id where f.Id=' + folderId,
         success: function (data) {
             if (data.substring(20).indexOf("error") > 0) {

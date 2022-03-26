@@ -15,12 +15,12 @@ function getAlbumImages(folderId, islargeLoad) {
         $('#imageContainer').html("");
         if (islargeLoad) {
             $.ajax({
-                url: "php/customFetchAll.php?query=Select * from CategoryFolder where Parent=" + folderId,
+                url: "php/yagdrasselFetchAll.php?query=Select * from CategoryFolder where Parent=" + folderId,
                 success: function (data) {
                     $('#albumContentArea').fadeIn();
                     let childFolders = JSON.parse(data);
                     $.each(childFolders, function (idx, childFolder) {
-                        $.getJSON('php/customFetchAll.php?query=select * from VwLinks where FolderId=' + childFolder.Id + ' order by SortOrder', function (data) {
+                        $.getJSON('php/yagdrasselFetchAll.php?query=select * from VwLinks where FolderId=' + childFolder.Id + ' order by SortOrder', function (data) {
                             let vlinks = JSON.parse(data);
                             $.each(vlinks, function (idx, vLink) {
                                 loadImageResults(vLink, childFolder.Id);
@@ -33,7 +33,7 @@ function getAlbumImages(folderId, islargeLoad) {
             });
         }
         else {
-            $.getJSON('php/customFetchAll.php?query=select * from VwLinks where FolderId=' + folderId + ' order by SortOrder', function (data) {
+            $.getJSON('php/yagdrasselFetchAll.php?query=select * from VwLinks where FolderId=' + folderId + ' order by SortOrder', function (data) {
                 // let vlinks = JSON.parse(data);
                 $.each(data, function (idx, vLink) {
                     loadImageResults(vLink, folderId);
@@ -78,7 +78,7 @@ function loadImageResults(vLink, folderId) {
 
 function getSubFolders(folderId) {
     try {
-        $.getJSON("php/customFetchAll.php?query=select * from VwDirTree where Parent=" + folderId +
+        $.getJSON("php/yagdrasselFetchAll.php?query=select * from VwDirTree where Parent=" + folderId +
             " order by SortOrder,FolderName", function (data) {
                 $.each(data, function (index, obj) {
                     let linkId = create_UUID();
@@ -114,17 +114,17 @@ function getAlbumPageInfo(folderId, islargeLoad) {
             alert("get AlbumPage info: folderId.isNullorUndefined: " + folderId);
             return;
         }
-
         $.ajax({
-            url: 'php/customFetch.php?query=Select * from CategoryFolder where Id=' + folderId,
+            url: 'php/yagdrasselFetch.php?query=Select * from CategoryFolder where Id=' + folderId,
             success: function (data) {
                 let catfolder = JSON.parse(data);
                 $('#albumPageLoadingGif').hide();
                 $('#albumTopRow').show();
                 $('#seoPageName').html(catfolder.FolderName);
+
                 setBreadcrumbs(folderId, catfolder.RootFolder);
 
-                // resetOggleHeader(folderId, catfolder.RootFolder);
+                addTrackbackLinks(folderId);
 
                 switch (catfolder.RootFolder) {
                     case "playboy":
@@ -191,9 +191,7 @@ function getAlbumPageInfo(folderId, islargeLoad) {
             },
             error: function (jqXHR) {
                 $('#albumPageLoadingGif').hide();
-                let errMsg = getXHRErrorDetails(jqXHR);
-                alert("get AlbumPageInfo: " + errMsg);
-                //if (!checkFor404(errMsg, folderId, "chargeCredits")) logError("XHR", folderId, errMsg, "chargeCredits");
+                logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "get albumPage info");
             }
         });
         let delta = (Date.now() - infoStart) / 1000;
@@ -208,7 +206,7 @@ function setBreadcrumbs(folderId, rootFolder) {
         //$('#aboveImageContainerMessageArea').html('loading breadcrumbs');
         $('#breadcrumbContainer').html("<img style='height:27px' src='https://common.ogglefiles.com/img/loader.gif'/>");
         $.ajax({
-            url: "php/customFetchAll.php?query=Select * from VwDirTree",
+            url: "php/yagdrasselFetchAll.php?query=Select * from VwDirTree",
             success: function (data) {
                 if (data.indexOf("Fatal error") > 0) {
                     $('#breadcrumbContainer').html(data);
@@ -270,6 +268,46 @@ function addBreadcrumb(folderId, folderName, className) {
         "\"'>" + folderName + "</div>";
 }
 
+function addTrackbackLinks(folderId) {
+    try {
+        $.ajax({
+            url: 'php/yagdrasselFetchAll.php?query=Select * from TrackbackLink where CatFolderId=' + folderId,
+            success: function (data) {
+                let trackBackItems = JSON.parse(data);
+                if ((trackBackItems.length > 0)) {
+                    $('#trackbackContainer').css("display", "inline-block");
+                    $.each(trackBackItems, function (idx, obj) {
+                        if (obj.LinkStatus == "ok") {
+                            switch (obj.SiteCode) {
+                                case "FRE":
+                                    $('#trackbackLinkArea').append("<div class='trackBackLink'><a href='" + obj.Href + "' target=\"_blank\">" + albumInfo.FolderName + " Free Porn</a></div>");
+                                    break;
+                                case "BAB":
+                                    $('#trackbackLinkArea').append("<div class='trackBackLink'><a href='" + obj.Href + "' target=\"_blank\">Babepedia</a></div>");
+                                    break;
+                                case "BOB":
+                                    $('#trackbackLinkArea').append("<div class='trackBackLink'><a href='" + obj.Href + "' target=\"_blank\">Boobpedia</a></div>");
+                                    break;
+                                case "IND":
+                                    $('#trackbackLinkArea').append("<div class='trackBackLink'><a href='" + obj.Href + "' target=\"_blank\">Indexxx</a></div>");
+                                    break;
+                                default:
+                                    logError("SWT", folderId, "site code: " + obj.SiteCode, "getAlbumPageInfo/TrackBackItems");
+                            }
+                        }
+                    });
+                }
+            },
+            error: function (jqXHR) {
+                logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "add trackback links");
+            }
+        });
+    } catch (e) {
+        logOggleError("CAT", folderId, e, "add trackback links");
+    }
+}
+
+
 function folderClick(folderId, isStepChild) {
     try {
         if (isStepChild == 1)
@@ -283,3 +321,7 @@ function folderClick(folderId, isStepChild) {
         logOggleError("CAT", folderId, e, "folder click");
     }
 }
+
+
+
+

@@ -1,175 +1,6 @@
 ﻿const settingsImgRepo = 'https://ogglefiles.com/danni/';
 
 /*-- click events -----------------------------------*/
-function resetOggleHeader(folderId, rootFolder) {
-    hdrFolderId = folderId;
-    hdrRootFolder = rootFolder;
-    $('#divLoginArea').show();
-    //  $('#hdrBtmRowSec3').html("");
-    $('#oggleHeaderTitle').html(rootFolder);
-    switch (rootFolder) {
-        case "boobs":
-            $('#hdrBtmRowSec3').append(bannerLink(eventCode, goToFolderId, calledFromFolderId));
-            $('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
-            $('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
-        case "root":
-        case "index":
-        case "archive": {
-            //changeFavoriteIcon("redBallon");
-            //console.log("changeFavoriteIcon redBallon 1")
-            //$('#oggleHeader').switchClass('playboyHeader');
-            $('#divSiteLogo').attr("src", "/img/redballon.png");
-            $('#oggleHeaderTitle').html("OggleBooble");
-            $('#topRowRightContainer').html(addRankerButton("010000000", "big naturals ranker"));
-            setHeaderMenu("boobs");
-            break;
-        }
-        case "playboyIndex":
-            //$('#oggleHeader').switchClass('playboyHeader');
-            document.title = "every Playboy Centerfold : OggleBooble";
-            $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
-            $('#oggleHeaderTitle').html("<span style='color:#fff;'>every playboy centerfold</span>");
-            $('#topRowRightContainer').append(addRankerButton("001000000", "centerfold ranker"));
-            $('#hdrBtmRowSec3').append(addPgLinkButton(10326, "Bond Girls"));
-            $('#hdrBtmRowSec3').append(bannerLink("back to OggleBooble", 0, folderId));
-            //$('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
-            $('#hdrBtmRowSec3').append(bannerLink("Oggle Porn", folderId));
-            setHeaderMenu("playboyIndex");
-            break;
-        case "playboy":
-            //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
-            $('#oggleHeaderTitle').html("Playboy");
-            $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
-            $('#topRowRightContainer').append(addRankerButton("001000000", "centerfold ranker"));
-            $('#hdrBtmRowSec3').append(bannerLink("back to OggleBooble", folderId));
-            //$('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
-            //$('#hdrBtmRowSec3').append(bannerLink(3909, "Oggle Porn"));
-            setHeaderMenu("playboy");
-            break;
-        case "cybergirl":
-            //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
-            $('#oggleHeaderTitle').html("Cybergirls");
-            $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
-            $('#topRowRightContainer').append(addRankerButton("000100000", "Cybergirls ranker"));
-            // bottom row
-            $('#hdrBtmRowSec3').append(bannerLink("back to OggleBooble", folderId));
-            $('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
-            $('#hdrBtmRowSec3').append(bannerLink("Oggle Porn", folderId));
-            //setHeaderMenu("playboy");
-            $('#topHeaderRow').html(
-                "<span onclick='headerMenuClick(\"cybergirl\",1132)'>centerfolds, </span>\n" +
-                "<span onclick='headerMenuClick(\"cybergirl\",6095)'>muses, </span>\n" +
-                "<span onclick='headerMenuClick(\"cybergirl\",6368)'>playboy plus, </span>\n" +
-                "<span onclick='headerMenuClick(\"cybergirl\",3128)'>international, </span>\n" +
-                "<span onclick='headerMenuClick(\"cybergirl\",9306)'>more</span>\n"
-            );
-            break;
-        case "bond":
-            //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
-            $('#oggleHeaderTitle').html("Bond Girls");
-            $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
-            $('#topRowRightContainer').append(addRankerButton("000010000", "Muses ranker"));
-            // bottom row
-            $('#badgesContainer').append(bannerLink(3908, "back to OggleBooble"));
-            //$('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
-            //$('#hdrBtmRowSec3').append(bannerLink(3909, "Oggle Porn"));
-            //setHeaderMenu("playboy");
-            $('#topHeaderRow').html(
-                "<span onclick='headerMenuClick(\"muses\",1132)'>centerfolds, </span>\n" +
-                "<span onclick='headerMenuClick(\"muses\",3796)'>cybergirls, </span>\n" +
-                "<span onclick='headerMenuClick(\"muses\",6368)'>playboy plus, </span>\n" +
-                "<span onclick='headerMenuClick(\"muses\",3128)'>international, </span>\n" +
-                "<span onclick='headerMenuClick(\"muses\",9306)'>more</span>\n"
-            );
-            break;
-        case "muses":
-            //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
-            $('#oggleHeaderTitle').html("muses");
-            $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
-            $('#topRowRightContainer').append(addRankerButton("000010000", "Muses ranker"));
-            // bottom row
-            $('#badgesContainer').append(bannerLink("back to OggleBooble", folderId));
-            //$('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
-            //$('#hdrBtmRowSec3').append(bannerLink(3909, "Oggle Porn"));
-            //setHeaderMenu("playboy");
-            $('#topHeaderRow').html(
-                "<span onclick='headerMenuClick(\"muses\",1132)'>centerfolds, </span>\n" +
-                "<span onclick='headerMenuClick(\"muses\",3796)'>cybergirls, </span>\n" +
-                "<span onclick='headerMenuClick(\"muses\",6368)'>playboy plus, </span>\n" +
-                "<span onclick='headerMenuClick(\"muses\",3128)'>international, </span>\n" +
-                "<span onclick='headerMenuClick(\"muses\",9306)'>more</span>\n"
-            );
-            break;
-        case "plus":
-            //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
-            $('#oggleHeaderTitle').html("Playboy Plus");
-            $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
-            $('#topRowRightContainer').append(addRankerButton("000001000", "Muses ranker"));
-            // bottom row
-            $('#badgesContainer').append(bannerLink("back to OggleBooble", folderId));
-            //setHeaderMenu("playboy");
-            $('#topHeaderRow').html(
-                "<span onclick='headerMenuClick(\"playboyplus\",1132)'>centerfolds, </span>\n" +
-                "<span onclick='headerMenuClick(\"playboyplus\",3796)'>cybergirls, </span>\n" +
-                "<span onclick='headerMenuClick(\"playboyplus\",6095)'>muses, </span>\n" +
-                "<span onclick='headerMenuClick(\"playboyplus\",3128)'>international, </span>\n" +
-                "<span onclick='headerMenuClick(\"playboyplus\",9306)'>more</span>\n"
-            );
-            break;
-        case "magazine":
-        case "centerfold": {
-            //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
-            $('#oggleHeaderTitle').html("playboy centerfold");
-            $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
-            $('#topRowRightContainer').append(addRankerButton("001000000", "centerfold ranker"));
-            // bottom row
-            $('#hdrBtmRowSec3').append(bannerLink("back to OggleBooble", folderId));
-            setHeaderMenu("playboy");
-            break;
-        }
-        case "soft": {
-            $('#oggleHeader').switchClass('boobsHeader', 'oggleSoft');
-            $('#divSiteLogo').attr("src", "/img/redwoman.png");
-            document.title = "softcore : OggleBooble";
-            changeFavoriteIcon("soft");
-            $('#oggleHeaderTitle').html("OggleSoftcore 2");
-            // bottom row
-            $('#badgesContainer').append(bannerLink("back to OggleBooble", folderId));
-            $('#badgesContainer').append(bannerLink("OgglePorn", folderId));
-            $('#badgesContainer').append(addPgLinkButton(440, "porn actresses archive"));
-            setHeaderMenu("soft");
-            break;
-        }
-        case "porn": {
-            changeFavoriteIcon("porn");
-            //console.log("changeFavoriteIcon porn 2")
-            $('#oggleHeader').switchClass('boobsHeader', 'pornHeader');
-            $('#divSiteLogo').attr("src", "/img/csLips02.png");
-            $('#oggleHeaderTitle').html("OgglePorn ");
-            $('#topRowRightContainer').html(addRankerButton("000000010", "porn ranker"));
-            // bottom row
-            $('#badgesContainer').append(bannerLink("back to OggleBooble", folderId));
-            $('#badgesContainer').append(addPgLinkButton(440, "porn actresses archive"));
-            $('#badgesContainer').append(addPgLinkButton(5233, "softcore"));
-            setHeaderMenu("porn");
-            break;
-        }
-        case "sluts":
-            changeFavoriteIcon("porn");
-            $('#oggleHeader').switchClass('boobsHeader', 'pornHeader');
-            $('#divSiteLogo').attr("src", "/img/csLips02.png");
-            $('#oggleHeaderTitle').html("PornStar Archive ");
-            $('#topRowRightContainer').html(addRankerButton("000000001", "porn star ranker"));
-            // bottom row
-            $('#badgesContainer').append(bannerLink("back to OggleBooble", folderId));
-            $('#badgesContainer').append(bannerLink("back to porn", folderId));
-            setHeaderMenu("sluts");
-            break;
-        default:
-            logError("SWT", 1117705, "switch case: " + rootFolder, "reset OggleHeader");
-            window.location.href = "Index.html";
-    }
-}
 function addRankerButton(rankerType, labelText) {
     return "<div class='headerBannerButton'>\n" +
         "<div class='clickable' onclick='location.href=\"index.html?spa=3907&bp=" + rankerType + "\"'" +
@@ -592,7 +423,7 @@ function addPgLinkButton(folderId, labelText) {
             $('#ctxDownLoad').hide();
             $.ajax({
                 type: "GET",
-                url: "php/customFetch.php?query=select p.FolderName as ParentFolderName, i.*, f.* from ImageFile i " +
+                url: "php/yagdrasselFetch.php?query=select p.FolderName as ParentFolderName, i.*, f.* from ImageFile i " +
                     "join CategoryFolder f on i.FolderId=f.Id join CategoryFolder p on f.Parent=p.Id where i.id ='" + linkId + "'",
                 success: function (data) {
                     let imgData = JSON.parse(data);
@@ -1203,77 +1034,242 @@ function addPgLinkButton(folderId, labelText) {
     }
 }
 
-/* -------- Context Menu -----------*/{
+/* -------- not used -----------*/{
+    function XXperformEvent(eventCode, eventDetail, folderId) {
+        //        if (eventCode === "PRN") {
+        //            //  setUserPornStatus(pornType);
+        //        }
+        //            case "LUP":  // latest Update click
+        //        if (eventDetail.lastIndexOf("_") > 0) {
+        //            logImageHit(eventDetail.substr(eventDetail.lastIndexOf("_") + 1, 36), folderId, true);
+        //        }
+        //        window.location.href = "/album.html?folder=" + folderId;
+        //        break;
+        //            case "GIC": // Gallery Item Clicked
+        //            case "CMC": // carousle context menu item clicked
+        //            case "CXM":  // carousle context menu opened
+        //            case "XLC":  // external link clicked
+        //        // DO NOTHING BUT REPORT
+        //        break;
+        //            case "PRN":  //("Porn Option clicked");
+        //        window.location.href = '/index.html?subdomain=porn';
+        //        break;
+        //            case "HBC":  //  header banner clicked
+        //        window.location.href = '/index.html?spa=' + eventDetail;
+        //        break;
+        //            case "GAX":  // can I get a connection
+        //        alert("can I get a connection");
+        //        //window.location.href = ".";
+        //        break;
+        //            case "EXP":  // Explode
+        //        //rtpe("EXP", currentAlbumJSfolderName, selectedImage, albumFolderId);
+        //        window.open(eventDetail, "_blank");
+        //            logImageHit(eventDetail.substr(eventDetail.lastIndexOf("_") + 1, 36), folderId, true);
+        //        }
+        //        window.location.href = "/album.html?folder=" + folderId;  //  open page in same window
+        //        break;
+        //            case "HBX":  // Home breadcrumb Clicked
+        //        if (eventDetail === "porn")
+        //            window.location.href = '/index.html?subdomain=porn';
+        //        else
+        //            window.location.href = "/";
+        //        break;
+        //            case "RNK":  // Ranker Banner Clicked
+        //        window.location.href = "/Ranker.html?subdomain=" + eventDetail;
+        //        break;
+        //            case "FLC":  //  footer link clicked
+        //        switch (eventDetail) {
+        //            case "about us": showCustomMessage(38); break;
+        //            case "dir tree": showCatListDialog(2); break;
+        //            case "porn dir tree": showCatListDialog(242); break;
+        //            case "playmate dir tree": showCatListDialog(472); break;
+        //            case "porn": showCustomMessage(35, false); break;
+        //            case "blog": window.location.href = '/index.html?subdomain=blog'; break;
+        //            case "ranker": window.location.href = "/Ranker.html"; break;
+        //            case "rejects": window.location.href = "/album.html?folder=1132"; break;
+        //            case "centerfolds": window.location.href = "/album.html?folder=1132"; break;
+        //            case "cybergirls": window.location.href = "/album.html?folder=3796"; break;
+        //            case "softcore": window.location.href = "/album.html?folder=5233"; break;
+        //            case "extras": window.location.href = "/album.html?folder=2601"; break;
+        //            case "sluts": window.location.href = "/album.html?folder=440"; break;
+        //            case "magazine covers": window.location.href = "/album.html?folder=1986"; break;
+        //            case "archive": window.location.href = "/album.html?folder=3"; break;
+        //            case "videos": window.location.href = 'video.html'; break;
+        //            case "mailme": window.location.href = 'mailto:curtishrhodes@hotmail.com'; break;
+        //            case "freedback": showFeedbackDialog(folderId); break;
+        //            case "slut archive": window.location.href = "/album.html?folder=440"; break;
+        //            default:
+        //                logError("SWT", folderId, "Uncaught Case: " + eventDetail, "performEvent/footer link click");
+        //                break;
+        //        }
+    }
+    function resetOggleHeader(folderId, rootFolder) {
+        hdrFolderId = folderId;
+        hdrRootFolder = rootFolder;
+        $('#divLoginArea').show();
+        //  $('#hdrBtmRowSec3').html("");
+        $('#oggleHeaderTitle').html(rootFolder);
+        switch (rootFolder) {
+            case "boobs":
+                $('#hdrBtmRowSec3').append(bannerLink(eventCode, goToFolderId, calledFromFolderId));
+                $('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
+                $('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
+            case "root":
+            case "index":
+            case "archive": {
+                //changeFavoriteIcon("redBallon");
+                //console.log("changeFavoriteIcon redBallon 1")
+                //$('#oggleHeader').switchClass('playboyHeader');
+                $('#divSiteLogo').attr("src", "/img/redballon.png");
+                $('#oggleHeaderTitle').html("OggleBooble");
+                $('#topRowRightContainer').html(addRankerButton("010000000", "big naturals ranker"));
+                setHeaderMenu("boobs");
+                break;
+            }
+            case "playboyIndex":
+                //$('#oggleHeader').switchClass('playboyHeader');
+                document.title = "every Playboy Centerfold : OggleBooble";
+                $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
+                $('#oggleHeaderTitle').html("<span style='color:#fff;'>every playboy centerfold</span>");
+                $('#topRowRightContainer').append(addRankerButton("001000000", "centerfold ranker"));
+                $('#hdrBtmRowSec3').append(addPgLinkButton(10326, "Bond Girls"));
+                $('#hdrBtmRowSec3').append(bannerLink("back to OggleBooble", 0, folderId));
+                //$('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
+                $('#hdrBtmRowSec3').append(bannerLink("Oggle Porn", folderId));
+                setHeaderMenu("playboyIndex");
+                break;
+            case "playboy":
+                //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
+                $('#oggleHeaderTitle').html("Playboy");
+                $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
+                $('#topRowRightContainer').append(addRankerButton("001000000", "centerfold ranker"));
+                $('#hdrBtmRowSec3').append(bannerLink("back to OggleBooble", folderId));
+                //$('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
+                //$('#hdrBtmRowSec3').append(bannerLink(3909, "Oggle Porn"));
+                setHeaderMenu("playboy");
+                break;
+            case "cybergirl":
+                //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
+                $('#oggleHeaderTitle').html("Cybergirls");
+                $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
+                $('#topRowRightContainer').append(addRankerButton("000100000", "Cybergirls ranker"));
+                // bottom row
+                $('#hdrBtmRowSec3').append(bannerLink("back to OggleBooble", folderId));
+                $('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
+                $('#hdrBtmRowSec3').append(bannerLink("Oggle Porn", folderId));
+                //setHeaderMenu("playboy");
+                $('#topHeaderRow').html(
+                    "<span onclick='headerMenuClick(\"cybergirl\",1132)'>centerfolds, </span>\n" +
+                    "<span onclick='headerMenuClick(\"cybergirl\",6095)'>muses, </span>\n" +
+                    "<span onclick='headerMenuClick(\"cybergirl\",6368)'>playboy plus, </span>\n" +
+                    "<span onclick='headerMenuClick(\"cybergirl\",3128)'>international, </span>\n" +
+                    "<span onclick='headerMenuClick(\"cybergirl\",9306)'>more</span>\n"
+                );
+                break;
+            case "bond":
+                //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
+                $('#oggleHeaderTitle').html("Bond Girls");
+                $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
+                $('#topRowRightContainer').append(addRankerButton("000010000", "Muses ranker"));
+                // bottom row
+                $('#badgesContainer').append(bannerLink(3908, "back to OggleBooble"));
+                //$('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
+                //$('#hdrBtmRowSec3').append(bannerLink(3909, "Oggle Porn"));
+                //setHeaderMenu("playboy");
+                $('#topHeaderRow').html(
+                    "<span onclick='headerMenuClick(\"muses\",1132)'>centerfolds, </span>\n" +
+                    "<span onclick='headerMenuClick(\"muses\",3796)'>cybergirls, </span>\n" +
+                    "<span onclick='headerMenuClick(\"muses\",6368)'>playboy plus, </span>\n" +
+                    "<span onclick='headerMenuClick(\"muses\",3128)'>international, </span>\n" +
+                    "<span onclick='headerMenuClick(\"muses\",9306)'>more</span>\n"
+                );
+                break;
+            case "muses":
+                //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
+                $('#oggleHeaderTitle').html("muses");
+                $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
+                $('#topRowRightContainer').append(addRankerButton("000010000", "Muses ranker"));
+                // bottom row
+                $('#badgesContainer').append(bannerLink("back to OggleBooble", folderId));
+                //$('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
+                //$('#hdrBtmRowSec3').append(bannerLink(3909, "Oggle Porn"));
+                //setHeaderMenu("playboy");
+                $('#topHeaderRow').html(
+                    "<span onclick='headerMenuClick(\"muses\",1132)'>centerfolds, </span>\n" +
+                    "<span onclick='headerMenuClick(\"muses\",3796)'>cybergirls, </span>\n" +
+                    "<span onclick='headerMenuClick(\"muses\",6368)'>playboy plus, </span>\n" +
+                    "<span onclick='headerMenuClick(\"muses\",3128)'>international, </span>\n" +
+                    "<span onclick='headerMenuClick(\"muses\",9306)'>more</span>\n"
+                );
+                break;
+            case "plus":
+                //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
+                $('#oggleHeaderTitle').html("Playboy Plus");
+                $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
+                $('#topRowRightContainer').append(addRankerButton("000001000", "Muses ranker"));
+                // bottom row
+                $('#badgesContainer').append(bannerLink("back to OggleBooble", folderId));
+                //setHeaderMenu("playboy");
+                $('#topHeaderRow').html(
+                    "<span onclick='headerMenuClick(\"playboyplus\",1132)'>centerfolds, </span>\n" +
+                    "<span onclick='headerMenuClick(\"playboyplus\",3796)'>cybergirls, </span>\n" +
+                    "<span onclick='headerMenuClick(\"playboyplus\",6095)'>muses, </span>\n" +
+                    "<span onclick='headerMenuClick(\"playboyplus\",3128)'>international, </span>\n" +
+                    "<span onclick='headerMenuClick(\"playboyplus\",9306)'>more</span>\n"
+                );
+                break;
+            case "magazine":
+            case "centerfold": {
+                //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
+                $('#oggleHeaderTitle').html("playboy centerfold");
+                $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
+                $('#topRowRightContainer').append(addRankerButton("001000000", "centerfold ranker"));
+                // bottom row
+                $('#hdrBtmRowSec3').append(bannerLink("back to OggleBooble", folderId));
+                setHeaderMenu("playboy");
+                break;
+            }
+            case "soft": {
+                $('#oggleHeader').switchClass('boobsHeader', 'oggleSoft');
+                $('#divSiteLogo').attr("src", "/img/redwoman.png");
+                document.title = "softcore : OggleBooble";
+                changeFavoriteIcon("soft");
+                $('#oggleHeaderTitle').html("OggleSoftcore 2");
+                // bottom row
+                $('#badgesContainer').append(bannerLink("back to OggleBooble", folderId));
+                $('#badgesContainer').append(bannerLink("OgglePorn", folderId));
+                $('#badgesContainer').append(addPgLinkButton(440, "porn actresses archive"));
+                setHeaderMenu("soft");
+                break;
+            }
+            case "porn": {
+                changeFavoriteIcon("porn");
+                //console.log("changeFavoriteIcon porn 2")
+                $('#oggleHeader').switchClass('boobsHeader', 'pornHeader');
+                $('#divSiteLogo').attr("src", "/img/csLips02.png");
+                $('#oggleHeaderTitle').html("OgglePorn ");
+                $('#topRowRightContainer').html(addRankerButton("000000010", "porn ranker"));
+                // bottom row
+                $('#badgesContainer').append(bannerLink("back to OggleBooble", folderId));
+                $('#badgesContainer').append(addPgLinkButton(440, "porn actresses archive"));
+                $('#badgesContainer').append(addPgLinkButton(5233, "softcore"));
+                setHeaderMenu("porn");
+                break;
+            }
+            case "sluts":
+                changeFavoriteIcon("porn");
+                $('#oggleHeader').switchClass('boobsHeader', 'pornHeader');
+                $('#divSiteLogo').attr("src", "/img/csLips02.png");
+                $('#oggleHeaderTitle').html("PornStar Archive ");
+                $('#topRowRightContainer').html(addRankerButton("000000001", "porn star ranker"));
+                // bottom row
+                $('#badgesContainer').append(bannerLink("back to OggleBooble", folderId));
+                $('#badgesContainer').append(bannerLink("back to porn", folderId));
+                setHeaderMenu("sluts");
+                break;
+            default:
+                logError("SWT", 1117705, "switch case: " + rootFolder, "reset OggleHeader");
+                window.location.href = "Index.html";
+        }
+    }
 }
-
-
-// REPORT THEN PERFORM EVENT
-function XXperformEvent(eventCode, eventDetail, folderId) {
-    //        if (eventCode === "PRN") {
-    //            //  setUserPornStatus(pornType);
-    //        }
-    //            case "LUP":  // latest Update click
-    //        if (eventDetail.lastIndexOf("_") > 0) {
-    //            logImageHit(eventDetail.substr(eventDetail.lastIndexOf("_") + 1, 36), folderId, true);
-    //        }
-    //        window.location.href = "/album.html?folder=" + folderId;
-    //        break;
-    //            case "GIC": // Gallery Item Clicked
-    //            case "CMC": // carousle context menu item clicked
-    //            case "CXM":  // carousle context menu opened
-    //            case "XLC":  // external link clicked
-    //        // DO NOTHING BUT REPORT
-    //        break;
-    //            case "PRN":  //("Porn Option clicked");
-    //        window.location.href = '/index.html?subdomain=porn';
-    //        break;
-    //            case "HBC":  //  header banner clicked
-    //        window.location.href = '/index.html?spa=' + eventDetail;
-    //        break;
-    //            case "GAX":  // can I get a connection
-    //        alert("can I get a connection");
-    //        //window.location.href = ".";
-    //        break;
-    //            case "EXP":  // Explode
-    //        //rtpe("EXP", currentAlbumJSfolderName, selectedImage, albumFolderId);
-    //        window.open(eventDetail, "_blank");
-    //            logImageHit(eventDetail.substr(eventDetail.lastIndexOf("_") + 1, 36), folderId, true);
-    //        }
-    //        window.location.href = "/album.html?folder=" + folderId;  //  open page in same window
-    //        break;
-    //            case "HBX":  // Home breadcrumb Clicked
-    //        if (eventDetail === "porn")
-    //            window.location.href = '/index.html?subdomain=porn';
-    //        else
-    //            window.location.href = "/";
-    //        break;
-    //            case "RNK":  // Ranker Banner Clicked
-    //        window.location.href = "/Ranker.html?subdomain=" + eventDetail;
-    //        break;
-    //            case "FLC":  //  footer link clicked
-    //        switch (eventDetail) {
-    //            case "about us": showCustomMessage(38); break;
-    //            case "dir tree": showCatListDialog(2); break;
-    //            case "porn dir tree": showCatListDialog(242); break;
-    //            case "playmate dir tree": showCatListDialog(472); break;
-    //            case "porn": showCustomMessage(35, false); break;
-    //            case "blog": window.location.href = '/index.html?subdomain=blog'; break;
-    //            case "ranker": window.location.href = "/Ranker.html"; break;
-    //            case "rejects": window.location.href = "/album.html?folder=1132"; break;
-    //            case "centerfolds": window.location.href = "/album.html?folder=1132"; break;
-    //            case "cybergirls": window.location.href = "/album.html?folder=3796"; break;
-    //            case "softcore": window.location.href = "/album.html?folder=5233"; break;
-    //            case "extras": window.location.href = "/album.html?folder=2601"; break;
-    //            case "sluts": window.location.href = "/album.html?folder=440"; break;
-    //            case "magazine covers": window.location.href = "/album.html?folder=1986"; break;
-    //            case "archive": window.location.href = "/album.html?folder=3"; break;
-    //            case "videos": window.location.href = 'video.html'; break;
-    //            case "mailme": window.location.href = 'mailto:curtishrhodes@hotmail.com'; break;
-    //            case "freedback": showFeedbackDialog(folderId); break;
-    //            case "slut archive": window.location.href = "/album.html?folder=440"; break;
-    //            default:
-    //                logError("SWT", folderId, "Uncaught Case: " + eventDetail, "performEvent/footer link click");
-    //                break;
-    //        }
-}
-
