@@ -64,16 +64,23 @@ function loadImageResults(vLink, folderId) {
     }
     else {
 
-        $('#imageContainer').append("<div class='intividualImageContainer'>" +
-            "<img id='" + vLink.LinkId + "' class='thumbImage' src='" + imgSrc + "' \n" +
+        $('#imageContainer').append("<div id='" + vLink.LinkId + "' class='intividualImageContainer'>" +
+            "<img class='thumbImage' src='" + imgSrc + "' \n" +
             "onerror='imageError(" + folderId + ",\"" + vLink.LinkId + "\",\"album\")' \n" +
             "oncontextmenu='albumContextMenu(\"Image\",\"" + vLink.LinkId + "\"," + folderId + ",\"" + imgSrc + "\")' \n" +
             "onclick='viewImage(\"" + imgSrc + "\",\"" + vLink.LinkId + "\")'/></div>");
 
-        if (vLink.FolderId !== vLink.SrcId)
-            imageHtml += "<div class='knownModelIndicator'><img src='images/foh01.png' title='" +
-                vLink.SrcFolder + "' onclick='rtpe(\"SEE\",\"abc\",\"detail\"," + vLink.SrcId + ")' /></div>\n";
+        if (vLink.FolderId !== vLink.SrcId) {
+            $('#' + vLink.LinkId + '').append("<div class='knownModelIndicator'><img src='https://common.ogglefiles.com/img/foh01.png' title='" +
+                vLink.SrcFolder + "' onclick='jumpToSrcFolder(" + vLink.SrcId + "," + folderId + ")' /></div>\n");
+        }
     }
+}
+
+function jumpToSrcFolder(srcId, folderId) {
+    //logOggleEvent("JPS", folderId, "album page");
+
+    window.open("/beta/album.html?folderId=" + srcId);
 }
 
 function getSubFolders(folderId) {

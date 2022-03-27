@@ -138,18 +138,16 @@ function addPgLinkButton(folderId, labelText) {
     let searchString = "", itemIndex = -1, listboxActive = false;
 
     function oggleSearchKeyDown(event) {
-        event.preventDefault();
+        //event.preventDefault();
         var ev = event.keyCode;
         if (!listboxActive) {
-
-            if (ev === 9 || ev === 40) {  //  tab
-
-                let firstlistItem = $('#searchResultsDiv').find('li:first');
-                if (isNullorUndefined(firstlistItem)) {
-                    console.error("not working");
-                    itemIndex = 1;
-                    listboxActive = true;
-                    $('#searchResultsDiv').find('li:first').addClass('selectedSearchItem').focus();
+            if (ev === 9 || ev === 40) {  // down arrow //  tab
+                if (searchString.length > 2) {
+                    if ($('#searchResultsDiv li').length > 0) {
+                        $("#searchResultsDiv ul:first-child").addClass('selectedSearchItem').focus();
+                        listboxActive = true;
+                        itemIndex = 1;
+                    }
                 }
                 return false;
             }
@@ -169,35 +167,27 @@ function addPgLinkButton(folderId, labelText) {
                 return false;
             }
 
-            if (ev !== 46 && ev > 31 && (ev < 48 || ev > 57)) {
-                if ($('#searchResultsDiv').val().length > searchString.length + 2) {
-                    alert("ev: " + ev + " evc: " + String.fromCharCode(ev) +
-                        "\n cur: " + searchString + "ins: " + $('#searchResultsDiv').val() +
-                        "\ncurL: " + searchString.length + " insL: " + $('#searchResultsDiv').val().length
-                    );
-                    searchString = $('#searchResultsDiv').val();
-                    performSearch(searchString);
-                }
-                else {
-                    searchString += String.fromCharCode(ev);
-                    //$('#txtSearch').val(searchString);
-                    performSearch(searchString);
-                }
-                return false;
+            //if (ev !== 46 && ev > 31 && (ev < 48 || ev > 57)) {
+            searchString += String.fromCharCode(ev);
+            if (searchString.length > 2) {
+                performSearch(searchString);
             }
         }
-        else {
-            // $('#headerMessage').html("LBA: " + ev);
-            var kludge;
-
-            if (ev === 40) {  // down arrow
-                if (itemIndex < $('#searchResultsDiv').children().length) {
-                    $('#searchResultsDiv').children().removeClass('selectedSearchItem');
-                    kludge = "li:nth-child(" + ++itemIndex + ")";
-                    $('#searchResultsDiv').find(kludge).addClass('selectedSearchItem').focus();
-                    $('#headerMessage').html("down: " + itemIndex);
+        else  // listboxActive true
+        {
+            if (ev === 40) {  // down arrow //  tab
+                if (searchString.length > 2) {
+                    if ($('#searchResultsDiv li').length > 0) {
+                        $("#searchResultsDiv ul:first-child").addClass('selectedSearchItem').focus();
+                        listboxActive = true;
+                        itemIndex = 1;
+                    }
                 }
-            }
+                else {
+                    clearSearch();
+                }
+                return false;
+            } // down arrow
             if (ev === 38) {  // up arrow
                 if (itemIndex > 1) {
                     $('#searchResultsDiv').children().removeClass('selectedSearchItem');
@@ -205,17 +195,26 @@ function addPgLinkButton(folderId, labelText) {
                     $('#searchResultsDiv').find(kludge).addClass('selectedSearchItem').focus();
                     $('#headerMessage').html("up: " + itemIndex);
                 }
+                return false;
             }
             if (ev === 13) {  // enter
                 kludge = "li:nth-child(" + itemIndex + ")";
                 var id = $('#searchResultsDiv').find(kludge).prop("id");
                 jumpToSelected($('#searchResultsDiv').find(kludge).prop("id"));
+                return false;
             }
             if (ev === 27) {  //  escape
                 clearSearch();
+                return false;
             }
-            return false;
+            // no valid key. something's wrong
+            clearSearch();
         }
+    }
+    function clearSearch() {
+        $('#searchResultsDiv').hide().html("");
+        listboxActive = false;
+        $('#txtSearch').focus();
     }
 
     function performSearch(searchString) {
@@ -232,10 +231,7 @@ function addPgLinkButton(folderId, labelText) {
                     type: "GET",
                     url: "php/oggleSearch.php?searchString=" + searchString,
                     success: function (data) {
-                        if (data.indexOf("Error") > 0) {
-                            alert(data);
-                        }
-                        else {
+                        if (data != "null") {
                             if (!isNullorUndefined(data.trim())) {
                                 let fData = JSON.parse(data);
                                 $('#searchResultsDiv').html("<ul class='searchResultList>").show();
@@ -257,15 +253,6 @@ function addPgLinkButton(folderId, labelText) {
                 alert(e);
             }
         }
-    }
-
-    function clearSearch() {
-        $('#searchResultsDiv').hide().html("");
-        $('#divLoginArea').show();
-        listboxActive = false;
-        searchString = "";
-        $('#txtSearch').val("");
-        $('#searchResultsDiv').hide();
     }
 
     function jumpToSelected(selectedFolderId) {

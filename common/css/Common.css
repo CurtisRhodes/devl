@@ -379,6 +379,7 @@ body {
 
 .oggleSearchBoxText {
     border-radius: 10px;
+    color: #000 !important;
 }
 
 .buttonSection {
@@ -392,8 +393,8 @@ body {
 
 .searchResultsDropdown {
     display: none;
-    background-color: #fff;
     border: solid thin black;
+    background-color: var(--oggleBackgroundColor);
     padding: 2px;
     z-index: 200;
     max-height: 555px;
