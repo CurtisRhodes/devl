@@ -27,8 +27,10 @@ body {
 }
 
 .sectionLabel {
+    display: flex;
     font-size: 16px;
     padding: 4px;
+    margin-left: 11px;
 }
 
 .latestContentBoxLabel {
@@ -52,7 +54,9 @@ body {
 .refrehIcon {
     display: none;
     height: 20px;
+    padding-top: 2px;
     cursor: pointer;
+    margin-left: 10px;
 }
 
 .boobsHeader {

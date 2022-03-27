@@ -552,71 +552,72 @@ function mailMe() {
     }
 
     function headerHtml() {
-        return "<div class='siteLogoContainer' onclick='topLogoClick()' >" +
-            "       <img id='divSiteLogo' title='home' class='siteLogo' src='https://common.ogglefiles.com/img/redballon.png'/>" +
-            "   </div>\n" +
-            "   <div class='headerBodyContainer'>\n" +
-            "       <div class='flexContainer'>\n" +
-            "           <div id='fancyHeaderTitle' onclick='headerTitleClick()' class='calligraphyTitle'></div >\n" +
-            "           <div id='topHeaderRow' class='hdrTopRowMenu'></div>" +
-            "           <div id='topRowRightContainer'></div>" +
-            "           <div id='searchBox' class='oggleSearchBox'>\n" +
-            "               <span id='notUserName' title='Esc clears search.'>search</span>" +
-            "                   <input class='oggleSearchBoxText' id='txtSearch' title='search' onkeydown='oggleSearchKeyDown(event)'></input>" +
-            "               <div id='searchResultsDiv' class='searchResultsDropdown'></div>\n" +
-            "           </div>\n" +
-            "       </div>\n" +
-            "       <div id='headerBottomRow' class='flexContainer'>\n" +
-            "           <div class='bottomRowSection1'>\n" +
-            "               <div id='headerMessage' class='bottomLeftHeaderArea'></div>\n" +
-            "               <div id='breadcrumbContainer' class='breadCrumbArea'></div>\n" +
-            "               <div id='badgesContainer' class='badgesSection'></div>\n" +
-            "               <div id='hdrBtmRowSec3' class='hdrBtmRowOverflow'></div>\n" +
-            "           </div>\n" +
-            "           <div id='divLoginArea' class='loginArea'>\n" +
-            "               <div id='optionLoggedIn' class='displayHidden'>\n" +
-            "                   <div class='hoverTab' title='modify profile'><a href='javascript:showUserProfileDialog()'>Hello <span id='spnUserName'></span></a></div>\n" +
-            "                   <div class='hoverTab'><a href='javascript:onLogoutClick()'>Log Out</a></div>\n" +
-            "               </div>\n" +
-            "               <div id='optionNotLoggedIn' class='displayHidden'>\n" +
-            "                   <div id='btnLayoutRegister' class='hoverTab'><a href='javascript:showRegisterDialog()'>Register</a></div>\n" +
-            "                   <div id='btnLayoutLogin' class='hoverTab'><a href='javascript:showLoginDialog()'>Log In</a></div>\n" +
-            "               </div>\n" +
-            "           </div>\n" +
-            "       </div>\n" +
-            "   </div>\n" +
+        return `<div class='siteLogoContainer' onclick='topLogoClick()' >
+                   <img id='divSiteLogo' title='home' class='siteLogo' src='https://common.ogglefiles.com/img/redballon.png'/>
+               </div>\n
+               <div class='headerBodyContainer'>
+                   <div class='flexContainer'>
+                       <div id='fancyHeaderTitle' onclick='headerTitleClick()' class='calligraphyTitle'></div >
+                       <div id='topHeaderRow' class='hdrTopRowMenu'></div>
+                       <div id='topRowRightContainer'></div>
+                       <div id='searchBox' class='oggleSearchBox'>
+                           <span id='notUserName' title='Esc clears search.'>search</span>
+                               <input class='oggleSearchBoxText' id='txtSearch' title='search'
+                                   onkeydown = 'oggleSearchKeyDown(event)' ></input > 
+                           <div id='searchResultsDiv' class='searchResultsDropdown'></div>
+                       </div>
+                   </div>
+                   <div id='headerBottomRow' class='flexContainer'>
+                       <div class='bottomRowSection1'>
+                           <div id='headerMessage' class='bottomLeftHeaderArea'></div>
+                           <div id='breadcrumbContainer' class='breadCrumbArea'></div>
+                           <div id='badgesContainer' class='badgesSection'></div>
+                           <div id='hdrBtmRowSec3' class='hdrBtmRowOverflow'></div>
+                       </div>
+                       <div id='divLoginArea' class='loginArea'>
+                           <div id='optionLoggedIn' class='displayHidden'>
+                               <div class='hoverTab' title='modify profile'><a href='javascript:showUserProfileDialog()'>Hello <span id='spnUserName'></span></a></div>
+                               <div class='hoverTab'><a href='javascript:onLogoutClick()'>Log Out</a></div>
+                           </div>
+                           <div id='optionNotLoggedIn' class='displayHidden'>
+                               <div id='btnLayoutRegister' class='hoverTab'><a href='javascript:showRegisterDialog()'>Register</a></div>
+                               <div id='btnLayoutLogin' class='hoverTab'><a href='javascript:showLoginDialog()'>Log In</a></div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
 
-            "<div id='indexCatTreeContainer' class='floatingDialogContainer'></div>\n" +
+            <div id='indexCatTreeContainer' class='floatingDialogContainer'></div>
 
-            "<div id='customMessageContainer' class='floatingDialogContainer'>\n" +
-            "    <div id='customMessage' class='customMessageContainer' ></div>\n" +
-            "</div>\n" +
+            <div id='customMessageContainer' class='floatingDialogContainer'>
+                <div id='customMessage' class='customMessageContainer' ></div>
+            </div>
 
-            "<div class='centeringOuterShell'>\n" +
-            "   <div class='centeringInnerShell'>\n" +
-            "      <div id='centeredDialogContainer' class='floatingDialogContainer'>\n" +
-            "           <div id='centeredDialogHeader'class='floatingDialogHeader' onmousedown='centeredDialogEnterDragMode()' onmouseup='centeredDialogCancelDragMode()'>" +
-            "               <div id='centeredDialogTitle' class='floatingDialogTitle'></div>" +
-            "               <div id='centeredDialogCloseButton' class='dialogCloseButton'>" +
-            "               <img src='https://common.ogglefiles.com/img/close.png' onclick='centeringDialogClose()'/></div>\n" +
-            "           </div>\n" +
-            "           <div id='centeredDialogContents' class='floatingDialogContents'></div>\n" +
-            "      </div>\n" +
-            "   </div>\n" +
-            "</div>\n" +
+            <div class='centeringOuterShell'>
+               <div class='centeringInnerShell'>
+                  <div id='centeredDialogContainer' class='floatingDialogContainer'>
+                       <div id='centeredDialogHeader'class='floatingDialogHeader' onmousedown='centeredDialogEnterDragMode()' onmouseup='centeredDialogCancelDragMode()'>" +
+                           <div id='centeredDialogTitle' class='floatingDialogTitle'></div>" +
+                           <div id='centeredDialogCloseButton' class='dialogCloseButton'>" +
+                           <img src='https://common.ogglefiles.com/img/close.png' onclick='centeringDialogClose()'/></div>
+                       </div>
+                       <div id='centeredDialogContents' class='floatingDialogContents'></div>
+                  </div>
+               </div>
+            </div>
 
-            "<div id='floatingDialogBox' class='floatingDialogContainer displayHidden'>\n" +
-            "    <div class='floatingDialogHeader'>\n" +
-            "        <div \id='floatingDialogBoxTitle' class='floatingDialogTitle'></div>\n" +
-            "        <div class='dialogCloseButton'><img src='https://common.ogglefiles.com/img/close.png' onclick='$(\"#floatingDialogBox\").hide()'/></div>\n" +
-            "    </div>\n" +
-            "    <div id='floatingDialogContents' class='floatingDialogContents'></div>\n" +
-            "</div>\n" +
+            <div id='floatingDialogBox' class='floatingDialogContainer displayHidden'>
+                <div class='floatingDialogHeader'>
+                    <div \id='floatingDialogBoxTitle' class='floatingDialogTitle'></div>
+                    <div class='dialogCloseButton'><img src='https://common.ogglefiles.com/img/close.png' onclick='$(\"#floatingDialogBox\").hide()'/></div>
+                </div>
+                <div id='floatingDialogContents' class='floatingDialogContents'></div>
+            </div>
 
-            "<div id='customDirTreeContainer' class='dirTreeImageContainer floatingDirTreeImage'>\n" +
-            "   <img class='customDirTreeImage' src='https://common.ogglefiles.com/img/close.png'/>\n" +
-            "</div>\n" +
-            "<div id='vailShell' class='modalVail'></div>\n";
+            <div id='customDirTreeContainer' class='dirTreeImageContainer floatingDirTreeImage'>
+               <img class='customDirTreeImage' src='https://common.ogglefiles.com/img/close.png'/>
+            </div>
+            <div id='vailShell' class='modalVail'></div>`;
     }
 }
 /* -------- Dialog boxes -----------*/{
@@ -648,22 +649,24 @@ function mailMe() {
                 <div class='clickable' onclick='window.open("https://ogglefiles.com/blog")'>Blog</div>
              </div>
              <div id='footerCol3' class='footerCol'>
-                <div class='clickable' onclick='mailMe()'>email site developer</div>
+                <div class='clickable' onclick='window.location.href="mailto:curtishrhodes@hotmail.com"'>email site developer</div>
              </div>
              <div id='footerCol4' class='footerCol'>
              </div>
              <div id='footerCol5' class='footerCol'>
              </div>
              <div id='footerCol6' class='footerCol'>
+                <div class='clickable' onclick='window.open("https://www.paypal.com/donate/?hosted_button_id=M5UE6B2RJ9NFY")'
+                    alt='paypal test'>make a donation</div>
              </div>
              <div id='footerCol7' class='footerCol rightMostfooterColumn'>
              </div>
-            </div>\n<div class='footerFooter'>
-                <div class='footerFooterMessage' id='footerMessage1'></div>
-                <div class='footerFooterMessage' id='footerMessage2'></div>
-                <div class='forceRight'>Copyright &copy;` + new Date().getFullYear() + `  -
-                <div class='inline clickable' onclick='window.open("https://ogglefiles.com/node/IntelDesign.html")'">
-                        Intelligent Design SoftWare</div>
+        </div>
+        <div class='footerFooter'>
+            <div class='footerFooterMessage' id='footerMessage1'></div>
+            <div class='footerFooterMessage' id='footerMessage2'></div>
+            <div class='forceRight'>Copyright &copy;` + new Date().getFullYear() + `  -
+                <div class='inline clickable' onclick='window.open("https://ogglefiles.com/node/IntelDesign.html")'">Intelligent Design SoftWare</div>
             </div>
         </div>`);
     }
@@ -683,8 +686,7 @@ function mailMe() {
                     <div class='clickable' onclick='displayFeedback()'>Feedback</div>`
                     );
                     $('#footerCol3').append(`
-                    <div class='clickable' onclick='footerItemClick(1)'>Search</div>
-                    <div class='clickable' onclick='footerItemClick(1)'>Research</div>
+                    <div class='clickable' onclick='footerItemClick(1)'>Search</div>                    
                     <div class='clickable' onclick='footerItemClick(1)'>Advertize</div>`
                     );
                     $('#footerCol4').append();
@@ -729,8 +731,6 @@ function mailMe() {
     //<a href='htt ps://ipinfo.io/' alt='IPinfo - Comprehensive IP address data, IP geolocation API and database'>
     //      this site uses<img src='/images/ipinfo.png' height='40' /></a>
     //<div id='footerCol6' class='footerColCustContainer'>
-    //    <div class='clickable' onclick='window.location.href='https://www.paypal.com/donate/?hosted_button_id=M5UE6B2RJ9NFY'
-    //        alt='paypal test'>make a donation</div>
     //</div >
     //<div id='footerPageHits'></div>\n
     //<div>page type: " + rootFolder + "</div>\n
@@ -757,8 +757,7 @@ function mailMe() {
         alert("footerItemClick: " + footerItem);
     }
 
-    function displayFeedback() {
-        alert("displayFeedback");
-        //\"FLC\",\"feedback\", rootFolder + "\", folderId + "
+    function mailMe() {
+
     }
 }

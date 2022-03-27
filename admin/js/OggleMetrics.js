@@ -44,37 +44,21 @@ function GoDeepFolderCounts(folderId) {
                         //let fileLinkCount = db.CategoryImageLinks.Where(l => l.ImageCategoryId == folderId).Count();
                         //int subFolderCount = db.CategoryFolders.Where(f => f.Parent == folderId).Count();
                         //subFolderCount += db.StepChildren.Where(s => s.Parent == folderId).Count();
-
-
-
                     }, 
                     error: function (jqXHR) {
-                        let errMsg = getXHRErrorDetails(jqXHR);
-                        alert("validateConnection: " + errMsg);
-                        //if (!checkFor404(errMsg, folderId, "chargeCredits")) logError("XHR", folderId, errMsg, "chargeCredits");
+                        logOggleError("XHR", -8877, getXHRErrorDetails(jqXHR), "go deep folderCounts");
                     }
                 });
-
-
-
-
-
-
                 //let fileLinkCount = db.CategoryImageLinks.Where(l => l.ImageCategoryId == folderId).Count();
                 //int subFolderCount = db.CategoryFolders.Where(f => f.Parent == folderId).Count();
                 //subFolderCount += db.StepChildren.Where(s => s.Parent == folderId).Count();
-
-
-
             },
             error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                alert("validateConnection: " + errMsg);
-                //if (!checkFor404(errMsg, folderId, "chargeCredits")) logError("XHR", folderId, errMsg, "chargeCredits");
+                logOggleError("XHR", -888, getXHRErrorDetails(jqXHR), "go deep folderCounts");
             }
         });
     } catch (e) {
         $('#dashBoardLoadingGif').hide();
-        logCatch("CreateNewFolder", e);
+        logOggleError("CAT", -888, e, "go deep folderCounts");
     }
 }

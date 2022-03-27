@@ -364,6 +364,43 @@ function addPgLinkButton(folderId, labelText) {
         }
     }
 
+    function logOggleEvent(eventCode, folderId, calledFrom) {
+        try {
+            visitorId = getCookieValue("VisitorId", "log Activity");
+            try {
+                let visitorId = getCookieValue("VisitorId", calledFrom + "/logError");
+                $.ajax({
+                    type: "POST",
+                    url: "php/logActivity.php",
+                    data: {
+                        eventCode: eventCode,
+                        folderId: folderId,
+                        visitorId: visitorId,
+                        calledFrom: calledFrom
+                    },
+                    success: function (success) {
+                        if (success.trim() == "ok") {
+                            console.log("activity logged.  VisitorId: " + visitorId + "  Code: " + activityCode + "  calledFrom: " + calledFrom);
+                        }
+                        else {
+                            console.log("log OggleActivity fail: " + success);
+                            logOggleError("AJX", folderId, success, "log OggleActivity");
+                        }
+                    },
+                    error: function (jqXHR) {
+                        let errMsg = getXHRErrorDetails(jqXHR);
+                        logOggleError("XHR", folderId, errMsg, "log OggleActivity")
+                        alert("Error log error: " + errMsg);
+                    }
+                });
+            } catch (e) {
+                console.error("logOggle error not working: " + e);
+            }
+
+        } catch (e) {
+            logOggleError("CAT", folderId, e, "log OggleActivity")
+        }
+    }
 }
 
 /*-- context menu --------------------------------------*/{
@@ -888,6 +925,7 @@ function addPgLinkButton(folderId, labelText) {
                 success: function (ipResponse) {
                     if (isNullorUndefined(ipResponse)) {
                         logOggleActivity("IPI", folderId, "null response");  // IpInfo call burned
+
                         console.log("ipInfo empty response");
                     }
                     else {
@@ -1033,6 +1071,13 @@ function addPgLinkButton(folderId, labelText) {
         //});
     }
 }
+
+
+function displayFeedback() {
+    alert("displayFeedback");
+    //\"FLC\",\"feedback\", rootFolder + "\", folderId + "
+}
+
 
 /* -------- not used -----------*/{
     function XXperformEvent(eventCode, eventDetail, folderId) {

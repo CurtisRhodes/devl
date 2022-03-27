@@ -307,7 +307,6 @@ function addTrackbackLinks(folderId) {
     }
 }
 
-
 function folderClick(folderId, isStepChild) {
     try {
         if (isStepChild == 1)
@@ -321,7 +320,3 @@ function folderClick(folderId, isStepChild) {
         logOggleError("CAT", folderId, e, "folder click");
     }
 }
-
-
-
-

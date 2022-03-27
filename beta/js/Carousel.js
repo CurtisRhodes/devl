@@ -1,5 +1,4 @@
-﻿
-const rotationSpeed = 7000, carouselDebugMode = false;
+﻿const rotationSpeed = 7000, carouselDebugMode = false;
 let carouselFooterHeight = 40, intervalReady = true, initialImageLoad = false, isPaused = false,
     imageIndex = 0, carouselRows = [], imageHistory = [], absolueStartTime,
     vCarouselInterval = null, lastImageIndex = 0, lastErrorThrown = 0,
@@ -25,7 +24,7 @@ function launchCarousel(pageContext) {
             resizeCarousel();
         });
     } catch (e) {
-        logCatch("launchCarousel", e);
+        logOggleError("BUG", -355, e, "launch carousel");
     }
 }
 
@@ -47,17 +46,14 @@ function loadFromCache() {
         if (isNullorUndefined(cacheArray)) {
             loadImages(true);
             console.log("cache may be corrupt");
-            alert("cache may be corrupt");
             return;
         }
-
         carouselRows = cacheArray;
         startCarousel("cache");
-        //alert("loaded " + carouselRows.length + " from " + carouselRoot + " cache");
         console.log("loaded " + carouselRows.length + " from " + carouselRoot + " cache");
     }
     catch (e) {
-        logCatch("loadFromCache", e);
+        logOggleError("BUG", -355, e, "load from cache");
     }
 }
 
@@ -67,9 +63,7 @@ function startCarousel(calledFrom) {
             loadImages(false);
         }
         if (vCarouselInterval) {
-            alert("carousel interval already started. Called from: " + calledFrom);
-            logError("BUG", 618510, "carousel interval already started. Called from: " + calledFrom, "start Carousel");
-            //console.log("carousel interval already started. Called from: " + calledFrom);
+            logOggleError("BUG", 618510, "carousel interval already started. Called from: " + calledFrom, "start carousel");
         }
         else {
             if (carouselRows.length > 10) {
@@ -84,12 +78,11 @@ function startCarousel(calledFrom) {
                 }, rotationSpeed);
             }
             else {
-                alert("failed to start carousel. carouselRows.length: " + carouselRows.length);
-                $('#footerMessage1').html("failed to start carousel. carouselRows.length: " + carouselRows.length);
+                logOggleError("BUG", -355, "failed to start carousel. carouselRows.length: " + carouselRows.length(), "start carousel");
             }
         }
     } catch (e) {
-        logCatch("startCarousel", e);
+        logOggleError("BUG", -355, e, "start carousel");
     }
 }
 
@@ -128,7 +121,7 @@ function intervalBody() {
             setTimeout(function () { $('#pauseButton').html(">") }, 700);
         }
     } catch (e) {
-        logCatch("interval body", e);
+        logOggleError("CAT", carouselRows[imageIndex].FolderId, e, "interval body");
     }
 }
 
@@ -137,8 +130,7 @@ function setLabelLinks(llIdx) {
         //$("#imageTopLabel").fadeOut();
         //$("#carouselFooterLabel").fadeOut();
         //$("#knownModelLabel").fadeOut();
-
-
+                
         let carouselItem = carouselRows[llIdx];
         if (carouselItem.carouselRoot == "centerfold") {
             if (carouselItem.RealRoot == "centerfold")
@@ -217,11 +209,8 @@ function setLabelLinks(llIdx) {
             }
         }
         setLabelLinksPositions()
-
-
-        //$('#headerMessage').html("carouselImageInnerContainer.top: " + $('#carouselImageInnerContainer').offset().top + "  left: " + $('#carouselFooterLabel').offset().left);
     } catch (e) {
-        logCatch("set LabelLinks", e);
+        logOggleError("CAT", carouselRows[llIdx].FolderId, e, "set label links");
     }
 }
 
@@ -279,20 +268,18 @@ function loadImages(forceCacheRefresh) {
             },
             error: function (jqXHR) {
                 $('#albumPageLoadingGif').hide();
-                let errMsg = getXHRErrorDetails(jqXHR);
-                alert("load carousel images: " + errMsg);
-                // logError("XHR", folderId, errMsg, "get albumImages");
+                logOggleError("XHR", -88854, getXHRErrorDetails(jqXHR), "load carousel images");
             }
         });
-    } catch (e) {
-        logCatch("load carousel images", e);
+    } catch (e) {        
+        logOggleError("CAT", -88854, e, "load carousel images");
     }
 }
 
 function refreshCache(forceRefresh) {
     try {
         if ((isNullorUndefined(window.localStorage)) && (isNullorUndefined(window.localStorage))) {
-            logError("SST", 1222, "this user should be flaged", "refresh carousle cache"); // NO SESSION STATE AVAILABLE
+            logOggleError("SST", 1222, "this user should be flaged", "refresh carousle cache"); // NO SESSION STATE AVAILABLE
             $('#footerMessage2').html("no session state cache available");
             return;
         }
@@ -330,7 +317,7 @@ function refreshCache(forceRefresh) {
             $('#footerMessage2').html("refreshed " + carouselRoot + " cache");
         }
     } catch (e) {
-        logCatch("loadFromCache", e);
+        logOggleError("CAT", -88872, e, "refresh cache");
     }
 }
 
@@ -412,9 +399,6 @@ function assuranceArrowClick(direction) {
         if (imageHistory.length > 1) {
             pause();
             let popimageIndex = imageHistory[imageHistory.length - 1];
-            //imageHistory.pop());
-            //alert("imageIndex: " + imageIndex + " popimageIndex: " + popimageIndex);
-
             let popimage = settingsImgRepo + carouselRows[popimageIndex].ImageFileName;
             $('#thisCarouselImage').attr('src', popimage);
             setLabelLinks(popimageIndex);
@@ -437,7 +421,7 @@ function clickViewAlbum(labelClick) {
         pause();
         window.location.href = "https://ogglefiles.com/beta/album.html?folder=" + clickFolderId;  //  open page in same window
     } catch (e) {
-        logCatch("clickViewAlbum", e);
+        logOggleError("CAT", -88845, e, "click view album");
     }
 }
 
@@ -462,7 +446,7 @@ function imgErrorThrown() {
             $('#thisCarouselImage').css('height', window.innerHeight * .5);
 
             //logOggleError("ILF", 11, carouselRows[imageIndex].ImageFileName + " not found", "carousel");
-            //logError("ILF", 11, carouselRows[imageIndex].ImageFileName+ " not found", "carousel");
+            //logOggleError("ILF", 11, carouselRows[imageIndex].ImageFileName+ " not found", "carousel");
 
         }
     } catch (e) {
@@ -491,7 +475,7 @@ function resizeCarousel() {
         setLabelLinksPositions();
 
     } catch (e) {
-        logCatch("resizeCarousel", e);
+        logOggleError("CAT", -88816, e, "resize carousel");
     }
 }
 

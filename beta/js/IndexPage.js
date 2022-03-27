@@ -97,7 +97,8 @@ function launchIndexPage(pageContext) {
                         });
 
                         $('#imgRandomGalleries').on("click", function () {
-                            getRandomGalleries(pageContext)
+                            getRandomGalleries(pageContext);
+                            logOggleActivity
                         }).show();
 
 

@@ -28,6 +28,7 @@
 body {
     font-family: Verdana;
     font-size: var(--normalFont);
+    margin: 0;
 }
 
 .threeColumnLayout {
@@ -150,7 +151,7 @@ body {
 
 .forceRight {
     position: absolute;
-    right: 0;
+    right: 20px;
 }
 
 .floatRight {
@@ -400,6 +401,7 @@ body {
 }
 
     .searchResultsDropdown li {
+        color: #000;
         list-style-type: none;
         padding: 3px;
         cursor: pointer;

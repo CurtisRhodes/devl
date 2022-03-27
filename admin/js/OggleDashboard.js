@@ -148,7 +148,7 @@ function performCreateNewFolder(newFolderName, sortOrder) {
         });
     } catch (e) {
         $('#dashBoardLoadingGif').hide();
-        logCatch("CreateNewFolder", e);
+        logOggleError("CAT", -888, e, "perform create new folder");
     }
 }
 
@@ -210,12 +210,11 @@ function showFiles() {
                 }
             },
             error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                alert("showFiles AJX: " + errMsg);
+                logOggleError("XHR", -888, getXHRErrorDetails(jqXHR), "show files");
             }
         });
     } catch (e) {
-        logCatch("showFiles CATCH: ", e);
+        logOggleError("CAT", -888, e, "show files");
     }
 }
 
@@ -240,19 +239,17 @@ function updateFolderCounts() {
                         $('#dataifyInfo').append("  .Took: " + (delta / 1000).toFixed(3));
                 }
                 else {
-                    alert("get folder counts AJX: " + returnObject);
+                    logOggleError("AJX", -888, data, "update folder counts");
                 }
             },
             error: function (jqXHR) {
                 $('#dashBoardLoadingGif').hide();
-                let errMsg = getXHRErrorDetails(jqXHR);
-                alert("get folder counts XHR: " + errMsg);
-                logError("XHR", $('#txtActiveFolderId').val(), errMsg, "get folder counts");
+                logOggleError("XHR", -888, getXHRErrorDetails(jqXHR), "update folder counts");
             }
         });
     } catch (e) {
         $('#dashBoardLoadingGif').hide();
-        logCatch("get folder counts", e);
+        logOggleError("CAT", -888, e, "update folder counts");
     }
 }
 
@@ -383,12 +380,11 @@ function updateFolderCounts() {
                     }
                 },
                 error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    logError("AJX", $('#txtActiveFolderId').val(), errMsg, "showSortTool");
+                    logOggleError("AJX", -888, getXHRErrorDetails(jqXHR), "save sort order");
                 }
             });
         } catch (e) {
-            logCatch("saveSortOrder", e);
+            logOggleError("CAT", -888, e, "save sort order");
         }
     }
 }

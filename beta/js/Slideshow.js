@@ -95,58 +95,60 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                             };
                         }
                         else {
-                            alert("no images found");
+                            displayStatusMessage("warning", "no images found");
+                            logOggleError("AJX", folderId, "no images found", "load slideshow items");
                         }
                     }
                 },
                 error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("getAlbumPageInfo: " + errMsg);
-                    //if (!checkFor404(errMsg, folderId, "chargeCredits")) logError("XHR", folderId, errMsg, "chargeCredits");
+                    logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "load slideshow items");
                 }
             });
         }
         let delta = (Date.now() - infoStart) / 1000;
         console.log("getGalleyInfo took: " + delta.toFixed(3));
     } catch (e) {
-        logCatch("load slideshow items", e);
+        logOggleError("CAT", folderId, e, "load slideshow items");
     }
 }
 
 function getFolderDetails(folderId) {
-    $.ajax({
-        url: 'php/yagdrasselFetch.php?query=select f.FolderName, p.FolderName as ParentName ' +
-            ' from CategoryFolder f join CategoryFolder p on f.Parent = p.Id where f.Id=' + folderId,
-        success: function (data) {
-            if (data.substring(20).indexOf("error") > 0) {
-                alert(data);
+    try {
+
+        $.ajax({
+            url: 'php/yagdrasselFetch.php?query=select f.FolderName, p.FolderName as ParentName ' +
+                ' from CategoryFolder f join CategoryFolder p on f.Parent = p.Id where f.Id=' + folderId,
+            success: function (data) {
+                if (data == false) {
+                    logOggleError("AJX", folderId, "folder not found?", "get folder details");
+                }
+                else {
+                    let thisCatFolder = JSON.parse(data);
+
+                    $('#slideshowMessageArea').html("<span sytle='font-size:19px'>" + thisCatFolder.ParentName +
+                        "/" + thisCatFolder.FolderName + "</span>");
+
+                    $('#leftClickArea').on("click", function () {
+                        if (isNullorUndefined(imageViewerIntervalTimer))
+                            slide("prev", folderId);
+                        else
+                            toggleSlideshow();
+                    });
+
+                    $('#rightClickArea').on("click", function () { slide("next", folderId) });
+                    $('.hiddenClickArea').on("dblclick", function () { toggleSlideshow(); });
+                    $('.hiddenClickArea').on("contextmenu", function () { slideshowContextMenu() });
+
+                    // $('#btnExplodeImage').on('click', showMaxSizeViewer(slideShowImgRepo + imageArray[imageViewerIndex].FileName, 'slideshow'));
+                }
+            },
+            error: function (jqXHR) {
+                logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "get folder details");
             }
-            else {
-                let thisCatFolder = JSON.parse(data);
-
-                $('#slideshowMessageArea').html("<span sytle='font-size:19px'>" + thisCatFolder.ParentName +
-                    "/" + thisCatFolder.FolderName + "</span>");
-
-                $('#leftClickArea').on("click", function () {
-                    if (isNullorUndefined(imageViewerIntervalTimer))
-                        slide("prev", folderId);
-                    else
-                        toggleSlideshow();
-                });
-
-                $('#rightClickArea').on("click", function () { slide("next", folderId) });
-                $('.hiddenClickArea').on("dblclick", function () { toggleSlideshow(); });
-                $('.hiddenClickArea').on("contextmenu", function () { slideshowContextMenu() });
-
-                // $('#btnExplodeImage').on('click', showMaxSizeViewer(slideShowImgRepo + imageArray[imageViewerIndex].FileName, 'slideshow'));
-            }
-        },
-        error: function (jqXHR) {
-            let errMsg = getXHRErrorDetails(jqXHR);
-            alert("get folder details: " + errMsg);
-            //if (!checkFor404(errMsg, folderId, "chargeCredits")) logError("XHR", folderId, errMsg, "chargeCredits");
-        }
-    });
+        });
+    } catch (e) {
+        logOggleError("CAT", folderId, e, "get folder details");
+    }
 }
 
 function adjustSlideshowSpeed(action) {
@@ -257,7 +259,7 @@ function slide(direction) {
             }
         }
     } catch (e) {
-        logCatch("slide", e);
+        logOggleError("CAT", imageArray[imageViewerIndex].FolderId, e, "slide");
     }
 }
 
@@ -327,7 +329,7 @@ function incrementIndex(direction) {
     }
 }
 
-$(document).keydown(function (event) {
+$('#slideshowContent').keydown(function (event) {
     if (!isPaused) {
         switch (event.which) {
             case 27:                        // esc
@@ -375,6 +377,8 @@ function closeSlideshow() {
     $('#albumContentArea').fadeIn();
     displayHeader("oggleIndex");
     displayFooter("oggleAlbum");
+    $('#slideshowContent').off();
+
 }
 
 function showSlideshowHeader() {
