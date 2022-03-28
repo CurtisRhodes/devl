@@ -1,8 +1,40 @@
 
-function showDailyError() {
+function showDailyErrorReport() {
+    $('.fullScreenContainer').hide();  // close all other sections
+    $('#reportsHeader').show();
+    $('#reportsHeaderTitle').html("Daily Error Report");
+    $('#oggleMetricsContainer').show();
 
-    alert("validateConnection: " + errMsg);
+    // error summary report
+    let sql = `select format(count(*), 0) count, ErrorCode, Description, CalledFrom, max(Occured) as Occured 
+                from ErrorLog e left join RefCode r on e.ErrorCode = r.RefCode
+                left join st21569_yagdrassel.CategoryFolder f on f.Id = e.FolderId
+                where date(Occured)="` + todayString() + `"
+                group by ErrorCode, Description, CalledFrom
+                order by count(*) desc`;
+    $.ajax({
+        url: "php/registroFetchAll.php?query=" + sql,
+        success: function (response) {
 
+            let errorSummary = JSON.parse(response);
+            $('#errorSummaryReport').html("<div>Error Summary</div>")
+
+            let tableKlude = "<table>";
+            $.each(errorSummary, function (idx, obj) {
+                tableKlude += "<tr><td>" + obj.Count + "</td>";
+                tableKlude += "<td>" + obj.ErrorCode + "</td>";
+                tableKlude += "<td>" + obj.Description + "</td>";
+                tableKlude += "<td>" + obj.CalledFrom + "</td>";
+                tableKlude += "<td>" + obj.Occured + "</td></tr>";
+            });
+            tableKlude += "<table>"
+            $('#errorSummaryReport').append(tableKlude);
+        },
+        error: function (jqXHR) {
+            let errMsg = showDailyErrorReport(jqXHR);
+            alert("validateConnection: " + errMsg);
+        }
+    });
 }
 
 function verifyHITConnection() {

@@ -14,54 +14,68 @@
     <link href="css/OggleDashboard.css" rel="stylesheet">
   </head>
   <body>
-    <header class="stickyHeader"></header>
-    <div id="visableArea" class="threeColumnLayout">
-        <div class="leftColumn dashboardLeftColumn">
-            <div class="vertMenu">
-                <div onclick='showDailyError()'>Daily Error Report</div>
-                <div onclick='verifyHITConnection()'>verify HIT Connection</div>
-            </div>
-        </div>
-        <div class="middleColumn">
-            <img id='oggleMetricsGif' alt="spinner" title="loading" class='loadingGif' src='https://common.ogglefiles.com/img/loader.gif' />
-            <div id='oggleMetricsContainer' class='fullScreenContainer'>
+      </div>
 
+      <header class="stickyHeader"></header>
+      <div id="visableArea" class="threeColumnLayout">
+          <img id='oggleMetricsGif' alt="spinner" title="loading" class='loadingGif' src='https://common.ogglefiles.com/img/loader.gif' />
+          <div class="leftColumn dashboardLeftColumn">
+              <div class="vertMenu">
+                  <div onclick='showDailyErrorReport()'>Daily Error Report</div>
+                  <div onclick='verifyHITConnection()'>verify HIT Connection</div>
+              </div>
+          </div>
+          <div class="middleColumn">
 
-            </div>
-            <div id="dataifyInfo" class="infoLine" onclick='$("#dataifyInfo").hide()'></div>
-        </div>
-        <div class="rightColumn">
-            <div id="dirTreeContainer" class="dirTreeArea"></div>
-        </div>
-    </div>
-    <footer></footer>
-    <script>
-        $(document).ready(function () {
-            displayHeader("OggleDashboard");
-            displayFooter("welcome");
-            $('#dashboardFileListContainer').hide();
+              <div id='reportsHeader' class='workAreaHeader'>
+                  <div class="flexContainer">
+                      <div class='workAreaHeaderArea'>
+                          <div id='reportsHeaderTitle' class='workAreaHeaderTitle'>Reports</div>
+                          <div class='reportsHeaderDetailRow'></div>
+                      </div>
+                      <div class='workAreaCloseButton'>
+                          <img style='height:25px' src='https://common.ogglefiles.com/img/close.png' onclick='showDefaultWorkArea()'>
+                      </div>
+                  </div>
+              </div>
 
-            //performBuildDirTree();
+              <div id='errorReport' class='fullScreenSection'>
+                  <div id="errorSummaryReport"></div>
+                  <div id='errorDetailReport' class='workAreaDisplayContainer'></div>
+                  <div id='errorreportFooter' class='workareaFooter'></div>
+              </div>
 
+              <div id="dataifyInfo" class="infoLine" onclick='$("#dataifyInfo").hide()'></div>
+          </div>
+          <div class="rightColumn">
+              <div id="dirTreeContainer" class="dirTreeArea"></div>
+          </div>
+          <footer></footer>
+          <script>
+              $(document).ready(function () {
+                  displayHeader("OggleDashboard");
+                  displayFooter("welcome");
+                  $('#dashboardFileListContainer').hide();
 
+                  //performBuildDirTree();
 
-            resizeOggleMetricsPage();
-            $(window).resize(function () {
-                resizeOggleMetricsPage();
-            });
-        });
+                  resizeOggleMetricsPage();
+                  $(window).resize(function () {
+                      resizeOggleMetricsPage();
+                  });
+              });
 
-        function launchPage() {
-            let folderId = Number($('#txtActiveFolderId').val());
-            window.open("https://Ogglebooble.com/album.html?folder=" + folderId);
-        }
+              function launchPage() {
+                  let folderId = Number($('#txtActiveFolderId').val());
+                  window.open("https://Ogglebooble.com/album.html?folder=" + folderId);
+              }
 
-        function resizeOggleMetricsPage() {
-            $('#visableArea').css('min-height', $(window).height() - $('header').height());
-            $('#visableArea').css('width', $(window).width());
+              function resizeOggleMetricsPage() {
+                  $('#visableArea').css('min-height', $(window).height() - $('header').height());
+                  $('#visableArea').css('width', $(window).width());
 
-            $('footer').css('width', $(window).width());
-        }
-    </script>
-  </body>
+                  $('footer').css('width', $(window).width());
+              }
+          </script>
+</body>
 </html>

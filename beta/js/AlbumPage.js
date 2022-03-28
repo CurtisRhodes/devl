@@ -79,8 +79,9 @@ function loadImageResults(vLink, folderId) {
 
 function jumpToSrcFolder(srcId, folderId) {
     //logOggleEvent("JPS", folderId, "album page");
+    window.open("https://ogglefiles.com/beta/album.html?folder=" + srcId);
+    //window.location.href = "https://ogglefiles.com/beta/album.html?folder=" + clickFolderId;  //  open page in same window
 
-    window.open("/beta/album.html?folderId=" + srcId);
 }
 
 function getSubFolders(folderId) {

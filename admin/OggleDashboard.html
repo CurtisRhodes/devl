@@ -21,14 +21,15 @@
         <div class="leftColumn dashboardLeftColumn">
             <div class="vertMenu">
                 <div onclick='showBuildDirTreeDialog()'>Build Dir Tree</div>
+                <div onclick="window.open('https://ogglefiles.com/admin/OggleMetrics.html')">Metrics Reports</div>
                 <div onclick="showCreateNewFolderDialog()">Create New Folder</div>
                 <div onclick='showSortTool()'>Sort Folder</div>
                 <div onclick='showRepairDialog()'>Repair Links</div>
                 <div onclick='updateFolderCounts()'>update folder counts</div>
                 <div onclick='sqlSandbox()'>sql sandbox</div>
                 <div onclick='showMoveManyTool(1)'>Move Many</div>
-                <div onclick='showAddStepChildFolderDialog()'>Copy Many</div>
-                <div onclick="showRenameFolderDialog()">Rename Folder</div>
+                <div onclick='showMoveManyTool(2)'>Copy Many</div>
+                <div onclick='showAddStepChildFolderDialog()'>Add Stepchild</div>
             </div>
         </div>
         <div class="middleColumn">
@@ -59,7 +60,7 @@
                     <div id="dashboardFileList"></div>
                 </div>
 
-                <div id='addImageLinkDialog' class='fullScreenSection displayHidden'>
+                <div id='addImageLinkDialog' class='fullScreenSection'>
                     <div id='addLinkCrudArea' class='addLinkCrudArea'>
                         <div class='flexbox'>
                             <label>link  </label><input id='txtImageLink' tabindex='1' class='roundedInput' onblur='previewLinkImage()' />
@@ -73,7 +74,7 @@
                     <img id='imgLinkPreview' class='linkImage' alt="preview image " />
                 </div>
 
-                <div id='moveManySection' class='fullScreenSection displayHidden'>
+                <div id='moveManySection' class='fullScreenSection'>
                     <div id='moveManyHeader' class='workAreaHeader'>
                         <div class='workAreaHeaderArea'>
                             <div id='moveManyTitle' class='workAreaHeaderTitle'>Move Many</div>
@@ -97,7 +98,7 @@
                     </div>
                 </div>
 
-                <div id='sortToolSection' class='fullScreenSection displayHidden'>
+                <div id='sortToolSection' class='fullScreenSection'>
                     <div id='sortToolHeader' class='workAreaHeader'>
                         <div id='sortTableHeader' class='workAreaHeaderTitle'></div>
                         <div class='workAreaCloseButton'>
@@ -114,7 +115,7 @@
                     </div>
                 </div>
 
-                <div id='sqlSandboxSection' class='fullScreenSection displayHidden flexbox'>
+                <div id='sqlSandboxSection' class='fullScreenSection flexbox'>
                     <div class="flexContainer">
                         <div class="vertMenu inline">
                             <div onclick='changeFolderType()'>change folder type</div>
@@ -136,29 +137,9 @@
                     </div>
                 </div>
 
-
-            <div id='reportsSection' class='fullScreenSection displayHidden flexbox'>
-                <div id='reportsLeftColumn' class='dashboardContainerColumn'>
-                    <div id='reportsLeftMenu' class='oggleVerticalMenu'></div>
-                </div>
-                <div id='reportsMiddleColumn' class='dashboardContainerColumn'>
-                    <div class='workAreaContainer'>
-                        <div id='reportsHeader' class='workAreaHeader'>
-                            <div class='workAreaHeaderArea'>
-                                <div id='reportsHeaderTitle' class='workAreaHeaderTitle'>Reports</div>
-                                <div class='reportsHeaderDetailRow'></div>
-                            </div>
-                            <div class='workAreaCloseButton'><img style='height:25px' src='https://common.ogglefiles.com/img/close.png' onclick='showDefaultWorkArea()'></div>
-                        </div>
-                        <div id='reportsContentArea' class='workAreaDisplayContainer'></div>
-                        <div id='reportsFooter' class='workareaFooter'></div>
-                    </div>
-                </div>
+                <div id="dataifyInfo" class="infoLine" onclick='$("#dataifyInfo").hide()'></div>
             </div>
-
-            <div id="dataifyInfo" class="infoLine" onclick='$("#dataifyInfo").hide()'></div>
         </div>
-            </div>
         <div class="rightColumn">
             <div id="dirTreeContainer" class="dirTreeArea"></div>
         </div>

@@ -97,9 +97,11 @@ flexbox {
 }
 
 .fullScreenSection {
+    display: none;
     background-color: rgba(151, 112, 112, 0.85);
     border: solid 4px var(--oggleBorderColor); /*#cd49d3;*/
     width: 100%;
+    margin-right: 33px;
     height: 100%;
 }
 
@@ -199,19 +201,17 @@ flexbox {
     cursor: pointer;
 }
 
-
 .infoLine {
-    position: absolute;
-    bottom: 22px;
     display: none;
+    position: absolute;
+    bottom: 7px;
     padding: 4px;
     margin-left: 3px;
     border: solid .5px #555;
-    height: 32px;
+    border-radius: 3px;
     min-width: 610px;
     cursor: pointer;
     background-color: #f8e8e8;
-    /*vertical-align: bottom;*/
 }
 
 *.dashboardToggle {
@@ -264,10 +264,9 @@ flexbox {
 }
 
 .workAreaHeader {
-    border: none;
+    display: none;
     background-color: var(--brucheumBlue);
     color: #fff;
-    display: flex;
     width: 100%;
 }
 
