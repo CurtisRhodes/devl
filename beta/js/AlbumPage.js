@@ -55,7 +55,7 @@ function loadImageResults(vLink, folderId) {
     if (vLink.FileName.endsWith("mpg") || vLink.FileName.endsWith("mp4")) {
         $('#imageContainer').append(
             "<div class='intividualImageContainer'" +
-            "' oncontextmenu='albumContextMenu(\"Video\",\"" + vLink.LinkId + "\"," +
+            "' oncontextmenu='oggleContextMenu(\"Video\",\"" + vLink.LinkId + "\"," +
             vLink.FolderId + ",\"" + posterFolder + vLink.Poster + "\")'>" +
             "<video id='" + vLink.LinkId + "' controls='controls' class='thumbImage' " +
             " poster='" + posterFolder + vLink.Poster + "' >" +
@@ -67,7 +67,7 @@ function loadImageResults(vLink, folderId) {
         $('#imageContainer').append("<div id='" + vLink.LinkId + "' class='intividualImageContainer'>" +
             "<img class='thumbImage' src='" + imgSrc + "' \n" +
             "onerror='imageError(" + folderId + ",\"" + vLink.LinkId + "\",\"album\")' \n" +
-            "oncontextmenu='albumContextMenu(\"Image\",\"" + vLink.LinkId + "\"," + folderId + ",\"" + imgSrc + "\")' \n" +
+            "oncontextmenu='oggleContextMenu(\"Image\",\"" + vLink.LinkId + "\"," + folderId + ",\"" + imgSrc + "\")' \n" +
             "onclick='viewImage(\"" + imgSrc + "\",\"" + vLink.LinkId + "\")'/></div>");
 
         if (vLink.FolderId !== vLink.SrcId) {
@@ -98,10 +98,9 @@ function getSubFolders(folderId) {
                         imgSrc = settingsImgRepo + "/" + obj.FolderImage.replace(/'/g, '%27');
 
                     $('#imageContainer').append("<div class='subFolderContainer'\n" +
-                        // " oncontextmenu='albumContextMenu(\"Folder\",\"" + linkId + "\"," + folderId + ",\"" + imgSrc + "\")'\n" +
+                        " oncontextmenu='oggleContextMenu(\"Folder\",\"" + linkId + "\"," + folderId + ",\"" + imgSrc + "\")'\n" +
                         " onclick='folderClick(" + obj.Id + "," + obj.IsStepChild + ")'>\n" +
-                        "<img id='" + linkId + "' class='folderImage' src='" + imgSrc + "'/> " +
-                        // alt = 'https://common.ogglefiles.com/img/RenStimpy8.jpg' /> " +
+                        "<img id='" + linkId + "' class='folderImage' alt='" + linkId + "' src='" + imgSrc + "'/> " +
                         //"onerror='imageError(\"" + folderId + "\",\"'" + obj.linkId + "\"',\"'" + imgSrc + "\"','\"subFolder\")'/>\n" +
                         "<div class='defaultSubFolderImage'>" + obj.FolderName + "</div>\n" +
                         "<span Id='fc" + obj.FolderId + "'>" + folderCounts + "</span></div>");
@@ -142,22 +141,43 @@ function getAlbumPageInfo(folderId, islargeLoad) {
                     case "plus":
                         displayHeader("playboy");
                         displayFooter("playboy");
+                        document.title = catfolder.FolderName + " : OggleBooble";
 
                         $('body').css({ "background-color": "#000", "color": "#fff" });
+                        $('#oggleHeader').css("color", "darkgreen");
                         $('#topHeaderRow').css("color", "#f2e289");
                         $('#activeBreadCrumb').css("color", "#f2e289");
                         $('#carouselContainer').css("background-color", "#000");
+                        //$('.defaultSubFolderImage').css("color", "#490157");
                         break;
                     case "bond":
+                        displayHeader("bond");
+                        document.title = catfolder.FolderName + " : OggleBooble";
+                        break;
                     case "porn":
-                    case "sluts":
+                        displayHeader("porn");
+                        displayFooter("porn");
                         document.title = catfolder.FolderName + " : OgglePorn";
+
+                        $('body').css({ "background-color": "darksalmon", "color": "#fff" });
+                        $('#oggleHeader').css("background-color", "darkorange");
+                        //$('#topHeaderRow').css("color", "#f2e289");
+                        //$('#activeBreadCrumb').css("color", "#f2e289");
+                        //$('#carouselContainer').css("background-color", "darksalmon");
+                        break;
+                    case "sluts":
+                        displayHeader("sluts");
+                        document.title = catfolder.FolderName + " : OgglePorn";
+                        $('body').css({ "background-color": "pink", "color": "#fff" });
+                        $('#oggleHeader').css("background-color", "deeppink");
                         break;
                     case "soft":
-                        document.title = catfolder.FolderName + " : OgglePorn";
+                        document.title = catfolder.FolderName + " : OggleSoftcore";
                         break;
                     default:
                         document.title = catfolder.FolderName + " : OggleBooble";
+                        displayHeader("oggleAlbum");
+                        displayFooter("oggleAlbum");
                 }
 
                 switch (catfolder.FolderType) {

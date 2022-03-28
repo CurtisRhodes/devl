@@ -235,18 +235,42 @@ function mailMe() {
                 $('#fancyHeaderTitle').html("OggleBooble");
                 $('#topHeaderRow').html("Home of the Big Naturals");
                 $('#hdrBtmRowSec3').append(bannerLink('every playboy centerfold', 'index.html?spa=playboy'));
-                $('#hdrBtmRowSec3').append(bannerLink('Bond Girls', 'album.html?folder=10326'));
+                $('#hdrBtmRowSec3').append(bannerLink('Oggle Porn', 'index.html?spa=porn'));
                 break;
             case "playboy":
-                $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/playboyBallon.png");
-                $('#fancyHeaderTitle').html("every playboy centerfold");
                 document.title = "Every Playboy Centerfold : OggleBooble";
+                $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/playboyBallon.png");
+                $('#fancyHeaderTitle').html("Every Playboy Centerfold");
                 $('#hdrBtmRowSec3').append(bannerLink('back to OggleBooble', 'index.html'));
                 $('#hdrBtmRowSec3').append(bannerLink('Bond Girls', 'album.html?folder=10326'));
-
-
                 changeFavoriteIcon("playboy");
-                $('#oggleHeader').css({ "background-color": "#000", "color": "#fff" });
+                break;
+            case "porn":
+                document.title = "OgglePorn : mostly blowjobs";
+                $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/csLips02.png");
+                $('#fancyHeaderTitle').html("Oggle Porn");
+                $('#hdrBtmRowSec3').append(bannerLink('back to OggleBooble', 'index.html'));
+                $('#hdrBtmRowSec3').append(bannerLink('porn actress archive', 'album.html?folder=440'));
+                changeFavoriteIcon("porn");
+                break;
+            case "sluts":
+                $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/csLips02.png");
+                $('#fancyHeaderTitle').html("sluts ");
+                $('#hdrBtmRowSec3').append(bannerLink('back to OgglePorn', 'index.html?spa=porn'));
+                $('#hdrBtmRowSec3').append(bannerLink('back to OggleBooble', 'index.html'));
+                changeFavoriteIcon("porn");
+                break;
+            case "bond":
+                $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/boogle007.png");
+                $('#fancyHeaderTitle').html("Bond Girls");
+                $('#hdrBtmRowSec3').append(bannerLink('back to OggleBooble', 'index.html'));
+                $('#hdrBtmRowSec3').append(bannerLink('every playboy centerfold', 'index.html?spa=playboy'));
+                changeFavoriteIcon("bond");
+                break;
+            case "soft":
+                $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/redwoman.png");
+                $('#hdrBtmRowSec3').append(bannerLink('back to OggleBooble', 'index.html'));
+                $('#hdrBtmRowSec3').append(bannerLink('OgglePorn', 'index.html?spa=porn'));
                 break;
             case "brucheum":
                 $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/house.gif");
@@ -293,7 +317,6 @@ function mailMe() {
                 $('#searchBox').hide();
                 break;
             }
-            case "bond":
             case "index": {
                 changeFavoriteIcon("redBallon");
                 $('#topHeaderRow').html("Home of the Big Naturals");
@@ -307,11 +330,6 @@ function mailMe() {
                 //document.title = "loading : OggleBooble";
                 break;
             }
-            case "porn":
-                changeFavoriteIcon("porn");
-                //console.log("changeFavoriteIcon porn 1")
-                document.title = "OgglePorn";
-                break;
             case "dashboard": {
                 $('#headerMessage').html("dashboard");
                 headerMenu = "dashboard";
@@ -459,12 +477,15 @@ function mailMe() {
             link.type = 'image/x-icon';
             link.rel = 'shortcut icon';
             switch (headerContext) {
-                case "brucheum": link.href = 'https://common.ogglefiles.com/img/Brucheum.ico'; break;
+                case "redBallon": link.href = 'https://common.ogglefiles.com/img/redBallon.ico'; break;
                 case "playboy": link.href = 'https://common.ogglefiles.com/img/playboyBallon.png'; break;
+                case "porn": link.href = 'https://common.ogglefiles.com/img/csLips02.png'; break;
+                case "sluts": link.href = 'https://common.ogglefiles.com/img/redwoman.png.png'; break;
+                case "bond": link.href = 'https://common.ogglefiles.com/img/boogle007.png'; break;
                 case "intelDesign": link.href = 'https://common.ogglefiles.com/img/intel01.jpg'; break;
                 case "getaJob": link.href = 'https://common.ogglefiles.com/img/GetaJob.png'; break;
                 case "loading": link.href = "https://common.ogglefiles.com/img/loader.gif"; link.type = 'image/gif'; break;
-                case "redBallon": link.href = 'https://common.ogglefiles.com/img/redBallon.ico'; break;
+                case "brucheum": link.href = 'https://common.ogglefiles.com/img/Brucheum.ico'; break;
                 default: link.href = 'https://common.ogglefiles.com/img/redBallon.ico'; break;
             }
             document.getElementsByTagName('head')[0].appendChild(link);
@@ -505,20 +526,14 @@ function mailMe() {
     function topLogoClick() {
         let logoImage = $('#divSiteLogo').prop("src").substr($('#divSiteLogo').prop("src").lastIndexOf("/") + 1);
         switch (logoImage) {
-            case "redballon.png": location.href = "index.html"; break;
-            case "redwoman.png": window.open("index.html?folder=440"); break;
-
+            case "redballon.png":
+                location.href = "index.html"; break;
+            case "redwoman.png":
+                window.open("index.html?folder=440"); break;
             case "playboyBallon.png":
-                window.location.href = "https://beta.ogglefiles.com/index.html?spa=playboy";
-            //case "playboyBallon.png":
-            //    window.location.href = "https://beta.ogglefiles.com/index.html?spa=playboy";
-            //case "playboyBallon.png":
-            //    window.location.href = "https://beta.ogglefiles.com/index.html?spa=playboy";
-            //case "playboyBallon.png":
-            //    window.location.href = "https://beta.ogglefiles.com/index.html?spa=playboy";
-
-                break;
-            case "csLips02.png": window.location.href = "Index.html?spa=3909"; break;
+                window.location.href = "https://beta.ogglefiles.com/index.html?spa=playboy"; break;
+            case "csLips02.png":
+                window.location.href = "https://beta.ogglefiles.com/index.html?spa=porn"; break;
             default:
                 alert("topLogoClick: " + logoImage + " not handled");
                 location.href = "index.html"; break;
@@ -680,6 +695,7 @@ function mailMe() {
                 case "oggleAlbum":
                 case "gallery":
                 case "oggleIndex":
+                case "porn":
                 case "slideshow":
                     $('#footerCol2').append(`
                     <div class='clickable' onclick='footerItemClick(1)'>Sitemap</div>

@@ -329,7 +329,7 @@ function incrementIndex(direction) {
     }
 }
 
-$('#slideshowContent').keydown(function (event) {
+$('body').keydown(function (event) {
     if (!isPaused) {
         switch (event.which) {
             case 27:                        // esc
@@ -361,7 +361,7 @@ function slideshowContextMenu() {
     pos = {};
     pos.x = event.clientX;
     pos.y = event.clientY;
-    showContextMenu("slideshow", pos,
+    oggleContextMenu("slideshow", pos,
         slideShowImgRepo + imageViewerArray[imageViewerIndex].FileName,
         imageViewerArray[imageViewerIndex].LinkId,
         imageViewerArray[imageViewerIndex].FolderId,
@@ -377,7 +377,7 @@ function closeSlideshow() {
     $('#albumContentArea').fadeIn();
     displayHeader("oggleIndex");
     displayFooter("oggleAlbum");
-    $('#slideshowContent').off();
+    $('#body').off();
 
 }
 

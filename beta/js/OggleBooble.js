@@ -392,7 +392,7 @@ function addPgLinkButton(folderId, labelText) {
 
 /*-- context menu --------------------------------------*/{
     let menuType, linkId, folderId, imgSrc;
-    function albumContextMenu(pmenuType, plinkId, pfolderId, pimgSrc) {
+    function oggleContextMenu(pmenuType, plinkId, pfolderId, pimgSrc) {
         event.preventDefault();
         window.event.returnValue = false;
         menuType = pmenuType, linkId = plinkId, folderId = pfolderId, imgSrc = pimgSrc;
@@ -571,10 +571,8 @@ function addPgLinkButton(folderId, labelText) {
                     showUnknownModelDialog(menuType, imgSrc, pLinkId, folderId);
                 }
                 else
-                    if (isNullorUndefined(pModelFolderId))
+                    if (menuType === "Folder")
                         showFolderInfoDialog(folderId, "img ctx");
-                    else
-                        showFolderInfoDialog(pModelFolderId, "img ctx");
                 $("#contextMenuContainer").fadeOut();
                 break;
             }

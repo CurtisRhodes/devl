@@ -1,4 +1,5 @@
-const updatedGalleriesCount = 11, randomGalleriesCount = 11;
+const randomGalleriesCount = 11;
+let updatedGalleriesCount = 15;
 
 function launchIndexPage(pageContext) {
 
@@ -15,8 +16,8 @@ function launchIndexPage(pageContext) {
     }
 
     if (pageContext == "porn") {
-        $('body').addClass("oggleBody");
-        $('#carouselContainer').css("color", "#000");
+        $('body').css({ "background-color": "darksalmon", "color": "#fff" });
+        $('#oggleHeader').css("background-color", "darkorange");
     }
 
     launchCarousel(pageContext);

@@ -34,7 +34,7 @@ function buildDirTree(startNode) {
 
         });
     } catch (e) {
-        alert("loadDirTree: " + e);
+        logOggleError("CAT", -47700, e, "build dDirTree");
     }
 }
 
@@ -42,27 +42,20 @@ function traverseDirTree(thisNode) {
     let subNodes = dirTreeArray.filter(node => node.Parent == thisNode.Id);
     dirTreeTab += dirTreeTabIndent;
     $.each(subNodes, function (idx, subNode) {
-
-        if (isNullorUndefined(subNode)) {
-            debugger;
-            alert("bad subNode?");
-        }
-        else {
-            let randomId = create_UUID();
-            largetxtstring += dirTreeNode(subNode, randomId);
-            if (subNode.SubFolderCount > 0) {
-                if (dirTreeTab > maxExpandDepth) {
-                    largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer' style='display:none' >";
-                }
-                else {
-                    largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer' >";
-                }
-
-                if (subNode.IsStepChild === "0")
-                    traverseDirTree(subNode);
-
-                largetxtstring += "</div>";
+        let randomId = create_UUID();
+        largetxtstring += dirTreeNode(subNode, randomId);
+        if (subNode.SubFolderCount > 0) {
+            if (dirTreeTab > maxExpandDepth) {
+                largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer' style='display:none' >";
             }
+            else {
+                largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer' >";
+            }
+
+            if (subNode.IsStepChild === "0")
+                traverseDirTree(subNode);
+
+            largetxtstring += "</div>";
         }
     });
     dirTreeTab -= dirTreeTabIndent;
@@ -105,7 +98,7 @@ function dirTreeNode(node, randomId) {
                 + "</div>\n";
         }
     } catch (e) {
-        alert("addDirTreeNode: " + e);
+        logOggleError("CAT", -47700, e, "add dirTree node");
     }
     return treeNodeTxt;
 }
@@ -150,8 +143,6 @@ function toggleDirTree(randomId) {
             $('#TT' + randomId + '').html("[-]");
             $('#CC' + randomId + '').show();
         }
-        else
-            alert("TT: " + $('#TT' + randomId + '').html());
     }
 }
 
@@ -191,7 +182,7 @@ function commonDirTreeClick(danniPath, folderId) {
             default:
         }
     } catch (e) {
-        logError("CAT", folderId, e, "common DirTreeClick");
+        logError("CAT", folderId, e, "common dirTree click");
     }
 }
 
