@@ -163,6 +163,12 @@ function errorDetailReport(errorCode) {
 
 }
 
+function showActivityReport() {
+
+
+}
+
+
 function closeAllReports() {
     $('.fullScreenSection').hide();  // close all other sections
     $('.reportSection').hide();  // close all other sections

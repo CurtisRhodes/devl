@@ -250,13 +250,6 @@ function setLoginHeader(userName) {
     }
 }
 
-function setCookie(userName) {
-    var expiryDate = new Date();
-    expiryDate.setMonth(expiryDate.getMonth() + 9);
-    document.cookie = 'User=' + userName + '; expires=' + expiryDate.toUTCString() + 'path=https://ogglebooble.com/';
-    alert("expires: " + expiryDate.toUTCString());
-}
-
 function getCookie(cname) {
     var decodedCookie = "";
     if (document.cookie) {

@@ -3,9 +3,11 @@
 /*-- verify user -----------------------------------*/{
     function verifyUser(calledFrom) {
         if (isNullorUndefined(sessionStorage["VisitorIdVerified"])) {
+            //sessionStorage["VisitorIdVerified"] = "ok";
             let cookeiVisitorId = getCookieValue("VisitorId");
             if (cookeiVisitorId == "cookie not found") {
-                lookupIpAddress();
+                sessionStorage["VisitorIdVerified"] = "ok";
+                ipifyLookup();
             }
             else {
                 verifyVisitorId(cookeiVisitorId);
@@ -21,28 +23,20 @@
     }
 
     function verifyVisitorId(visitorId) {
-
-
         try {
-
-
-
-
             $.ajax({
                 type: "GET",
                 url: "php/registroFetch.php?query=Select * from Visitor where VisitorId='" + visitorId + "'",
                 success: function (data) {
                     if (data == "false") {
-                        // special case. calledFrom = VisitorId 
-                        lookupIpAddress(visitorId);
+                        ipifyLookup();
                     }
                     else {
-                        sessionStorage["VisitorIdVerifier"] = "ok";
+                        sessionStorage["VisitorIdVerified"] = "ok";
                     }
                 },
                 error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("perform IpLookup: " + errMsg);
+                    logOggleError("CAT", folderId, getXHRErrorDetails(jqXHR), "verify VisitorId")
                 }
             });
         } catch (e) {
@@ -50,35 +44,41 @@
         }
     }
 
-    function lookupIpAddress() {
+    //  
+    function ipifyLookup() {
         try {
             $.ajax({
                 type: "GET",
                 url: "https://api.ipify.org",
                 success: function (ipifyRtrnIP) {
                     if (isNullorUndefined(ipifyRtrnIP)) {
-                        logOggleError("", -88817, "ipify empty response", "")
+                        logOggleError("", -88817, "ipify empty response", "ipify lookup")
                     }
                     else {
-                        // ipify success
-                        // checkVisitor(ipifyRtrnIP, calledFrom);
+                        // ipify success // checkVisitor(ipifyRtrnIP, calledFrom);
                         $.ajax({
                             type: "GET",
                             url: "php/registroFetch.php?query=Select * from Visitor where IpAddress='" + ipifyRtrnIP + "'",
                             success: function (data) {
                                 if (data == "false") {
                                     performIpInfo(ipifyRtrnIP);
-                                    logOggleActivity("CV1", -88823, "check Visitor"); // ipify IP not found.in Visitor table
+                                    //logOggleActivity("CV1", -88823, "lookup Ip Address"); // ipify IP not found.in Visitor table
                                 }
                                 else {
                                     let visitorRow = JSON.parse(data);
-                                    if (localStorage["VisitorId"] != visitorRow.VisitorId) {
-                                        checklocalStorageVisitorId(visitorRow, ipifyRtrnIP);
+                                    if (localStorage["VisitorId"] == visitorRow.VisitorId) {
+                                        //sessionStorage["VisitorIdVerified"] = "ok";
+                                        logOggleError("BUG", -67736, "just told cookie not found", "ipify lookup")
+
+                                    }
+                                    else {
+                                        logOggleActivity("CV2", -88812, "lookup Ip Address");  // local storage does not match visitorId for IP
+                                        checklocalStorageVisitorId(visitorRow.VisitorId, ipifyRtrnIP);
                                     }
                                 }
                             },
                             error: function (jqXHR) {
-                                logOggleError("XHR", -67769, getXHRErrorDetails(jqXHR), "check Visitor")
+                                logOggleError("XHR", -67769, getXHRErrorDetails(jqXHR), "ipify lookup")
                                 alert("perform IpLookup: " + errMsg);
                             }
                         });
@@ -120,19 +120,25 @@
         }
     }
 
-    function checklocalStorageVisitorId(visitorRow, ipifyRtrnIP) {
-        //localStorage["VisitorId"] = ipVisitorId;
-        //logOggleActivity("CV2", -88812, "check Visitor");  // local storage does not match visitorId for IP
+    function checklocalStorageVisitorId(ipVisitorId, ipifyRtrnIP) {
         $.ajax({
             type: "GET",
             url: "php/registroFetch.php?query=Select * from Visitor where VisitorId='" + localStorage["VisitorId"] + "'",
             success: function (data) {
                 if (data == "false") {
+                    localStorage["VisitorId"] = ipVisitorId;
+                    localStorage["VisitorId"] = ipVisitorId;
+                    localStorage["VisitorId"] = ipVisitorId;
+                    localStorage["VisitorId"] = ipVisitorId;
+                    rebuildCookie();
                     logOggleError("BUG", -35400, "localStorage has bad VisitorId");
                 }
                 else {
+                    // localStorage["VisitorId"] ok
                     let localStorageVisitorRow = JSON.parse(data);
                     if (ipifyRtrnIP != localStorageVisitorRow.ipAddress) {
+                        logOggleError("BUG", -35421, "localStorage VisitorId(" + localStorage["VisitorId"] + ") has wrong Ip Address(" + localStorageVisitorRow.ipAddress + ")", "check localStorage VisitorId");
+
                     }
                 }
             },
@@ -865,7 +871,7 @@ function addPgLinkButton(folderId, labelText) {
         visitorId = getCookieValue("VisitorId", "log pageHit");
         if (visitorId == "cookie not found") {
             logOggleActivity("PHC", folderId,"log pageHit")
-            lookupIpAddress("log pageHit");
+            ipifyLookup("log pageHit");
         }
         else {
             $.ajax({

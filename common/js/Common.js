@@ -203,11 +203,18 @@ function mailMe() {
         }
     }
 
+    function setCookieValue(itemName, newValue) {
+        document.cookie = itemName + "=" + newValue;
+    }
+
     function rebuildCookie() {
         try {
             document.cookie = "VisitorId=" + localStorage["VisitorId"];
             document.cookie = "UserName=" + localStorage["UserName"];
             document.cookie = "IsLoggedIn=" + localStorage["IsLoggedIn"];
+            var expiryDate = new Date();
+            expiryDate.setMonth(expiryDate.getMonth() + 9);
+            document.cookie = 'expires=' + expiryDate.toUTCString() + 'path=https://ogglebooble.com/';
 
         } catch (e) {
             console.log("CATCH rebuild cookie: " + e);
