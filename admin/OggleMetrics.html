@@ -14,15 +14,13 @@
     <link href="css/OggleDashboard.css" rel="stylesheet">
   </head>
   <body>
-      </div>
-
       <header class="stickyHeader"></header>
       <div id="visableArea" class="threeColumnLayout">
           <img id='oggleMetricsGif' alt="spinner" title="loading" class='loadingGif' src='https://common.ogglefiles.com/img/loader.gif' />
           <div class="leftColumn dashboardLeftColumn">
               <div class="vertMenu">
+                  <div onclick='showPageHitsReport()'>Page Hits</div>
                   <div onclick='showDailyErrorReport()'>Daily Error Report</div>
-                  <div onclick='verifyHITConnection()'>verify HIT Connection</div>
               </div>
           </div>
           <div class="middleColumn">
@@ -34,48 +32,56 @@
                           <div class='reportsHeaderDetailRow'></div>
                       </div>
                       <div class='workAreaCloseButton'>
-                          <img style='height:25px' src='https://common.ogglefiles.com/img/close.png' onclick='showDefaultWorkArea()'>
+                          <img style='height:25px' src='https://common.ogglefiles.com/img/close.png' onclick='closeAllReports()'>
                       </div>
                   </div>
               </div>
 
-              <div id='errorReport' class='fullScreenSection'>
-                  <div id="errorSummaryReport"></div>
-                  <div id='errorDetailReport' class='workAreaDisplayContainer'></div>
+              <div id='pageHitReports' class='fullScreenSection'>
+                  <div id="pageHitSummaryReport" class="reportSection"></div>
                   <div id='errorreportFooter' class='workareaFooter'></div>
               </div>
+
+              <div id='errorReports' class='fullScreenSection'>
+                  <div id="errorSummaryReport" class="reportSection"></div>
+                  <div id="errorDetailReport" class="reportSection"></div>
+                  <div id="errorreportFooter" class='workareaFooter'></div>
+              </div>
+
+
 
               <div id="dataifyInfo" class="infoLine" onclick='$("#dataifyInfo").hide()'></div>
           </div>
           <div class="rightColumn">
               <div id="dirTreeContainer" class="dirTreeArea"></div>
           </div>
-          <footer></footer>
-          <script>
-              $(document).ready(function () {
-                  displayHeader("OggleDashboard");
-                  displayFooter("welcome");
-                  $('#dashboardFileListContainer').hide();
+      </div>
+      <footer></footer>
+      <script>
+          $(document).ready(function () {
+              displayHeader("OggleDashboard");
+              displayFooter("welcome");
+              $('#dashboardFileListContainer').hide();
 
-                  //performBuildDirTree();
+              //performBuildDirTree();
 
+              resizeOggleMetricsPage();
+              $(window).resize(function () {
                   resizeOggleMetricsPage();
-                  $(window).resize(function () {
-                      resizeOggleMetricsPage();
-                  });
               });
+          });
 
-              function launchPage() {
-                  let folderId = Number($('#txtActiveFolderId').val());
-                  window.open("https://Ogglebooble.com/album.html?folder=" + folderId);
-              }
+          function launchPage() {
+              let folderId = Number($('#txtActiveFolderId').val());
+              window.open("https://Ogglebooble.com/album.html?folder=" + folderId);
+          }
 
-              function resizeOggleMetricsPage() {
-                  $('#visableArea').css('min-height', $(window).height() - $('header').height());
-                  $('#visableArea').css('width', $(window).width());
+          function resizeOggleMetricsPage() {
+              $('#visableArea').css('min-height', $(window).height() - $('header').height());
+              $('#visableArea').css('width', $(window).width());
 
-                  $('footer').css('width', $(window).width());
-              }
-          </script>
-</body>
+              $('footer').css('width', $(window).width());
+          }
+      </script>
+  </body>
 </html>

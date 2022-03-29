@@ -527,6 +527,14 @@ function folderCountTest() {
 {
     let mmSourceFolderId, mmSelectedTreeFolderPath;
     function showMoveManyDialog(cx) {
+        if (isNullorUndefined($('#txtCurrentActiveFolder').val())) {
+            alert("select a folder");
+            return;
+        }
+        $('.fullScreenSection').hide();
+        $('#dirTreeContainer').hide();
+        $('#dashboardTopRow').hide();
+
         if (cx == 1) {
             $('#moveManyTitle').html("Move Many");
             $('#moveManyButton').html("Move");
@@ -540,26 +548,10 @@ function folderCountTest() {
             $('#moveManyButton').html("Archive");
         }
 
-        //$('#dashboardTopRow').hide();
-
-
-
-
+        $('#moveManySection').show();
     }
 
     function showMoveManyTool(cx) {
-        if (isNullorUndefined($('#txtCurrentActiveFolder').val())) {
-            alert("select a folder");
-            return;
-        }
-        $('.fullScreenSection').hide();
-
-
-
-
-
-        $('#dirTreeContainer').hide();
-        $('#moveManySection').show();
 
         $('#txtMoveManySource').val(mmSelectedTreeFolderPath);
         $('#moveManyImageArea').css("height", $('#dashboardContainer').height() - $('#moveManyHeader').height());

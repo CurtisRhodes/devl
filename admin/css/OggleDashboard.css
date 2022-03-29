@@ -301,6 +301,9 @@ workAreaHeaderDetailRow {
     margin-left: 5px;
     overflow-y: auto;
 }
+.reportSection {
+    display: none;
+}
 
 .workareaFooter {
     border-top: solid 5px var(--brucheumBlue);
