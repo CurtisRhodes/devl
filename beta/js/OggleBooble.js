@@ -1,5 +1,154 @@
 ﻿const settingsImgRepo = 'https://ogglefiles.com/danni/';
 
+/*-- verify user -----------------------------------*/{
+    function verifyUser(calledFrom) {
+        if (isNullorUndefined(sessionStorage["VisitorIdVerified"])) {
+            let cookeiVisitorId = getCookieValue("VisitorId");
+            if (cookeiVisitorId == "cookie not found") {
+                lookupIpAddress();
+            }
+            else {
+                verifyVisitorId(cookeiVisitorId);
+            }
+            if (calledFrom == "album") {
+                // new visitor comming in from an external link
+            }
+        }
+        if (isNullorUndefined(sessionStorage["VisitLogged"])) {
+            logVisit("verify");
+        }
+
+    }
+
+    function verifyVisitorId(visitorId) {
+
+
+        try {
+
+
+
+
+            $.ajax({
+                type: "GET",
+                url: "php/registroFetch.php?query=Select * from Visitor where VisitorId='" + visitorId + "'",
+                success: function (data) {
+                    if (data == "false") {
+                        // special case. calledFrom = VisitorId 
+                        lookupIpAddress(visitorId);
+                    }
+                    else {
+                        sessionStorage["VisitorIdVerifier"] = "ok";
+                    }
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    alert("perform IpLookup: " + errMsg);
+                }
+            });
+        } catch (e) {
+            logOggleError("CAT", folderId, e, "verify VisitorId")
+        }
+    }
+
+    function lookupIpAddress() {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "https://api.ipify.org",
+                success: function (ipifyRtrnIP) {
+                    if (isNullorUndefined(ipifyRtrnIP)) {
+                        logOggleError("", -88817, "ipify empty response", "")
+                    }
+                    else {
+                        // ipify success
+                        // checkVisitor(ipifyRtrnIP, calledFrom);
+                        $.ajax({
+                            type: "GET",
+                            url: "php/registroFetch.php?query=Select * from Visitor where IpAddress='" + ipifyRtrnIP + "'",
+                            success: function (data) {
+                                if (data == "false") {
+                                    performIpInfo(ipifyRtrnIP);
+                                    logOggleActivity("CV1", -88823, "check Visitor"); // ipify IP not found.in Visitor table
+                                }
+                                else {
+                                    let visitorRow = JSON.parse(data);
+                                    if (localStorage["VisitorId"] != visitorRow.VisitorId) {
+                                        checklocalStorageVisitorId(visitorRow, ipifyRtrnIP);
+                                    }
+                                }
+                            },
+                            error: function (jqXHR) {
+                                logOggleError("XHR", -67769, getXHRErrorDetails(jqXHR), "check Visitor")
+                                alert("perform IpLookup: " + errMsg);
+                            }
+                        });
+                    }
+                },
+                error: function (jqXHR) {
+                    logOggleError("XHR", -67700, getXHRErrorDetails(jqXHR), "lookup Ip Address")
+                }
+            });
+        }
+        catch (e) {
+            logOggleError("CAT", -67700, e, "lookup Ip Address")
+        }
+    }
+
+    function performIpInfo(ipAddress) {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "https://ipinfo.io/" + ipAddress + "?token=ac5da086206dc4",
+                success: function (ipResponse) {
+                    if (isNullorUndefined(ipResponse)) {
+                        logOggleActivity("IP4", -21264, ipAddress);  // IpInfo null response' where RefCode = 'IP4';
+                    }
+                    else {
+                        addVisitor(ipResponse);
+                        logOggleActivity("IP0", -21200, "success Ip: " + ipResponse.ip);
+                    }
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    logOggleActivity("IPX", -21277, "XHR error: " + errMsg);
+                    logOggleError("XHR", -21277, errMsg, "perform IpLookup");
+                }
+            });
+        } catch (e) {
+            logOggleActivity("IPC", -21269, "CAT error: " + e);
+            logOggleError("CAT", -21269, e, "perform IpLookup");
+        }
+    }
+
+    function checklocalStorageVisitorId(visitorRow, ipifyRtrnIP) {
+        //localStorage["VisitorId"] = ipVisitorId;
+        //logOggleActivity("CV2", -88812, "check Visitor");  // local storage does not match visitorId for IP
+        $.ajax({
+            type: "GET",
+            url: "php/registroFetch.php?query=Select * from Visitor where VisitorId='" + localStorage["VisitorId"] + "'",
+            success: function (data) {
+                if (data == "false") {
+                    logOggleError("BUG", -35400, "localStorage has bad VisitorId");
+                }
+                else {
+                    let localStorageVisitorRow = JSON.parse(data);
+                    if (ipifyRtrnIP != localStorageVisitorRow.ipAddress) {
+                    }
+                }
+            },
+            error: function (jqXHR) {
+                logOggleError("XHR", -67769, getXHRErrorDetails(jqXHR), "check localStorage VisitorId")
+                alert("perform IpLookup: " + errMsg);
+            }
+        });
+    }
+
+    function recordHitSource(calledFrom, folder) {
+
+
+    }
+}
+
 /*-- click events -----------------------------------*/
 function addRankerButton(rankerType, labelText) {
     return "<div class='headerBannerButton'>\n" +
@@ -14,127 +163,7 @@ function addPgLinkButton(folderId, labelText) {
         "</div>\n";
 }
 
-/*-- exploding image view -------------------*/{
-    const viewerOffsetTop = 44, explodeSpeed = 22, heightIncrement = 22;
-    let viewerH, viewerMaxH;
-
-    function showMaxSizeViewer(imgSrc, calledFrom) {
-        //logEvent("EXP", folderId, pFolderName, linkId);
-        //showMaxSizeViewer()
-        if (calledFrom == 'slideshow') {
-            $("#slideshowCtxMenuContainer").hide();
-        }
-        else {
-            $("#imageContextMenu").hide();
-            $('#viewerImage').attr("src", imgSrc);
-        }
-        $("#vailShell").show().on("click", function () { closeExploderDiv() });
-        $('#singleImageOuterContainer').show();
-
-        //replaceFullPage(imgSrc);
-    }
-
-    function viewImage(imgSrc, linkId) {
-        currentImagelinkId = linkId;
-        viewerH = 50;
-        let parentPos = $('#visableArea').offset();
-        let startLeft = $('#visableArea').width() * .34;
-
-        $("#singleImageOuterContainer").css({
-            height: viewerH,
-            top: parentPos.top - viewerOffsetTop,
-            left: parentPos.left + startLeft
-        });
-        $("#viewerImage").css("height", viewerH);
-        $("#vailShell").show().on("click", function () { closeImageViewer() });
-        $('#viewerImage').attr("src", imgSrc);
-        $('#singleImageOuterContainer').show();
-        viewerMaxH = $('#visableArea').height() + viewerOffsetTop - 55;
-        incrementExplode();
-
-        $('#viewerImage').on('click', showMaxSizeViewer(imgSrc, 'album'));
-
-        $('body').keydown(function (event) {
-            if (event.keyCode === 27)
-                closeImageViewer();
-        });
-    }
-
-    function incrementExplode() {
-        if (viewerH < viewerMaxH) {
-            setTimeout(function () {
-                viewerH += heightIncrement;
-                $("#viewerImage").css("height", viewerH);
-
-                let imgleft = $("#singleImageOuterContainer").css("left");
-
-                $("#singleImageOuterContainer").css("left", imgleft - (heightIncrement / 2));
-                incrementExplode();
-            }, explodeSpeed);
-        }
-        else {
-            $("#viewerImage").css("height", viewerMaxH);
-            $("#divSlideshowButton").show();
-            $("#viewerCloseButton").show();
-            let visWidth = $('#visableArea').width();
-            let imgWidth = $('#viewerImage').width();
-            $("#singleImageOuterContainer").css("left", (visWidth / 2) - (imgWidth / 2));
-        }
-    }
-
-    function incrementImplodeViewer(divObject) {
-        let viewerH = divObject.height();
-        if (viewerH > 0) {
-            setTimeout(function () {
-                divObject.css("height", viewerH - heightIncrement);
-                incrementImplodeViewer(divObject);
-            }, explodeSpeed);
-        }
-        else {
-            $('#singleImageOuterContainer').hide();
-            $("#divSlideshowButton").hide();
-            $("#viewerCloseButton").hide();
-            $("#vailShell").hide();
-            $('body').off();
-        }
-    }
-
-    function closeImageViewer() {
-        incrementImplodeViewer($("#viewerImage"));
-    }
-
-    function resizeViewer() {
-        if ($('#singleImageOuterContainer').is(":visible")) {
-            $("#singleImageOuterContainer").css("height", viewerMaxH);
-            let visWidth = $('#visableArea').width();
-            let imgWidth = $('#viewerImage').width();
-            $("#singleImageOuterContainer").css("left", (visWidth / 2) - (imgWidth / 2));
-        }
-    }
-
-    function showSlideshow() {
-        try {
-            $("#vailShell").hide();
-            $('#singleImageOuterContainer').hide();
-            $("#divSlideshowButton").hide();
-            $("#viewerCloseButton").hide();
-            $("#vailShell").hide();
-            $('body').off();
-
-            showSlideshowViewer(currentFolderId, currentImagelinkId, false)
-        } catch (e) {
-            logOggleError("CAT", -874, e, "show slideshow")
-        }
-    }
-    function closeExploderDiv() {
-        $('#exploderDiv').hide();
-        //$("#divSlideshowButton").hide();
-        //$("#viewerCloseButton").hide();
-        $("#vailShell").hide();
-    }
-}
-
-/*-- Search --------------------------------------------*/{
+/*-- search --------------------------------------------*/{
     let searchString = "", itemIndex = -1, listboxActive = false;
 
     function oggleSearchKeyDown(event) {
@@ -267,7 +296,6 @@ function addPgLinkButton(folderId, labelText) {
 
     }
 }
-
 /*-- log error -----------------------------------------*/{
     function logOggleError(errorCode, folderId, errorMessage, calledFrom) {
         try {
@@ -389,7 +417,6 @@ function addPgLinkButton(folderId, labelText) {
         }
     }
 }
-
 /*-- context menu --------------------------------------*/{
     let menuType, linkId, folderId, imgSrc;
     function oggleContextMenu(pmenuType, plinkId, pfolderId, pimgSrc) {
@@ -794,147 +821,10 @@ function addPgLinkButton(folderId, labelText) {
         $('#centeredDialogContainer').draggable().fadeIn();
     }
 }
-
-/*-- verify user -----------------------------------*/{
-    function verifyUser(calledFrom) {
-        let visitorId;
-        if (isNullorUndefined(localStorage["VisitorId"])) {
-            visitorId = getCookieValue("VisitorId", "verifyUser");
-            if (visitorId == "cookie not found") {
-                lookupIpAddress("verify user");
-            }
-            else {
-                if (isNullorUndefined(sessionStorage["VisitorIdVerifier"])) {
-                    verifyVisitorId(visitorId);
-                }
-            }
-        }
-        if (isNullorUndefined(sessionStorage["VisitLogged"])) {
-            if (calledFrom == "album") {
-                // new visitor comming in from an external link
-            }
-            logVisit("verify");
-        }
-    }
-
-    function lookupIpAddress(calledFrom) {
-        try {
-            $.ajax({
-                type: "GET",
-                url: "https://api.ipify.org",
-                success: function (ipifyRtrnTxt) {
-                    if (isNullorUndefined(ipifyRtrnTxt)) {
-                        console.log("ipInfo empty response");
-                        //logActivity2(visitorId, "I01", folderId, ipifyRtrnTxt); // ipify ok
-                        //ifyUpdate(visitorId, ipifyRtrnTxt, folderId, calledFrom);
-                    }
-                    else {
-                        checkVisitor(ipifyRtrnTxt, calledFrom);
-                    }
-                },
-                error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("perform IpLookup: " + errMsg);
-                    //logActivity2(visitorId, "I0X", folderId, errMsg); //  get IpIfyIpInfo XHR error
-                    //if (!checkFor404(errMsg, folderId, "get IpIfyIpInfo/" + calledFrom))
-                    //    logError2(create_UUID(), "XHR", folderId, errMsg, "get IpIfyIpInfo/" + calledFrom);
-                }
-            });
-        }
-        catch (e) {
-            logOggleError("CAT", folderId, e, "verify User")
-        }
-    }
-
-    function checkVisitor(ipAddress, calledFrom) {
-        try {
-            $.ajax({
-                type: "GET",
-                url: "php/registroFetch.php?query=Select * from Visitor where IpAddress='" + ipAddress + "'",
-                success: function (data) {
-                    if (data == "false") {
-                        performIpInfoLookup(ipAddress);
-                    }
-                    else {
-                        if (calledFrom != "verify user") {
-                            let visitorRow = JSON.parse(data);
-                            if (localStorage["VisitorId"] = visitorRow.VisitorId) {
-                                if (calledFrom != visitorRow.VisitorId) {
-                                    localStorage["VisitorId"] = visitorRow.VisitorId;
-                                    logOggleActivity("XXX", -888, calledFrom);
-                                }
-                            }
-                        }
-                    }
-                },
-                error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("perform IpLookup: " + errMsg);
-                }
-            });
-        } catch (e) {
-            logOggleError("CAT", folderId, e, "check Visitor")
-        }
-    }
-
-    function verifyVisitorId(visitorId) {
-        try {
-            $.ajax({
-                type: "GET",
-                url: "php/registroFetch.php?query=Select * from Visitor where VisitorId='" + visitorId + "'",
-                success: function (data) {
-                    if (data == "false") {
-                        // special case. calledFrom = VisitorId 
-                        lookupIpAddress(visitorId);
-                    }
-                    else {
-                        sessionStorage["VisitorIdVerifier"] = "ok";
-                    }
-                },
-                error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("perform IpLookup: " + errMsg);
-                }
-            });
-        } catch (e) {
-            logOggleError("CAT", folderId, e, "verify VisitorId")
-        }
-    }
-
-    function performIpInfoLookup(ipAddress) {
-        try {
-            let folderId = -212;
-            $.ajax({
-                type: "GET",
-                url: "https://ipinfo.io/" + ipAddress + "?token=ac5da086206dc4",
-                success: function (ipResponse) {
-                    if (isNullorUndefined(ipResponse)) {
-                        logOggleActivity("IPI", folderId, "null response");  // IpInfo call burned
-
-                        console.log("ipInfo empty response");
-                    }
-                    else {
-                        addVisitor(ipResponse);
-                        logOggleActivity("IPI", folderId, "success Ip: " + ipResponse.ip);
-                    }
-                },
-                error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    logOggleActivity("IPI", folderId, "XHR error: " + errMsg);
-                    logOggleError("XHR", folderId, errMsg, "perform IpLookup");
-                }
-            });
-        } catch (e) {
-            logOggleActivity("IPI", folderId, "CAT error: " + e);
-            logOggleError("CAT", folderId, e, "perform IpLookup");
-        }
-    }
-}
-
-/* -------- Hit Counter ------------*/{
+/*-- hit Counter ---------------------------------------*/{
     function logVisit(calledFrom) {
         try {
-            let visitorId = getCookieValue("VisitorId", "verifyUser");
+            let visitorId = getCookieValue("VisitorId");
             $.ajax({
                 type: "POST",
                 url: "php/logVisit.php",
@@ -974,6 +864,7 @@ function addPgLinkButton(folderId, labelText) {
         //$('#footerMessage1').html("logging page hit");
         visitorId = getCookieValue("VisitorId", "log pageHit");
         if (visitorId == "cookie not found") {
+            logOggleActivity("PHC", folderId,"log pageHit")
             lookupIpAddress("log pageHit");
         }
         else {
@@ -1056,7 +947,125 @@ function addPgLinkButton(folderId, labelText) {
         //});
     }
 }
+/*-- exploding image view ------------------------------*/{
+    const viewerOffsetTop = 44, explodeSpeed = 22, heightIncrement = 22;
+    let viewerH, viewerMaxH;
 
+    function showMaxSizeViewer(imgSrc, calledFrom) {
+        //logEvent("EXP", folderId, pFolderName, linkId);
+        //showMaxSizeViewer()
+        if (calledFrom == 'slideshow') {
+            $("#slideshowCtxMenuContainer").hide();
+        }
+        else {
+            $("#imageContextMenu").hide();
+            $('#viewerImage').attr("src", imgSrc);
+        }
+        $("#vailShell").show().on("click", function () { closeExploderDiv() });
+        $('#singleImageOuterContainer').show();
+
+        //replaceFullPage(imgSrc);
+    }
+
+    function viewImage(imgSrc, linkId) {
+        currentImagelinkId = linkId;
+        viewerH = 50;
+        let parentPos = $('#visableArea').offset();
+        let startLeft = $('#visableArea').width() * .34;
+
+        $("#singleImageOuterContainer").css({
+            height: viewerH,
+            top: parentPos.top - viewerOffsetTop,
+            left: parentPos.left + startLeft
+        });
+        $("#viewerImage").css("height", viewerH);
+        $("#vailShell").show().on("click", function () { closeImageViewer() });
+        $('#viewerImage').attr("src", imgSrc);
+        $('#singleImageOuterContainer').show();
+        viewerMaxH = $('#visableArea').height() + viewerOffsetTop - 55;
+        incrementExplode();
+
+        $('#viewerImage').on('click', showMaxSizeViewer(imgSrc, 'album'));
+
+        $('body').keydown(function (event) {
+            if (event.keyCode === 27)
+                closeImageViewer();
+        });
+    }
+
+    function incrementExplode() {
+        if (viewerH < viewerMaxH) {
+            setTimeout(function () {
+                viewerH += heightIncrement;
+                $("#viewerImage").css("height", viewerH);
+
+                let imgleft = $("#singleImageOuterContainer").css("left");
+
+                $("#singleImageOuterContainer").css("left", imgleft - (heightIncrement / 2));
+                incrementExplode();
+            }, explodeSpeed);
+        }
+        else {
+            $("#viewerImage").css("height", viewerMaxH);
+            $("#divSlideshowButton").show();
+            $("#viewerCloseButton").show();
+            let visWidth = $('#visableArea').width();
+            let imgWidth = $('#viewerImage').width();
+            $("#singleImageOuterContainer").css("left", (visWidth / 2) - (imgWidth / 2));
+        }
+    }
+
+    function incrementImplodeViewer(divObject) {
+        let viewerH = divObject.height();
+        if (viewerH > 0) {
+            setTimeout(function () {
+                divObject.css("height", viewerH - heightIncrement);
+                incrementImplodeViewer(divObject);
+            }, explodeSpeed);
+        }
+        else {
+            $('#singleImageOuterContainer').hide();
+            $("#divSlideshowButton").hide();
+            $("#viewerCloseButton").hide();
+            $("#vailShell").hide();
+            $('body').off();
+        }
+    }
+
+    function closeImageViewer() {
+        incrementImplodeViewer($("#viewerImage"));
+    }
+
+    function resizeViewer() {
+        if ($('#singleImageOuterContainer').is(":visible")) {
+            $("#singleImageOuterContainer").css("height", viewerMaxH);
+            let visWidth = $('#visableArea').width();
+            let imgWidth = $('#viewerImage').width();
+            $("#singleImageOuterContainer").css("left", (visWidth / 2) - (imgWidth / 2));
+        }
+    }
+
+    function showSlideshow() {
+        try {
+            $("#vailShell").hide();
+            $('#singleImageOuterContainer').hide();
+            $("#divSlideshowButton").hide();
+            $("#viewerCloseButton").hide();
+            $("#vailShell").hide();
+            $('body').off();
+
+            showSlideshowViewer(currentFolderId, currentImagelinkId, false)
+        } catch (e) {
+            logOggleError("CAT", -874, e, "show slideshow")
+        }
+    }
+    function closeExploderDiv() {
+        $('#exploderDiv').hide();
+        //$("#divSlideshowButton").hide();
+        //$("#viewerCloseButton").hide();
+        $("#vailShell").hide();
+    }
+}
 
 function displayFeedback() {
     alert("displayFeedback");

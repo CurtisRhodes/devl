@@ -188,7 +188,6 @@ function mailMe() {
                     }
                 }
             }
-
             if (returnValue == "cookie not found") {
                 if (!isNullorUndefined(localStorage[itemName])) {
                     returnValue = localStorage[itemName];

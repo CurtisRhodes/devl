@@ -283,7 +283,7 @@ flexbox {
     width: 100%;
 }
 
-workAreaHeaderDetailRow {
+.workAreaHeaderDetailRow {
 }
 
 .workAreaContainer {
@@ -305,6 +305,7 @@ workAreaHeaderDetailRow {
     margin-left: 5px;
     max-height: 255px;
     overflow-y: auto;
+    border-bottom: solid thin black;
 }
 .reportBodyTitle {
     text-align:center;

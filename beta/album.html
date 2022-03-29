@@ -101,6 +101,9 @@
             else {
                 albumParamFolderId = params.folder;
             }
+            if (isNullorUndefined(params.calledFrom)) {
+                recordHitSource(params.calledFrom, params.folder);
+            }
 
             displayHeader("oggleAlbum");
 

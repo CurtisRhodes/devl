@@ -244,12 +244,12 @@ function updateFolderCounts() {
             },
             error: function (jqXHR) {
                 $('#dashBoardLoadingGif').hide();
-                logOggleError("XHR", -888, getXHRErrorDetails(jqXHR), "update folder counts");
+                logOggleError("XHR", -88817, getXHRErrorDetails(jqXHR), "update folder counts");
             }
         });
     } catch (e) {
         $('#dashBoardLoadingGif').hide();
-        logOggleError("CAT", -888, e, "update folder counts");
+        logOggleError("CAT", -88817, e, "update folder counts");
     }
 }
 
@@ -380,11 +380,11 @@ function updateFolderCounts() {
                     }
                 },
                 error: function (jqXHR) {
-                    logOggleError("AJX", -888, getXHRErrorDetails(jqXHR), "save sort order");
+                    logOggleError("AJX", -88822, getXHRErrorDetails(jqXHR), "save sort order");
                 }
             });
         } catch (e) {
-            logOggleError("CAT", -888, e, "save sort order");
+            logOggleError("CAT", -88822, e, "save sort order");
         }
     }
 }

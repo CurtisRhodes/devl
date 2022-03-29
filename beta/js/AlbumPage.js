@@ -5,6 +5,11 @@ function loadAlbumPage(folderId, islargeLoad) {
     currentFolderId = folderId;
     getAlbumImages(folderId, islargeLoad);
     getAlbumPageInfo(folderId, islargeLoad);
+
+
+    verifyUser("album page");
+
+
 }
 
 /*-- php -----------------------------------*/

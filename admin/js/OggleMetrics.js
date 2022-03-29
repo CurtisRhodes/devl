@@ -36,7 +36,6 @@ function hitsByPageReport(pageHitDate) {
                 from PageHit h join st21569_yagdrassel.CategoryFolder f on f.Id = h.PageId
                 where Occured='`+ pageHitDate +`' group by PageId, FolderName, Rootfolder
                 order by count(*) desc`;
-
     $.ajax({
         url: "php/registroFetchAll.php?query=" + sql,
         success: function (response) {
@@ -47,7 +46,8 @@ function hitsByPageReport(pageHitDate) {
             let tableKlude = "<table>";
             $.each(errorSummary, function (idx, obj) {
                 tableKlude += "<tr><td>" + obj.Hits + "</td>";
-                tableKlude += "<td class='clickable underline' onclick='pageHitPageDetailReport(\"" + obj.PageId + "\")'>" + obj.FolderName + "</td>";
+                tableKlude += "<td class='clickable underline' " +
+                    "onclick='pageHitPageDetailReport(\"" + obj.PageId + "\",\"" + pageHitDate + "\")'>" + obj.FolderName + "</td>";
                 tableKlude += "<td>" + obj.RootFolder + "</td></tr>";
             });
             tableKlude += "<table>"
@@ -58,10 +58,38 @@ function hitsByPageReport(pageHitDate) {
             alert("pageHit by pag eReport: " + errMsg);
         }
     });
+}
+function pageHitPageDetailReport(pageId, pageHitDate) {
+    
+    let sql = `select f.FolderName, h.VisitorId, concat(City,', ',Region,' ',Country) as Location,
+                    h.Occured, coalesce(r.UserName,'*') as UserName
+                from PageHit h left join st21569_yagdrassel.CategoryFolder f on h.PageId = f.Id
+                left join Visitor v on h.VisitorId = v.VisitorId
+                left join RegisteredUser r on h.VisitorId = r.VisitorId
+                where date(h.Occured)='` + pageHitDate + `' and h.PageId=` + pageId;
+
+    $.ajax({
+        url: "php/registroFetchAll.php?query=" + sql,
+        success: function (response) {
+
+            let pageDetail = JSON.parse(response);
+            $('#pageHitPageDetailReport').html("<div class='reportBodyTitle'>" + pageDetail[0].FolderName + "Page Hit Detail " + pageHitDate + "</div>");
+
+            let tableKlude = "<table>";
+            $.each(pageDetail, function (idx, obj) {
+                tableKlude += "<tr><td>" + obj.Location + "</td>";
+                tableKlude += "<td>" + obj.UserName + "</td></tr>";
+            });
+            tableKlude += "<table>"
+            $('#pageHitPageDetailReport').append(tableKlude).show();
+        },
+        error: function (jqXHR) {
+            let errMsg = getXHRErrorDetails(jqXHR);
+            alert("pageHit by pag eReport: " + errMsg);
+        }
+    });
 
 }
-
-function pageHitPageDetailReport()
 
 function showDailyErrorReport() {
     closeAllReports();
@@ -190,12 +218,12 @@ function GoDeepFolderCounts(folderId) {
                 //subFolderCount += db.StepChildren.Where(s => s.Parent == folderId).Count();
             },
             error: function (jqXHR) {
-                logOggleError("XHR", -888, getXHRErrorDetails(jqXHR), "go deep folderCounts");
+                logOggleError("XHR", -88866, getXHRErrorDetails(jqXHR), "go deep folderCounts");
             }
         });
     } catch (e) {
         $('#dashBoardLoadingGif').hide();
-        logOggleError("CAT", -888, e, "go deep folderCounts");
+        logOggleError("CAT", -88865, e, "go deep folderCounts");
     }
 }
 
