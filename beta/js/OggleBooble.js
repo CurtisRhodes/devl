@@ -1,4 +1,23 @@
 ﻿const settingsImgRepo = 'https://ogglefiles.com/danni/';
+let slideshowVisible = false, imageViewerVisible = false;
+
+function captureKeydownEvent(event) {
+    if (slideshowVisible)
+        doSlideShowKdownEvents(event);
+    else
+        if (imageViewerVisible) {
+            if (event.keyCode === 27)
+                closeImageViewer();
+        }
+        else
+            if (document.activeElement.id == "txtSearch")
+                searchBoxKeyDown(event);
+            else {
+                let activeElement = document.activeElement.id;
+                $('#topRowRightContainer').html("activeElement: " + activeElement);
+            }
+}
+
 
 /*-- verify user -----------------------------------*/{
     function verifyUser(calledFrom) {
@@ -148,9 +167,42 @@
         });
     }
 
-    function recordHitSource(calledFrom, folder) {
-
-
+    function recordHitSource(siteCode, folderId) {
+        try {
+            visitorId = getCookieValue("VisitorId");
+            if (visitorId == "cookie not found") {
+                ipifyLookup();
+            }
+            $.ajax({
+                type: "POST",
+                url: "php/logTrackbackHit.php",
+                data: {
+                    folderId: folderId,
+                    siteCode: siteCode,
+                    visitorId: visitorId
+                },
+                success: function (success) {
+                    if (success.trim() == "ok") {
+                        logOggleActivity("PHC", folderId, "record hit source");
+                    }
+                    else {
+                        switch (success.trim()) {
+                            case '23000':
+                                //logError("",);  // duplicate page hit
+                                break;
+                            case '42000':
+                            default:
+                            //alert("logVisit: php error code: " + success);
+                        }
+                    }
+                },
+                error: function (jqXHR) {
+                    logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "record hit source");
+                }
+            });
+        } catch (e) {
+            logOggleError("CAT", folderId, e, "record hit source");
+        }
     }
 }
 
@@ -169,86 +221,71 @@ function addPgLinkButton(folderId, labelText) {
 }
 
 /*-- search --------------------------------------------*/{
-    let searchString = "", itemIndex = -1, listboxActive = false;
+    let searchString = "", itemIndex = -1;
 
-    function oggleSearchKeyDown(event) {
-        //event.preventDefault();
+    function searchBoxKeyDown(event) {
         var ev = event.keyCode;
-        if (!listboxActive) {
-            if (ev === 9 || ev === 40) {  // down arrow //  tab
-                if (searchString.length > 2) {
-                    if ($('#searchResultsDiv li').length > 0) {
-                        $("#searchResultsDiv ul:first-child").addClass('selectedSearchItem').focus();
-                        listboxActive = true;
-                        itemIndex = 1;
-                    }
-                }
-                return false;
-            }
-            if (ev === 27) {  //  escape
-                clearSearch();
-                return false;
-            }
-            if (ev === 8) {  //  backspace
-                if (searchString.length > 0)
-                    searchString = searchString.substring(0, searchString.length - 1);
-                performSearch(searchString);
-                return false;
-            }
-            if (ev === 13) {  // enter
-                var selectedItem = $('#searchResultsDiv').find('li:first').prop("id");
-                jumpToSelected(selectedItem);
-                return false;
-            }
 
-            //if (ev !== 46 && ev > 31 && (ev < 48 || ev > 57)) {
-            searchString += String.fromCharCode(ev);
-            if (searchString.length > 2) {
+        if (ev === 27) {  //  escape
+            clearSearch();
+        }
+        if (ev === 8) {  //  backspace
+            if (searchString.length > 0)
+                searchString = searchString.substring(0, searchString.length - 1);
+            if (searchString.length > 2)
                 performSearch(searchString);
+        }
+        if (ev === 13) {  // enter
+            if (searchString.length > 2)
+                if ($('#searchResultsDiv').html() != "") {
+                    var selectedItem = $('#searchResultsDiv').find('li:first').prop("id");
+                    jumpToSelected(selectedItem);
+                }
+        }
+        if (ev === 9 || ev === 40) {  // down arrow //  tab
+            if (searchString.length > 2) {
+                if ($('#searchResultsDiv').html() != "") {
+                    $("#searchResultsDiv ul:first-child").addClass('selectedSearchItem').focus();
+                    itemIndex = 1;
+                }
             }
         }
-        else  // listboxActive true
-        {
-            if (ev === 40) {  // down arrow //  tab
+        else {
+            if (ev !== 46 && ev > 31 && (ev < 48 || ev > 57)) {
+                searchString += String.fromCharCode(ev);
                 if (searchString.length > 2) {
-                    if ($('#searchResultsDiv li').length > 0) {
-                        $("#searchResultsDiv ul:first-child").addClass('selectedSearchItem').focus();
-                        listboxActive = true;
-                        itemIndex = 1;
-                    }
+                    performSearch(searchString);
                 }
-                else {
-                    clearSearch();
-                }
-                return false;
-            } // down arrow
-            if (ev === 38) {  // up arrow
-                if (itemIndex > 1) {
-                    $('#searchResultsDiv').children().removeClass('selectedSearchItem');
-                    kludge = "li:nth-child(" + --itemIndex + ")";
-                    $('#searchResultsDiv').find(kludge).addClass('selectedSearchItem').focus();
-                    $('#headerMessage').html("up: " + itemIndex);
-                }
-                return false;
             }
-            if (ev === 13) {  // enter
-                kludge = "li:nth-child(" + itemIndex + ")";
-                var id = $('#searchResultsDiv').find(kludge).prop("id");
-                jumpToSelected($('#searchResultsDiv').find(kludge).prop("id"));
-                return false;
-            }
-            if (ev === 27) {  //  escape
-                clearSearch();
-                return false;
-            }
-            // no valid key. something's wrong
+        }
+    }
+
+    function searchListKeyDown(event) {
+        //event.preventDefault();
+
+        if (ev === 38) {  // up arrow
+            //if (itemIndex > 1) {
+            //    $('#searchResultsDiv').children().removeClass('selectedSearchItem');
+            //    kludge = "li:nth-child(" + --itemIndex + ")";
+            //    $('#searchResultsDiv').find(kludge).addClass('selectedSearchItem').focus();
+            //    $('#headerMessage').html("up: " + itemIndex);
+            //}
+        }
+        if (ev === 13) {  // enter
+            event.preventDefault();
+            kludge = "li:nth-child(" + itemIndex + ")";
+            var id = $('#searchResultsDiv').find(kludge).prop("id");
+            jumpToSelected($('#searchResultsDiv').find(kludge).prop("id"));
+            return false;
+        }
+        if (ev === 27) {  //  escape
             clearSearch();
         }
     }
+
     function clearSearch() {
         $('#searchResultsDiv').hide().html("");
-        listboxActive = false;
-        $('#txtSearch').focus();
+        $('#txtSearch').html('').focus();
     }
 
     function performSearch(searchString) {
@@ -304,7 +341,7 @@ function addPgLinkButton(folderId, labelText) {
 /*-- log error -----------------------------------------*/{
     function logOggleError(errorCode, folderId, errorMessage, calledFrom) {
         try {
-            let visitorId = getCookieValue("VisitorId", calledFrom + "/logError");
+            let visitorId = getCookieValue("VisitorId");
             $.ajax({
                 type: "POST",
                 url: "php/logError.php",
@@ -317,7 +354,7 @@ function addPgLinkButton(folderId, labelText) {
                 },
                 success: function (success) {
                     if (success.trim() == "ok") {
-                        console.log(errorCode + " error logged from: " + calledFrom);
+                        console.log(errorCode + " error from: " + calledFrom + " error: " + errorMessage);
                     }
                     else {
                         if (!success.trim().startsWith("2300"))
@@ -330,6 +367,7 @@ function addPgLinkButton(folderId, labelText) {
                 }
             });
         } catch (e) {
+            alert("Error log CATCH error: " + e);
             console.log("logOggle error not working: " + e);
         }
     }
@@ -349,37 +387,28 @@ function addPgLinkButton(folderId, labelText) {
 
     function logOggleActivity(activityCode, folderId, calledFrom) {
         try {
-            visitorId = getCookieValue("VisitorId", "log Activity");
-            try {
-                let visitorId = getCookieValue("VisitorId", calledFrom + "/logError");
-                $.ajax({
-                    type: "POST",
-                    url: "php/logActivity.php",
-                    data: {
-                        activityCode: activityCode,
-                        folderId: folderId,
-                        visitorId: visitorId,
-                        calledFrom: calledFrom
-                    },
-                    success: function (success) {
-                        if (success.trim() == "ok") {
-                            console.log("activity logged.  VisitorId: " + visitorId + "  Code: " + activityCode + "  calledFrom: " + calledFrom);
-                        }
-                        else {
-                            console.log("log OggleActivity fail: " + success);
-                            logOggleError("AJX", folderId, success, "log OggleActivity");
-                        }
-                    },
-                    error: function (jqXHR) {
-                        let errMsg = getXHRErrorDetails(jqXHR);
-                        logOggleError("XHR", folderId, errMsg,"log OggleActivity")
-                        alert("Error log error: " + errMsg);
+            $.ajax({
+                type: "POST",
+                url: "php/logActivity.php",
+                data: {
+                    activityCode: activityCode,
+                    folderId: folderId,
+                    visitorId: getCookieValue("VisitorId"),
+                    calledFrom: calledFrom
+                },
+                success: function (success) {
+                    if (success.trim() == "ok") {
+                        console.log("activity logged.  VisitorId: " + visitorId + "  Code: " + activityCode + "  calledFrom: " + calledFrom);
                     }
-                });
-            } catch (e) {
-                console.error("logOggle error not working: " + e);
-            }
-
+                    else {
+                        console.log("log OggleActivity fail: " + success);
+                        logOggleError("AJX", folderId, success, "log OggleActivity");
+                    }
+                },
+                error: function (jqXHR) {
+                    logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "log OggleActivity")
+                }
+            });
         } catch (e) {
             logOggleError("CAT", folderId, e, "log OggleActivity")
         }
@@ -975,6 +1004,7 @@ function addPgLinkButton(folderId, labelText) {
 
     function viewImage(imgSrc, linkId) {
         currentImagelinkId = linkId;
+        imageViewerVisible = true;
         viewerH = 50;
         let parentPos = $('#visableArea').offset();
         let startLeft = $('#visableArea').width() * .34;
@@ -993,10 +1023,6 @@ function addPgLinkButton(folderId, labelText) {
 
         $('#viewerImage').on('click', showMaxSizeViewer(imgSrc, 'album'));
 
-        $('body').keydown(function (event) {
-            if (event.keyCode === 27)
-                closeImageViewer();
-        });
     }
 
     function incrementExplode() {
@@ -1040,6 +1066,7 @@ function addPgLinkButton(folderId, labelText) {
 
     function closeImageViewer() {
         incrementImplodeViewer($("#viewerImage"));
+        imageViewerVisible = false;
     }
 
     function resizeViewer() {
