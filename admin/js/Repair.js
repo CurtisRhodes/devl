@@ -230,9 +230,15 @@ function removeOrphanImageRows(physcialImageFileRows, databaseImageFilesRows, ro
     if (asyncBlock1 == null) {
 
         let asyncBlock1 = setInterval(function () {
-            if (abandon) return;
             $.each(databaseImageFilesRows, function (idx, databaseImageFile) {
+                if (abandon) return;
+
                 let physcialFileRow = physcialImageFileRows.filter(node => encodeURI(node.name) == encodeURI(databaseImageFile.FileName));
+
+
+
+
+
                 if (physcialFileRow.length == 0) {
                     // we have a data record with no physcial file
                     if (removeOrphans)

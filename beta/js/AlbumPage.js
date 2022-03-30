@@ -158,27 +158,36 @@ function getAlbumPageInfo(folderId, islargeLoad) {
                         break;
                     case "bond":
                         displayHeader("bond");
+                        displayHeader("porn");
+                        displayFooter("porn");
                         document.title = catfolder.FolderName + " : OggleBooble";
                         break;
                     case "porn":
-                        displayHeader("porn");
-                        displayFooter("porn");
                         document.title = catfolder.FolderName + " : OgglePorn";
 
-                        $('body').css({ "background-color": "darksalmon", "color": "#fff" });
                         $('#oggleHeader').css("background-color", "darkorange");
+                        $('body').css({ "background-color": "darksalmon", "color": "#fff" });
+                        $('#carouselContainer').css("background-color", "#darksalmon");
                         //$('#topHeaderRow').css("color", "#f2e289");
                         //$('#activeBreadCrumb').css("color", "#f2e289");
                         //$('#carouselContainer').css("background-color", "darksalmon");
+                        displayHeader("porn");
+                        displayFooter("porn");
                         break;
                     case "sluts":
                         displayHeader("sluts");
                         document.title = catfolder.FolderName + " : OgglePorn";
-                        $('body').css({ "background-color": "pink", "color": "#fff" });
+                        $('#oggleHeader').css("background-color", "darkorange");
                         $('#oggleHeader').css("background-color", "deeppink");
+                        displayHeader("porn");
+                        displayFooter("porn");
                         break;
                     case "soft":
                         document.title = catfolder.FolderName + " : OggleSoftcore";
+                        $('#oggleHeader').css("background-color", "deeppink");
+                        $('#oggleHeader').css("background-color", "deeppink");
+                        displayHeader("porn");
+                        displayFooter("porn");
                         break;
                     default:
                         document.title = catfolder.FolderName + " : OggleBooble";

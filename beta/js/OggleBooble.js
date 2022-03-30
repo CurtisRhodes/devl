@@ -44,7 +44,6 @@
         }
     }
 
-    //  
     function ipifyLookup() {
         try {
             $.ajax({
@@ -321,7 +320,8 @@ function addPgLinkButton(folderId, labelText) {
                         console.log(errorCode + " error logged from: " + calledFrom);
                     }
                     else {
-                        console.log("log oggleerror fail: " + success);
+                        if (!success.trim().startsWith("2300"))
+                            console.log("log oggleerror fail: " + success);
                     }
                 },
                 error: function (jqXHR) {

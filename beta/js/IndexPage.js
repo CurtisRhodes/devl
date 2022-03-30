@@ -12,13 +12,14 @@ function launchIndexPage(pageContext) {
     if (pageContext == "playboy") {
         $('body').css({ "background-color": "#000", "color": "#fff" });
         $('#carouselContainer').css("background-color", "#000");
-        $('#topHeaderRow').css("color", "#f2e289");
+        $('#oggleHeader').css("color", "#f2e289");
     }
 
     if (pageContext == "porn") {
         $('body').css({ "background-color": "darksalmon", "color": "#fff" });
+        $('#carouselContainer').css("background-color", "#000");
         $('#oggleHeader').css("background-color", "darkorange");
-    }
+        {}
 
     launchCarousel(pageContext);
     getRandomGalleries(pageContext);
