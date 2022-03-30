@@ -67,6 +67,8 @@
                 pageContext = params.spa;
             }
 
+            document.addEventListener('keydown', captureKeydownEvent);
+
             launchIndexPage(pageContext);
 
             resizePage();

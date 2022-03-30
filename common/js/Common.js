@@ -580,11 +580,11 @@ function mailMe() {
                    <div class='flexContainer'>
                        <div id='fancyHeaderTitle' onclick='headerTitleClick()' class='calligraphyTitle'></div >
                        <div id='topHeaderRow' class='hdrTopRowMenu'></div>
+                       <div id='topRowMiddleContainer'></div>
                        <div id='topRowRightContainer'></div>
                        <div id='searchBox' class='oggleSearchBox'>
                            <span id='notUserName' title='Esc clears search.'>search</span>
-                               <input class='oggleSearchBoxText' id='txtSearch' title='search'
-                                   onkeydown = 'oggleSearchKeyDown(event)' ></input > 
+                               <input class='oggleSearchBoxText' id='txtSearch' title='search'></input > 
                            <div id='searchResultsDiv' class='searchResultsDropdown'></div>
                        </div>
                    </div>

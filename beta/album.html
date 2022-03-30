@@ -94,6 +94,9 @@
 
     <script>
         $(document).ready(function () {
+
+            document.addEventListener('keydown', captureKeydownEvent);
+
             let params = getParams();
             if (isNullorUndefined(params.folder)) {
                 window.location.href = "index.html";
@@ -101,7 +104,7 @@
             else {
                 albumParamFolderId = params.folder;
             }
-            if (isNullorUndefined(params.calledFrom)) {
+            if (!isNullorUndefined(params.calledFrom)) {
                 recordHitSource(params.calledFrom, params.folder);
             }
 

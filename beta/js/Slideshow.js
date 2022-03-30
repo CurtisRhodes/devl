@@ -5,12 +5,8 @@ let slideShowSpeed = 5000, imageArray = [], imageViewerIndex = 0, spSessionCount
     isPaused = false, imageViewerIntervalTimer = null, slideshowParentName, isSiding = false;
 
 function showSlideshowViewer(folderId, startLink, isLargeLoad) {
-
+    slideshowVisible = true;
     displayFooter("slideshow");
-    //displayFooter("slideshow");
-    //displayFooter("slideshow");
-    //displayFooter("slideshow");
-    //displayFooter("slideshow");
     showSlideshowHeader();
     getFolderDetails(folderId);
 
@@ -19,6 +15,33 @@ function showSlideshowViewer(folderId, startLink, isLargeLoad) {
     spSessionCount = 0;
     loadSlideshowItems(folderId, startLink, isLargeLoad);
     resizeSlideshow();
+}
+
+function doSlideShowKdownEvents(event) {
+    if (!isPaused) {
+        switch (event.which) {
+            case 27:                        // esc
+                closeSlideshow();
+                break;
+            //case 38: scrollTabStrip('foward'); break;
+            //case 33: scrollTabStrip('foward'); break;
+            case 34:                        // pg down
+            case 40:                        // dowm arrow
+            case 37:                        // left arrow
+                slide('prev');
+                break;
+            case 13:                        // enter
+            case 38:                        // up arrow
+            case 39:                        // right arrow
+                event.preventDefault();
+                window.event.returnValue = false;
+                slide('next');
+                break;
+            //case 122:                       // F11
+            //    $('#standardHeader').hide();
+            //    break;
+        }
+    }
 }
 
 function toggleSlideshow() {
@@ -329,43 +352,16 @@ function incrementIndex(direction) {
     }
 }
 
-$('body').keydown(function (event) {
-    if (!isPaused) {
-        switch (event.which) {
-            case 27:                        // esc
-                closeSlideshow();
-                break;
-            //case 38: scrollTabStrip('foward'); break;
-            //case 33: scrollTabStrip('foward'); break;
-            case 34:                        // pg down
-            case 40:                        // dowm arrow
-            case 37:                        // left arrow
-                slide('prev');
-                break;
-            case 13:                        // enter
-            case 38:                        // up arrow
-            case 39:                        // right arrow
-                event.preventDefault();
-                window.event.returnValue = false;
-                slide('next');
-                break;
-            //case 122:                       // F11
-            //    $('#standardHeader').hide();
-            //    break;
-        }
-    }
-});
-
 function slideshowContextMenu() {
     isPaused = true;
     pos = {};
     pos.x = event.clientX;
     pos.y = event.clientY;
     oggleContextMenu("slideshow", pos,
-        slideShowImgRepo + imageViewerArray[imageViewerIndex].FileName,
-        imageViewerArray[imageViewerIndex].LinkId,
-        imageViewerArray[imageViewerIndex].FolderId,
-        imageViewerArray[imageViewerIndex].FolderName);
+        slideShowImgRepo + imageArray[imageViewerIndex].FileName,
+        imageArray[imageViewerIndex].LinkId,
+        imageArray[imageViewerIndex].FolderId,
+        imageArray[imageViewerIndex].FolderName);
 }
 
 function resumeSlideshow() {
@@ -377,8 +373,7 @@ function closeSlideshow() {
     $('#albumContentArea').fadeIn();
     displayHeader("oggleIndex");
     displayFooter("oggleAlbum");
-    $('#body').off();
-
+    slideshowVisible = false;
 }
 
 function showSlideshowHeader() {
@@ -386,7 +381,7 @@ function showSlideshowHeader() {
     tempd.innerHTML = $('#breadcrumbContainer').html();
 
     displayHeader("slideshow");
-    $('#topRowRightContainer').html(tempd.innerHTML);
+    $('#topRowMiddleContainer').html(tempd.innerHTML);
 
     $('#headerBottomRow').html(`
       <div class="fullWidthFlexContainer">
