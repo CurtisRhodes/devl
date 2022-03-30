@@ -397,10 +397,7 @@ function addPgLinkButton(folderId, labelText) {
                     calledFrom: calledFrom
                 },
                 success: function (success) {
-                    if (success.trim() == "ok") {
-                        console.log("activity logged.  VisitorId: " + visitorId + "  Code: " + activityCode + "  calledFrom: " + calledFrom);
-                    }
-                    else {
+                    if (success.trim() != "ok") {
                         console.log("log OggleActivity fail: " + success);
                         logOggleError("AJX", folderId, success, "log OggleActivity");
                     }
@@ -802,6 +799,10 @@ function addPgLinkButton(folderId, labelText) {
         }
         //var winH = $(window).height();
         //var dlgH = $('#centeredDialog').height();
+    }
+
+    function showFolderInfoDialog() {
+
     }
 
     function showImageCommentDialog(linkId, imgSrc, folderId, calledFrom) {

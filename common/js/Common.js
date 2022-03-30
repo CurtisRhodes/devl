@@ -275,6 +275,7 @@ function mailMe() {
                 break;
             case "soft":
                 $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/redwoman.png");
+                $('#fancyHeaderTitle').html("Oggle softcore");
                 $('#hdrBtmRowSec3').append(bannerLink('back to OggleBooble', 'index.html'));
                 $('#hdrBtmRowSec3').append(bannerLink('OgglePorn', 'index.html?spa=porn'));
                 break;
@@ -675,6 +676,7 @@ function mailMe() {
              <div id='footerCol4' class='footerCol'>
              </div>
              <div id='footerCol5' class='footerCol'>
+                <div id='footerPagehit'></div>
              </div>
              <div id='footerCol6' class='footerCol'>
                 <div class='clickable' onclick='window.open("https://www.paypal.com/donate/?hosted_button_id=M5UE6B2RJ9NFY")'

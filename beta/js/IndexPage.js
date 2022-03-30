@@ -17,9 +17,10 @@ function launchIndexPage(pageContext) {
 
     if (pageContext == "porn") {
         $('body').css({ "background-color": "darksalmon", "color": "#fff" });
-        $('#carouselContainer').css("background-color", "#000");
+        $('#carouselContainer').css("background-color", "darksalmon");
         $('#oggleHeader').css("background-color", "darkorange");
-        {}
+    }
+
 
     launchCarousel(pageContext);
     getRandomGalleries(pageContext);
@@ -27,9 +28,9 @@ function launchIndexPage(pageContext) {
 
     verifyUser("index page");
 
-//    $('#betaMessage').html("reformat hard drive")
-//        .css({ "top": 111, "left": 50 })
-//        .on("click", function () { showMessageContainer() }).show();
+    //    $('#betaMessage').html("reformat hard drive")
+    //        .css({ "top": 111, "left": 50 })
+    //        .on("click", function () { showMessageContainer() }).show();
 }
 
 /*-- php -------------------------------------------*/{

@@ -136,64 +136,11 @@ function getAlbumPageInfo(folderId, islargeLoad) {
 
                 setBreadcrumbs(folderId, catfolder.RootFolder);
 
+                resetHeader(catfolder);
+
                 addTrackbackLinks(folderId);
 
-                switch (catfolder.RootFolder) {
-                    case "playboy":
-                    case "centerfold":
-                    case "cybergirl":
-                    case "magazine":
-                    case "muses":
-                    case "plus":
-                        displayHeader("playboy");
-                        displayFooter("playboy");
-                        document.title = catfolder.FolderName + " : OggleBooble";
-
-                        $('body').css({ "background-color": "#000", "color": "#fff" });
-                        $('#oggleHeader').css("color", "darkgreen");
-                        $('#topHeaderRow').css("color", "#f2e289");
-                        $('#activeBreadCrumb').css("color", "#f2e289");
-                        $('#carouselContainer').css("background-color", "#000");
-                        //$('.defaultSubFolderImage').css("color", "#490157");
-                        break;
-                    case "bond":
-                        displayHeader("bond");
-                        displayHeader("porn");
-                        displayFooter("porn");
-                        document.title = catfolder.FolderName + " : OggleBooble";
-                        break;
-                    case "porn":
-                        document.title = catfolder.FolderName + " : OgglePorn";
-
-                        $('#oggleHeader').css("background-color", "darkorange");
-                        $('body').css({ "background-color": "darksalmon", "color": "#fff" });
-                        $('#carouselContainer').css("background-color", "#darksalmon");
-                        //$('#topHeaderRow').css("color", "#f2e289");
-                        //$('#activeBreadCrumb').css("color", "#f2e289");
-                        //$('#carouselContainer').css("background-color", "darksalmon");
-                        displayHeader("porn");
-                        displayFooter("porn");
-                        break;
-                    case "sluts":
-                        displayHeader("sluts");
-                        document.title = catfolder.FolderName + " : OgglePorn";
-                        $('#oggleHeader').css("background-color", "darkorange");
-                        $('#oggleHeader').css("background-color", "deeppink");
-                        displayHeader("porn");
-                        displayFooter("porn");
-                        break;
-                    case "soft":
-                        document.title = catfolder.FolderName + " : OggleSoftcore";
-                        $('#oggleHeader').css("background-color", "deeppink");
-                        $('#oggleHeader').css("background-color", "deeppink");
-                        displayHeader("porn");
-                        displayFooter("porn");
-                        break;
-                    default:
-                        document.title = catfolder.FolderName + " : OggleBooble";
-                        displayHeader("oggleAlbum");
-                        displayFooter("oggleAlbum");
-                }
+                showPageHits(folderId);
 
                 switch (catfolder.FolderType) {
                     case "multiFolder":
@@ -241,6 +188,60 @@ function getAlbumPageInfo(folderId, islargeLoad) {
     } catch (e) {
         logOggleError("CAT", folderId, e, "get albumPage info");
     }
+}
+
+function resetHeader(catfolder) {
+    switch (catfolder.RootFolder) {
+        case "playboy":
+        case "centerfold":
+        case "cybergirl":
+        case "magazine":
+        case "muses":
+        case "plus":
+            displayHeader("playboy");
+            displayFooter("playboy");
+            document.title = catfolder.FolderName + " : OggleBooble";
+            $('body').css({ "background-color": "#000", "color": "#fff" });
+            $('#oggleHeader').css("background-color", "#000");
+            $('#carouselContainer').css("background-color", "#000");
+            break;
+        case "bond":
+            displayHeader("bond");
+            displayHeader("porn");
+            displayFooter("porn");
+            document.title = catfolder.FolderName + " : OggleBooble";
+            break;
+        case "porn":
+            document.title = catfolder.FolderName + " : OgglePorn";
+            $('#oggleHeader').css("background-color", "darkorange");
+            $('body').css({ "background-color": "darksalmon", "color": "#fff" });
+            $('#carouselContainer').css("background-color", "darksalmon");
+            //$('#topHeaderRow').css("color", "#f2e289");
+            //$('#activeBreadCrumb').css("color", "#f2e289");
+            //$('#carouselContainer').css("background-color", "darksalmon");
+            displayHeader("porn");
+            displayFooter("porn");
+            break;
+        case "sluts":
+            document.title = catfolder.FolderName + " : OggleSluts";
+            $('#oggleHeader').css("background-color", "deeppink");
+            $('body').css("background-color", "palevioletred");
+            displayHeader("sluts");
+            displayFooter("porn");
+            break;
+        case "soft":
+            document.title = catfolder.FolderName + " : OggleSoftcore";
+            $('#oggleHeader').css("background-color", "deeppink");
+            $('body').css({ "background-color": "darksalmon", "color": "#fff" });
+            displayHeader("soft");
+            displayFooter("porn");
+            break;
+        default:
+            document.title = catfolder.FolderName + " : OggleBooble";
+            displayHeader("oggleAlbum");
+            displayFooter("oggleAlbum");
+    }
+
 }
 
 function setBreadcrumbs(folderId, rootFolder) {
@@ -305,9 +306,13 @@ function setBreadcrumbs(folderId, rootFolder) {
 }
 
 function addBreadcrumb(folderId, folderName, className) {
-    return "<div class='" + className +
-        "' onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + folderId +
-        "\"'>" + folderName + "</div>";
+    if (className == "activeBreadCrumb")
+        return "<div class='" + className +
+            "' onclick='openfolderDialog(" + folderId + ")'>" + folderName + "</div>";
+    else
+        return "<div class='" + className +
+            "' onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + folderId +
+            "\"'>" + folderName + "</div>";
 }
 
 function addTrackbackLinks(folderId) {
@@ -360,5 +365,23 @@ function folderClick(folderId, isStepChild) {
         //" onclick='rtpe(\"SUB\",\"called from: " + folderId + "\",\"" + folder.DirectoryName + "\"," + folder.FolderId + ")'>\n" +
     } catch (e) {
         logOggleError("CAT", folderId, e, "folder click");
+    }
+}
+
+function showPageHits(folderId) {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "php/registroFetch.php?query=select format(count(*),0) from PageHit where PageId=" + folderId,
+            success: function (data) {
+                let pgc = JSON.parse(data)[0];
+                $('#footerPagehit').html("page hits: " + pgc);
+            },
+            error: function (jqXHR) {
+                logOggleError("CAT", folderId, getXHRErrorDetails(jqXHR), "verify VisitorId")
+            }
+        });
+    } catch (e) {
+        logOggleError("CAT", folderId, e, "verify VisitorId")
     }
 }
