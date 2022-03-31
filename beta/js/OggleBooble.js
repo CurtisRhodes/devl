@@ -205,7 +205,6 @@ function captureKeydownEvent(event) {
         }
     }
 }
-
 /*-- click events -----------------------------------*/
 function addRankerButton(rankerType, labelText) {
     return "<div class='headerBannerButton'>\n" +
@@ -461,15 +460,11 @@ function addPgLinkButton(folderId, labelText) {
         $('#contextMenuContent').html(oggleContextMenuHtml());
         $('#contextMenuContainer').css("top", pos.y);
         $('#contextMenuContainer').css("left", pos.x);
-
         if (menuType === "Folder")
             getFolderctxMenuDetails();
         else
             getSingleImageDetails(linkId);
-
         $('#contextMenuContainer').draggable().show();
-
-
         $("#contextMenuContainer").mousemove(function (event) {
             $("#hdrBtmRowSec3").html('');
             let ctxLeft = $("#contextMenuContainer").offset().left;
@@ -499,10 +494,10 @@ function addPgLinkButton(folderId, labelText) {
             let getSingleImageDetailsStart = Date.now();
             $('#ctxTxtModelName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='https://common.ogglefiles.com/img/loader.gif'/>");
             $('#ctxExplode').hide();
-            $('#ctxOpenInNewTab').hide();
+            $('#ctxNewTab').hide();
             $('#ctxSeeMore').hide();
             $('#ctxSaveAs').hide();
-            $('#ctxImageShowLinks').hide();
+            $('#ctxLinks').hide();
             $('#ctxDownLoad').hide();
             $.ajax({
                 type: "GET",
@@ -535,7 +530,7 @@ function addPgLinkButton(folderId, labelText) {
                     $('#imageInfoExternalLink').html(imgData.ExternalLink);
 
                     if (menuType === "Carousel") {
-                        $('#ctxOpenInNewTab').show();
+                        $('#ctxNewTab').show();
                     }
                     if (menuType === "Slideshow") {
                         $('#ctxssClose').show();
@@ -566,16 +561,66 @@ function addPgLinkButton(folderId, labelText) {
         }
     }
 
+    function getFolderctxMenuDetails() {
+        try {
+            //let getSingleImageDetailsStart = Date.now();
+            $('.ctxItem').hide();
+            $('#ctxTxtModelName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='https://common.ogglefiles.com/img/loader.gif'/>");
+            $('#ctxSeeMore').html("more like her").show();
+            $('#ctxLinks').html("stepchildren").show();
+            $.ajax({
+                type: "GET",
+                url: "php/yagdrasselFetch.php?query=select p.FolderName as ParentFolderName, i.*, f.* from ImageFile i " +
+                    "join CategoryFolder f on i.FolderId=f.Id join CategoryFolder p on f.Parent=p.Id where i.id ='" + linkId + "'",
+                success: function (data) {
+                    let folderData = JSON.parse(data);
+                    $('#ctxTxtModelName').html(folderData.FolderName);
+
+                    pFolderName = folderData.FolderName;
+                    if (folderData.FolderType == "singleChild")
+                        $('#ctxParent').html(folderData.ParentFolderName);
+                    else {
+                        $('#ctxParent').html(folderData.FolderType);
+                    }
+
+                    //$('#ctxComment').show();
+
+                    // beta mode
+                    $('.adminLink').show();
+
+                    //if (isInRole("admin", "context menu"))
+                    //    $('.adminLink').show();
+                    //else
+                    //    $('.adminLink').hide();
+
+                    let delta = Date.now() - getSingleImageDetailsStart;
+                    let minutes = Math.floor(delta / 60000);
+                    let seconds = (delta % 60000 / 1000).toFixed(0);
+                    //
+                    console.log("get Single Image Details took: " + minutes + ":" + (seconds < 10 ? '0' : '') + seconds);
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    logError("XHR", folderId, errMsg, "getSingle ImageDetails");
+                    alert("getSingle ImageDetails: " + errMsg);
+                }
+            });
+        } catch (e) {
+            logOggleError("CAT", folderId, e, "getSingle ImageDetails")
+        }
+    }
+
     function oggleContextMenuHtml() {
         return `<div id='ctxTxtModelName' class='ctxItem' onclick='oggleCtxMenuAction(\"showDialog\")'>model name</div>
+        <div id='ctxParent' class='ctxItem' onclick='oggleCtxMenuAction(\"see more\")'>see more of her</div>
         <div id='ctxSeeMore' class='ctxItem' onclick='oggleCtxMenuAction(\"see more\")'>see more of her</div>
-        <div id='ctxOpenInNewTab'  class='ctxItem' onclick='oggleCtxMenuAction(\"openInNewTab\")'>Open in new tab</div>
+        <div id='ctxNewTab'  class='ctxItem' onclick='oggleCtxMenuAction(\"openInNewTab\")'>Open in new tab</div>
         <div id='ctxFantasy' class='ctxItem' onclick='oggleCtxMenuAction(\"fantasy\")'>Write a fantasy about this image</div>
         <div id='ctxComment' class='ctxItem' onclick='oggleCtxMenuAction(\"comment\")'>Write a fantasy about this image</div>
         <div id='ctxExplode' class='ctxItem' onclick='oggleCtxMenuAction(\"explode\")'>rank this image</div>
         <div id='ctxSaveAs'  class='ctxItem' onclick='oggleCtxMenuAction(\"saveAs\")'>save as</div>
         <div id='ctxssClose' class='ctxItem' onclick='oggleCtxMenuAction(\"closeSlideshow\")'>close slideshow</div>
-        <div id='ctxImageShowLinks' class='ctxItem' onclick='oggleCtxMenuAction(\"showLinks\")'>Show Links</div>
+        <div id='ctxLinks' class='ctxItem' onclick='oggleCtxMenuAction(\"showLinks\")'>Show Links</div>
         <div id='linkInfoContainer' class='contextMenuInnerContainer'></div>
         <div id='ctxInfo'    class='adminLink' onclick='oggleCtxMenuAction(\"info\")'>Show Image info</div>
         <div id='ctxDownLoad' onclick='oggleCtxMenuAction(\"download\")'>download folder</div>`
@@ -704,31 +749,8 @@ function addPgLinkButton(folderId, labelText) {
             }
         }
     }
-    /*--  context menu actions ---------------------------------*/
-    function setFolderImage(filinkId, folderId, level) {
-        try {
-            $.ajax({
-                type: "GET",
-                url: "php/updateFolderImage.php?folderImage='" + filinkId + "'&folderId=" + folderId + "&level=" + level,
-                success: function (success) {
-                    if (success.trim().startsWith("ok")) {
-                        displayStatusMessage("ok", level + " image set for " + folderId);
-                        $("#imageContextMenu").fadeOut();
-                    }
-                    else {
-                        logError("AJX", folderId, success, "setFolderImage");
-                    }
-                },
-                error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("setFolderImage: " + errMsg);
-                }
-            });
-        } catch (e) {
-            logOggleError("CAT", folderId, e, "set Folder Image")
-        }
-    }
-
+}
+/*-- dialog windows --------------------------------------*/{
     function showRejectsDialog(linkId, folderId, imgSrc) {
         $('#centeredDialogTitle').html("move image to rejects");
         $('#centeredDialogContents').html(
@@ -741,68 +763,210 @@ function addPgLinkButton(folderId, labelText) {
             "</form>");
         $('#centeredDialogContainer').draggable().fadeIn();
     }
-    function performMoveImageToRejects(linkId, folderId) {
 
-        //let rejectReason = $('input[name="rdoRejectImageReasons"]:checked').val();
-        $('#albumPageLoadingGif').show();
-        $.ajax({
-            url: 'php/moveToRejects.php?imageFileId=' + linkId,
-            success: function (success) {
-                $('#albumPageLoadingGif').hide();
-                if (success.trim() == "ok") {
-                    displayStatusMessage("ok", "image moved to rejects");                }
-                else {
-                    alert("move to rejects: " + success);
-                    //logError("AJX", 3908, success, "perform MoveImageToRejects");
+    function showFileDetailsDialog() {
+        try {  // GetQuickFolderInfo
+            if (typeof pause === 'function') pause();
+            $("#centeredDialogTitle").html("loading");
+            $("#centeredDialogContents").html(`
+            <div class='flexbox'>
+                <div class='floatLeft'>
+                    <table>
+                        <thead><tr><th></th></tr></thead>
+                        <tbody>
+                        <tr><td>name        </td><td><input id='txtFolderName'></input></td></tr>
+                        <tr><td>home country</td><td><input id='txtHomeCountry'></input></td></tr>
+                        <tr><td>hometown    </td><td><input id='txtHometown'></input></td></tr>
+                        <tr><td>born        </td><td><input id='txtBorn'></input></td></tr>
+                        <tr><td>boobs       </td><td><select id='selBoobs' class='boobDropDown'>
+                                    <option value=0>Real</option><option value=1>Fake</option></td></tr>
+                        <tr><td>figure      </td><td><input id='txtMeasurements'></input></td></tr>
+                        <tbody>
+                    </table>
+                <div class='floatLeft'>
+                    <img id='modelDialogThumbNailImage' src='/Images/redballon.png' class='modelDialogImage' />
+                </div>
+            </div>
+            <div id='summernoteContainer'></div>
+            <div id='folderInfoDialogFooter' class='folderDialogFooter'>
+                <div id='btnCatDlgEdit' class='folderCategoryDialogButton' onclick='editFolderDialog()'>Edit</div>
+                <div id='btnCatDlgDone' class='folderCategoryDialogButton' onclick='doneEditing()'>Done</div>
+                <div id='btnCatDlgLinks' class='folderCategoryDialogButton' onclick='showTrackbackDialog()'>Trackback Links</div>
+            </div>
+            <div id='trackBackDialog' class='floatingDialogBox'></div>`);
+
+
+            //$(".note-editable").css('font-size', '16px');
+            //$('#centeredDialogContainer').css("top", 111);
+            //$('#centeredDialogContainer').css("left", -350);
+            //$("#btnCatDlgDone").hide();
+            //$("#btnCatDlgLinks").hide();
+            //$('#summernoteContainer').summernote({ toolbar: "none" });
+            //$('#summernoteContainer').summernote('disable');
+            $(".note-editable").css({ 'font-size': '16px', 'min-height': '186px' });
+
+            //if (localStorage["IsLoggedIn"] == "false") {
+            //    showMyAlert("you must be logged in to edit folder comments");
+            //    $("#btnCatDlgEdit").hide();
+            //    $("#btnCatDlgLinks").hide();
+            //}
+
+            $('#centeredDialogContainer').css({ "top": 33 + $(window).scrollTop() });
+            $('#centeredDialogContainer').draggable().fadeIn();
+            $('#centeredDialogContainer').mouseleave(function () {
+                if (allowDialogClose) dragableDialogClose();
+            });
+
+            $.ajax({
+                url: "php/registroFetch.php?query=select * from CategoryFolder f " +
+                    " left join FolderDetail d on f.Id = d.FolderId where FolderId=" + folderId,
+                success: function (folderInfo) {
+                    $('#albumPageLoadingGif').hide();
+                    if (folderInfo.Success === "ok") {
+                        $('#txtFolderName').val(folderInfo.FolderName);
+                        $('#txtHomeCountry').val(folderInfo.FolderName);
+                        $('#txtHometown').val(folderInfo.FolderName);
+                        $('#txtBorn').val(folderInfo.FolderName);
+                        $('#txtFolderName').val(folderInfo.FolderName);
+
+                        //objFolderInfo.FolderName = folderInfo.FolderName;
+                        //objFolderInfo.FolderName = $('#txtFolderName').val();
+                        //$('#modelInfoDialog').dialog('option', 'title', objFolderInfo.FolderName);
+                        //objFolderInfo.Born = $('#txtBorn').val();
+                        //objFolderInfo.Nationality = $('#txtNationality').val();
+                        //objFolderInfo.Measurements = $('#txtMeasurements').val();
+                        //objFolderInfo.Boobs = $('#selBoobs').val();
+                        //objFolderInfo.CommentText = $('#modelInfoDialogComment').summernote('code');
+                        //objFolderInfo.ExternalLinks = $('#externalLinks').summernote('code');
+                        //objFolderInfo.LinkStatus = $('#txtStatus').val();
+
+                        //$('#txtEdtFolderName').val(folderInfo.FolderName);
+                        //$("#centeredDialogTitle").html(folderInfo.FolderName);
+                        //$("#summernoteContainer").summernote("code", folderInfo.FolderComments);
+
+                        //$('#aboveImageContainerMessageArea').html("aFolderType: " + rtnFolderInfo.FolderType);
+                        //multiModel	488
+                        //multiFolder	394
+                        switch (folderInfo.FolderType) {
+                            case "singleModel":
+                            case "singleParent":
+                                showFullModelDetails(folderId);
+                                break;
+                            //case "singleChild":
+                            //    showFullModelDetails(folderInfo.Parent);
+                            //    break;
+                        }
+
+                        //logEvent("SMD", folderId, calledFrom, "folder type: " + folderInfo.FolderType);
+                    }
+                    else logOggleError("AJX", folderId, folderInfo.Success, "GetQuickFolderInfo");
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
+                    if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", folderId, errMsg, functionName);
                 }
-            },
-            error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                alert("move to rejects: " + errMsg);
-            }
-        });
-    }
-
-    function showCopyLinkDialog(linkId, menuType, imgSrc) {
-
-        slideShowButtonsActive = false;
-        //showDirTreeDialog(imgSrc, menuType, "Caterogize Link");
-        $('#linkManipulateClick').html("<div class='roundendButton' onclick='perfomCopyLink(\"" + linkId + "\")'>Caterogize</div>");
-    }
-    function showDirTreeDialog(imgSrc, menuType, title) {
-        //alert("showDirTreeDialog.  menuType: " + menuType);
-        slideShowButtonsActive = false;
-        let dirTreeDialogHtml = `<div>
-                   <div class='inline'><img id='linkManipulateImage' class='copyDialogImage' src='" + imgSrc + "'/></div>
-                   <div id='dirTreeResults' class='pusedoTextBox'></div>
-                   <div class='inline'><img class='dialogDirTreeButton' src='/Images/caretDown.png' "
-                       onclick='$(\"#linkManipulateDirTree\").toggle()'/></div>
-                   <div id='linkManipulateClick'></div>
-                   <div id='linkManipulateDirTree' class='hideableDropDown'><img class='ctxloadingGif' title='loading gif' alt='' src='Images/loader.gif' /></div>
-               </div>`;
-
-        $('#centeredDialogContents').html(dirTreeDialogHtml);
-        $('#centeredDialogTitle').html(title);
-        $('#centeredDialogContainer').css("top", 33); 
-        $('#centeredDialogContainer').draggable().fadeIn();
-
-        if (isNullorUndefined(tempDirTree)) {
-            showHtmlDirTree("linkManipulateDirTree");
-            tempDirTree = $("linkManipulateDirTree").html();
-            //loadDirectoryTree(1, "linkManipulateDirTree", false);
+            });
         }
-        else {
-            $('#dashBoardLoadingGif').show();
-            $("linkManipulateDirTree").html(tempDirTree);
-            $('#dashBoardLoadingGif').hide();
-            //console.log("loaded linkManipulateDirTree from temp");
+        catch (e) {
+            $('#albumPageLoadingGif').hide();
+            logOggleError("CAT", folderId, e, "show folderInfo dialog");
         }
-        //var winH = $(window).height();
-        //var dlgH = $('#centeredDialog').height();
     }
 
-    function showFolderInfoDialog() {
+    function showFolderInfoDialog(folderId) {
+        try {  // GetQuickFolderInfo
+            if (typeof pause === 'function') pause();
+            $("#centeredDialogTitle").html("loading");
+            $("#centeredDialogContents").html(`
+                <div>
+                    <div><input id='txtFolderName'></div>
+                    <div id='summernoteContainer'></div>
+                    <div id='folderInfoDialogFooter' class='folderDialogFooter'>
+                        <div id='btnCatDlgEdit' class='folderCategoryDialogButton' onclick='editFolderDialog()'>Edit</div>
+                        <div id='btnCatDlgDone' class='folderCategoryDialogButton' onclick='doneEditing()'>Done</div>
+                        <div id='btnCatDlgLinks' class='folderCategoryDialogButton' onclick='showTrackbackDialog()'>Trackback Links</div>
+                    </div>
+                </div>`);
 
+
+
+            //$(".note-editable").css('font-size', '16px');
+            //$('#centeredDialogContainer').css("top", 111);
+            //$('#centeredDialogContainer').css("left", -350);
+            //$("#btnCatDlgDone").hide();
+            //$("#btnCatDlgLinks").hide();
+            //$('#summernoteContainer').summernote({ toolbar: "none" });
+            //$('#summernoteContainer').summernote('disable');
+            $(".note-editable").css({ 'font-size': '16px', 'min-height': '186px' });
+
+            //if (localStorage["IsLoggedIn"] == "false") {
+            //    showMyAlert("you must be logged in to edit folder comments");
+            //    $("#btnCatDlgEdit").hide();
+            //    $("#btnCatDlgLinks").hide();
+            //}
+
+            $('#centeredDialogContainer').css({ "top": 33 + $(window).scrollTop() });
+            $('#centeredDialogContainer').draggable().fadeIn();
+            $('#centeredDialogContainer').mouseleave(function () {
+                if (allowDialogClose) dragableDialogClose();
+            });
+
+            $.ajax({
+                url: "php/registroFetch.php?query=select * from CategoryFolder f " +
+                    " left join FolderDetail d on f.Id = d.FolderId where FolderId=" + folderId,
+                success: function (folderInfo) {
+                    $('#albumPageLoadingGif').hide();
+                    if (folderInfo.Success === "ok") {
+                        $('#txtFolderName').val(folderInfo.FolderName);
+                        $('#txtHomeCountry').val(folderInfo.FolderName);
+                        $('#txtHometown').val(folderInfo.FolderName);
+                        $('#txtBorn').val(folderInfo.FolderName);
+                        $('#txtFolderName').val(folderInfo.FolderName);
+
+                        //objFolderInfo.FolderName = folderInfo.FolderName;
+                        //objFolderInfo.FolderName = $('#txtFolderName').val();
+                        //$('#modelInfoDialog').dialog('option', 'title', objFolderInfo.FolderName);
+                        //objFolderInfo.Born = $('#txtBorn').val();
+                        //objFolderInfo.Nationality = $('#txtNationality').val();
+                        //objFolderInfo.Measurements = $('#txtMeasurements').val();
+                        //objFolderInfo.Boobs = $('#selBoobs').val();
+                        //objFolderInfo.CommentText = $('#modelInfoDialogComment').summernote('code');
+                        //objFolderInfo.ExternalLinks = $('#externalLinks').summernote('code');
+                        //objFolderInfo.LinkStatus = $('#txtStatus').val();
+
+                        //$('#txtEdtFolderName').val(folderInfo.FolderName);
+                        //$("#centeredDialogTitle").html(folderInfo.FolderName);
+                        //$("#summernoteContainer").summernote("code", folderInfo.FolderComments);
+
+                        //$('#aboveImageContainerMessageArea').html("aFolderType: " + rtnFolderInfo.FolderType);
+                        //multiModel	488
+                        //multiFolder	394
+                        switch (folderInfo.FolderType) {
+                            case "singleModel":
+                            case "singleParent":
+                                showFullModelDetails(folderId);
+                                break;
+                            //case "singleChild":
+                            //    showFullModelDetails(folderInfo.Parent);
+                            //    break;
+                        }
+
+                        //logEvent("SMD", folderId, calledFrom, "folder type: " + folderInfo.FolderType);
+                    }
+                    else logOggleError("AJX", folderId, folderInfo.Success, "GetQuickFolderInfo");
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
+                    if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", folderId, errMsg, functionName);
+                }
+            });
+        }
+        catch (e) {
+            $('#albumPageLoadingGif').hide();
+            logOggleError("CAT", folderId, e, "show folderInfo dialog");
+        }
     }
 
     function showImageCommentDialog(linkId, imgSrc, folderId, calledFrom) {
@@ -840,11 +1004,571 @@ function addPgLinkButton(folderId, labelText) {
             FolderId: folderId
         };
     }
+}
+
+function performMoveImageToRejects(linkId, folderId) {
+
+        //let rejectReason = $('input[name="rdoRejectImageReasons"]:checked').val();
+        $('#albumPageLoadingGif').show();
+        $.ajax({
+            url: 'php/moveToRejects.php?imageFileId=' + linkId,
+            success: function (success) {
+                $('#albumPageLoadingGif').hide();
+                if (success.trim() == "ok") {
+                    displayStatusMessage("ok", "image moved to rejects");                }
+                else {
+                    alert("move to rejects: " + success);
+                    //logError("AJX", 3908, success, "perform MoveImageToRejects");
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                alert("move to rejects: " + errMsg);
+            }
+        });
+    }
+function showCopyLinkDialog(linkId, menuType, imgSrc) {
+
+        slideShowButtonsActive = false;
+        //showDirTreeDialog(imgSrc, menuType, "Caterogize Link");
+        $('#linkManipulateClick').html("<div class='roundendButton' onclick='perfomCopyLink(\"" + linkId + "\")'>Caterogize</div>");
+    }
+function showDirTreeDialog(imgSrc, menuType, title) {
+        //alert("showDirTreeDialog.  menuType: " + menuType);
+        slideShowButtonsActive = false;
+        let dirTreeDialogHtml = `<div>
+                   <div class='inline'><img id='linkManipulateImage' class='copyDialogImage' src='" + imgSrc + "'/></div>
+                   <div id='dirTreeResults' class='pusedoTextBox'></div>
+                   <div class='inline'><img class='dialogDirTreeButton' src='/Images/caretDown.png' "
+                       onclick='$(\"#linkManipulateDirTree\").toggle()'/></div>
+                   <div id='linkManipulateClick'></div>
+                   <div id='linkManipulateDirTree' class='hideableDropDown'><img class='ctxloadingGif' title='loading gif' alt='' src='Images/loader.gif' /></div>
+               </div>`;
+
+        $('#centeredDialogContents').html(dirTreeDialogHtml);
+        $('#centeredDialogTitle').html(title);
+        $('#centeredDialogContainer').css("top", 33); 
+        $('#centeredDialogContainer').draggable().fadeIn();
+
+        if (isNullorUndefined(tempDirTree)) {
+            showHtmlDirTree("linkManipulateDirTree");
+            tempDirTree = $("linkManipulateDirTree").html();
+            //loadDirectoryTree(1, "linkManipulateDirTree", false);
+        }
+        else {
+            $('#dashBoardLoadingGif').show();
+            $("linkManipulateDirTree").html(tempDirTree);
+            $('#dashBoardLoadingGif').hide();
+            //console.log("loaded linkManipulateDirTree from temp");
+        }
+        //var winH = $(window).height();
+        //var dlgH = $('#centeredDialog').height();
+    }
+var objFolderInfo = {}, allowDialogClose = true;
+
+    function showFullModelDetails(folderId) {
+        $('#albumPageLoadingGif').show();
+        $("#modelInfoDetails").html(modelInfoDetailHtml());
+        $('#readonlyPoserDetails').show();
+        $('#editablePoserDetails').hide();
+
+        //$('#btnCatDlgCancel').hide();
+        //$('#btnCatDlgMeta').hide();
+
+        $.ajax({
+            type: "GET",
+            url: settingsArray.ApiServer + "api/FolderDetail/GetFullFolderInfo?folderId=" + folderId,
+            success: function (folderInfo) {
+                $('#albumPageLoadingGif').hide();
+                if (folderInfo.Success === "ok") {
+                    objFolderInfo = folderInfo;
+                    $('#centeredDialogTitle').html(folderInfo.FolderName);
+                    $('#modelDialogThumbNailImage').attr("src", folderInfo.FolderImage);
+                    $('#txtFolderName').val(folderInfo.FolderName);
+                    $('#txtBorn').val(dateString(folderInfo.Birthday));
+                    $('#txtHomeCountry').val(folderInfo.HomeCountry);
+                    $('#txtHometown').val(folderInfo.HomeTown);
+                    $('#txtBoobs').val(((folderInfo.FakeBoobs) ? "fake" : "real"));
+                    $('#txtMeasurements').val(folderInfo.Measurements);
+                    setReadonlyFields();
+                    $("#btnCatDlgLinks").show();
+                    $("#summernoteContainer").summernote("code", folderInfo.FolderComments);
+                }
+                else {
+                    $('#albumPageLoadingGif').hide();
+                    logError("AJX", folderId, folderInfo.Success, "show FullModelDetails");
+                }
+            },
+            error: function (jqXHR) {
+                $('#albumPageLoadingGif').hide();
+                let errMsg = getXHRErrorDetails(jqXHR);
+                if (!checkFor404(errMsg, folderId, "show FullModelDetails")) logError("XHR", folderId, errMsg, "show FullModelDetails");
+            }
+        });
+    }
+
+    function modelInfoDetailHtml() {
+
+        //if (localStorage["IsLoggedIn"] == "true") {
+        //    $('#folderInfoDialogFooter').append(
+        //        "        <div id='btnCatDlgLinks' class='folderCategoryDialogButton' onclick='showTrackbackDialog()'>Trackback Links</div>\n");
+        //}
+        //    "        <div id='btnCatDlgMeta' class='folderCategoryDialogButton' onclick='addMetaTags()'>add meta tags</div>
+
+    }
+
+    // ADD EDIT FOLDER INFO
+    function setReadonlyFields() {
+        $('#readOnlyFolderName').html(objFolderInfo.FolderName);
+        $('#readOnlyBorn').html(isNullorUndefined(objFolderInfo.Birthday) ? "_ " : dateString(objFolderInfo.Birthday));
+        $('#readOnlyHomeCountry').html(isNullorUndefined(objFolderInfo.HomeCountry) ? " " : objFolderInfo.HomeCountry);
+        $('#readOnlyHometown').html(isNullorUndefined(objFolderInfo.HomeTown) ? " " : objFolderInfo.HomeTown);
+        $('#readOnlyBoobs').html(isNullorUndefined(objFolderInfo.FakeBoobs) ? 0 : objFolderInfo.FakeBoobs ? "fake" : "real");
+        $('#readOnlyMeasurements').html(isNullorUndefined(objFolderInfo.Measurements) ? " " : objFolderInfo.Measurements);
+    }
+    function editFolderDialog() {
+        if ($('#btnCatDlgEdit').html() === "Save") {
+            saveFolderDialog();
+            return;
+        }
+        allowDialogClose = false;
+
+        //objFolderInfo.FolderType = folderInfo.FolderType;
+        $('#divEdtFolderName').show();
+
+        $('#editablePoserDetails').show();
+        $('#readonlyPoserDetails').hide();
+        $('#btnCatDlgEdit').html("Save");
+        $('#summernoteContainer').summernote("destroy");
+        $('#summernoteContainer').summernote({
+            toolbar: [['codeview']],
+            height: "200"
+        });
+        $('#summernoteContainer').focus();
+        $('#summernoteContainer').summernote('focus');
+        //$(".note-editable").css('font-size', '16px');
+        //alert("summernote('code'):" + $('#summernoteContainer').summernote('code'))
+
+        $("#txtBorn").datepicker();
+        //$('#selBoobs').val(objFolderInfo.FakeBoobs ? 1 : 0).change();
+    }
+    function saveFolderDialog() {
+        $('#albumPageLoadingGif').show();
+        // LOAD GETS
+        // alternamtive folderName $('#txtFolderName').val(rtnFolderInfo.FolderName);
+        objFolderInfo.FolderName = $('#txtEdtFolderName ').val();
+        objFolderInfo.Birthday = $('#txtBorn').val();
+        objFolderInfo.HomeCountry = $('#txtHomeCountry').val();
+        objFolderInfo.HomeTown = $('#txtHometown').val();
+        objFolderInfo.Measurements = $('#txtMeasurements').val();
+        objFolderInfo.FakeBoobs = $('#selBoobs').val() == 1;
+        objFolderInfo.FolderComments = $('#summernoteContainer').summernote('code');
+        //folderInfo.ExternalLinks = $('#externalLinks').summernote('code');
+        //folderInfo.LinkStatus = $('#txtStatus').val();
+        $.ajax({
+            type: "PUT",
+            url: settingsArray.ApiServer + "/api/FolderDetail/AddUpdate",
+            data: objFolderInfo,
+            success: function (success) {
+                $('#albumPageLoadingGif').fadeOut();
+                if (success === "ok") {
+                    displayStatusMessage("ok", "category description updated");
+                    //awardCredits("FIE", objFolderInfo.Id);
+                    $("#btnCatDlgDone").show();
+                    $('#summernoteContainer').focus();
+                    $('#summernoteContainer').summernote('focus');
+                    $('#summernoteContainer').summernote('focus');
+                }
+                else {
+                    logError("AJX", objFolderInfo.Id, success, "saveFolderDialog");
+                }
+            },
+            error: function (jqXHR) {
+                $('#albumPageLoadingGif').hide();
+                let errMsg = getXHRErrorDetails(jqXHR);
+                let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
+                if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", objFolderInfo.Id, errMsg, functionName);
+            }
+        });
+    }
+    function doneEditing() {
+        allowDialogClose = true;
+        $("#btnCatDlgDone").hide();
+        $('#btnCatDlgEdit').html("Edit");
+
+        $('#editablePoserDetails').hide();
+        $('#readonlyPoserDetails').show();
+        $('#summernoteContainer').summernote("destroy");
+        $('#summernoteContainer').summernote({
+            toolbar: "none",
+            height: "200"
+        });
+    }
+
+    function clearGets() {
+        $('#txtLinkHref').val('');
+        $('#txtLinkLabel').val('');
+        $('#txtFolderName').val('');
+        $('#txtBorn').val('');
+        $('#modelInfoDialogComment').html('');
+        $('#txtNationality').val('');
+        $('#txtStatus').val('');
+        $('#externalLinks').html('');
+    }
+
+    function updateFolderDetail() {
+        loadGets();
+        $.ajax({
+            type: "PUT",
+            url: settingsArray.ApiServer + "api/FolderDetail/AddUpdate",
+            data: objFolderInfo,
+            success: function (success) {
+                if (success === "ok") {
+                    displayStatusMessage("ok", "Model info updated");
+                }
+                else {
+                    logError("AJX", objFolderInfo.Id, success, "updateFolderDetail");
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
+                if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", objFolderInfo.Id, errMsg, functionName);
+            }
+        });
+    }
+
+    ///////////////// TRACKBACK DIALOG  ////////////
+    function showTrackbackDialog() {
+        $('#btnCatDlgEdit').html("pause");
+        allowDialogClose = false;
+        $("#trackBackDialog").html(`
+            <div>
+               <div id='bb'class='oggleDialogHeader'>" +
+                   <div id='cc' class='oggleDialogTitle'>Trackback Links</div>" +
+                   <div id='ddd' class='oggleDialogCloseButton'><img src='/images/poweroffRed01.png' onclick='$(\"#trackBackDialog\").hide()'/></div>
+               </div>
+               <div>link <input id='txtTrackBackLink'  class='roundedInput' style='width:85%'></input></div>" +
+               <div>site <select id='selTrackBackLinkSite' class='roundedInput'>
+                      <option value='BAB'>babepedia</option>
+                      <option value='BOB'>boobpedia</option>
+                      <option value='IND'>Indexx</option>
+                      <option value='FRE'>freeones</option>
+                   </select></div>
+               <div>status<input id='txtTrackBackStatus' class='roundedInput'></input></div>" +
+               <div class='tbResultsContainer'>" +
+                   <ul id='ulExistingLinks'></ul>" +
+               </div>
+               <div class='folderDialogFooter'>
+                   <div id='btnTbDlgAddEdit' class='folderCategoryDialogButton' onclick='tbAddEdit()'>add</div>
+                   <div id='btnTbDlgDelete' class='folderCategoryDialogButton displayHidden' onclick='tbDelete()'>delete</div>
+                   <div id='btnTbAddCancel' class='folderCategoryDialogButton' onclick='btnTbAddCancel()'>Cancel</div>
+               </div>
+            </div>`);
+
+        $("#trackBackDialog").css("top", 150);
+        $("#trackBackDialog").css("left", -550);
+        $('#selTrackBackLinkSite').val("").attr('disabled', 'disabled');
+        $('#txtTrackBackStatus').val("").attr('disabled', 'disabled');
+        $('#txtTrackBackLink').val("").attr('disabled', 'disabled');
+        $('#btnTbAddCancel').hide();
+        $("#trackBackDialog").draggable().show();
+        loadTrackBackItems();
+    }
+    function loadTrackBackItems() {
+        $.ajax({
+            type: "GET",
+            url: settingsArray.ApiServer + "api/FolderDetail/GetTrackBackLinks?folderId=" + objFolderInfo.FolderId,
+            success: function (trackbackModel) {
+                if (trackbackModel.Success === "ok") {
+                    $('#ulExistingLinks').html("");
+                    objFolderInfo.TrackBackItems = trackbackModel.TrackBackItems;
+                    $.each(trackbackModel.TrackBackItems, function (idx, obj) {
+                        $('#ulExistingLinks').append("<li class='clickable' onclick='loadTbForEdit(" + idx + ")' >" + obj.SiteCode + " - " + obj.LinkStatus + "</li>");
+
+                    });
+                }
+                else {
+                    logError("AJX", objFolderInfo.FolderId, trackbackModel.Success, "loadTrackBackItems");
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
+                if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", objFolderInfo.Id, errMsg, functionName);
+            }
+        })
+    }
+    function btnTbAddCancel() {
+        if ($('#btnTbAddCancel').html() === "cancel") {
+            $('#btnTbAddCancel').hide();
+            $('#selTrackBackLinkSite').val("").attr('disabled', 'disabled');
+            $('#txtTrackBackStatus').val("").attr('disabled', 'disabled');
+            $('#txtTrackBackLink').val("").attr('disabled', 'disabled');
+            $('#btntbdlgaddedit').html("add");
+        }
+    }
+    function loadTbForEdit(idx) {
+        let selectedLink = objFolderInfo.TrackBackItems[idx];
+        $('#selTrackBackLinkSite').val(selectedLink.SiteCode).attr('disabled', 'disabled');
+        $('#txtTrackBackStatus').val(selectedLink.LinkStatus).attr('disabled', 'disabled');
+        $('#txtTrackBackLink').val(selectedLink.Href).attr('disabled', 'disabled');
+        $('#btnTbDlgAddEdit').html("edit");
+    }
+    function tbAddEdit() {
+        if ($('#btnTbDlgAddEdit').html() === "add") {
+            $('#selTrackBackLinkSite').val("").removeAttr('disabled');
+            $('#txtTrackBackStatus').val("").removeAttr('disabled');
+            $('#txtTrackBackLink').val("").removeAttr('disabled');
+            $('#btnTbDlgAddEdit').html("save");
+            $("#btnTbAddCancel").html("cancel").show();
+            return;
+        }
+        if ($('#btnTbDlgAddEdit').html() === "edit") {
+            $('#selTrackBackLinkSite').removeAttr('disabled');
+            $('#txtTrackBackStatus').removeAttr('disabled');
+            $('#txtTrackBackLink').removeAttr('disabled');
+            $('#btnTbDlgAddEdit').html("save");
+            $("#btnTbAddCancel").html("cancel").show();
+            return;
+        }
+        if ($('#btnTbDlgAddEdit').html() === "save") {
+            $.ajax({
+                type: "POST",
+                url: settingsArray.ApiServer + "api/FolderDetail/AddEditTrackBackLink",
+                data: {
+                    PageId: objFolderInfo.FolderId,
+                    SiteCode: $('#selTrackBackLinkSite').val(),
+                    Href: $('#txtTrackBackLink').val(),
+                    LinkStatus: $('#txtTrackBackStatus').val()
+                },
+                success: function (successModel) {
+                    if (successModel.Success === "ok") {
+                        if (successModel.ReturnValue === "Insert")
+                            displayStatusMessage("ok", "trackback link added");
+                        else
+                            displayStatusMessage("ok", "trackback link updated");
+
+                        loadTrackBackItems();
+
+                        $('#btnTbDlgAddEdit').html("add");
+                        $('#selTrackBackLinkSite').val("");
+                        $('#txtTrackBackStatus').val("");
+                        $('#txtTrackBackLink').val("");
+                        $('#btnTbDlgDelete').hide();
+                    }
+                    else logError("AJX", folderId, successModel.Success, "addTrackback");
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
+                    if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", objFolderInfo.Id, errMsg, functionName);
+                }
+            });
+        }
+    }
+    function tbDelete() { }
+
+    //////////////// Identify Poser ////////////////
+
+    function xxcreatePosersIdentifiedFolder() {
+        var defaultParentFolder = 917;
+        if (validate()) {
+            // step 1:  Create new Ftmp Folder
+            $.ajax({
+                type: "POST",
+                url: settingsArray.ApiServer + "/api/FtpDashBoard/CreateFolder?parentId=" + defaultParentFolder + "&newFolderName=" + objFolderInfo.FolderName,
+                success: function (successModel) {
+                    $('#dashBoardLoadingGif').hide();
+                    if (successModel.Success === "ok") {
+                        // step 2: Move Image 
+                        displayStatusMessage("ok", "new folder created");
+                        //linkId = fileName.Substring(fileName.LastIndexOf("_") + 1, 36);
+                        var MoveCopyImageModel = {
+                            Mode: "Archive",
+                            Link: successModel.FolderImage,
+                            SourceFolderId: successModel.FolderId,
+                            DestinationFolderId: successModel.ReturnValue
+                        };
+
+                        $.ajax({
+                            type: "PUT",
+                            url: settingsArray.ApiServer + "/api/MoveImage/MoveImage",
+                            data: MoveCopyImageModel,
+                            success: function (moveImageSuccessModel) {
+                                if (moveImageSuccessModel.Success === "ok") {
+                                    displayStatusMessage("ok", "image moved to newfolder");
+                                }
+                                else
+                                    logError("AJX", defaultParentFolder, moveImageSuccessModel.Success, "createPosersIdentifiedFolder/MoveImage");
+                            },
+                            error: function (jqXHR) {
+                                let errMsg = getXHRErrorDetails(jqXHR);
+                                let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
+                                if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", defaultParentFolder, errMsg, functionName);
+                            }
+                        });
+                    }
+                    else
+                        logError("AJX", defaultParentFolder, successModel.Success, "createPosersIdentifiedFolder");
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
+                    if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", defaultParentFolder, errMsg, functionName);
+                }
+            });
+        }
+        //// 2. actually create
+        //string extension = model.FolderImage.Substring(model.FolderImage.LastIndexOf("."));
+        ////string sourceOriginPath = Helpers.GetParentPath(dbParent.Id, true);
+        //string linkId = model.FolderImage.Substring(model.FolderImage.LastIndexOf("_") + 1, 36);
+        ////string ftpSource = "ftp://50.62.160.105/" + dbParent.RootFolder + ".ogglebooble.com/" + sourceOriginPath + "posers identified/" + model.FolderName + "_" + linkId + extension;
+
+        //string ftpSource = model.FolderImage.Replace("http://", "ftp://50.62.160.105/");
+        //string expectedFileName = model.FolderName + "_" + linkId + extension;
+        //string ftpDestinationPath = "ftp://50.62.160.105/archive.ogglebooble.com/posers identified/" + model.FolderName;
+
+        //if (!FtpUtilies.DirectoryExists(ftpDestinationPath))
+        //    FtpUtilies.CreateDirectory(ftpDestinationPath);
+
+        //success = FtpUtilies.MoveFile(ftpSource, ftpDestinationPath + "/" + expectedFileName);
+
+        //ImageLink goDaddyrow = db.ImageLinks.Where(g => g.Id == linkId).First();
+        //goDaddyrow.Link = "http://archive.ogglebooble.com/posers identified/" + model.FolderName + "/" + expectedFileName;
+        //goDaddyrow.FolderLocation = newFolderId;
+
+        //db.CategoryImageLinks.Add(new CategoryImageLink() {ImageCategoryId = newFolderId, ImageLinkId = linkId });
+        //db.SaveChanges();
+
+
+        // 2. add new category folder row and folder detail row
+    }
+
+    function showUnknownModelDialog(menuType, imgSrc, linkId, folderId) {
+        let unknownModelDialogHtml =
+            "<div class='flexContainer'>" +
+            "   <div class='floatLeft'>" +
+            "          <div class='inline'><img id='linkManipulateImage' class='copyDialogImage' src='" + imgSrc + "'/></div>\n" +
+            "   </div>" +
+
+            "   <div id='unknownPoserDialog' class='floatLeft'>" +
+            "       <div>If you you know who this is<br/>please <a class='dialogEditButton' href='javascript:showIdentifyPoserDialog()'>identify poser</a></div>\n" +
+            "       <br/>" +
+            "       <a class='dialogEditButton' href='javascript:IamThisModel()'>I am in this image</a>\n" +
+            "   </div>" +
+
+            "   <div id='identifyPoserDialog' class='floatLeft displayHidden' style='width:400px'>\n" +
+            "       <span>I think this poser&apos;s name is</span><input id='txtPoserIdentified' class='roundedInput'></input>\n" +
+            "       <div>comment</div>" +
+            "       <div class='modelInfoCommentArea'>\n" +
+            "          <textarea id='poserSummernoteContainer'></textarea>\n" +
+            "       </div>\n" +
+            "   </div>" +
+            "</div>" +
+            "<div id='poserDialogFooter' class='folderDialogFooter'>\n" +
+            "   <div id='btnPoserSave' style='margin-left:114px;'  class='folderCategoryDialogButton' onclick='poserSave(\"" + linkId + "\"," + folderId + ")'>save</div>\n" +
+            "   <div id='btnPoserCancel' class='folderCategoryDialogButton' onclick='dragableDialogClose()'>cancel</div>\n" +
+            "</div>";
+
+
+
+        if (menuType == "SlideShow") {
+            $('#slideShowDialogTitle').html("Unknown Poser");
+            $('#slideShowDialogContents').html(unknownModelDialogHtml);
+            $('#slideShowDialogContainer').draggable().fadeIn();
+        }
+        else {
+            $('#centeredDialogTitle').html("Unknown Poser");
+            $('#centeredDialogContents').html(unknownModelDialogHtml);
+            $('#centeredDialogContainer').css("top", 125);
+            $('#centeredDialogContainer').css("left", -350);
+            $('#centeredDialogContainer').draggable().fadeIn();
+        }
+
+        //$('#centeredDialogContainer').css("min-width", 470);
+        //$('#centeredDialogContainer').mouseleave(function () { dragableDialogClose(); });
+        $('#poserSummernoteContainer').summernote({
+            toolbar: [['codeview']],
+            height: "100"
+        });
+        $("#btnPoserSave").hide();
+        $("#btnPoserCancel").hide();
+        allowDialogClose = true;
+    }
+    function IamThisModel() {
+        alert("IamThisModel clicked");
+
+    }
+    function showIdentifyPoserDialog() {
+        $('#centeredDialogTitle').html("Identify Unknown Poser");
+        $("#identifyPoserDialog").show();
+        $("#unknownPoserDialog").hide();
+        $("#btnPoserSave").show();
+        $("#btnPoserCancel").show();
+        allowDialogClose = false;
+    }
+
+    function poserSave(linkId, folderId) {
+        let visitorId = getCookieValue("VisitorId", "poser Save");
+        if (document.domain !== "localhost")
+            sendEmail("CurtishRhodes@hotmail.com", "PoserIdentified@Ogglebooble.com", "poser identified !!!", +
+                "suggested name: " + $('#txtPoserIdentified').val() + "<br/>" +
+                "visitor: " + visitorId + "<br/>" +
+                "folderId: " + folderId + "<br/>" +
+                "linkId: " + linkId);
+        else
+            alert("sendEmail(CurtishRhodes@hotmail.com, PoserIdentified@Ogglebooble.com,\nposer identified !!!\n" +
+                "suggested name: " + $('#txtPoserIdentified').val() +
+                "\nvisitor: " + visitorId + "\nfolderId: " + folderId + "\nlinkId: " + linkId
+            );
+
+        showMyAlert("Thank you for your input\nYou have earned 1000 credits.");
+        logEvent("FBS", folderId, "poser identified", "link: " + linkId);
+        dragableDialogClose();
+    }
+
+    function addHrefToExternalLinks() {
+        alert("addHrefToExternalLinks: " + $('#txtLinkHref').val());
+        $('#externalLinks').summernote('pasteHTML', "<a href=" + $('#txtLinkHref').val() + " target = '_blank'>" + $('#txtLinkLabel').val() + "</a><br/>");
+        addTrackback($('#txtLinkHref').val());
+        $('#txtLinkHref').val('');
+        $('#txtLinkLabel').val('');
+    }
+    function addMetaTags() {
+
+        //openMetaTagDialog(categoryFolderId);
+    }
+
+/*--  context menu actions ---------------------------------*/{
+    function setFolderImage(filinkId, folderId, level) {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "php/updateFolderImage.php?folderImage='" + filinkId + "'&folderId=" + folderId + "&level=" + level,
+                success: function (success) {
+                    if (success.trim().startsWith("ok")) {
+                        displayStatusMessage("ok", level + " image set for " + folderId);
+                        $("#imageContextMenu").fadeOut();
+                    }
+                    else {
+                        logError("AJX", folderId, success, "setFolderImage");
+                    }
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    alert("setFolderImage: " + errMsg);
+                }
+            });
+        } catch (e) {
+            logOggleError("CAT", folderId, e, "set Folder Image")
+        }
+    }
 
     function writeAfantasy() {
         $('#centeredDialogTitle').html("move image to rejects");
         $('#centeredDialogContents').html(
-         `  <div class='center'><img id='commentDialogImage' class='commentDialogImage' /></div>
+            `  <div class='center'><img id='commentDialogImage' class='commentDialogImage' /></div>
             <div><input id='txtCommentTitle' class='roundedInput commentTitleText' tabindex='1' placeholder='Give your comment a title' /></div>
             <div id='imageCommentEditor' tabindex='2'>
 
@@ -857,6 +1581,7 @@ function addPgLinkButton(folderId, labelText) {
         $('#centeredDialogContainer').draggable().fadeIn();
     }
 }
+
 /*-- hit Counter ---------------------------------------*/{
     function logVisit(calledFrom) {
         try {
