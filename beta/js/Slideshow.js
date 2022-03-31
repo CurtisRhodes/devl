@@ -65,29 +65,50 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
         $('#albumPageLoadingGif').show();
         $('#slideshowMessageArea').html('loading');
         if (isLargeLoad) {
+            imageViewerIndex = 0;
             $.ajax({
                 url: "php/yagdrasselFetchAll.php?query=select f.Id, p.FolderName from CategoryFolder f " +
                     "join CategoryFolder p on f.Parent = p.Id where f.Parent=" + folderId,
                 success: function (data) {
                     let childFolders = JSON.parse(data);
                     slideshowParentName = childFolders[0].FolderName;
-                    $.each(childFolders, function (idx, childFolder) {
-                        $.getJSON('php/yagdrasselFetchAll.php?query=select * from VwLinks where FolderId=' +
-                            childFolder.Id + ' order by SortOrder', function (data) {
+                    let subfolderCount = childFolders.length;
+                    let subFolderLoop = 0, subLoopDone = true;
+                    let asyncthrottle = setInterval(function () {
+                        subLoopDone = false;
+                        try {
+                        $.ajax({
+                            url: 'php/yagdrasselFetchAll.php?query=select * from VwLinks where FolderId=' + childFolders[subFolderLoop].Id,
+                            success: function (data) {
                                 $.each(data, function (idx, obj) {
                                     imageArray.push(obj);
 
                                     if (imageArray.length == 10) {
-                                        $('#slideshowImage').attr("src", imageArray[0].FileName);
+                                        $('#slideshowImage').attr("src", imageArray[imageViewerIndex].FileName);
                                         $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
                                         $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + imageArray.length);
-
                                         $('#slideshowImageContainer').css('left', ($('#slideshowImageContainer').outerWidth() / 2) - ($('#leftClickArea').width() / 2));
                                     }
+
                                 });
-                                $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + imageArray.length);
-                            });
-                    });
+                                subLoopDone = true;
+                            },
+                            error: function (jqXHR) {
+                                logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "load slideshow items");
+                            }
+                        });
+                        } catch (e) {
+                            logOggleError("CAT", folderId, e, "load slideshow items");
+
+                        }
+                        while (!subLoopDone) {
+                            setTimeout(function () { }, 200);
+                        }
+                        $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + imageArray.length);
+                        subFolderLoop++;
+                        if (subFolderLoop > childFolders.length)
+                            clearInterval(asyncthrottle);
+                    }, 500);
                 }
             });
         }
@@ -101,9 +122,10 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                     else {
                         imageArray = JSON.parse(data);
                         if (imageArray.length > 0) {
+
                             imageViewerIndex = imageArray.findIndex(node => node.LinkId == startLink);
-                            if (imageViewerIndex < 0)
-                                imageViewerIndex = 0;
+                            if (imageViewerIndex < 0) imageViewerIndex = 0;
+
                             $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
                             $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + imageArray.length);
 

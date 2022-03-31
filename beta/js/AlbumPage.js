@@ -25,7 +25,8 @@ function getAlbumImages(folderId, islargeLoad) {
                     $('#albumContentArea').fadeIn();
                     let childFolders = JSON.parse(data);
                     $.each(childFolders, function (idx, childFolder) {
-                        $.getJSON('php/yagdrasselFetchAll.php?query=select * from VwLinks where FolderId=' + childFolder.Id + ' order by SortOrder', function (data) {
+                        $.getJSON('php/yagdrasselFetchAll.php?query=select * from VwLinks where FolderId=' +
+                            childFolder.Id + ' order by SortOrder', function (data) {
                             let vlinks = JSON.parse(data);
                             $.each(vlinks, function (idx, vLink) {
                                 loadImageResults(vLink, childFolder.Id);
@@ -261,7 +262,16 @@ function setBreadcrumbs(folderId, rootFolder) {
                         $('#breadcrumbContainer').html("no good");
                         return;
                     }
-                    $('#breadcrumbContainer').html(addBreadcrumb(folderId, breadcrumbItem[0].FolderName, "inactiveBreadCrumb"));
+                    //$('#breadcrumbContainer').html(addBreadcrumb(folderId, breadcrumbItem[0].FolderName, "inactiveBreadCrumb"));
+                    if ((dirTreeArray[0].FolderType == "multiFolder") || (dirTreeArray[0].FolderType == "multiModel")) {
+                        $('#breadcrumbContainer').html("<div class='inactiveBreadCrumb' " +
+                            "onclick='showFolderInfoDialog(" + folderId + ")'>" + breadcrumbItem[0].FolderName + "</div>");
+                    }
+                    else {
+                        $('#breadcrumbContainer').html("<div class='inactiveBreadCrumb' " +
+                            "onclick='showFileDetailsDialog(" + folderId + ")'>" + breadcrumbItem[0].FolderName + "</div>");
+                    }
+
                     let parent = breadcrumbItem[0].Parent;
 
                     while (parent > 0) {
@@ -276,7 +286,10 @@ function setBreadcrumbs(folderId, rootFolder) {
                                 parent = 99;
                             }
                             else {
-                                $('#breadcrumbContainer').prepend(addBreadcrumb(parent, breadcrumbItem[0].FolderName, "activeBreadCrumb"));
+                                //addBreadcrumb(parent, breadcrumbItem[0].FolderName, "activeBreadCrumb"));
+                                $('#breadcrumbContainer').prepend("<div class='activeBreadCrumb' " +
+                                    "onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + folderId +
+                                    "\"'>" + breadcrumbItem[0].FolderName + "</div>");
                                 parent = breadcrumbItem[0].Parent;
                             }
                         }
@@ -303,16 +316,6 @@ function setBreadcrumbs(folderId, rootFolder) {
     } catch (e) {
         logOggleError("CAT", folderId, e, "set breadcrumbs");
     }
-}
-
-function addBreadcrumb(folderId, folderName, className) {
-    if (className == "activeBreadCrumb")
-        return "<div class='" + className +
-            "' onclick='openfolderDialog(" + folderId + ")'>" + folderName + "</div>";
-    else
-        return "<div class='" + className +
-            "' onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + folderId +
-            "\"'>" + folderName + "</div>";
 }
 
 function addTrackbackLinks(folderId) {
