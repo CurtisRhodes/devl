@@ -288,8 +288,8 @@ function setBreadcrumbs(folderId, rootFolder) {
                             else {
                                 //addBreadcrumb(parent, breadcrumbItem[0].FolderName, "activeBreadCrumb"));
                                 $('#breadcrumbContainer').prepend("<div class='activeBreadCrumb' " +
-                                    "onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + folderId +
-                                    "\"'>" + breadcrumbItem[0].FolderName + "</div>");
+                                    "onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" +
+                                    breadcrumbItem[0].Id + "\"'>" + breadcrumbItem[0].FolderName + "</div>");
                                 parent = breadcrumbItem[0].Parent;
                             }
                         }
