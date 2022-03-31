@@ -65,6 +65,7 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
         $('#albumPageLoadingGif').show();
         $('#slideshowMessageArea').html('loading');
         if (isLargeLoad) {
+
             imageViewerIndex = 0;
             $.ajax({
                 url: "php/yagdrasselFetchAll.php?query=select f.Id, p.FolderName from CategoryFolder f " +
@@ -74,41 +75,47 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                     slideshowParentName = childFolders[0].FolderName;
                     let subfolderCount = childFolders.length;
                     let subFolderLoop = 0, subLoopDone = true;
-                    let asyncthrottle = setInterval(function () {
+
+                    $.each(childFolders, function (idx, childFolder) {
+                        let dots = "";
                         subLoopDone = false;
-                        try {
-                        $.ajax({
-                            url: 'php/yagdrasselFetchAll.php?query=select * from VwLinks where FolderId=' + childFolders[subFolderLoop].Id,
-                            success: function (data) {
-                                $.each(data, function (idx, obj) {
-                                    imageArray.push(obj);
-
-                                    if (imageArray.length == 10) {
-                                        $('#slideshowImage').attr("src", imageArray[imageViewerIndex].FileName);
-                                        $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
-                                        $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + imageArray.length);
-                                        $('#slideshowImageContainer').css('left', ($('#slideshowImageContainer').outerWidth() / 2) - ($('#leftClickArea').width() / 2));
-                                    }
-
-                                });
-                                subLoopDone = true;
-                            },
-                            error: function (jqXHR) {
-                                logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "load slideshow items");
+                        let asyncThrottle = setInterval(function () {
+                            $.ajax({
+                                url: 'php/yagdrasselFetchAll.php?query=select * from VwLinks where FolderId=' + childFolder.Id,
+                                success: function (data) {
+                                    $.each(data, function (idx, obj) {
+                                        imageArray.push(obj);
+                                        if (imageArray.length == 10) {
+                                            $('#slideshowImage').attr("src", imageArray[imageViewerIndex].FileName);
+                                            $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
+                                            $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + imageArray.length);
+                                            $('#slideshowImageContainer').css('left', ($('#slideshowImageContainer').outerWidth() / 2) - ($('#leftClickArea').width() / 2));
+                                        }
+                                    });
+                                    subLoopDone = true;
+                                    subLoopDone = true;
+                                    subLoopDone = true;
+                                    subLoopDone = true;
+                                    subLoopDone = true;
+                                    subLoopDone = true;
+                                    subLoopDone = true;
+                                },
+                                error: function (jqXHR) {
+                                    logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "load slideshow items");
+                                    subLoopDone = true;
+                                }
+                            });
+                            if (subLoopDone) {
+                                clearInterval(asyncThrottle);
                             }
-                        });
-                        } catch (e) {
-                            logOggleError("CAT", folderId, e, "load slideshow items");
-
-                        }
-                        while (!subLoopDone) {
-                            setTimeout(function () { }, 200);
-                        }
-                        $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + imageArray.length);
-                        subFolderLoop++;
-                        if (subFolderLoop > childFolders.length)
-                            clearInterval(asyncthrottle);
-                    }, 500);
+                            dots += " *";
+                            $('#dots').html(dots);
+                        }, 666);
+                    });
+                    if (++subFolderLoop == subfolderCount) {
+                        // ajax really done
+                        imageViewerIndex = 0;
+                    }
                 }
             });
         }
@@ -125,19 +132,6 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
 
                             imageViewerIndex = imageArray.findIndex(node => node.LinkId == startLink);
                             if (imageViewerIndex < 0) imageViewerIndex = 0;
-
-                            $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
-                            $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + imageArray.length);
-
-                            let ttSrc = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
-                            tempImgSrc.src = ttSrc;
-                            tempImgSrc.onload = function () {
-                                // the magic center
-                                $('#slideshowImage').attr("src", tempImgSrc.src);
-                                let imageWidth = $('#slideshowImageContainer').outerWidth();
-                                $('#slideshowImageContainer').css('left', 0 - imageWidth / 2);
-                                $('#albumPageLoadingGif').hide();
-                            };
                         }
                         else {
                             displayStatusMessage("warning", "no images found");
@@ -150,6 +144,24 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                 }
             });
         }
+        //  now do the ajax done part
+
+        $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
+        $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + imageArray.length);
+
+        let ttSrc = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
+        tempImgSrc.src = ttSrc;
+        tempImgSrc.onload = function () {
+            // the magic center
+            $('#slideshowImage').attr("src", tempImgSrc.src);
+            let imageWidth = $('#slideshowImageContainer').outerWidth();
+            $('#slideshowImageContainer').css('left', 0 - imageWidth / 2);
+            $('#albumPageLoadingGif').hide();
+        };
+
+
+
+
         let delta = (Date.now() - infoStart) / 1000;
         console.log("getGalleyInfo took: " + delta.toFixed(3));
     } catch (e) {

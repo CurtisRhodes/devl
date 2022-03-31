@@ -262,7 +262,6 @@ flexbox {
 }
 
 .workAreaHeader {
-    display: none;
     background-color: var(--brucheumBlue);
     color: #fff;
     width: 100%;
