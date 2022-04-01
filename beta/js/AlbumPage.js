@@ -5,11 +5,7 @@ function loadAlbumPage(folderId, islargeLoad) {
     currentFolderId = folderId;
     getAlbumImages(folderId, islargeLoad);
     getAlbumPageInfo(folderId, islargeLoad);
-
-
     verifyUser("album page");
-
-
 }
 
 /*-- php -----------------------------------*/
@@ -18,36 +14,23 @@ function getAlbumImages(folderId, islargeLoad) {
         $('#albumPageLoadingGif').css("height", "27px");
         $('#albumPageLoadingGif').show();
         $('#imageContainer').html("");
-        if (islargeLoad) {
-            $.ajax({
-                url: "php/yagdrasselFetchAll.php?query=Select * from CategoryFolder where Parent=" + folderId,
-                success: function (data) {
-                    $('#albumContentArea').fadeIn();
-                    let childFolders = JSON.parse(data);
-                    $.each(childFolders, function (idx, childFolder) {
-                        $.getJSON('php/yagdrasselFetchAll.php?query=select * from VwLinks where FolderId=' +
-                            childFolder.Id + ' order by SortOrder', function (data) {
-                            let vlinks = JSON.parse(data);
-                            $.each(vlinks, function (idx, vLink) {
-                                loadImageResults(vLink, childFolder.Id);
-                            });
-                        });
-                        resizeAlbumPage();
-                    });
-                    $('#albumPageLoadingGif').hide();
-                }
-            });
-        }
-        else {
-            $.getJSON('php/yagdrasselFetchAll.php?query=select * from VwLinks where FolderId=' + folderId + ' order by SortOrder', function (data) {
+        let sql = "select * from VwLinks where FolderId=" + folderId + " order by SortOrder";
+        if (islargeLoad)
+            sql = "select * from VwLinks where FolderId in (select Id from CategoryFolder where Parent=" + folderId + ")";
+
+        $.getJSON('php/yagdrasselFetchAll.php?query=' + sql,
+            function (data) {
                 // let vlinks = JSON.parse(data);
                 $.each(data, function (idx, vLink) {
                     loadImageResults(vLink, folderId);
                 });
-                getSubFolders(folderId);
+                if (islargeLoad)
+                    $('#albumPageLoadingGif').hide();
+                else
+                    getSubFolders(folderId);
             });
-        }
-    } catch (e) {
+    }
+    catch (e) {
         $('#albumPageLoadingGif').hide();
         logOggleError("CAT", folderId, e, "getAlbumImages");
     }
@@ -77,17 +60,11 @@ function loadImageResults(vLink, folderId) {
             "onclick='viewImage(\"" + imgSrc + "\",\"" + vLink.LinkId + "\")'/></div>");
 
         if (vLink.FolderId !== vLink.SrcId) {
-            $('#' + vLink.LinkId + '').append("<div class='knownModelIndicator'><img src='https://common.ogglefiles.com/img/foh01.png' title='" +
-                vLink.SrcFolder + "' onclick='jumpToSrcFolder(" + vLink.SrcId + "," + folderId + ")' /></div>\n");
+            $('#' + vLink.LinkId + '').append(`<div class='knownModelIndicator'>
+                <img src='https://common.ogglefiles.com/img/foh01.png' title='`+ vLink.SrcFolder + `' 
+                    onclick='window.open(\"https://ogglefiles.com/beta/album.html?folder=\"` + vLink.SrcId + `'/></div>`);
         }
     }
-}
-
-function jumpToSrcFolder(srcId, folderId) {
-    //logOggleEvent("JPS", folderId, "album page");
-    window.open("https://ogglefiles.com/beta/album.html?folder=" + srcId);
-    //window.location.href = "https://ogglefiles.com/beta/album.html?folder=" + clickFolderId;  //  open page in same window
-
 }
 
 function getSubFolders(folderId) {
@@ -145,7 +122,8 @@ function getAlbumPageInfo(folderId, islargeLoad) {
 
                 switch (catfolder.FolderType) {
                     case "multiFolder":
-                    case "singleParent":
+                    case "singleParent":                        
+                        $('#slideShowClick').hide();
                         $('#largeLoadButton').show();
                         $('#deepSlideshowButton').show();
                         if (catfolder.Files > 0) 

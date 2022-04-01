@@ -460,26 +460,25 @@ function addPgLinkButton(folderId, labelText) {
         $('#contextMenuContent').html(oggleContextMenuHtml());
         $('#contextMenuContainer').css("top", pos.y);
         $('#contextMenuContainer').css("left", pos.x);
-
         if (pmenuType === "Folder")
             ctxMenuFolderInfo();
         else
             ctxMenuImageInfo();
         $('#contextMenuContainer').draggable().show();
         $("#contextMenuContainer").mousemove(function (event) {
-            $("#hdrBtmRowSec3").html('');
-            let ctxLeft = $("#contextMenuContainer").offset().left;
-            let ctxTop = $("#contextMenuContainer").offset().top;
+            //$("#hdrBtmRowSec3").html('');
+            let ctxLeft = $("#contextMenuContainer").offset().left - 22;
+            let ctxTop = $("#contextMenuContainer").offset().top - 22;
             let ctxRight = $("#contextMenuContainer").offset().left + $("#contextMenuContainer").width() + 22;
             let ctxBott = $("#contextMenuContainer").offset().top + $("#contextMenuContainer").height() + 22;
 
             //$("#hdrBtmRowSec3").html("ctxTop: " + ctxTop + ", ctxBott: " + ctxBott + ", ctxLeft: " + ctxLeft +
             //    ", ctxRight: " + ctxRight + ", x: " + event.pageX + ", y: " + event.pageY);
 
-            if (event.pageY <= ctxTop) $("#hdrBtmRowSec3").html('past top');
-            if (event.pageY >= ctxBott) $("#hdrBtmRowSec3").html('past bott');
-            if (event.pageX <= ctxLeft) $("#hdrBtmRowSec3").html('past left');
-            if (event.pageX >= ctxRight) $("#hdrBtmRowSec3").html('past right');
+            //if (event.pageY <= ctxTop) $("#hdrBtmRowSec3").html('past top');
+            //if (event.pageY >= ctxBott) $("#hdrBtmRowSec3").html('past bott');
+            //if (event.pageX <= ctxLeft) $("#hdrBtmRowSec3").html('past left');
+            //if (event.pageX >= ctxRight) $("#hdrBtmRowSec3").html('past right');
 
             if ((event.pageY <= ctxTop) ||
                 (event.pageY >= ctxBott) ||
@@ -1258,7 +1257,7 @@ var objFolderInfo = {}, allowDialogClose = true;
 
     ///////////////// TRACKBACK DIALOG  ////////////
     function showTrackbackDialog() {
-        $('#btnCatDlgEdit').html("pause");
+        //$('#btnCatDlgEdit').html("pause");
         allowDialogClose = false;
         $("#trackBackDialog").html(`
             <div>

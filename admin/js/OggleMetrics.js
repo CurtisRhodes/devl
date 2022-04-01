@@ -30,6 +30,7 @@ function showPageHitsReport() {
         }
     });
 }
+
 function hitsByPageReport(pageHitDate) {
 
     let sql = `select  count(*) as Hits, PageId, FolderName, RootFolder 
@@ -39,10 +40,9 @@ function hitsByPageReport(pageHitDate) {
     $.ajax({
         url: "php/registroFetchAll.php?query=" + sql,
         success: function (response) {
-
             let errorSummary = JSON.parse(response);
-            $('#pageHitByPageReport').html("<div class='reportBodyTitle'>PaegeHit Detail " + pageHitDate + "</div>");
 
+            $('#pageHitByPageReport').html("<div class='reportBodyTitle'>PaegeHit Detail " + pageHitDate + "</div>");
             let tableKlude = "<table>";
             $.each(errorSummary, function (idx, obj) {
                 tableKlude += "<tr><td>" + obj.Hits + "</td>";
@@ -59,6 +59,18 @@ function hitsByPageReport(pageHitDate) {
         }
     });
 }
+
+function metricsReport() {
+//    select VisitDate, count(*) from Visit
+//    group by VisitDate;
+
+//    select date(InitialVisit), count(*)
+//    from Visitor
+//    where InitialVisit > '2022-03-11'
+//    group by date(InitialVisit);
+}
+
+
 function pageHitPageDetailReport(pageId, pageHitDate) {
     
     let sql = `select f.FolderName, h.VisitorId, concat(City,', ',Region,' ',Country) as Location,
@@ -91,6 +103,8 @@ function pageHitPageDetailReport(pageId, pageHitDate) {
 
 }
 
+
+/*--------------------------------------------------*/
 function showDailyErrorReport() {
     closeAllReports();
     $('#reportsHeader').show();
