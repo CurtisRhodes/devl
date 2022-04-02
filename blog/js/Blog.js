@@ -1,175 +1,167 @@
 // const settingsImgRepo = 'https: //ogglefiles.com/danni/';
-let blogObject = {};
 
-function displayBlogList() {
+let currentBlogObject = {
+    BlogId: 0,
+    CommentTitle: '',
+    ImgSrc: '',
+    Text: '',
+    Posted: '',
+    Summary: '',
+};
+
+function startOggleBlog() {
+
+    displayBlogList('PBE');
+
+    //$('#summernoteContainer').summernote();
+    //loadDropDown($('#selBlogEditCommentType'));
+    //$('#blogListArea').show();
+
+}
+
+function displayBlogList(commentType) {
     try {
+        $('.blogSection').hide();
+        $('#blogListArea').show();
 
-        let commentType = $('#ddCommentType').val();
-        if (isNullorUndefined(commentType)) {
-            commentType = 'PBE';
-        }
+        $('#leftColumnList').hide();
+        $('#leftColumnNew').show();
+        $('#leftColumnView').hide();
+        $('#leftColumnEdit').hide();
 
+        loadDropDown($('#ddCommentType', 'BLG'));
+
+        //currentBlogObject.CommentType : $('#ddCommentType').val();
         $.ajax({
             type: "GET",
             url: "php/getBlogItems.php?commentType=" + commentType,
             success: function (data) {
-                if (data.substring(5, 20).indexOf("error") > 0) {
-                    $('#blogListArea').html(data);
-                }
+                let jData = JSON.parse(data);
+                currentBlogObject.CommentType = commentType;
+                $('#blogArticleJogArea').html("");
+                if (jData.length == 0)
+                    alert("no entries found for commentType: " + commentType);
                 else {
-                    let jData = JSON.parse(data);
-                    blogObject.CommentType = commentType;
-                    $('#blogArticleJogArea').html("");
-                    if (jData.length == 0)
-                        alert("no entries found for commentType: " + commentType);
-                    else {
-                        $.each(jData, function (idx, blogComment) {
-                            $('#blogArticleJogArea').append(`
+                    $.each(jData, function (idx, blogComment) {
+                        $('#blogArticleJogArea').append(`
                             <div class="blogArticleItem">
                                 <div><img class="articleJogImage" src="` + blogComment.JogImage + `"/></div>
                                 <div>
                                     <div class="blogCommentTitle">` + blogComment.CommentTitle + `</div>
                                     <div class="blogSummary">` + blogComment.Summary + `</div>
                                 </div>
-                                <div class="blogEditButton" onclick="editBlogEntry('`+ blogComment.Id + `')">edit</div>
+                                <div class="blogEditButton" onclick="displayEditArea('`+ blogComment.Id + `')">edit</div>
                             </div>`);
-                        });
-
-                        loadCommentTypesDD($('#ddCommentType'));
-                        resizeBlogPage();
-                    }
+                    });
+                    resizeBlogPage();
                 }
             },
             error: function (jqXHR) {
                 $('#albumPageLoadingGif').hide();
-                let errMsg = getXHRErrorDetails(jqXHR);
-                alert("display blogList: " + errMsg);
-                // logError("XHR", folderId, errMsg, "get albumImages");
+                logBlogError("CAT", -245223911, getXHRErrorDetails(jqXHR), "display blog list");
             }
         });
     } catch (e) {
-        logCatch("loadImages", e);
+        logBlogError("CAT", -245223911, e, "display blog list");
     }
 }
 
-function loadCommentTypesDD(ddObject) {
-    $.ajax({
-        type: "GET",
-        url: "php/getRefs.php?refType=BLG",
-        success: function (data) {
-            if (data.substring(5, 20).indexOf("error") > 0) {
-                $('#blogListArea').html(data);
-            }
-            else {
-                let jData = JSON.parse(data);
-                ddObject.html("");
-                //$('#ddCommentType').html("");
-                $.each(jData, function (idx, obj) {
-                    //$('#ddBlogRefs').append("<option value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
-                    if (obj.RefCode == blogObject.CommentType) {
-                        $('#blogTitle').html(obj.RefDescription);
-                        ddObject.append("<option selected='selected' value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
-                    }
-                    else
-                        ddObject.append("<option value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
-                });
+function displayEditArea(blogId) {
+    try {
+        $('.blogSection').hide();
+        $('#blogEditArea').show();
 
-                ddObject.change(function () {
-                    blogObject.CommentType = $('#ddCommentType').val()
-                    displayBlogList();
-                });
+        $('#leftColumnList').show();
+        $('#leftColumnNew').show();
+        $('#leftColumnView').hide();
+        //$('#leftColumnEdit').hide();
+
+        $('#btnAddEdit').html("Update");
+        $('#albumPageLoadingGif').show();
+        $.ajax({
+            type: "GET",
+            url: "php/getBlogItem.php?blogId=" + blogId,
+            success: function (data) {
+                $('#albumPageLoadingGif').hide();
+                let blogComment = JSON.parse(data)[0];
+                $('#txtCommentTitle').val(blogComment.CommentTitle);
+                loadDropDown($('#selBlogEditCommentType'));
+                $('#txtPosted').val(blogComment.Created);
+                $('#summernoteContainer').summernote('code', blogComment.CommentText);
+                $('#imgBlogLink').attr("src", blogComment.JogImage);
+            },
+            error: function (jqXHR) {
+                logBlogError("XHR", -245223915, getXHRErrorDetails(jqXHR), "error blog list");
+                $('#albumPageLoadingGif').hide();
             }
-        },
-        error: function (jqXHR) {
-            $('#blogLoadingGif').hide();
-            let errMsg = getXHRErrorDetails(jqXHR);
-            alert("loadCommentTypesDD: " + errMsg);
-            //let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
-            //if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", 3911, errMsg, functionName);
-        }
-    });
+        });
+    } catch (e) {
+        logBlogError("CAT", -245223915, e, "error blog list");
+    }
+
+    //
+    //$('#btnNewCancel').hide();
+    //loadDropDown();
+    //$('#blogCrudBox').css("width", $(window).width() * .66);
+    //loadSingleBlogEntry(blogItemId, "edit");
 }
 
-function newEntry() {
-    //"    <div id='blogEditArea' class='blogArea twoColumnFrame flexContainer'>
-    displayBlogEditHtml();
-    clearBlogGets();
-    loadCommentTypesDD();
+function displayViewArea() {
+    $('.blogSection').hide();
+    $('#blogViewArea').show();
+    $('#leftColumnNew').show();
+    $('#leftColumnView').hide();
+    $('#leftColumnEdit').hide();
+    //loadSingleBlogEntry(blogItemId);
+}
+
+function displayNewEntryArea() {
     $('#leftColumnNew').hide();
-    $('#leftColumnShow').show();
+    $('#leftColumnView').show();
     $('#leftColumnEdit').hide();
     $('#btnAddEdit').html("Add");
     $("#txtPosted").datepicker();
 }
 
-function editBlogEntry(blogId) {
-    $('#blogListArea').hide();
-    $('#blogEditArea').show();
-
-    try {
-        $.ajax({
-            type: "GET",
-            url: "php/getBlogItem.php?blogId=" + blogId,
-            success: function (data) {
-                if (data.substring(5, 20).indexOf("error") > 0) {
-                    $('#blogListArea').html(data);
+function loadDropDown(ddElement, refType) {
+    $.ajax({
+        type: "GET",
+        url: "php/getRefs.php?refType=" + refType,
+        success: function (data) {
+            let jData = JSON.parse(data);
+            ddElement.html("");
+            $.each(jData, function (idx, obj) {
+                if (obj.RefCode == currentBlogObject.CommentType) {
+                    $('#blogTitle').html(obj.RefDescription);
+                    ddElement.append("<option selected='selected' value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
                 }
-                else {
-                    let blogComment = JSON.parse(data)[0];
+                else
+                    ddElement.append("<option value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
+            });
 
-                    $('#txtCommentTitle').val(blogComment.CommentTitle);
-                    loadCommentTypesDD($('#selBlogEditCommentType'));
-                    $('#txtPosted').val(blogComment.Created);
-                    $('#summernoteContainer').summernote('code', blogComment.CommentText);
-                   // $('#txtLink').val(blogComment.JogImage);
-
-
-                    $('#imgBlogLink').attr("src", blogComment.JogImage);
-                }
-            },
-            error: function (jqXHR) {
-                $('#albumPageLoadingGif').hide();
-                let errMsg = getXHRErrorDetails(jqXHR);
-                alert("display blogList: " + errMsg);
-                // logError("XHR", folderId, errMsg, "get albumImages");
-            }
-        });
-    } catch (e) {
-        logCatch("loadImages", e);
-    }
-
-    //
-    $('#leftColumnNew').show();
-    $('#leftColumnShow').show();
-    $('#leftColumnEdit').hide();
-    $('#btnAddEdit').html("Update");
-    //$('#btnNewCancel').hide();
-    //loadCommentTypesDD();
-    //$('#blogCrudBox').css("width", $(window).width() * .66);
-    //loadSingleBlogEntry(blogItemId, "edit");
-}
-
-function viewBlogEntry(blogItemId) {
-    if (isNullorUndefined(blogItemId))
-        blogItemId = blogObject.Id;
-    else
-        blogObject.Id = blogItemId;
-
-    $('.blogEditButton').hide();
-    $('#leftColumnShow').show();
-    $('#leftColumnEdit').show();
+            ddElement.change(function () {
+                currentBlogObject.CommentType = $('#ddCommentType').val()
+                displayBlogList();
+            });
+        },
+        error: function (jqXHR) {
+            logBlogError("XHR", -21544, getXHRErrorDetails(jqXHR), "blog load dropDown");
+            $('#blogLoadingGif').hide();
+        }
+    });
 }
 
 function loadSingleBlogEntry(blogItemId, editMode) {
     try {
         $.ajax({
             type: "GET",
-            url: settingsArray.ApiServer + "api/OggleBlog/GetBlogItem?blogId=" + blogItemId,
+            url: "wysiwygFetch.php?query=" + "select * from BlogItem where BlogId=" + blogItemId,
             success: function (model) {
                 if (model.Success === "ok") {
-                    blogObject.ImageLink = model.ImageLink;
-                    blogObject.ImgSrc = model.ImgSrc;
-                    blogObject.CommentType = model.CommentType;
+                    //currentBlogObject.ImageLink = model.ImageLink;
+                    currentBlogObject.ImgSrc = model.ImgSrc;
+                    currentBlogObject.ImgSrc = model.ImgSrc;
+                    currentBlogObject.CommentType = model.CommentType;
 
                     if (editMode == "edit") {
                         $('#txtCommentTitle').val(model.CommentTitle);
@@ -179,68 +171,28 @@ function loadSingleBlogEntry(blogItemId, editMode) {
                         $('#txtPosted').val(model.Pdate); //.datepicker();
                         $('#txtLink').val(model.ImageLink);
                         $('#imgBlogLink').attr("src", model.ImgSrc);
-                        $('#txtBlogId').val(blogObject.Id);
+                        $('#txtBlogId').val(currentBlogObject.Id);
 
                         $('#btnAddEdit').html("Update");
                         $('#btnNewCancel').html("Cancel");
                     }
                     else {
                         $('#blogPageTitle').html(model.CommentTitle);
-                        $('#blogPageBody').html(model.CommentText);
-                        
+                        $('#blogPageBody').html(model.CommentText);                        
                         $('#blogPageImage').attr("src", model.ImgSrc);
                     }
                 }
                 else {
-                    logError("AJX", 3911, model.Success, "load SingleBlogEntry");
+                    logBlogError("AJX", 3911, model.Success, "load SingleBlogEntry");
                 }
             },
             error: function (jqXHR) {
                 $('#blogLoadingGif').hide();
-                let errMsg = getXHRErrorDetails(jqXHR);
-                let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
-                if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", 3911, errMsg, functionName);
+                logBlogError("XHR", -24522331, e, "load SingleBlogEntry");
             }
         });
     } catch (e) {
-        logError("CAT", 3911, e, "load SingleBlogEntry");
-    }
-}
-
-function loadRefs() {
-    try {
-        $.ajax({
-            type: "GET",
-            url: "php/getRefs.php?refType=BLG",
-            success: function (data) {
-                if (data.indexOf("error") > 0) {
-                    $('#blogListArea').html(data);
-                }
-                else {
-                    let jData = JSON.parse(data);
-                    $('#blogArticleJogContainer').html("");
-                    if (jData.length == 0)
-                        alert("no entries found for commentType: " + commentType);
-                    else {
-                        $.each(jData, function (idx, obj) {
-                            $('#ddBlogRefs').append(`
-                                <div class="blogArticleBottomRow flexContainer">
-                                    <div class="blogEditButton floatright" onclick="editArticle('` + blogComment.PkId + `');">edit</div>
-                                </div>`);
-                        });
-                        resizeBlogPage();
-                    }
-                }
-            },
-            error: function (jqXHR) {
-                $('#albumPageLoadingGif').hide();
-                let errMsg = getXHRErrorDetails(jqXH);
-                alert("get albumImages: " + errMsg);
-                // logError("XHR", folderId, errMsg, "get albumImages");
-            }
-        });
-    } catch (e) {
-        logCatch("loadImages", e);
+        logBlogError("CAT", -24522331, e, "load SingleBlogEntry");
     }
 }
 
@@ -248,40 +200,39 @@ function clearBlogGets() {
     // $('#txtommentTile').val($('#txtLnk').val("");
     $('#sumernoteContainer').summernote('cde', "");
     $('#imgBlogLink').attr("src", "");
-    blogObject.Id = "";
+    currentBlogObject.Id = "";
 }
 
 function addBlogEntry() {
     try {
-        blogObject.CommentTitle = $('#txtCommentTtle').val();
-        blogObject.VisitorId = getCookievalue("VisitorId", "save BlogEntry");
-        blogObject.Link = $('#txtLink').val();
-        blogObject.CommentText = $('#summernoteContainer').summernote('code');
-        blogObject.CommentType = $('#selBlogEditCommentType').val();
+        currentBlogObject.CommentTitle = $('#txtCommentTtle').val();
+        currentBlogObject.VisitorId = getCookievalue("VisitorId", "save BlogEntry");
+        currentBlogObject.Link = $('#txtLink').val();
+        currentBlogObject.CommentText = $('#summernoteContainer').summernote('code');
+        currentBlogObject.CommentType = $('#selBlogEditCommentType').val();
 
         if ($('#btnAddEdit').html() == "Add") {
             $.ajax({
                 type: "POST",
                 url: settingsArray.ApiServer + "api/OggleBlog/Insert",
-                data: blogObject,
+                data: currentBlogObject,
                 success: function (successModel) {
                     if (successModel.Success == "ok") {
                         displayStatusMessage("ok", "Entry Saved");
                         $('#btnAddEdit').html("Edit");
                         //$('#btnNewCancel').show();
-                        blogObject.Id = successModel.ReturnValue;
+                        currentBlogObject.Id = successModel.ReturnValue;
                     }
                     else
                         logError("AJX", 3911, successModel.Success, "saveBlogEntry");
                 },
                 error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    if (!checkFor404(errMsg, folderId, "saveBlogEntry")) logError("XHR", 3911, errMsg, "saveBlogEntry");
+                    logBlogError("XHR", -24522911, e, "add blog entry");
                 }
             });
         }
     } catch (e) {
-        logCatch("loadImages", e);
+        logBlogError("CAT", -24522911, e, "add blog entry");
     }
 }
 
@@ -290,15 +241,20 @@ function updateBlogEntry() {
         $.ajax({
             type: "PUT",
             url: settingsArray.ApiServer + "api/OggleBlog/Update",
-            data: blogObject,
+            data: currentBlogObject,
             success: function (success) {
                 if (success == "ok") {
                     displayStatusMessage("ok", "Entry Updated");
-                } else logError("AJX", 3911, success, "saveBlogEntry");
-            }, error: function (jqXHR) { let errMsg = getXHRErrorDetails(jqXHR); let functionName = arguments.callee.toString().match(/function ([^\(]+) /)[1]; if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", 3911, errMsg, functionName); }
+                } else logError("AJX", -24522661, success, "saveBlogEntry");
+            },
+            error: function (jqXHR) {
+                logBlogError("XHR", -24522661, getXHRErrorDetails(jqXHR), "update blog entry");
+            }
         });
     }
-    catch (e) { logError("CAT", 3911, e, "saveBlogEntry"); }
+    catch (e) {
+        logBlogError("CAT", -24522661, e, "update blog entry");
+    }
 }
 
 function loadImage() {
@@ -308,7 +264,7 @@ function loadImage() {
         url: settingsArray.ApiServer + "api/OggleBlog/GetImageLink?linkId=" + $('#txtLink').val(),
         success: function (imageAddress) {
             $('#imgBlogLink').attr("src", imageAddress);
-            blogObject.ImageLink = $('#txtLink').val();
+            currentBlogObject.ImageLink = $('#txtLink').val();
         },
         error: function (jqXHR) {
             $('#blogLoadingGif').hide();
@@ -325,3 +281,35 @@ function btnNewCancelAction() {
     }
 }
 
+function logBlogError(errorCode, folderId, errorMessage, calledFrom) {
+    try {
+        let visitorId = getCookieValue("VisitorId");
+        $.ajax({
+            type: "POST",
+            url: "php/logError.php",
+            data: {
+                ErrorCode: errorCode,
+                FolderId: folderId,
+                VisitorId: visitorId,
+                CalledFrom: calledFrom,
+                ErrorMessage: errorMessage
+            },
+            success: function (success) {
+                if (success.trim() == "ok") {
+                    console.log(errorCode + " error from: " + calledFrom + " error: " + errorMessage);
+                }
+                else {
+                    if (!success.trim().startsWith("2300"))
+                        console.log("log oggleerror fail: " + success);
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                alert("Error log error: " + errMsg);
+            }
+        });
+    } catch (e) {
+        alert("Error log CATCH error: " + e);
+        console.log("logOggle error not working: " + e);
+    }
+}

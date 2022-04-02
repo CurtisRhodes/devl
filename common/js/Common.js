@@ -694,8 +694,6 @@ function mailMe() {
         </div>`);
     }
 
-    //  target='_blank'
-
     function displayFooter(footerContext) {
         try {
             $('footer').html(footerHtml());
