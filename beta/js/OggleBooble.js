@@ -492,46 +492,35 @@ function addPgLinkButton(folderId, labelText) {
     function ctxMenuImageInfo() {
         try {
             let getSingleImageDetailsStart = Date.now();
-            $('#ctxTxtModelName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='https://common.ogglefiles.com/img/loader.gif'/>");
-            $('.ctxItem').hide();
 
+            $('.ctxItem').hide();
+            $('#ctxTxtModelName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='https://common.ogglefiles.com/img/loader.gif'/>");
             $('#ctxComment').show();
             $('#ctxExplode').show();
+            $('#ctxImageInfo').show();
 
             // beta mode
-            $('ctxAdmin').show();
+            $('.adminLink').show();
 
-
-
-            let sql = "select p.FolderName as ParentFolderName, i.*, f.* from ImageFile i " +
-                "join CategoryFolder f on i.FolderId=f.Id join CategoryFolder p on f.Parent=p.Id where i.id=" + pfolderId;
-
+            sql = "select f.FolderName, p.FolderName as ParentFolderName, f.FolderPath, f.FolderType, i.* from ImageFile i join CategoryFolder f on i.FolderId = f.Id " +
+                  " join CategoryFolder p on f.Parent = p.Id where i.Id='" + plinkId + "'";
             $.ajax({
                 type: "GET",
                 url: "php/yagdrasselFetch.php?query=" + sql,
                 success: function (data) {
                     let imgData = JSON.parse(data);
                     if (imgData == "false") {
-                        $('#ctxTxtModelName').html("");
+                        $('#ctxTxtModelName').html("empty data");
                         logOggleError("AJX", pfolderId, "empty data", "get singleImage details");
                     }
                     else {
-                        pFolderName = imgData.FolderName;
+
                         if (imgData.FolderType == "singleChild")
                             $('#ctxTxtModelName').html(imgData.ParentFolderName);
                         else {
                             $('#ctxTxtModelName').html(imgData.FolderName);
                         }
-                        if (imgData.FolderType == "multiModel") {
-                            if (imgData.Id != folderId) { //  we have a link
-                                $('#ctxSeeMore').show();
-
-                            }
-                            else {
-                                $('#ctxTxtModelName').html("unknown model");
-                            }
-                        }
-
+                        // imgInfo
                         $('#imageInfoFileName').html(imgData.FileName);
                         $('#imageInfoFolderPath').html(imgData.FolderPath);
                         $('#imageInfoLinkId').val(plinkId);
@@ -548,45 +537,54 @@ function addPgLinkButton(folderId, labelText) {
                             $('#ctxssClose').show();
                         }
 
-                        let delta = Date.now() - getSingleImageDetailsStart;
-                        let minutes = Math.floor(delta / 60000);
-                        let seconds = (delta % 60000 / 1000).toFixed(0);
-                        //
-                        console.log("get Single Image Details took: " + minutes + ":" + (seconds < 10 ? '0' : '') + seconds);
+                        //if(pfolderId == )
+
+
+                        if (imgData.FolderType == "multiModel") {
+                            if (imgData.FolderId == pfolderId) {
+                                $('#ctxTxtModelName').html("unknown model");
+                            }
+                        }
+                        /// check for CategoryImageLink links
+                        sql = "select f.Id, f.FolderName from CategoryImageLink l join CategoryFolder f on l.ImageCategoryId = f.id " +
+                            "where ImageLinkId = '" + plinkId + "' and ImageCategoryId !=" + pfolderId;
+                        $.ajax({
+                            type: "GET",
+                            url: "php/yagdrasselFetchAll.php?query=" + sql,
+                            success: function (data) {
+                                let categoryImageLinks = JSON.parse(data);
+                                if (categoryImageLinks.length > 0) {
+                                    $('#ctxLinks').show();
+
+                                    $.each(categoryImageLinks, function (idx, categoryImageLink) {
+                                        if (categoryImageLink.Id == imgData.FolderId) {
+                                            $('#linkInfoContainer').append("<div style='color:red' onclick='window.open('https://Ogglebooble.com/album.html?folder="
+                                                + categoryImageLink.Id + "')>" + categoryImageLink.FileName + "</div");
+                                        }
+                                        else
+                                        $('#linkInfoContainer').append("<div onclick='window.open('https://Ogglebooble.com/album.html?folder="
+                                            + categoryImageLink.Id + "')>" + categoryImageLink.FileName + "</div");
+                                    });
+                                }
+                                let delta = Date.now() - getSingleImageDetailsStart;
+                                let minutes = Math.floor(delta / 60000);
+                                let seconds = (delta % 60000 / 1000).toFixed(0);
+                                //
+                                console.log("get Single Image Details took: " + minutes + ":" + (seconds < 10 ? '0' : '') + seconds);
+                            },
+                            error: function (jqXHR) {
+                                logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "check for links");
+                            }
+                        });
                     }
                 },
                 error: function (jqXHR) {
-                    $('#ctxTxtModelName').html("");
+                    $('#ctxTxtModelName').html(getXHRErrorDetails(jqXHR));
                     logOggleError("XHR", pfolderId, getXHRErrorDetails(jqXHR))
                 }
             });
-
-
-            /// check for links
-            sql = "select Id, FolderName from CategoryImageLink l " +
-                "join CategoryFolder f on l.ImageCategoryId = f.id where ImageLinkId = '" + plinkId + "'";
-            $.ajax({
-                type: "GET",
-                url: "php/yagdrasselFetchAll.php?query=" + sql,
-                success: function (data) {
-                    let imageLinks = JSON.parse(data);
-                    if (imageLinks.length > 0) {
-                        $('#ctxLinks').show();
-                        $.each(imageLinks, function (idx, obj) {
-                            $('#linkInfoContainer').append("<div onclick='window.open('https://Ogglebooble.com/album.html?folder="
-                                + obj.Id + "')>" + obj.FileName + "</div");
-                        });
-                        logOggleError("AJX", pfolderId, "empty data", "get singleImage details");
-                    }
-                },
-                error: function (jqXHR) {
-                    $('#ctxTxtModelName').html("");
-                    logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "check for links");
-                }
-            });
-
         } catch (e) {
-            $('#ctxTxtModelName').html("");
+            $('#ctxTxtModelName').html(e);
             logOggleError("CAT", folderId, e, "get singleImage details")
         }
     }
@@ -615,8 +613,6 @@ function addPgLinkButton(folderId, labelText) {
                     else {
                         $('#ctxTxtModelName').html(folderData.FolderName);
                         $('#ctxParent').html(folderData.ParentFolderName);
-                        // beta mode
-                        $('.adminLink').show();
 
                         //$('#ctxParent').html(folderData.FolderType);
                         //$('#ctxParent').html(folderData.FolderPath);
@@ -653,13 +649,14 @@ function addPgLinkButton(folderId, labelText) {
         <div id='ctxNewTab'     class='ctxItem' onclick='oggleCtxMenuAction(\"openInNewTab\")'>Open in new tab</div>
         <div id='ctxFantasy'    class='ctxItem' onclick='oggleCtxMenuAction(\"fantasy\")'>Write a fantasy about this image</div>
         <div id='ctxComment'    class='ctxItem' onclick='oggleCtxMenuAction(\"comment\")'>Comment</div>
-        <div id='ctxExplode'    class='ctxItem' onclick='oggleCtxMenuAction(\"explode\")'>rank this image</div>
+        <div id='ctxRank'    class='ctxItem' onclick='oggleCtxMenuAction(\"rank\")'>rank this image</div>
+        <div id='ctxExplode'    class='ctxItem' onclick='oggleCtxMenuAction(\"explode\")'>full screen</div>
         <div id='ctxSaveAs'     class='ctxItem' onclick='oggleCtxMenuAction(\"saveAs\")'>save as</div>
         <div id='ctxssClose'    class='ctxItem' onclick='oggleCtxMenuAction(\"closeSlideshow\")'>close slideshow</div>
         <div id='ctxLinks'      class='ctxItem' onclick='oggleCtxMenuAction(\"showLinks\")'>Show Links</div>
         <div id='linkInfoContainer' class='contextMenuInnerContainer'></div>
         <div id='ctxDownLoad'   class='ctxItem' onclick='oggleCtxMenuAction(\"download\")'>download folder</div>
-        <div id='ctxAdmin'      class='ctxItem' onclick='oggleCtxMenuAction(\"info\")'>Show Image info</div>
+        <div id='ctxImageInfo'  class='ctxItem' onclick='oggleCtxMenuAction(\"info\")'>Show Image info</div>
         <div id='imageInfoContainer' class='contextMenuInnerContainer'>
             <div><span class='ctxItem'>file name</span><span id='imageInfoFileName' class='ctxInfoValue'></span></div>
             <div><span class='ctxItem'>folder path</span><span id='imageInfoFolderPath' class='ctxInfoValue'></span></div>
@@ -737,7 +734,8 @@ function addPgLinkButton(folderId, labelText) {
                 break;
             }
             case "explode": {
-                explodeImage();
+                //explodeImage();
+                window.open(pimgSrc);
                 break;
             }
             case "Image tags":
@@ -745,7 +743,7 @@ function addPgLinkButton(folderId, labelText) {
                 openMetaTagDialog(pfolderId, plinkId);
                 break;
             case "info":
-                if (menuType === "Folder")
+                if (pmenuType === "Folder")
                     $('#folderInfoContainer').toggle();
                 else
                     $('#imageInfoContainer').toggle();
