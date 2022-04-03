@@ -2,6 +2,7 @@
 
 let currentBlogObject = {
     BlogId: 0,
+    CommentType: '',
     CommentTitle: '',
     ImgSrc: '',
     Text: '',
@@ -11,15 +12,23 @@ let currentBlogObject = {
 
 function startOggleBlog() {
 
-    displayBlogList('PBE');
+    loadDropDowns();
+    currentBlogObject.CommentType = 'PBE';
+    displayBlogList();
 
+    //$('#blogListRefDropDown'), 'BLG');
     //$('#summernoteContainer').summernote();
     //loadDropDown($('#selBlogEditCommentType'));
     //$('#blogListArea').show();
 
+    //if (obj.RefCode == currentBlogObject.CommentType) {
+    //    $('#blogTitle').html(obj.RefDescription);
+    //    ddElement.append("<option selected='selected' value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
+    //}
+
 }
 
-function displayBlogList(commentType) {
+function displayBlogList() {
     try {
         $('.blogSection').hide();
         $('#blogListArea').show();
@@ -29,28 +38,32 @@ function displayBlogList(commentType) {
         $('#leftColumnView').hide();
         $('#leftColumnEdit').hide();
 
-        loadDropDown($('#ddCommentType', 'BLG'));
+        $('#blogListRefDropDown').val(currentBlogObject.CommentType);
+        $('#blogListRefDropDown').change(function () {
+            if ($('#ddCommentType').val() != currentBlogObject.CommentType) {
+                currentBlogObject.CommentType = $('#ddCommentType').val()
+                displayBlogList();
+            }
+        });
 
-        //currentBlogObject.CommentType : $('#ddCommentType').val();
         $.ajax({
             type: "GET",
-            url: "php/getBlogItems.php?commentType=" + commentType,
+            url: "php/getBlogItems.php?commentType=" + currentBlogObject.CommentType,
             success: function (data) {
                 let jData = JSON.parse(data);
-                currentBlogObject.CommentType = commentType;
                 $('#blogArticleJogArea').html("");
                 if (jData.length == 0)
-                    alert("no entries found for commentType: " + commentType);
+                    alert("no entries found for commentType: " + currentBlogObject.CommentType);
                 else {
                     $.each(jData, function (idx, blogComment) {
                         $('#blogArticleJogArea').append(`
                             <div class="blogArticleItem">
                                 <div><img class="articleJogImage" src="` + blogComment.JogImage + `"/></div>
                                 <div>
-                                    <div class="blogCommentTitle">` + blogComment.CommentTitle + `</div>
-                                    <div class="blogSummary">` + blogComment.Summary + `</div>
+                                    <div class="blogListCommentTitle">` + blogComment.CommentTitle + `</div>
+                                    <div class="blogListCommentSummary">` + blogComment.Summary + `</div>
                                 </div>
-                                <div class="blogEditButton" onclick="displayEditArea('`+ blogComment.Id + `')">edit</div>
+                                <div class="blogListEditButton" onclick="displayEditArea('`+ blogComment.Id + `')">edit</div>
                             </div>`);
                     });
                     resizeBlogPage();
@@ -116,39 +129,48 @@ function displayViewArea() {
 }
 
 function displayNewEntryArea() {
+
+    $('.blogSection').hide();
+    $('#blogEditArea').show();
     $('#leftColumnNew').hide();
+    $('#leftColumnList').show();
     $('#leftColumnView').show();
     $('#leftColumnEdit').hide();
-    $('#btnAddEdit').html("Add");
     $("#txtPosted").datepicker();
-}
 
-function loadDropDown(ddElement, refType) {
-    $.ajax({
-        type: "GET",
-        url: "php/getRefs.php?refType=" + refType,
-        success: function (data) {
-            let jData = JSON.parse(data);
-            ddElement.html("");
-            $.each(jData, function (idx, obj) {
-                if (obj.RefCode == currentBlogObject.CommentType) {
-                    $('#blogTitle').html(obj.RefDescription);
-                    ddElement.append("<option selected='selected' value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
-                }
-                else
-                    ddElement.append("<option value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
-            });
 
-            ddElement.change(function () {
-                currentBlogObject.CommentType = $('#ddCommentType').val()
-                displayBlogList();
-            });
-        },
-        error: function (jqXHR) {
-            logBlogError("XHR", -21544, getXHRErrorDetails(jqXHR), "blog load dropDown");
-            $('#blogLoadingGif').hide();
-        }
-    });
+    $('#blogPageTitle').html("new blog entry");
+
+    $('#btnAddEdit').html("Add");
+
+    $("#imgBlogJog").attr("src", "https://common.ogglefiles.com/img/redballon.png");
+    
+    $("#txtEntryTile").val("I know you are but what am I");
+
+
+
+    //<div class="blogBottomSection">
+    //    <div class="blogTileSection">
+    //        <label>title</label><input id="txtEntryTile" class="blogEntryTile" />
+    //    </div>
+    //    <div class="blogSummarySection">
+    //        <label>summary</label>
+    //        <div id='summernoteSummaryContainer'></div>
+    //    </div>
+    //    <div class="blogEditorSection">
+    //        <label>body</label>
+    //        <div id='summernoteBodyContainer'></div>
+    //    </div>
+    //    <div class="blogFooterSection">
+    //        <div id='btnAddEdit' class='roundendButton' onclick='saveBlogEntry()'>Add</div>
+    //        <div id='btnNewCancel' class='roundendButton' onclick='btnNewCancelAction()'>New</div>
+    //    </div>
+    //</div>
+    //<div class="footerSection">
+    //<div id='btnAddEdit' class='roundendButton' onclick='saveBlogEntry()'>Add</div>
+    //<div id='btnNewCancel' class='roundendButton' onclick='btnNewCancelAction()'>New</div>
+
+
 }
 
 function loadSingleBlogEntry(blogItemId, editMode) {
@@ -281,6 +303,29 @@ function btnNewCancelAction() {
     }
 }
 
+
+
+function loadDropDowns() {
+    $.ajax({
+        type: "GET",
+        url: "php/getRefs.php?refType=BLG",
+        success: function (data) {
+            let jData = JSON.parse(data);
+            $('#blogListRefDropDown').html("");
+            $('#selBlogEditCommentType').html("");
+            $.each(jData, function (idx, obj) {
+                $('#blogListRefDropDown').append("<option value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
+                $('#selBlogEditCommentType').append("<option value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
+            });
+        },
+        error: function (jqXHR) {
+            logBlogError("XHR", -21544, getXHRErrorDetails(jqXHR), "blog load dropDowns");
+            $('#blogLoadingGif').hide();
+        }
+    });
+}
+
+
 function logBlogError(errorCode, folderId, errorMessage, calledFrom) {
     try {
         let visitorId = getCookieValue("VisitorId");
@@ -313,3 +358,18 @@ function logBlogError(errorCode, folderId, errorMessage, calledFrom) {
         console.log("logOggle error not working: " + e);
     }
 }
+
+
+function validateConnection() {
+    $.ajax({
+        type: "GET",
+        url: "php/validateConnection.php",
+        success: function (data) {
+            alert(data);
+        },
+        error: function (jqXHR) {
+            alert(getXHRErrorDetails(jqXHR));
+        }
+    });
+}
+

@@ -16,6 +16,6 @@
       if ($link->connect_error) {
         die('<p>Failed to connect to MySQL: '. $link->connect_error .'</p>');
       } else {
-        echo '<p>Connection to MySQL server successfully established.</p>';
+        echo '<p>Connection to wysiwyg server successfully established.</p>';
       }
     ?>
