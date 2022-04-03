@@ -71,12 +71,16 @@ function displayBlogList() {
             },
             error: function (jqXHR) {
                 $('#albumPageLoadingGif').hide();
-                logBlogError("CAT", -245223911, getXHRErrorDetails(jqXHR), "display blog list");
+                logBlogError("XHR", -245223911, getXHRErrorDetails(jqXHR), "display blog list");
             }
         });
     } catch (e) {
         logBlogError("CAT", -245223911, e, "display blog list");
     }
+}
+
+function showAddNew() {
+
 }
 
 function displayEditArea(blogId) {
@@ -136,40 +140,15 @@ function displayNewEntryArea() {
     $('#leftColumnList').show();
     $('#leftColumnView').show();
     $('#leftColumnEdit').hide();
-    $("#txtPosted").datepicker();
+    $("#txtPosted").datepicker({ defaultDate: new Date() });
+    $('#summernoteSummaryContainer').summernote();
+    $('#summernoteBodyContainer').summernote();
 
 
     $('#blogPageTitle').html("new blog entry");
-
     $('#btnAddEdit').html("Add");
-
     $("#imgBlogJog").attr("src", "https://common.ogglefiles.com/img/redballon.png");
-    
     $("#txtEntryTile").val("I know you are but what am I");
-
-
-
-    //<div class="blogBottomSection">
-    //    <div class="blogTileSection">
-    //        <label>title</label><input id="txtEntryTile" class="blogEntryTile" />
-    //    </div>
-    //    <div class="blogSummarySection">
-    //        <label>summary</label>
-    //        <div id='summernoteSummaryContainer'></div>
-    //    </div>
-    //    <div class="blogEditorSection">
-    //        <label>body</label>
-    //        <div id='summernoteBodyContainer'></div>
-    //    </div>
-    //    <div class="blogFooterSection">
-    //        <div id='btnAddEdit' class='roundendButton' onclick='saveBlogEntry()'>Add</div>
-    //        <div id='btnNewCancel' class='roundendButton' onclick='btnNewCancelAction()'>New</div>
-    //    </div>
-    //</div>
-    //<div class="footerSection">
-    //<div id='btnAddEdit' class='roundendButton' onclick='saveBlogEntry()'>Add</div>
-    //<div id='btnNewCancel' class='roundendButton' onclick='btnNewCancelAction()'>New</div>
-
 
 }
 
@@ -280,21 +259,36 @@ function updateBlogEntry() {
 }
 
 function loadImage() {
+
+
+    let srcFile = $('#txtLink').val();
+
+    let savedFile = "https://ogglefiles.com/blog/blog%20images/" + srcFile.name;
+
+    alert("srcFile: " + srcFile);
+
+    //<?php
+    //?>
+
+
     // get full html image name
-    $.ajax({
-        type: "GET",
-        url: settingsArray.ApiServer + "api/OggleBlog/GetImageLink?linkId=" + $('#txtLink').val(),
-        success: function (imageAddress) {
-            $('#imgBlogLink').attr("src", imageAddress);
-            currentBlogObject.ImageLink = $('#txtLink').val();
-        },
-        error: function (jqXHR) {
-            $('#blogLoadingGif').hide();
-            let errMsg = getXHRErrorDetails(jqXHR);
-            //let functionName=arguments.callee.toString().match(/function ([^\(]+) /)[1];
-            if (!checkFor404(errMsg, folderId, "loadImage")) logError("XHR", 3911, errMsg, "loadImage");
-        }
-    });
+
+
+
+    //ImageFile dbImageFile = db.ImageFiles.Where(i => i.Id == linkId).First();
+    //imageAddress = db.CategoryFolders.Where(f => f.Id == dbImageFile.FolderId).First().FolderPath + "/" + dbImageFile.FileName;
+
+
+//    $.ajax({
+//        url: settingsArray.ApiServer + "api/OggleBlog/GetImageLink?linkId=" + $('#txtLink').val(),
+//        success: function (imageAddress) {
+//            $('#imgBlogLink').attr("src", imageAddress);
+//            currentBlogObject.ImageLink = $('#txtLink').val();
+//        },
+//        error: function (jqXHR) {
+//            logBlogError("XHR", -245223911, getXHRErrorDetails(jqXHR), "load image");
+//        }
+//    });
 }
 
 function btnNewCancelAction() {
