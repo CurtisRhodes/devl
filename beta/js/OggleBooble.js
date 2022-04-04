@@ -786,6 +786,313 @@ function addPgLinkButton(folderId, labelText) {
         }
     }
 }
+/*-- context menu actions ---------------------------------*/{
+    function setFolderImage(filinkId, folderId, level) {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "php/updateFolderImage.php?folderImage='" + filinkId + "'&folderId=" + folderId + "&level=" + level,
+                success: function (success) {
+                    if (success.trim().startsWith("ok")) {
+                        displayStatusMessage("ok", level + " image set for " + folderId);
+                        $("#imageContextMenu").fadeOut();
+                    }
+                    else {
+                        logError("AJX", folderId, success, "setFolderImage");
+                    }
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    alert("setFolderImage: " + errMsg);
+                }
+            });
+        } catch (e) {
+            logOggleError("CAT", folderId, e, "set Folder Image")
+        }
+    }
+
+    function writeAfantasy() {
+        $('#centeredDialogTitle').html("move image to rejects");
+        $('#centeredDialogContents').html(
+            `  <div class='center'><img id='commentDialogImage' class='commentDialogImage' /></div>
+            <div><input id='txtCommentTitle' class='roundedInput commentTitleText' tabindex='1' placeholder='Give your comment a title' /></div>
+            <div id='imageCommentEditor' tabindex='2'>
+
+            </div>
+            <div class='folderDialogFooter'>
+                <div id='divSaveFantasy' class='roundendButton clickable commentDialogButton inline' onclick='saveComment()'>save</div>
+                <div id='divCloseFantasy' class='roundendButton clickable commentDialogButton inline' onclick='closeImageCommentDialog()'>cancel</div>
+                <div id='commentInstructions' class='commentDialogInstructions inline'>log in to view comments</div>
+            </div>`);
+        $('#centeredDialogContainer').draggable().fadeIn();
+    }
+
+    function performMoveImageToRejects(linkId, folderId) {
+
+        //let rejectReason = $('input[name="rdoRejectImageReasons"]:checked').val();
+        $('#albumPageLoadingGif').show();
+        $.ajax({
+            url: 'php/moveToRejects.php?imageFileId=' + linkId,
+            success: function (success) {
+                $('#albumPageLoadingGif').hide();
+                if (success.trim() == "ok") {
+                    displayStatusMessage("ok", "image moved to rejects");
+                }
+                else {
+                    alert("move to rejects: " + success);
+                    //logError("AJX", 3908, success, "perform MoveImageToRejects");
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                alert("move to rejects: " + errMsg);
+            }
+        });
+    }
+}
+/*-- hit Counter ---------------------------------------*/{
+    function logVisit(calledFrom) {
+        try {
+            let visitorId = getCookieValue("VisitorId");
+            $.ajax({
+                type: "POST",
+                url: "php/logVisit.php",
+                data: {
+                    visitorId: visitorId,
+                    appName: "OggleBooble"
+                },
+                success: function (success) {
+                    if (success.trim() == "ok") {
+                        if (calledFrom == "new visitor")
+                            displayStatusMessage("ok", "Welcome New Visitor");
+                        else
+                            displayStatusMessage("ok", "Welcome back ");
+                    }
+                    else {
+                        switch (success.trim()) {
+                            case '23000':
+                                //logError("",)
+                                break;
+                            case '42000':
+                            default:
+                                alert("logVisit: " + success);
+                        }
+                    }
+                    sessionStorage["VisitLogged"] = "yes";
+                },
+                error: function (jqXHR, exception) {
+                    alert("LogVisit jqXHR : " + getXHRErrorDetails(jqXHR, exception));
+                }
+            });
+        } catch (e) {
+            logOggleError("Cat", folderId, e, "log visit")
+        }
+    }
+
+    function logPageHit(folderId) {
+        //$('#footerMessage1').html("logging page hit");
+        visitorId = getCookieValue("VisitorId", "log pageHit");
+        if (visitorId == "cookie not found") {
+            logOggleActivity("PHC", folderId,"log pageHit")
+            ipifyLookup("log pageHit");
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "php/logPageHit.php",
+                data: {
+                    visitorId: visitorId,
+                    pageId: folderId
+                },
+                success: function (success) {
+                    if (success.trim() != "ok") {
+                        switch (success.trim()) {
+                            case '23000':
+                                //logError("",);  // duplicate page hit
+                                break;
+                            case '42000':
+                            default:
+                            //alert("logVisit: php error code: " + success);
+                        }
+                    }
+                },
+                error: function (jqXHR, exception) {
+                    alert("log PageHit error: " + getXHRErrorDetails(jqXHR, exception));
+                }
+            });
+        }
+    }
+
+    function addVisitor(ipResponse) {
+        visitorId = create_UUID();
+
+//        alert("visitorId:" + visitorId + "  $city: " + ipResponse.city + ", $region: " + ipResponse.region +
+//            "\ncountry: " + ipResponse.country + "  loc: " + ipResponse.loc + " ip: " + ipResponse.ip);
+
+
+        $.ajax({
+            type: "POST",
+            url: "php/addVisitor.php",
+            data: {
+                visitorId: visitorId,
+                ip: ipResponse.ip,
+                city: ipResponse.city,
+                region: ipResponse.region,
+                country: ipResponse.country,
+                loc: ipResponse.loc
+            },
+            success: function (success) {
+                if (success.trim() == "ok") {
+                    localStorage["VisitorId"] = visitorId;
+                    logVisit("new visitor");
+                }
+                else {
+                    switch (success.trim()) {
+                        case '23000':
+                            //logError("",);  // duplicate page hit
+                            break;
+                        case '42000':
+                        default:
+                            alert("logVisit: php error code: " + success);
+                    }
+                }
+            },
+            error: function (jqXHR, exception) {
+                alert("log PageHit error: " + getXHRErrorDetails(jqXHR, exception));
+            }
+        });
+
+        //addVisitor({
+        //    city: "Dallas",
+        //    country: "US",
+        //    hostname: "072-190-028-092.res.spectrum.com",
+        //    ip: "72.190.28.92",
+        //    loc: "32.9322,-96.8353",
+        //    org: "AS11427 Charter Communications Inc",
+        //    postal: "75244",
+        //    region: "Texas",
+        //    timezone: "America/Chicago",
+        //    [[Prototype]]: Object
+        //});
+    }
+}
+/*-- exploding image view ------------------------------*/{
+    const viewerOffsetTop = 44, explodeSpeed = 22, heightIncrement = 22;
+    let viewerH, viewerMaxH;
+
+    function showMaxSizeViewer(imgSrc, calledFrom) {
+        //logEvent("EXP", folderId, pFolderName, linkId);
+        //showMaxSizeViewer()
+        if (calledFrom == 'slideshow') {
+            $("#slideshowCtxMenuContainer").hide();
+        }
+        else {
+            $("#imageContextMenu").hide();
+            $('#viewerImage').attr("src", imgSrc);
+        }
+        $("#vailShell").show().on("click", function () { closeExploderDiv() });
+        $('#singleImageOuterContainer').show();
+
+        //replaceFullPage(imgSrc);
+    }
+
+    function viewImage(imgSrc, linkId) {
+        currentImagelinkId = linkId;
+        imageViewerVisible = true;
+        viewerH = 50;
+        let parentPos = $('#visableArea').offset();
+        let startLeft = $('#visableArea').width() * .34;
+
+        $("#singleImageOuterContainer").css({
+            height: viewerH,
+            top: parentPos.top - viewerOffsetTop,
+            left: parentPos.left + startLeft
+        });
+        $("#viewerImage").css("height", viewerH);
+        $("#vailShell").show().on("click", function () { closeImageViewer() });
+        $('#viewerImage').attr("src", imgSrc);
+        $('#singleImageOuterContainer').show();
+        viewerMaxH = $('#visableArea').height() + viewerOffsetTop - 55;
+        incrementExplode();
+
+        $('#viewerImage').on('click', showMaxSizeViewer(imgSrc, 'album'));
+
+    }
+
+    function incrementExplode() {
+        if (viewerH < viewerMaxH) {
+            setTimeout(function () {
+                viewerH += heightIncrement;
+                $("#viewerImage").css("height", viewerH);
+
+                let imgleft = $("#singleImageOuterContainer").css("left");
+
+                $("#singleImageOuterContainer").css("left", imgleft - (heightIncrement / 2));
+                incrementExplode();
+            }, explodeSpeed);
+        }
+        else {
+            $("#viewerImage").css("height", viewerMaxH);
+            $("#divSlideshowButton").show();
+            $("#viewerCloseButton").show();
+            let visWidth = $('#visableArea').width();
+            let imgWidth = $('#viewerImage').width();
+            $("#singleImageOuterContainer").css("left", (visWidth / 2) - (imgWidth / 2));
+        }
+    }
+
+    function incrementImplodeViewer(divObject) {
+        let viewerH = divObject.height();
+        if (viewerH > 0) {
+            setTimeout(function () {
+                divObject.css("height", viewerH - heightIncrement);
+                incrementImplodeViewer(divObject);
+            }, explodeSpeed);
+        }
+        else {
+            $('#singleImageOuterContainer').hide();
+            $("#divSlideshowButton").hide();
+            $("#viewerCloseButton").hide();
+            $("#vailShell").hide();
+            $('body').off();
+        }
+    }
+
+    function closeImageViewer() {
+        incrementImplodeViewer($("#viewerImage"));
+        imageViewerVisible = false;
+    }
+
+    function resizeViewer() {
+        if ($('#singleImageOuterContainer').is(":visible")) {
+            $("#singleImageOuterContainer").css("height", viewerMaxH);
+            let visWidth = $('#visableArea').width();
+            let imgWidth = $('#viewerImage').width();
+            $("#singleImageOuterContainer").css("left", (visWidth / 2) - (imgWidth / 2));
+        }
+    }
+
+    function showSlideshow() {
+        try {
+            $("#vailShell").hide();
+            $('#singleImageOuterContainer').hide();
+            $("#divSlideshowButton").hide();
+            $("#viewerCloseButton").hide();
+            $("#vailShell").hide();
+            $('body').off();
+
+            showSlideshowViewer(currentFolderId, currentImagelinkId, false)
+        } catch (e) {
+            logOggleError("CAT", -874, e, "show slideshow")
+        }
+    }
+    function closeExploderDiv() {
+        $('#exploderDiv').hide();
+        //$("#divSlideshowButton").hide();
+        //$("#viewerCloseButton").hide();
+        $("#vailShell").hide();
+    }
+}
 /*-- dialog windows --------------------------------------*/{
     function showRejectsDialog(linkId, folderId, imgSrc) {
         $('#centeredDialogTitle').html("move image to rejects");
@@ -808,7 +1115,7 @@ function addPgLinkButton(folderId, labelText) {
 
             $("#centeredDialogContents").html(`
             <div class='flexbox'>
-                <div class='floatLeft'>
+                <div class='inline'>
                     <table>
                         <thead><tr><th></th></tr></thead>
                         <tbody>
@@ -822,8 +1129,9 @@ function addPgLinkButton(folderId, labelText) {
                         <tr><td>figure      </td><td><input id='txtMeasurements'></input></td></tr>
                         <tbody>
                     </table>
-                <div class='floatLeft'>
-                    <img id='modelDialogThumbNailImage' src='/Images/redballon.png' class='modelDialogImage' />
+                </div>
+                <div class='inline'>
+                    <img id='modelDialogThumbNailImage' src='https://common.ogglefiles.com/img/redballon.png' class='folderDetailsDialogImage' />
                 </div>
             </div>
             <div id='summernoteContainer'></div>
@@ -840,7 +1148,7 @@ function addPgLinkButton(folderId, labelText) {
             //$('#centeredDialogContainer').css("left", -350);
             //$("#btnCatDlgDone").hide();
             //$("#btnCatDlgLinks").hide();
-            //$('#summernoteContainer').summernote({ toolbar: "none" });
+            $('#summernoteContainer').summernote({ toolbar: "none" });
             //$('#summernoteContainer').summernote('disable');
             $(".note-editable").css({ 'font-size': '16px', 'min-height': '186px' });
 
@@ -1040,15 +1348,15 @@ function addPgLinkButton(folderId, labelText) {
             FolderId: folderId
         };
     }
-}
 
-function showCopyLinkDialog(linkId, menuType, imgSrc) {
+    function showCopyLinkDialog(linkId, menuType, imgSrc) {
 
         slideShowButtonsActive = false;
         //showDirTreeDialog(imgSrc, menuType, "Caterogize Link");
         $('#linkManipulateClick').html("<div class='roundendButton' onclick='perfomCopyLink(\"" + linkId + "\")'>Caterogize</div>");
     }
-function showDirTreeDialog(imgSrc, menuType, title) {
+
+    function showDirTreeDialog(imgSrc, menuType, title) {
         //alert("showDirTreeDialog.  menuType: " + menuType);
         slideShowButtonsActive = false;
         let dirTreeDialogHtml = `<div>
@@ -1062,7 +1370,7 @@ function showDirTreeDialog(imgSrc, menuType, title) {
 
         $('#centeredDialogContents').html(dirTreeDialogHtml);
         $('#centeredDialogTitle').html(title);
-        $('#centeredDialogContainer').css("top", 33); 
+        $('#centeredDialogContainer').css("top", 33);
         $('#centeredDialogContainer').draggable().fadeIn();
 
         if (isNullorUndefined(tempDirTree)) {
@@ -1079,7 +1387,8 @@ function showDirTreeDialog(imgSrc, menuType, title) {
         //var winH = $(window).height();
         //var dlgH = $('#centeredDialog').height();
     }
-var objFolderInfo = {}, allowDialogClose = true;
+
+    var objFolderInfo = {}, allowDialogClose = true;
 
     function showFullModelDetails(folderId) {
         $('#albumPageLoadingGif').show();
@@ -1553,314 +1862,6 @@ var objFolderInfo = {}, allowDialogClose = true;
     function addMetaTags() {
 
         //openMetaTagDialog(categoryFolderId);
-    }
-
-/*--  context menu actions ---------------------------------*/{
-    function setFolderImage(filinkId, folderId, level) {
-        try {
-            $.ajax({
-                type: "GET",
-                url: "php/updateFolderImage.php?folderImage='" + filinkId + "'&folderId=" + folderId + "&level=" + level,
-                success: function (success) {
-                    if (success.trim().startsWith("ok")) {
-                        displayStatusMessage("ok", level + " image set for " + folderId);
-                        $("#imageContextMenu").fadeOut();
-                    }
-                    else {
-                        logError("AJX", folderId, success, "setFolderImage");
-                    }
-                },
-                error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("setFolderImage: " + errMsg);
-                }
-            });
-        } catch (e) {
-            logOggleError("CAT", folderId, e, "set Folder Image")
-        }
-    }
-
-    function writeAfantasy() {
-        $('#centeredDialogTitle').html("move image to rejects");
-        $('#centeredDialogContents').html(
-            `  <div class='center'><img id='commentDialogImage' class='commentDialogImage' /></div>
-            <div><input id='txtCommentTitle' class='roundedInput commentTitleText' tabindex='1' placeholder='Give your comment a title' /></div>
-            <div id='imageCommentEditor' tabindex='2'>
-
-            </div>
-            <div class='folderDialogFooter'>
-                <div id='divSaveFantasy' class='roundendButton clickable commentDialogButton inline' onclick='saveComment()'>save</div>
-                <div id='divCloseFantasy' class='roundendButton clickable commentDialogButton inline' onclick='closeImageCommentDialog()'>cancel</div>
-                <div id='commentInstructions' class='commentDialogInstructions inline'>log in to view comments</div>
-            </div>`);
-        $('#centeredDialogContainer').draggable().fadeIn();
-    }
-
-    function performMoveImageToRejects(linkId, folderId) {
-
-        //let rejectReason = $('input[name="rdoRejectImageReasons"]:checked').val();
-        $('#albumPageLoadingGif').show();
-        $.ajax({
-            url: 'php/moveToRejects.php?imageFileId=' + linkId,
-            success: function (success) {
-                $('#albumPageLoadingGif').hide();
-                if (success.trim() == "ok") {
-                    displayStatusMessage("ok", "image moved to rejects");
-                }
-                else {
-                    alert("move to rejects: " + success);
-                    //logError("AJX", 3908, success, "perform MoveImageToRejects");
-                }
-            },
-            error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                alert("move to rejects: " + errMsg);
-            }
-        });
-    }
-}
-
-/*-- hit Counter ---------------------------------------*/{
-    function logVisit(calledFrom) {
-        try {
-            let visitorId = getCookieValue("VisitorId");
-            $.ajax({
-                type: "POST",
-                url: "php/logVisit.php",
-                data: {
-                    visitorId: visitorId,
-                    appName: "OggleBooble"
-                },
-                success: function (success) {
-                    if (success.trim() == "ok") {
-                        if (calledFrom == "new visitor")
-                            displayStatusMessage("ok", "Welcome New Visitor");
-                        else
-                            displayStatusMessage("ok", "Welcome back ");
-                    }
-                    else {
-                        switch (success.trim()) {
-                            case '23000':
-                                //logError("",)
-                                break;
-                            case '42000':
-                            default:
-                                alert("logVisit: " + success);
-                        }
-                    }
-                    sessionStorage["VisitLogged"] = "yes";
-                },
-                error: function (jqXHR, exception) {
-                    alert("LogVisit jqXHR : " + getXHRErrorDetails(jqXHR, exception));
-                }
-            });
-        } catch (e) {
-            logOggleError("Cat", folderId, e, "log visit")
-        }
-    }
-
-    function logPageHit(folderId) {
-        //$('#footerMessage1').html("logging page hit");
-        visitorId = getCookieValue("VisitorId", "log pageHit");
-        if (visitorId == "cookie not found") {
-            logOggleActivity("PHC", folderId,"log pageHit")
-            ipifyLookup("log pageHit");
-        }
-        else {
-            $.ajax({
-                type: "POST",
-                url: "php/logPageHit.php",
-                data: {
-                    visitorId: visitorId,
-                    pageId: folderId
-                },
-                success: function (success) {
-                    if (success.trim() != "ok") {
-                        switch (success.trim()) {
-                            case '23000':
-                                //logError("",);  // duplicate page hit
-                                break;
-                            case '42000':
-                            default:
-                            //alert("logVisit: php error code: " + success);
-                        }
-                    }
-                },
-                error: function (jqXHR, exception) {
-                    alert("log PageHit error: " + getXHRErrorDetails(jqXHR, exception));
-                }
-            });
-        }
-    }
-
-    function addVisitor(ipResponse) {
-        visitorId = create_UUID();
-
-//        alert("visitorId:" + visitorId + "  $city: " + ipResponse.city + ", $region: " + ipResponse.region +
-//            "\ncountry: " + ipResponse.country + "  loc: " + ipResponse.loc + " ip: " + ipResponse.ip);
-
-
-        $.ajax({
-            type: "POST",
-            url: "php/addVisitor.php",
-            data: {
-                visitorId: visitorId,
-                ip: ipResponse.ip,
-                city: ipResponse.city,
-                region: ipResponse.region,
-                country: ipResponse.country,
-                loc: ipResponse.loc
-            },
-            success: function (success) {
-                if (success.trim() == "ok") {
-                    localStorage["VisitorId"] = visitorId;
-                    logVisit("new visitor");
-                }
-                else {
-                    switch (success.trim()) {
-                        case '23000':
-                            //logError("",);  // duplicate page hit
-                            break;
-                        case '42000':
-                        default:
-                            alert("logVisit: php error code: " + success);
-                    }
-                }
-            },
-            error: function (jqXHR, exception) {
-                alert("log PageHit error: " + getXHRErrorDetails(jqXHR, exception));
-            }
-        });
-
-        //addVisitor({
-        //    city: "Dallas",
-        //    country: "US",
-        //    hostname: "072-190-028-092.res.spectrum.com",
-        //    ip: "72.190.28.92",
-        //    loc: "32.9322,-96.8353",
-        //    org: "AS11427 Charter Communications Inc",
-        //    postal: "75244",
-        //    region: "Texas",
-        //    timezone: "America/Chicago",
-        //    [[Prototype]]: Object
-        //});
-    }
-}
-/*-- exploding image view ------------------------------*/{
-    const viewerOffsetTop = 44, explodeSpeed = 22, heightIncrement = 22;
-    let viewerH, viewerMaxH;
-
-    function showMaxSizeViewer(imgSrc, calledFrom) {
-        //logEvent("EXP", folderId, pFolderName, linkId);
-        //showMaxSizeViewer()
-        if (calledFrom == 'slideshow') {
-            $("#slideshowCtxMenuContainer").hide();
-        }
-        else {
-            $("#imageContextMenu").hide();
-            $('#viewerImage').attr("src", imgSrc);
-        }
-        $("#vailShell").show().on("click", function () { closeExploderDiv() });
-        $('#singleImageOuterContainer').show();
-
-        //replaceFullPage(imgSrc);
-    }
-
-    function viewImage(imgSrc, linkId) {
-        currentImagelinkId = linkId;
-        imageViewerVisible = true;
-        viewerH = 50;
-        let parentPos = $('#visableArea').offset();
-        let startLeft = $('#visableArea').width() * .34;
-
-        $("#singleImageOuterContainer").css({
-            height: viewerH,
-            top: parentPos.top - viewerOffsetTop,
-            left: parentPos.left + startLeft
-        });
-        $("#viewerImage").css("height", viewerH);
-        $("#vailShell").show().on("click", function () { closeImageViewer() });
-        $('#viewerImage').attr("src", imgSrc);
-        $('#singleImageOuterContainer').show();
-        viewerMaxH = $('#visableArea').height() + viewerOffsetTop - 55;
-        incrementExplode();
-
-        $('#viewerImage').on('click', showMaxSizeViewer(imgSrc, 'album'));
-
-    }
-
-    function incrementExplode() {
-        if (viewerH < viewerMaxH) {
-            setTimeout(function () {
-                viewerH += heightIncrement;
-                $("#viewerImage").css("height", viewerH);
-
-                let imgleft = $("#singleImageOuterContainer").css("left");
-
-                $("#singleImageOuterContainer").css("left", imgleft - (heightIncrement / 2));
-                incrementExplode();
-            }, explodeSpeed);
-        }
-        else {
-            $("#viewerImage").css("height", viewerMaxH);
-            $("#divSlideshowButton").show();
-            $("#viewerCloseButton").show();
-            let visWidth = $('#visableArea').width();
-            let imgWidth = $('#viewerImage').width();
-            $("#singleImageOuterContainer").css("left", (visWidth / 2) - (imgWidth / 2));
-        }
-    }
-
-    function incrementImplodeViewer(divObject) {
-        let viewerH = divObject.height();
-        if (viewerH > 0) {
-            setTimeout(function () {
-                divObject.css("height", viewerH - heightIncrement);
-                incrementImplodeViewer(divObject);
-            }, explodeSpeed);
-        }
-        else {
-            $('#singleImageOuterContainer').hide();
-            $("#divSlideshowButton").hide();
-            $("#viewerCloseButton").hide();
-            $("#vailShell").hide();
-            $('body').off();
-        }
-    }
-
-    function closeImageViewer() {
-        incrementImplodeViewer($("#viewerImage"));
-        imageViewerVisible = false;
-    }
-
-    function resizeViewer() {
-        if ($('#singleImageOuterContainer').is(":visible")) {
-            $("#singleImageOuterContainer").css("height", viewerMaxH);
-            let visWidth = $('#visableArea').width();
-            let imgWidth = $('#viewerImage').width();
-            $("#singleImageOuterContainer").css("left", (visWidth / 2) - (imgWidth / 2));
-        }
-    }
-
-    function showSlideshow() {
-        try {
-            $("#vailShell").hide();
-            $('#singleImageOuterContainer').hide();
-            $("#divSlideshowButton").hide();
-            $("#viewerCloseButton").hide();
-            $("#vailShell").hide();
-            $('body').off();
-
-            showSlideshowViewer(currentFolderId, currentImagelinkId, false)
-        } catch (e) {
-            logOggleError("CAT", -874, e, "show slideshow")
-        }
-    }
-    function closeExploderDiv() {
-        $('#exploderDiv').hide();
-        //$("#divSlideshowButton").hide();
-        //$("#viewerCloseButton").hide();
-        $("#vailShell").hide();
     }
 }
 

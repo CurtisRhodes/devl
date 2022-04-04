@@ -121,3 +121,6 @@ body {
         color: yellow;
     }
 
+.folderDetailsDialogImage {
+    height: 300px;
+}

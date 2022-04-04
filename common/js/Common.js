@@ -618,9 +618,9 @@ function mailMe() {
             <div class='centeringOuterShell'>
                <div class='centeringInnerShell'>
                   <div id='centeredDialogContainer' class='floatingDialogContainer'>
-                       <div id='centeredDialogHeader'class='floatingDialogHeader' onmousedown='centeredDialogEnterDragMode()' onmouseup='centeredDialogCancelDragMode()'>" +
-                           <div id='centeredDialogTitle' class='floatingDialogTitle'></div>" +
-                           <div id='centeredDialogCloseButton' class='dialogCloseButton'>" +
+                       <div id='centeredDialogHeader'class='floatingDialogHeader' onmousedown='centeredDialogEnterDragMode()' onmouseup='centeredDialogCancelDragMode()'>
+                           <div id='centeredDialogTitle' class='floatingDialogTitle'></div>
+                           <div id='centeredDialogCloseButton' class='dialogCloseButton'>
                            <img src='https://common.ogglefiles.com/img/close.png' onclick='centeringDialogClose()'/></div>
                        </div>
                        <div id='centeredDialogContents' class='floatingDialogContents'></div>
