@@ -457,13 +457,23 @@ function addPgLinkButton(folderId, labelText) {
         pfolderId = folderId;
         pimgSrc = imgSrc;
 
+        event.preventDefault();
+        window.event.returnValue = false;
+        pos = {};
+        pos.x = event.clientX;
+        pos.y = event.clientY + $(window).scrollTop();
+        $('#contextMenuContent').html(oggleContextMenuHtml());
+        $('#contextMenuContainer').css("top", pos.y);
+        $('#contextMenuContainer').css("left", pos.x);
+        $('#contextMenuContainer').draggable().show();
+
         switch (menuType) {
             case "video":
             case "image":
                 ctxMenuImageInfo();
                 break;
             case "subfolder":  // no need for image details 
-                ctxMenuFolderInfo();
+                ctxMenuFolderInfo(folderId);
             default:
         }
         if (pmenuType === "Carousel") {
@@ -477,18 +487,6 @@ function addPgLinkButton(folderId, labelText) {
                 }
             }
         }
-
-
-
-        event.preventDefault();
-        window.event.returnValue = false;
-        pos = {};
-        pos.x = event.clientX;
-        pos.y = event.clientY + $(window).scrollTop();
-        $('#contextMenuContent').html(oggleContextMenuHtml());
-        $('#contextMenuContainer').css("top", pos.y);
-        $('#contextMenuContainer').css("left", pos.x);
-        $('#contextMenuContainer').draggable().show();
         $("#contextMenuContainer").mousemove(function (event) {
             //$("#hdrBtmRowSec3").html('');
             let ctxLeft = $("#contextMenuContainer").offset().left - 22;
@@ -556,7 +554,6 @@ function addPgLinkButton(folderId, labelText) {
                         $('#imageInfoLastModified').html(imgData.Acquired);
                         $('#imageInfoExternalLink').html(imgData.ExternalLink);
 
-\
                          /// check for CategoryImageLink links
                         sql = "select f.Id, f.FolderName from CategoryImageLink l join CategoryFolder f on l.ImageCategoryId = f.id " +
                             "where ImageLinkId = '" + plinkId + "' and ImageCategoryId !=" + pfolderId;
@@ -601,17 +598,21 @@ function addPgLinkButton(folderId, labelText) {
         }
     }
 
-    function ctxMenuFolderInfo() {
+    function ctxMenuFolderInfo(folderId) {
         try {
-            //let getSingleImageDetailsStart = Date.now();
             $('.ctxItem').hide();
             $('#ctxTxtModelName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='https://common.ogglefiles.com/img/loader.gif'/>");
-            $('#ctxSeeMore').html("more like her").show();
+            //$('#ctxSeeMore').html("more like her").show();
             //if (isInRole("admin", "context menu"))
             $('.adminLink').show();
+            $('#ctxComment').show();
+            $('#ctxExplode').show();
+            $('#ctxImageInfo').show();
 
-            let sql = "select p.FolderName as ParentFolderName, i.*, f.* from ImageFile i " +
-                "join CategoryFolder f on i.FolderId=f.Id join CategoryFolder p on f.Parent=p.Id where i.id=" + pfolderId;
+            // beta mode
+            $('.adminLink').show();
+
+            let sql = "select * from CategoryFolder f left join FolderDetail d on d.FolderId = f.Id where f.Id=" + folderId;
 
             $.ajax({
                 type: "GET",
@@ -619,28 +620,21 @@ function addPgLinkButton(folderId, labelText) {
                 success: function (data) {
                     let folderData = JSON.parse(data);
                     if (folderData == "false") {
-                        $('#ctxTxtModelName').html("");
+                        $('#ctxTxtModelName').html("empty data");
                         logOggleError("AJX", pfolderId, "empty data", "get singleImage details");
                     }
                     else {
                         $('#ctxTxtModelName').html(folderData.FolderName);
-                        $('#ctxParent').html(folderData.ParentFolderName);
-
-                        //$('#ctxParent').html(folderData.FolderType);
-                        //$('#ctxParent').html(folderData.FolderPath);
-
-
                         //$('#ctxComment').show();
 
-
-                        //else
-                        //    $('.adminLink').hide();
-
-                        //    let delta = Date.now() - getSingleImageDetailsStart;
-                        //    let minutes = Math.floor(delta / 60000);
-                        //    let seconds = (delta % 60000 / 1000).toFixed(0);
-                        //    //
-                        //    console.log("get Single Image Details took: " + minutes + ":" + (seconds < 10 ? '0' : '') + seconds);
+                        // folderInfo
+                        $('#folderInfoPath').html(folderData.FolderPath);
+                        $('#folderInfoRoot').html(folderData.Rootfolder);
+                        $('#folderInfoType').html(folderData.FolderType);
+                        $('#folderInfoFileCount').html(folderData.Files).toLocaleString();
+                        $('#folderInfoSubDirs').html(folderData.SubFolders).toLocaleString();
+                        $('#folderInfoTotalSubDirs').html(folderData.TotalChildFolders).toLocaleString();
+                        $('#folderInfoTotalChildFiles').html(folderData.TotalChildFiles).toLocaleString();
                     }
                 },
                 error: function (jqXHR) {
@@ -650,13 +644,12 @@ function addPgLinkButton(folderId, labelText) {
             });
         } catch (e) {
             $('#ctxTxtModelName').html("");
-            logOggleError("CAT", pfolderId, e, "get singleImage details")
+            logOggleError("CAT", folderId, e, "get folder details")
         }
     }
 
     function oggleContextMenuHtml() {
         return `<div id='ctxTxtModelName' class='ctxItem' onclick='oggleCtxMenuAction(\"showDialog\")'>model name</div>
-        <div id='ctxParent'     class='ctxItem' onclick='oggleCtxMenuAction(\"see more\")'>see more of her</div>
         <div id='ctxSeeMore'    class='ctxItem' onclick='oggleCtxMenuAction(\"see more\")'>see more of her</div>
         <div id='ctxNewTab'     class='ctxItem' onclick='oggleCtxMenuAction(\"openInNewTab\")'>Open in new tab</div>
         <div id='ctxFantasy'    class='ctxItem' onclick='oggleCtxMenuAction(\"fantasy\")'>Write a fantasy about this image</div>
@@ -682,12 +675,13 @@ function addPgLinkButton(folderId, labelText) {
             <div><span class='ctxItem'>external link</span><span id='imageInfoExternalLink' class='ctxInfoValue'></span></div>
         </div>
         <div id='folderInfoContainer' class='contextMenuInnerContainer'>
-            <div><span class='ctxItem'>file name</span><span id='folderInfoFileName' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>folder id</span><span id='folderInfoId' class='ctxInfoValue'></span></div>
             <div><span class='ctxItem'>folder path</span><span id='folderInfoPath' class='ctxInfoValue'></span></div>
+            <div><span class='ctxItem'>root folder</span><span id='folderInfoRoot' class='ctxInfoValue'></span></div>
+            <div><span class='ctxItem'>folder type</span><span id='folderInfoType' class='ctxInfoValue'></span></div>
             <div><span class='ctxItem'>files</span><span id='folderInfoFileCount' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>subfolders</span><span id='folderInfoSubDirsCount' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>last modified</span><span id='folderInfoLastModified' class='ctxInfoValue'></span></div>
+            <div><span class='ctxItem'>subfolders</span><span id='folderInfoSubDirs' class='ctxInfoValue'></span></div>
+            <div><span class='ctxItem'>total subfolders</span><span id='folderInfoTotalSubDirs' class='ctxInfoValue'></span></div>
+            <div><span class='ctxItem'>total child files</span><span id='folderInfoTotalChildFiles' class='ctxInfoValue'></span></div>
         </div>
         <div id='ctxShowAdmin' class='adminLink' onclick='$(\"#linkAdminContainer\").toggle()'>Admin</div>
             <div id='linkAdminContainer' class='contextMenuInnerContainer'>

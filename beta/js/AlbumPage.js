@@ -50,9 +50,8 @@ function loadImageResults(vLink) {
     else {
         $('#imageContainer').append(`<div id='` + vLink.LinkId + `' class='intividualImageContainer'>
             <img class='thumbImage' src='` + imgSrc + `' onerror='imageError(` + vLink.FolderId + `,"` + vLink.LinkId + `","album")'
-            oncontextmenu='oggleContextMenu("image",` + vLink.LinkId + `,` + folderId + `,"'` + imgSrc + `")'
+            oncontextmenu='oggleContextMenu("image",` + vLink.LinkId + `,` + vLink.FolderId + `,"'` + imgSrc + `")'
             onclick='viewImage("` + imgSrc + `","` + vLink.LinkId + `")'/></div>`);
-        //                 oggleContextMenu(menuType, linkId, folderId, imgSrc)
         if (vLink.FolderId !== vLink.SrcId) {
             $('#' + vLink.LinkId + '').append(`<div class='knownModelIndicator'>
                 <img src='https://common.ogglefiles.com/img/foh01.png' title='`+ vLink.SrcFolder + `' 
@@ -66,7 +65,7 @@ function getSubFolders(folderId) {
         $.getJSON("php/yagdrasselFetchAll.php?query=select * from VwDirTree where Parent=" + folderId +
             " order by SortOrder,FolderName", function (data) {
                 $.each(data, function (index, obj) {
-                    let linkId = create_UUID();
+                    let randomId = create_UUID();
                     let folderCounts = "(" + Number(obj.FileCount).toLocaleString() + ")";
                     if (obj.SubFolderCount > 0)
                         folderCounts = "(" + obj.SubFolderCount + "/" + Number(obj.FileCount + obj.TotalChildFiles).toLocaleString() + ")";
@@ -74,18 +73,16 @@ function getSubFolders(folderId) {
                     let imgSrc = 'https://common.ogglefiles.com/img/RenStimpy8.jpg'
                     if (!isNullorUndefined(obj.FolderImage))
                         imgSrc = settingsImgRepo + "/" + obj.FolderImage.replace(/'/g, '%27');
-
-
-                    let myCtxvLink = { folderId:folderId,  };
-                    $('#imageContainer').append("<div class='subFolderContainer'\n" +
-                        " oncontextmenu='oggleContextMenu(\"subfolder\",\"" + linkId + "\"," + folderId + ",\"" + imgSrc + "\")'\n" +
-                        " onclick='folderClick(" + obj.Id + "," + obj.IsStepChild + ")'>\n" +
-                        "<img id='" + linkId + "' class='folderImage' alt='" + linkId + "' src='" + imgSrc + "'/> " +
-                        //"onerror='imageError(\"" + folderId + "\",\"'" + obj.linkId + "\"',\"'" + imgSrc + "\"','\"subFolder\")'/>\n" +
-                        "<div class='defaultSubFolderImage'>" + obj.FolderName + "</div>\n" +
-                        "<span Id='fc" + obj.FolderId + "'>" + folderCounts + "</span></div>");
+                    $('#imageContainer').append(`<div class='subFolderContainer'
+                        oncontextmenu='oggleContextMenu("subfolder","","` + obj.FolderId + `","` + imgSrc + `")'
+                        onclick='folderClick(` + obj.Id + `,` + obj.IsStepChild + `)'>
+                        <img id='` + randomId + `' class='folderImage' alt='' src='` + imgSrc + `' onerror=
+                            'imageError(` + folderId + `,"` + obj.linkId + `","` + imgSrc + `","subFolder")'/>
+                        <div class='defaultSubFolderImage'>` + obj.FolderName + `"</div>
+                        <span Id='fc` + obj.FolderId + `'>` + folderCounts + `"</span></div>`);
                 });
                 resizeAlbumPage();
+                //resizeAlbumPage();
             });
     } catch (e) {
         $('#albumPageLoadingGif').hide();
