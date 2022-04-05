@@ -449,21 +449,45 @@ function addPgLinkButton(folderId, labelText) {
     }
 }
 /*-- context menu --------------------------------------*/{
+    //oggleContextMenu(\"subfolder\",\"" + linkId + "\"," + folderId + ",\"" + imgSrc + "\")'\n" +
     let pmenuType, plinkId, pfolderId, pimgSrc;
     function oggleContextMenu(menuType, linkId, folderId, imgSrc) {
+        pmenuType = menuType;
+        plinkId = linkId;
+        pfolderId = folderId;
+        pimgSrc = imgSrc;
+
+        switch (menuType) {
+            case "video":
+            case "image":
+                ctxMenuImageInfo();
+                break;
+            case "subfolder":  // no need for image details 
+                ctxMenuFolderInfo();
+            default:
+        }
+        if (pmenuType === "Carousel") {
+            $('#ctxNewTab').show();
+        }
+        if (pmenuType === "Slideshow") {
+            $('#ctxssClose').show();
+            if (imgData.FolderType == "multiModel") {
+                if (imgData.FolderId == pfolderId) {
+                    $('#ctxTxtModelName').html("unknown model");
+                }
+            }
+        }
+
+
+
         event.preventDefault();
         window.event.returnValue = false;
-        pmenuType = menuType, plinkId = linkId, pfolderId = folderId, pimgSrc = imgSrc;
         pos = {};
         pos.x = event.clientX;
         pos.y = event.clientY + $(window).scrollTop();
         $('#contextMenuContent').html(oggleContextMenuHtml());
         $('#contextMenuContainer').css("top", pos.y);
         $('#contextMenuContainer').css("left", pos.x);
-        if (pmenuType === "Folder")
-            ctxMenuFolderInfo();
-        else
-            ctxMenuImageInfo();
         $('#contextMenuContainer').draggable().show();
         $("#contextMenuContainer").mousemove(function (event) {
             //$("#hdrBtmRowSec3").html('');
@@ -502,6 +526,8 @@ function addPgLinkButton(folderId, labelText) {
             // beta mode
             $('.adminLink').show();
 
+
+
             sql = "select f.FolderName, p.FolderName as ParentFolderName, f.FolderPath, f.FolderType, i.* from ImageFile i join CategoryFolder f on i.FolderId = f.Id " +
                   " join CategoryFolder p on f.Parent = p.Id where i.Id='" + plinkId + "'";
             $.ajax({
@@ -530,22 +556,8 @@ function addPgLinkButton(folderId, labelText) {
                         $('#imageInfoLastModified').html(imgData.Acquired);
                         $('#imageInfoExternalLink').html(imgData.ExternalLink);
 
-                        if (pmenuType === "Carousel") {
-                            $('#ctxNewTab').show();
-                        }
-                        if (pmenuType === "Slideshow") {
-                            $('#ctxssClose').show();
-                        }
-
-                        //if(pfolderId == )
-
-
-                        if (imgData.FolderType == "multiModel") {
-                            if (imgData.FolderId == pfolderId) {
-                                $('#ctxTxtModelName').html("unknown model");
-                            }
-                        }
-                        /// check for CategoryImageLink links
+\
+                         /// check for CategoryImageLink links
                         sql = "select f.Id, f.FolderName from CategoryImageLink l join CategoryFolder f on l.ImageCategoryId = f.id " +
                             "where ImageLinkId = '" + plinkId + "' and ImageCategoryId !=" + pfolderId;
                         $.ajax({
@@ -702,7 +714,6 @@ function addPgLinkButton(folderId, labelText) {
                     alert("You must be logged in to download an album");
                 break;
             case "showDialog": {
-
                 if ($('#ctxTxtModelName').html() === "unknown model") {
                     showUnknownModelDialog(pmenuType, pimgSrc, pLinkId, pfolderId);
                 }

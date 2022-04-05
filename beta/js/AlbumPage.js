@@ -22,7 +22,7 @@ function getAlbumImages(folderId, islargeLoad) {
             function (data) {
                 // let vlinks = JSON.parse(data);
                 $.each(data, function (idx, vLink) {
-                    loadImageResults(vLink, folderId);
+                    loadImageResults(vLink);
                 });
                 if (islargeLoad)
                     $('#albumPageLoadingGif').hide();
@@ -36,29 +36,23 @@ function getAlbumImages(folderId, islargeLoad) {
     }
 }
 
-function loadImageResults(vLink, folderId) {
+function loadImageResults(vLink) {
     let imgSrc = 'https://common.ogglefiles.com/img/redballon.png';
     if (!isNullorUndefined(vLink.FileName))
         imgSrc = settingsImgRepo + "/" + vLink.FileName.replace(/'/g, '%27');
 
     if (vLink.FileName.endsWith("mpg") || vLink.FileName.endsWith("mp4")) {
-        $('#imageContainer').append(
-            "<div class='intividualImageContainer'" +
-            "' oncontextmenu='oggleContextMenu(\"Video\",\"" + vLink.LinkId + "\"," +
-            vLink.FolderId + ",\"" + posterFolder + vLink.Poster + "\")'>" +
-            "<video id='" + vLink.LinkId + "' controls='controls' class='thumbImage' " +
-            " poster='" + posterFolder + vLink.Poster + "' >" +
-            "   <source src='" + imgSrc + "' type='video/mp4' label='label'>" +
-            "</video></div>");
+        $('#imageContainer').append(`
+            <div class='intividualImageContainer' oncontextmenu='oggleContextMenu("video","` + vLink + `)'>
+              <video id='" + vLink.LinkId + "' controls='controls' class='thumbImage' poster='` + posterFolder + vLink.Poster + `'>
+               <source src='` + imgSrc + `' type='video/mp4' label='label'></video></div>`);
     }
     else {
-
-        $('#imageContainer').append("<div id='" + vLink.LinkId + "' class='intividualImageContainer'>" +
-            "<img class='thumbImage' src='" + imgSrc + "' \n" +
-            "onerror='imageError(" + folderId + ",\"" + vLink.LinkId + "\",\"album\")' \n" +
-            "oncontextmenu='oggleContextMenu(\"Image\",\"" + vLink.LinkId + "\"," + folderId + ",\"" + imgSrc + "\")' \n" +
-            "onclick='viewImage(\"" + imgSrc + "\",\"" + vLink.LinkId + "\")'/></div>");
-
+        $('#imageContainer').append(`<div id='` + vLink.LinkId + `' class='intividualImageContainer'>
+            <img class='thumbImage' src='` + imgSrc + `' onerror='imageError(` + vLink.FolderId + `,"` + vLink.LinkId + `","album")'
+            oncontextmenu='oggleContextMenu("image",` + vLink.LinkId + `,` + folderId + `,"'` + imgSrc + `")'
+            onclick='viewImage("` + imgSrc + `","` + vLink.LinkId + `")'/></div>`);
+        //                 oggleContextMenu(menuType, linkId, folderId, imgSrc)
         if (vLink.FolderId !== vLink.SrcId) {
             $('#' + vLink.LinkId + '').append(`<div class='knownModelIndicator'>
                 <img src='https://common.ogglefiles.com/img/foh01.png' title='`+ vLink.SrcFolder + `' 
@@ -81,8 +75,10 @@ function getSubFolders(folderId) {
                     if (!isNullorUndefined(obj.FolderImage))
                         imgSrc = settingsImgRepo + "/" + obj.FolderImage.replace(/'/g, '%27');
 
+
+                    let myCtxvLink = { folderId:folderId,  };
                     $('#imageContainer').append("<div class='subFolderContainer'\n" +
-                        " oncontextmenu='oggleContextMenu(\"Folder\",\"" + linkId + "\"," + folderId + ",\"" + imgSrc + "\")'\n" +
+                        " oncontextmenu='oggleContextMenu(\"subfolder\",\"" + linkId + "\"," + folderId + ",\"" + imgSrc + "\")'\n" +
                         " onclick='folderClick(" + obj.Id + "," + obj.IsStepChild + ")'>\n" +
                         "<img id='" + linkId + "' class='folderImage' alt='" + linkId + "' src='" + imgSrc + "'/> " +
                         //"onerror='imageError(\"" + folderId + "\",\"'" + obj.linkId + "\"',\"'" + imgSrc + "\"','\"subFolder\")'/>\n" +
@@ -112,7 +108,7 @@ function getAlbumPageInfo(folderId, islargeLoad) {
                 $('#albumTopRow').show();
                 $('#seoPageName').html(catfolder.FolderName);
 
-                setBreadcrumbs(folderId, catfolder.RootFolder);
+                setBreadcrumbs(folderId, catfolder.FolderType, catfolder.RootFolder);
 
                 resetHeader(catfolder);
 
@@ -223,66 +219,62 @@ function resetHeader(catfolder) {
 
 }
 
-function setBreadcrumbs(folderId, rootFolder) {
+function setBreadcrumbs(folderId,folderType, rootFolder) {
     try {
         //$('#aboveImageContainerMessageArea').html('loading breadcrumbs');
         $('#breadcrumbContainer').html("<img style='height:27px' src='https://common.ogglefiles.com/img/loader.gif'/>");
         $.ajax({
             url: "php/yagdrasselFetchAll.php?query=Select * from VwDirTree",
             success: function (data) {
-                if (data.indexOf("Fatal error") > 0) {
-                    $('#breadcrumbContainer').html(data);
+                let dirTreeArray = JSON.parse(data);
+                let breadcrumbItem = dirTreeArray.filter(function (item) { return item.Id === folderId; });
+                if (breadcrumbItem.length == 0) {
+                    $('#breadcrumbContainer').html("no good");
+                    return;
                 }
-                else {
-                    let dirTreeArray = JSON.parse(data);
-                    let breadcrumbItem = dirTreeArray.filter(function (item) { return item.Id === folderId; });
-                    if (breadcrumbItem.length == 0) {
-                        $('#breadcrumbContainer').html("no good");
-                        return;
-                    }
-                    //$('#breadcrumbContainer').html(addBreadcrumb(folderId, breadcrumbItem[0].FolderName, "inactiveBreadCrumb"));
-                    if ((dirTreeArray[0].FolderType == "multiFolder") || (dirTreeArray[0].FolderType == "multiModel")) {
-                        $('#breadcrumbContainer').html("<div class='inactiveBreadCrumb' " +
-                            "onclick='showFolderInfoDialog(" + folderId + ")'>" + breadcrumbItem[0].FolderName + "</div>");
-                    }
-                    else {
+
+                switch (folderType) {
+                    case "singleModel":
+                    case "singleParent":  // showFileDetailsDialog
                         $('#breadcrumbContainer').html("<div class='inactiveBreadCrumb' " +
                             "onclick='showFileDetailsDialog(" + folderId + ")'>" + breadcrumbItem[0].FolderName + "</div>");
+                        break;
+                    default: // showFolderInfoDialog
+                        $('#breadcrumbContainer').html("<div class='inactiveBreadCrumb' " +
+                            "onclick='showFolderInfoDialog(" + folderId + ")'>" + breadcrumbItem[0].FolderName + "</div>");
+                }
+
+                let parent = breadcrumbItem[0].Parent;
+
+                while (parent > 0) {
+                    breadcrumbItem = dirTreeArray.filter(function (item) { return item.Id == parent; });
+                    if (isNullorUndefined(breadcrumbItem)) {
+                        parent = 99;
+                        $('#breadcrumbContainer').prepend("item: " + parent + " isNullorUndefined");
                     }
-
-                    let parent = breadcrumbItem[0].Parent;
-
-                    while (parent > 0) {
-                        breadcrumbItem = dirTreeArray.filter(function (item) { return item.Id == parent; });
-                        if (isNullorUndefined(breadcrumbItem)) {
+                    else {
+                        if (breadcrumbItem.length == 0) {
+                            $('#breadcrumbContainer').prepend("no good " + parent + " length == 0");
                             parent = 99;
-                            $('#breadcrumbContainer').prepend("item: " + parent + " isNullorUndefined");
                         }
                         else {
-                            if (breadcrumbItem.length == 0) {
-                                $('#breadcrumbContainer').prepend("no good " + parent + " length == 0");
-                                parent = 99;
-                            }
-                            else {
-                                //addBreadcrumb(parent, breadcrumbItem[0].FolderName, "activeBreadCrumb"));
-                                $('#breadcrumbContainer').prepend("<div class='activeBreadCrumb' " +
-                                    "onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" +
-                                    breadcrumbItem[0].Id + "\"'>" + breadcrumbItem[0].FolderName + "</div>");
-                                parent = breadcrumbItem[0].Parent;
-                            }
+                            //addBreadcrumb(parent, breadcrumbItem[0].FolderName, "activeBreadCrumb"));
+                            $('#breadcrumbContainer').prepend("<div class='activeBreadCrumb' " +
+                                "onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" +
+                                breadcrumbItem[0].Id + "\"'>" + breadcrumbItem[0].FolderName + "</div>");
+                            parent = breadcrumbItem[0].Parent;
                         }
                     }
-                    switch (rootFolder) {
-                        case "playboy":
-                        case "centerfold":
-                        case "cybergirl":
-                        case "magazine":
-                        case "muses":
-                        case "plus":
-                            $('.activeBreadCrumb').css("color", "#f2e289");
-                            break;
-                    }
-
+                }
+                switch (rootFolder) {
+                    case "playboy":
+                    case "centerfold":
+                    case "cybergirl":
+                    case "magazine":
+                    case "muses":
+                    case "plus":
+                        $('.activeBreadCrumb').css("color", "#f2e289");
+                        break;
                 }
             },
             error: function (jqXHR) {
