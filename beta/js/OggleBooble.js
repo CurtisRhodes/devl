@@ -12,10 +12,10 @@ function captureKeydownEvent(event) {
         else
             if (document.activeElement.id == "txtSearch")
                 searchBoxKeyDown(event);
-            else {
-                let activeElement = document.activeElement.id;
-                $('#topRowRightContainer').html("activeElement: " + activeElement);
-            }
+//            else {
+//                let activeElement = document.activeElement.id;
+//                $('#topRowRightContainer').html("activeElement: " + activeElement);
+//            }
 }
 
 
@@ -188,7 +188,7 @@ function captureKeydownEvent(event) {
                     else {
                         switch (success.trim()) {
                             case '23000':
-                                //logError("",);  // duplicate page hit
+                                //logOggleError("",);  // duplicate page hit
                                 break;
                             case '42000':
                             default:
@@ -414,7 +414,7 @@ function addPgLinkButton(folderId, labelText) {
         try {
             visitorId = getCookieValue("VisitorId", "log Activity");
             try {
-                let visitorId = getCookieValue("VisitorId", calledFrom + "/logError");
+                let visitorId = getCookieValue("VisitorId", calledFrom + "/logOggleError");
                 $.ajax({
                     type: "POST",
                     url: "php/logActivity.php",
@@ -616,11 +616,11 @@ function addPgLinkButton(folderId, labelText) {
                         $('#ctxFolderName').html(folderData.FolderName);
                         // folderInfo
                         $('#folderInfoPath').html(folderData.FolderPath);
-                        $('#folderInfoRoot').html(folderData.Rootfolder);
+                        $('#folderInfoRoot').html(folderData.RootFolder);
                         $('#folderInfoType').html(folderData.FolderType);
                         $('#folderInfoFileCount').html(folderData.Files).toLocaleString();
                         $('#folderInfoSubDirs').html(folderData.SubFolders).toLocaleString();
-                        $('#folderInfoTotalSubDirs').html(folderData.TotalChildFolders).toLocaleString();
+                        $('#folderInfoTotalSubDirs').html(folderData.TotalSubFolders).toLocaleString();
                         $('#folderInfoTotalChildFiles').html(folderData.TotalChildFiles).toLocaleString();
                     }
                     // beta mode
@@ -782,7 +782,7 @@ function addPgLinkButton(folderId, labelText) {
                         $("#imageContextMenu").fadeOut();
                     }
                     else {
-                        logError("AJX", folderId, success, "setFolderImage");
+                        logOggleError("AJX", folderId, success, "setFolderImage");
                     }
                 },
                 error: function (jqXHR) {
@@ -824,7 +824,7 @@ function addPgLinkButton(folderId, labelText) {
                 }
                 else {
                     alert("move to rejects: " + success);
-                    //logError("AJX", 3908, success, "perform MoveImageToRejects");
+                    //logOggleError("AJX", 3908, success, "perform MoveImageToRejects");
                 }
             },
             error: function (jqXHR) {
@@ -855,7 +855,7 @@ function addPgLinkButton(folderId, labelText) {
                     else {
                         switch (success.trim()) {
                             case '23000':
-                                //logError("",)
+                                //logOggleError("",)
                                 break;
                             case '42000':
                             default:
@@ -892,7 +892,7 @@ function addPgLinkButton(folderId, labelText) {
                     if (success.trim() != "ok") {
                         switch (success.trim()) {
                             case '23000':
-                                //logError("",);  // duplicate page hit
+                                //logOggleError("",);  // duplicate page hit
                                 break;
                             case '42000':
                             default:
@@ -933,7 +933,7 @@ function addPgLinkButton(folderId, labelText) {
                 else {
                     switch (success.trim()) {
                         case '23000':
-                            //logError("",);  // duplicate page hit
+                            //logOggleError("",);  // duplicate page hit
                             break;
                         case '42000':
                         default:
@@ -1078,19 +1078,6 @@ function addPgLinkButton(folderId, labelText) {
     }
 }
 /*-- dialog windows --------------------------------------*/{
-    function showRejectsDialog(linkId, folderId, imgSrc) {
-        $('#centeredDialogTitle').html("move image to rejects");
-        $('#centeredDialogContents').html(
-            "<form id='frmReject>'\n" +
-            "    <div class='inline'><img id='linkManipulateImage' class='ctxDialogImage' src='" + imgSrc + "'/></div>\n" +
-            "    <div><input type='radio' value='DUP' name='rdoRejectImageReasons' checked='checked'></input>  duplicate</div>\n" +
-            "    <div><input type='radio' value='BAD' name='rdoRejectImageReasons'></input>  bad link</div>\n" +
-            "    <div><input type='radio' value='LOW' name='rdoRejectImageReasons'></input>  low quality</div>\n" +
-            "    <div class='roundendButton' onclick='performMoveImageToRejects(\"" + linkId + "\"," + folderId + ")'>ok</div>\n" +
-            "</form>");
-        $('#centeredDialogContainer').draggable().fadeIn();
-    }
-
     function showFileDetailsDialog(folderId) {
         try {  // GetQuickFolderInfo
             if (typeof pause === 'function') pause();
@@ -1203,9 +1190,10 @@ function addPgLinkButton(folderId, labelText) {
     }
 
     function showFolderInfoDialog(folderId) {
-        try {  // GetQuickFolderInfo
+        try { 
+            $("#contextMenuContainer").fadeOut();
             if (typeof pause === 'function') pause();
-            //$("#centeredDialogTitle").html("loading");
+            $("#centeredDialogTitle").html("loading");
             $("#centeredDialogContents").html(`
                 <div>
                     <div><input id='txtFolderName'></div>
@@ -1216,26 +1204,18 @@ function addPgLinkButton(folderId, labelText) {
                     </div>
                 </div>`);
 
-            $("#btnCatDlgDone").hide()
-            $("#btnCatDlgEdit").on("click", function () {
-                if ($("#btnCatDlgEdit").html() == "Save") {
+            $('#summernoteContainer').summernote();
 
-                }
-                else {
-                    $("#btnCatDlgEdit").html("Save");
-                    $("#btnCatDlgDone").show()
-                }
-            });
-
-            editFolderDialog
+            $('#centeredDialogContainer').css({ "top": 33 + $(window).scrollTop() });
+            $('#centeredDialogContainer').draggable().fadeIn();
 
             //$(".note-editable").css('font-size', '16px');
             //$('#centeredDialogContainer').css("top", 111);
             //$('#centeredDialogContainer').css("left", -350);
             //$("#btnCatDlgEdit").hide();
-            $('#summernoteContainer').summernote({ toolbar: "none" });
+            //$('#summernoteContainer').summernote({ toolbar: "none" });
             //$('#summernoteContainer').summernote('disable');
-            $(".note-editable").css({ 'font-size': '16px', 'min-height': '186px' });
+            //$(".note-editable").css({ 'font-size': '16px', 'min-height': '186px' });
 
             //if (localStorage["IsLoggedIn"] == "false") {
             //    showMyAlert("you must be logged in to edit folder comments");
@@ -1243,37 +1223,91 @@ function addPgLinkButton(folderId, labelText) {
             //    $("#btnCatDlgLinks").hide();
             //}
 
-            $('#centeredDialogContainer').css({ "top": 33 + $(window).scrollTop() });
-            $('#centeredDialogContainer').draggable().fadeIn();
-            $('#centeredDialogContainer').mouseleave(function () {
-                if (allowDialogClose) centeringDialogClose();
-            });
 
             $.ajax({
-                url: "php/registroFetch.php?query=select * from CategoryFolder f " +
-                    " left join FolderDetail d on f.Id = d.FolderId where FolderId=" + folderId,
-                success: function (folderInfo) {
-                    $('#albumPageLoadingGif').hide();
-                    if (folderInfo.Success === "ok") {
+                url: "php/yagdrasselFetch.php?query=select FolderName, FolderComments from CategoryFolder f left join FolderDetail d on f.Id = d.FolderId where f.Id=" + folderId,
+                success: function (data) {
+                    if (data != "false") {
+                        folderInfo = JSON.parse(data);
+
+                        $("#centeredDialogTitle").html(folderInfo.FolderName);
                         $('#txtFolderName').val(folderInfo.FolderName);
+                        $('#summernoteContainer').summernote("code", folderInfo.FolderComments);
 
                         //logEvent("SMD", folderId, calledFrom, "folder type: " + folderInfo.FolderType);
+                        $("#btnCatDlgDone").hide()
+                        $("#btnCatDlgEdit").on("click", function () {
+                            if ($("#btnCatDlgEdit").html() == "Edit") {
+                                $("#btnCatDlgEdit").html("Save");
+                                $("#btnCatDlgDone").show();
+                            }
+                            else {
+                                //updateFolderDetail();
+                                $.ajax({
+                                    type: "PUT",
+                                    url: "UpdateFolderDetail.php",
+                                    data: {
+                                        folderName: $('#txtFolderName').val(),
+                                        folderComments: $('#summernoteContainer').summernote("code")
+                                    },
+                                    success: function (success) {
+                                        if (success === "ok") {
+                                            displayStatusMessage("ok", "Folder info updated");
+                                            $("#btnCatDlgEdit").html("Edit");
+                                            $("#btnCatDlgDone").hide();
+                                            logOggleActivity("SMD", folderId, "folder info dialog");
+                                        }
+                                        else {
+                                            logOggleError("AJX", folderId, success, "update folderDetail");
+                                        }
+                                    },
+                                    error: function (jqXHR) {
+                                        logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "update folderDetail");
+                                    }
+                                });
+                            }
+                        });
+
+                        $('#centeredDialogContainer').mouseleave(function () {
+                            centeringDialogClose();
+                        });
                     }
                     else {
-                        logOggleError("AJX", folderId, folderInfo.Success, "GetQuickFolderInfo");
+                        logOggleError("AJX", folderId, folderInfo.Success, "show folderInfo dialog");
                     }
                 },
                 error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
-                    if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", folderId, errMsg, functionName);
+                    logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "show folderInfo dialog");
                 }
             });
+
+
+
         }
         catch (e) {
-            $('#albumPageLoadingGif').hide();
             logOggleError("CAT", folderId, e, "show folderInfo dialog");
         }
+    }
+    function updateFolderDetail() {
+        loadGets();
+        $.ajax({
+            type: "PUT",
+            url: settingsArray.ApiServer + "api/FolderDetail/AddUpdate",
+            data: objFolderInfo,
+            success: function (success) {
+                if (success === "ok") {
+                    displayStatusMessage("ok", "Model info updated");
+                }
+                else {
+                    logOggleError("AJX", objFolderInfo.Id, success, "updateFolderDetail");
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
+                if (!checkFor404(errMsg, folderId, functionName)) logOggleError("XHR", objFolderInfo.Id, errMsg, functionName);
+            }
+        });
     }
 
     function showImageCommentDialog(linkId, imgSrc, folderId, calledFrom) {
@@ -1351,8 +1385,6 @@ function addPgLinkButton(folderId, labelText) {
         //var dlgH = $('#centeredDialog').height();
     }
 
-    var objFolderInfo = {}, allowDialogClose = true;
-
     function showFullModelDetails(folderId) {
         $('#albumPageLoadingGif').show();
         $("#modelInfoDetails").html(modelInfoDetailHtml());
@@ -1383,17 +1415,32 @@ function addPgLinkButton(folderId, labelText) {
                 }
                 else {
                     $('#albumPageLoadingGif').hide();
-                    logError("AJX", folderId, folderInfo.Success, "show FullModelDetails");
+                    logOggleError("AJX", folderId, folderInfo.Success, "show FullModelDetails");
                 }
             },
             error: function (jqXHR) {
                 $('#albumPageLoadingGif').hide();
                 let errMsg = getXHRErrorDetails(jqXHR);
-                if (!checkFor404(errMsg, folderId, "show FullModelDetails")) logError("XHR", folderId, errMsg, "show FullModelDetails");
+                if (!checkFor404(errMsg, folderId, "show FullModelDetails")) logOggleError("XHR", folderId, errMsg, "show FullModelDetails");
             }
         });
     }
 
+    function showRejectsDialog(linkId, folderId, imgSrc) {
+        $('#centeredDialogTitle').html("move image to rejects");
+        $('#centeredDialogContents').html(
+            "<form id='frmReject>'\n" +
+            "    <div class='inline'><img id='linkManipulateImage' class='ctxDialogImage' src='" + imgSrc + "'/></div>\n" +
+            "    <div><input type='radio' value='DUP' name='rdoRejectImageReasons' checked='checked'></input>  duplicate</div>\n" +
+            "    <div><input type='radio' value='BAD' name='rdoRejectImageReasons'></input>  bad link</div>\n" +
+            "    <div><input type='radio' value='LOW' name='rdoRejectImageReasons'></input>  low quality</div>\n" +
+            "    <div class='roundendButton' onclick='performMoveImageToRejects(\"" + linkId + "\"," + folderId + ")'>ok</div>\n" +
+            "</form>");
+        $('#centeredDialogContainer').draggable().fadeIn();
+    }
+}
+
+/*--   zzzdialog windows --------------------------------------*/{
     function modelInfoDetailHtml() {
 
         //if (localStorage["IsLoggedIn"] == "true") {
@@ -1467,14 +1514,11 @@ function addPgLinkButton(folderId, labelText) {
                     $('#summernoteContainer').summernote('focus');
                 }
                 else {
-                    logError("AJX", objFolderInfo.Id, success, "saveFolderDialog");
+                    logOggleError("AJX", objFolderInfo.Id, success, "save folderDialog");
                 }
             },
             error: function (jqXHR) {
-                $('#albumPageLoadingGif').hide();
-                let errMsg = getXHRErrorDetails(jqXHR);
-                let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
-                if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", objFolderInfo.Id, errMsg, functionName);
+                logOggleError("XHR", objFolderInfo.Id, getXHRErrorDetails(jqXHR), "save folderDialog");
             }
         });
     }
@@ -1501,28 +1545,6 @@ function addPgLinkButton(folderId, labelText) {
         $('#txtNationality').val('');
         $('#txtStatus').val('');
         $('#externalLinks').html('');
-    }
-
-    function updateFolderDetail() {
-        loadGets();
-        $.ajax({
-            type: "PUT",
-            url: settingsArray.ApiServer + "api/FolderDetail/AddUpdate",
-            data: objFolderInfo,
-            success: function (success) {
-                if (success === "ok") {
-                    displayStatusMessage("ok", "Model info updated");
-                }
-                else {
-                    logError("AJX", objFolderInfo.Id, success, "updateFolderDetail");
-                }
-            },
-            error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
-                if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", objFolderInfo.Id, errMsg, functionName);
-            }
-        });
     }
 
     ///////////////// TRACKBACK DIALOG  ////////////
@@ -1576,13 +1598,11 @@ function addPgLinkButton(folderId, labelText) {
                     });
                 }
                 else {
-                    logError("AJX", objFolderInfo.FolderId, trackbackModel.Success, "loadTrackBackItems");
+                    logOggleError("AJX", objFolderInfo.FolderId, trackbackModel.Success, "load trackBack items");
                 }
             },
             error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
-                if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", objFolderInfo.Id, errMsg, functionName);
+                logOggleError("XHR", objFolderInfo.Id, getXHRErrorDetails(jqXHR), "load trackBack items");
             }
         })
     }
@@ -1644,12 +1664,10 @@ function addPgLinkButton(folderId, labelText) {
                         $('#txtTrackBackLink').val("");
                         $('#btnTbDlgDelete').hide();
                     }
-                    else logError("AJX", folderId, successModel.Success, "addTrackback");
+                    else logOggleError("AJX", folderId, successModel.Success, "addTrackback");
                 },
                 error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
-                    if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", objFolderInfo.Id, errMsg, functionName);
+                    logOggleError("XHR", objFolderInfo.Id, getXHRErrorDetails(jqXHR), "addTrackback");
                 }
             });
         }
@@ -1657,80 +1675,6 @@ function addPgLinkButton(folderId, labelText) {
     function tbDelete() { }
 
     //////////////// Identify Poser ////////////////
-
-    function xxcreatePosersIdentifiedFolder() {
-        var defaultParentFolder = 917;
-        if (validate()) {
-            // step 1:  Create new Ftmp Folder
-            $.ajax({
-                type: "POST",
-                url: settingsArray.ApiServer + "/api/FtpDashBoard/CreateFolder?parentId=" + defaultParentFolder + "&newFolderName=" + objFolderInfo.FolderName,
-                success: function (successModel) {
-                    $('#dashBoardLoadingGif').hide();
-                    if (successModel.Success === "ok") {
-                        // step 2: Move Image 
-                        displayStatusMessage("ok", "new folder created");
-                        //linkId = fileName.Substring(fileName.LastIndexOf("_") + 1, 36);
-                        var MoveCopyImageModel = {
-                            Mode: "Archive",
-                            Link: successModel.FolderImage,
-                            SourceFolderId: successModel.FolderId,
-                            DestinationFolderId: successModel.ReturnValue
-                        };
-
-                        $.ajax({
-                            type: "PUT",
-                            url: settingsArray.ApiServer + "/api/MoveImage/MoveImage",
-                            data: MoveCopyImageModel,
-                            success: function (moveImageSuccessModel) {
-                                if (moveImageSuccessModel.Success === "ok") {
-                                    displayStatusMessage("ok", "image moved to newfolder");
-                                }
-                                else
-                                    logError("AJX", defaultParentFolder, moveImageSuccessModel.Success, "createPosersIdentifiedFolder/MoveImage");
-                            },
-                            error: function (jqXHR) {
-                                let errMsg = getXHRErrorDetails(jqXHR);
-                                let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
-                                if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", defaultParentFolder, errMsg, functionName);
-                            }
-                        });
-                    }
-                    else
-                        logError("AJX", defaultParentFolder, successModel.Success, "createPosersIdentifiedFolder");
-                },
-                error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
-                    if (!checkFor404(errMsg, folderId, functionName)) logError("XHR", defaultParentFolder, errMsg, functionName);
-                }
-            });
-        }
-        //// 2. actually create
-        //string extension = model.FolderImage.Substring(model.FolderImage.LastIndexOf("."));
-        ////string sourceOriginPath = Helpers.GetParentPath(dbParent.Id, true);
-        //string linkId = model.FolderImage.Substring(model.FolderImage.LastIndexOf("_") + 1, 36);
-        ////string ftpSource = "ftp://50.62.160.105/" + dbParent.RootFolder + ".ogglebooble.com/" + sourceOriginPath + "posers identified/" + model.FolderName + "_" + linkId + extension;
-
-        //string ftpSource = model.FolderImage.Replace("http://", "ftp://50.62.160.105/");
-        //string expectedFileName = model.FolderName + "_" + linkId + extension;
-        //string ftpDestinationPath = "ftp://50.62.160.105/archive.ogglebooble.com/posers identified/" + model.FolderName;
-
-        //if (!FtpUtilies.DirectoryExists(ftpDestinationPath))
-        //    FtpUtilies.CreateDirectory(ftpDestinationPath);
-
-        //success = FtpUtilies.MoveFile(ftpSource, ftpDestinationPath + "/" + expectedFileName);
-
-        //ImageLink goDaddyrow = db.ImageLinks.Where(g => g.Id == linkId).First();
-        //goDaddyrow.Link = "http://archive.ogglebooble.com/posers identified/" + model.FolderName + "/" + expectedFileName;
-        //goDaddyrow.FolderLocation = newFolderId;
-
-        //db.CategoryImageLinks.Add(new CategoryImageLink() {ImageCategoryId = newFolderId, ImageLinkId = linkId });
-        //db.SaveChanges();
-
-
-        // 2. add new category folder row and folder detail row
-    }
 
     function showUnknownModelDialog(menuType, imgSrc, linkId, folderId) {
         let unknownModelDialogHtml =
@@ -1831,245 +1775,4 @@ function addPgLinkButton(folderId, labelText) {
 function displayFeedback() {
     alert("displayFeedback");
     //\"FLC\",\"feedback\", rootFolder + "\", folderId + "
-}
-
-
-/* -------- not used -----------*/{
-    function XXperformEvent(eventCode, eventDetail, folderId) {
-        //        if (eventCode === "PRN") {
-        //            //  setUserPornStatus(pornType);
-        //        }
-        //            case "LUP":  // latest Update click
-        //        if (eventDetail.lastIndexOf("_") > 0) {
-        //            logImageHit(eventDetail.substr(eventDetail.lastIndexOf("_") + 1, 36), folderId, true);
-        //        }
-        //        window.location.href = "/album.html?folder=" + folderId;
-        //        break;
-        //            case "GIC": // Gallery Item Clicked
-        //            case "CMC": // carousle context menu item clicked
-        //            case "CXM":  // carousle context menu opened
-        //            case "XLC":  // external link clicked
-        //        // DO NOTHING BUT REPORT
-        //        break;
-        //            case "PRN":  //("Porn Option clicked");
-        //        window.location.href = '/index.html?subdomain=porn';
-        //        break;
-        //            case "HBC":  //  header banner clicked
-        //        window.location.href = '/index.html?spa=' + eventDetail;
-        //        break;
-        //            case "GAX":  // can I get a connection
-        //        alert("can I get a connection");
-        //        //window.location.href = ".";
-        //        break;
-        //            case "EXP":  // Explode
-        //        //rtpe("EXP", currentAlbumJSfolderName, selectedImage, albumFolderId);
-        //        window.open(eventDetail, "_blank");
-        //            logImageHit(eventDetail.substr(eventDetail.lastIndexOf("_") + 1, 36), folderId, true);
-        //        }
-        //        window.location.href = "/album.html?folder=" + folderId;  //  open page in same window
-        //        break;
-        //            case "HBX":  // Home breadcrumb Clicked
-        //        if (eventDetail === "porn")
-        //            window.location.href = '/index.html?subdomain=porn';
-        //        else
-        //            window.location.href = "/";
-        //        break;
-        //            case "RNK":  // Ranker Banner Clicked
-        //        window.location.href = "/Ranker.html?subdomain=" + eventDetail;
-        //        break;
-        //            case "FLC":  //  footer link clicked
-        //        switch (eventDetail) {
-        //            case "about us": showCustomMessage(38); break;
-        //            case "dir tree": showCatListDialog(2); break;
-        //            case "porn dir tree": showCatListDialog(242); break;
-        //            case "playmate dir tree": showCatListDialog(472); break;
-        //            case "porn": showCustomMessage(35, false); break;
-        //            case "blog": window.location.href = '/index.html?subdomain=blog'; break;
-        //            case "ranker": window.location.href = "/Ranker.html"; break;
-        //            case "rejects": window.location.href = "/album.html?folder=1132"; break;
-        //            case "centerfolds": window.location.href = "/album.html?folder=1132"; break;
-        //            case "cybergirls": window.location.href = "/album.html?folder=3796"; break;
-        //            case "softcore": window.location.href = "/album.html?folder=5233"; break;
-        //            case "extras": window.location.href = "/album.html?folder=2601"; break;
-        //            case "sluts": window.location.href = "/album.html?folder=440"; break;
-        //            case "magazine covers": window.location.href = "/album.html?folder=1986"; break;
-        //            case "archive": window.location.href = "/album.html?folder=3"; break;
-        //            case "videos": window.location.href = 'video.html'; break;
-        //            case "mailme": window.location.href = 'mailto:curtishrhodes@hotmail.com'; break;
-        //            case "freedback": showFeedbackDialog(folderId); break;
-        //            case "slut archive": window.location.href = "/album.html?folder=440"; break;
-        //            default:
-        //                logError("SWT", folderId, "Uncaught Case: " + eventDetail, "performEvent/footer link click");
-        //                break;
-        //        }
-    }
-    function resetOggleHeader(folderId, rootFolder) {
-        hdrFolderId = folderId;
-        hdrRootFolder = rootFolder;
-        $('#divLoginArea').show();
-        //  $('#hdrBtmRowSec3').html("");
-        $('#oggleHeaderTitle').html(rootFolder);
-        switch (rootFolder) {
-            case "boobs":
-                $('#hdrBtmRowSec3').append(bannerLink(eventCode, goToFolderId, calledFromFolderId));
-                $('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
-                $('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
-            case "root":
-            case "index":
-            case "archive": {
-                //changeFavoriteIcon("redBallon");
-                //console.log("changeFavoriteIcon redBallon 1")
-                //$('#oggleHeader').switchClass('playboyHeader');
-                $('#divSiteLogo').attr("src", "/img/redballon.png");
-                $('#oggleHeaderTitle').html("OggleBooble");
-                $('#topRowRightContainer').html(addRankerButton("010000000", "big naturals ranker"));
-                setHeaderMenu("boobs");
-                break;
-            }
-            case "playboyIndex":
-                //$('#oggleHeader').switchClass('playboyHeader');
-                document.title = "every Playboy Centerfold : OggleBooble";
-                $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
-                $('#oggleHeaderTitle').html("<span style='color:#fff;'>every playboy centerfold</span>");
-                $('#topRowRightContainer').append(addRankerButton("001000000", "centerfold ranker"));
-                $('#hdrBtmRowSec3').append(addPgLinkButton(10326, "Bond Girls"));
-                $('#hdrBtmRowSec3').append(bannerLink("back to OggleBooble", 0, folderId));
-                //$('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
-                $('#hdrBtmRowSec3').append(bannerLink("Oggle Porn", folderId));
-                setHeaderMenu("playboyIndex");
-                break;
-            case "playboy":
-                //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
-                $('#oggleHeaderTitle').html("Playboy");
-                $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
-                $('#topRowRightContainer').append(addRankerButton("001000000", "centerfold ranker"));
-                $('#hdrBtmRowSec3').append(bannerLink("back to OggleBooble", folderId));
-                //$('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
-                //$('#hdrBtmRowSec3').append(bannerLink(3909, "Oggle Porn"));
-                setHeaderMenu("playboy");
-                break;
-            case "cybergirl":
-                //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
-                $('#oggleHeaderTitle').html("Cybergirls");
-                $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
-                $('#topRowRightContainer').append(addRankerButton("000100000", "Cybergirls ranker"));
-                // bottom row
-                $('#hdrBtmRowSec3').append(bannerLink("back to OggleBooble", folderId));
-                $('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
-                $('#hdrBtmRowSec3').append(bannerLink("Oggle Porn", folderId));
-                //setHeaderMenu("playboy");
-                $('#topHeaderRow').html(
-                    "<span onclick='headerMenuClick(\"cybergirl\",1132)'>centerfolds, </span>\n" +
-                    "<span onclick='headerMenuClick(\"cybergirl\",6095)'>muses, </span>\n" +
-                    "<span onclick='headerMenuClick(\"cybergirl\",6368)'>playboy plus, </span>\n" +
-                    "<span onclick='headerMenuClick(\"cybergirl\",3128)'>international, </span>\n" +
-                    "<span onclick='headerMenuClick(\"cybergirl\",9306)'>more</span>\n"
-                );
-                break;
-            case "bond":
-                //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
-                $('#oggleHeaderTitle').html("Bond Girls");
-                $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
-                $('#topRowRightContainer').append(addRankerButton("000010000", "Muses ranker"));
-                // bottom row
-                $('#badgesContainer').append(bannerLink(3908, "back to OggleBooble"));
-                //$('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
-                //$('#hdrBtmRowSec3').append(bannerLink(3909, "Oggle Porn"));
-                //setHeaderMenu("playboy");
-                $('#topHeaderRow').html(
-                    "<span onclick='headerMenuClick(\"muses\",1132)'>centerfolds, </span>\n" +
-                    "<span onclick='headerMenuClick(\"muses\",3796)'>cybergirls, </span>\n" +
-                    "<span onclick='headerMenuClick(\"muses\",6368)'>playboy plus, </span>\n" +
-                    "<span onclick='headerMenuClick(\"muses\",3128)'>international, </span>\n" +
-                    "<span onclick='headerMenuClick(\"muses\",9306)'>more</span>\n"
-                );
-                break;
-            case "muses":
-                //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
-                $('#oggleHeaderTitle').html("muses");
-                $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
-                $('#topRowRightContainer').append(addRankerButton("000010000", "Muses ranker"));
-                // bottom row
-                $('#badgesContainer').append(bannerLink("back to OggleBooble", folderId));
-                //$('#hdrBtmRowSec3').append(addPgLinkButton(3, "big naturals archive"));
-                //$('#hdrBtmRowSec3').append(bannerLink(3909, "Oggle Porn"));
-                //setHeaderMenu("playboy");
-                $('#topHeaderRow').html(
-                    "<span onclick='headerMenuClick(\"muses\",1132)'>centerfolds, </span>\n" +
-                    "<span onclick='headerMenuClick(\"muses\",3796)'>cybergirls, </span>\n" +
-                    "<span onclick='headerMenuClick(\"muses\",6368)'>playboy plus, </span>\n" +
-                    "<span onclick='headerMenuClick(\"muses\",3128)'>international, </span>\n" +
-                    "<span onclick='headerMenuClick(\"muses\",9306)'>more</span>\n"
-                );
-                break;
-            case "plus":
-                //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
-                $('#oggleHeaderTitle').html("Playboy Plus");
-                $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
-                $('#topRowRightContainer').append(addRankerButton("000001000", "Muses ranker"));
-                // bottom row
-                $('#badgesContainer').append(bannerLink("back to OggleBooble", folderId));
-                //setHeaderMenu("playboy");
-                $('#topHeaderRow').html(
-                    "<span onclick='headerMenuClick(\"playboyplus\",1132)'>centerfolds, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyplus\",3796)'>cybergirls, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyplus\",6095)'>muses, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyplus\",3128)'>international, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyplus\",9306)'>more</span>\n"
-                );
-                break;
-            case "magazine":
-            case "centerfold": {
-                //$('#oggleHeader').switchClass('boobsHeader', 'playboyHeader');
-                $('#oggleHeaderTitle').html("playboy centerfold");
-                $('#divSiteLogo').attr("src", "/img/playboyBallon.png");
-                $('#topRowRightContainer').append(addRankerButton("001000000", "centerfold ranker"));
-                // bottom row
-                $('#hdrBtmRowSec3').append(bannerLink("back to OggleBooble", folderId));
-                setHeaderMenu("playboy");
-                break;
-            }
-            case "soft": {
-                $('#oggleHeader').switchClass('boobsHeader', 'oggleSoft');
-                $('#divSiteLogo').attr("src", "/img/redwoman.png");
-                document.title = "softcore : OggleBooble";
-                changeFavoriteIcon("soft");
-                $('#oggleHeaderTitle').html("OggleSoftcore 2");
-                // bottom row
-                $('#badgesContainer').append(bannerLink("back to OggleBooble", folderId));
-                $('#badgesContainer').append(bannerLink("OgglePorn", folderId));
-                $('#badgesContainer').append(addPgLinkButton(440, "porn actresses archive"));
-                setHeaderMenu("soft");
-                break;
-            }
-            case "porn": {
-                changeFavoriteIcon("porn");
-                //console.log("changeFavoriteIcon porn 2")
-                $('#oggleHeader').switchClass('boobsHeader', 'pornHeader');
-                $('#divSiteLogo').attr("src", "/img/csLips02.png");
-                $('#oggleHeaderTitle').html("OgglePorn ");
-                $('#topRowRightContainer').html(addRankerButton("000000010", "porn ranker"));
-                // bottom row
-                $('#badgesContainer').append(bannerLink("back to OggleBooble", folderId));
-                $('#badgesContainer').append(addPgLinkButton(440, "porn actresses archive"));
-                $('#badgesContainer').append(addPgLinkButton(5233, "softcore"));
-                setHeaderMenu("porn");
-                break;
-            }
-            case "sluts":
-                changeFavoriteIcon("porn");
-                $('#oggleHeader').switchClass('boobsHeader', 'pornHeader');
-                $('#divSiteLogo').attr("src", "/img/csLips02.png");
-                $('#oggleHeaderTitle').html("PornStar Archive ");
-                $('#topRowRightContainer').html(addRankerButton("000000001", "porn star ranker"));
-                // bottom row
-                $('#badgesContainer').append(bannerLink("back to OggleBooble", folderId));
-                $('#badgesContainer').append(bannerLink("back to porn", folderId));
-                setHeaderMenu("sluts");
-                break;
-            default:
-                logError("SWT", 1117705, "switch case: " + rootFolder, "reset OggleHeader");
-                window.location.href = "Index.html";
-        }
-    }
 }

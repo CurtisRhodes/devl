@@ -548,6 +548,7 @@ footer {
     background: var(--oggleDialogBackgroundColor);
     border: solid 2px var(--borderColor);
     padding: 8px 10px;
+    color: black;
     z-index: 520;
 }
     .ogContextMenu div {

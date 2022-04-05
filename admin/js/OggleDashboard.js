@@ -57,6 +57,7 @@ function showCreateNewFolderDialog() {
     $('#dashboardDialogContents').html(`
         <div><span>parent</span><input id='txtCreateFolderParent' class='txtLinkPath inlineInput roundedInput' readonly='readonly'></input></div>\n
         <div><span>title</span><input id='txtNewFolderTitle' class='inlineInput roundedInput'></input></div>\n
+        <div><span>folder name</span><input id='txtNewFolderName' class='inlineInput roundedInput'></input></div>\n
         <div><span>type</span><select id='ddNewFolderType' class='inlineInput roundedInput'>\n
                <option value='singleChild'>singleChild</option>\n
                <option value='singleModel'>singleModel</option>\n
@@ -92,16 +93,19 @@ function showCreateNewFolderDialog() {
 function performAutoCreateNewFolders() {
     let startNumber = Number($('#txtNumStartAutoAt').val());
     let numNewFolder = startNumber + Number($('#txtNumAutoCreate').val());
-    //alert("auto create " + numNewFolder + " new folders");
-    let newFolderName = $('#txtNewFolderTitle').val();
+    let newFolderTitle = $('#txtNewFolderTitle').val();
+    let newFolderName = $('#txtNewFolderName').val();
+    if (newFolderName == "")
+        newFolderName = newFolderTitle;
+
     let loopCounter = startNumber;
     $('#dataifyInfo').html("creating new folder");
     let mySlowLoop = setInterval(function () {
-        let folderName = newFolderName + "00" + loopCounter;
+        let folderName = newFolderName + "_00" + loopCounter;
         if (loopCounter > 9)
-            folderName = newFolderName + "0" + loopCounter;
+            folderName = newFolderName + "_0" + loopCounter;
         if (loopCounter > 99)
-            folderName = newFolderName + loopCounter;
+            folderName = newFolderName + "_" + loopCounter;
 
         $('#dataifyInfo').show().html("creating new folders");
         performCreateNewFolder(folderName, loopCounter++);
@@ -116,7 +120,11 @@ function performAutoCreateNewFolders() {
 }
 
 function callPerformCreateNewFolder() {
+
     performCreateNewFolder($('#txtNewFolderTitle').val(), $('#txtSortOrder').val());
+
+    $('#dataifyInfo').html("ok. New folder created");
+
 }
 
 function performCreateNewFolder(newFolderName, sortOrder) {

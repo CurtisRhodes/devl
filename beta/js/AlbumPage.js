@@ -50,7 +50,7 @@ function loadImageResults(vLink) {
     else {
         $('#imageContainer').append(`<div id='` + vLink.LinkId + `' class='intividualImageContainer'>
             <img class='thumbImage' src='` + imgSrc + `' onerror='imageError(` + vLink.FolderId + `,"` + vLink.LinkId + `","album")'
-            oncontextmenu='oggleContextMenu("image",` + vLink.LinkId + `,` + vLink.FolderId + `,"'` + imgSrc + `")'
+            oncontextmenu='oggleContextMenu("image","` + vLink.LinkId + `",` + vLink.FolderId + `,"` + imgSrc + `")'
             onclick='viewImage("` + imgSrc + `","` + vLink.LinkId + `")'/></div>`);
         if (vLink.FolderId !== vLink.SrcId) {
             $('#' + vLink.LinkId + '').append(`<div class='knownModelIndicator'>

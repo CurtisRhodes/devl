@@ -5,33 +5,42 @@ function buildDirTree(startNode) {
     try {
         let startTime = Date.now();
         $('#dashBoardLoadingGif').show();
-        $.getJSON('php/yagdrasselFetchAll.php?query=select * from VwDirTree', function (data) {
-            $('#dashBoardLoadingGif').hide();
-            let delta = (Date.now() - startTime) / 1000;
-            console.log("loading vwLinks took: " + delta.toFixed(3));
-            $('#floatingDialogBox').fadeOut();
+        $.ajax({
+            cache: false,
+            url: 'php/yagdrasselFetchAll.php?query=select * from VwDirTree',
+            success(data) {
+                $('#dashBoardLoadingGif').hide();
+                let delta = (Date.now() - startTime) / 1000;
+                console.log("loading vwLinks took: " + delta.toFixed(3));
+                $('#floatingDialogBox').fadeOut();
 
-            dirTreeArray = data;
+                dirTreeArray = JSON.parse(data);
 
-            startTime = Date.now();
-            let rootNode = dirTreeArray.filter(node => node.Id == startNode)[0];
-            let randomId = create_UUID();
+                startTime = Date.now();
+                let rootNode = dirTreeArray.filter(node => node.Id == startNode)[0];
+                let randomId = create_UUID();
 
-            largetxtstring = dirTreeNode(rootNode, randomId);
-            largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer'>";
-            $('#dirTreeContainer').html(dirTreeArray[0].treeNodeTxt);
+                largetxtstring = dirTreeNode(rootNode, randomId);
+                largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer'>";
+                $('#dirTreeContainer').html(dirTreeArray[0].treeNodeTxt);
 
-            $('#txtCurrentActiveFolder').val(rootNode.FolderPath);
-            $('#txtActiveFolderId').val(rootNode.Id);
+                $('#txtCurrentActiveFolder').val(rootNode.FolderPath);
+                $('#txtActiveFolderId').val(rootNode.Id);
 
-            traverseDirTree(rootNode);
+                traverseDirTree(rootNode);
 
-            largetxtstring += "</div>";
-            $('#dirTreeContainer').html(largetxtstring);
+                largetxtstring += "</div>";
+                $('#dirTreeContainer').html(largetxtstring);
 
-            delta = (Date.now() - startTime) / 1000;
-            console.log("loading html tree took: " + delta.toFixed(3));
+                delta = (Date.now() - startTime) / 1000;
+                console.log("loading html tree took: " + delta.toFixed(3));
 
+            },
+            error: function (jqXHR) {
+                $('#dashBoardLoadingGif').hide();
+                let errMsg = getXHRErrorDetails(jqXHR);
+                logOggleError("AJX", $('#txtActiveFolderId').val(), errMsg, "create New Folder");
+            }
         });
     } catch (e) {
         logOggleError("CAT", -47700, e, "build dDirTree");
