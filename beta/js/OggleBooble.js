@@ -449,7 +449,6 @@ function addPgLinkButton(folderId, labelText) {
     }
 }
 /*-- context menu --------------------------------------*/{
-    //oggleContextMenu(\"subfolder\",\"" + linkId + "\"," + folderId + ",\"" + imgSrc + "\")'\n" +
     let pmenuType, plinkId, pfolderId, pimgSrc;
     function oggleContextMenu(menuType, linkId, folderId, imgSrc) {
         pmenuType = menuType;
@@ -481,12 +480,8 @@ function addPgLinkButton(folderId, labelText) {
         }
         if (pmenuType === "Slideshow") {
             $('#ctxssClose').show();
-            if (imgData.FolderType == "multiModel") {
-                if (imgData.FolderId == pfolderId) {
-                    $('#ctxTxtModelName').html("unknown model");
-                }
-            }
         }
+
         $("#contextMenuContainer").mousemove(function (event) {
             //$("#hdrBtmRowSec3").html('');
             let ctxLeft = $("#contextMenuContainer").offset().left - 22;
@@ -516,15 +511,12 @@ function addPgLinkButton(folderId, labelText) {
             let getSingleImageDetailsStart = Date.now();
 
             $('.ctxItem').hide();
-            $('#ctxTxtModelName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='https://common.ogglefiles.com/img/loader.gif'/>");
+            $('#ctxImageName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='https://common.ogglefiles.com/img/loader.gif'/>");
             $('#ctxComment').show();
             $('#ctxExplode').show();
             $('#ctxImageInfo').show();
-
             // beta mode
             $('.adminLink').show();
-
-
 
             sql = "select f.FolderName, p.FolderName as ParentFolderName, f.FolderPath, f.FolderType, i.* from ImageFile i join CategoryFolder f on i.FolderId = f.Id " +
                   " join CategoryFolder p on f.Parent = p.Id where i.Id='" + plinkId + "'";
@@ -534,16 +526,18 @@ function addPgLinkButton(folderId, labelText) {
                 success: function (data) {
                     let imgData = JSON.parse(data);
                     if (imgData == "false") {
-                        $('#ctxTxtModelName').html("empty data");
+                        $('#ctxImageName').html("empty data");
                         logOggleError("AJX", pfolderId, "empty data", "get singleImage details");
                     }
                     else {
 
-                        if (imgData.FolderType == "singleChild")
-                            $('#ctxTxtModelName').html(imgData.ParentFolderName);
-                        else {
-                            $('#ctxTxtModelName').html(imgData.FolderName);
+                        $('#ctxImageName').html(imgData.FolderName);
+                        if (imgData.FolderType == "multiModel") {
+                            if (imgData.FolderId == pfolderId) {
+                                $('#ctxImageName').html("unknown model");
+                            }
                         }
+
                         // imgInfo
                         $('#imageInfoFileName').html(imgData.FileName);
                         $('#imageInfoFolderPath').html(imgData.FolderPath);
@@ -567,11 +561,11 @@ function addPgLinkButton(folderId, labelText) {
 
                                     $.each(categoryImageLinks, function (idx, categoryImageLink) {
                                         if (categoryImageLink.Id == imgData.FolderId) {
-                                            $('#linkInfoContainer').append("<div style='color:red' onclick='window.open('https://Ogglebooble.com/album.html?folder="
+                                            $('#showLinksContainer').append("<div style='color:red' onclick='window.open('https://Ogglebooble.com/album.html?folder="
                                                 + categoryImageLink.Id + "')>" + categoryImageLink.FileName + "</div");
                                         }
                                         else
-                                        $('#linkInfoContainer').append("<div onclick='window.open('https://Ogglebooble.com/album.html?folder="
+                                            $('#showLinksContainer').append("<div onclick='window.open('https://Ogglebooble.com/album.html?folder="
                                             + categoryImageLink.Id + "')>" + categoryImageLink.FileName + "</div");
                                     });
                                 }
@@ -588,45 +582,38 @@ function addPgLinkButton(folderId, labelText) {
                     }
                 },
                 error: function (jqXHR) {
-                    $('#ctxTxtModelName').html(getXHRErrorDetails(jqXHR));
+                    $('#ctxImageName').html(getXHRErrorDetails(jqXHR));
                     logOggleError("XHR", pfolderId, getXHRErrorDetails(jqXHR))
                 }
             });
         } catch (e) {
-            $('#ctxTxtModelName').html(e);
+            $('#ctxImageName').html(e);
             logOggleError("CAT", folderId, e, "get singleImage details")
         }
     }
 
     function ctxMenuFolderInfo(folderId) {
         try {
+
             $('.ctxItem').hide();
-            $('#ctxTxtModelName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='https://common.ogglefiles.com/img/loader.gif'/>");
-            //$('#ctxSeeMore').html("more like her").show();
-            //if (isInRole("admin", "context menu"))
-            $('.adminLink').show();
+            $('#ctxFolderName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='https://common.ogglefiles.com/img/loader.gif'/>");
             $('#ctxComment').show();
-            $('#ctxExplode').show();
-            $('#ctxImageInfo').show();
+            $('#ctxSeeMore').html("more like her").show();
+            $('#ctxDownLoad').show();
+            $('#ctxFolderInfo').show();
 
-            // beta mode
-            $('.adminLink').show();
-
-            let sql = "select * from CategoryFolder f left join FolderDetail d on d.FolderId = f.Id where f.Id=" + folderId;
-
+            //let sql = "select * from CategoryFolder f left join FolderDetail d on d.FolderId = f.Id where f.Id=" + folderId;
             $.ajax({
                 type: "GET",
-                url: "php/yagdrasselFetch.php?query=" + sql,
+                url: "php/yagdrasselFetch.php?query=select * from CategoryFolder where Id=" + folderId,
                 success: function (data) {
                     let folderData = JSON.parse(data);
                     if (folderData == "false") {
-                        $('#ctxTxtModelName').html("empty data");
+                        $('#ctxFolderName').html("empty data");
                         logOggleError("AJX", pfolderId, "empty data", "get singleImage details");
                     }
                     else {
-                        $('#ctxTxtModelName').html(folderData.FolderName);
-                        //$('#ctxComment').show();
-
+                        $('#ctxFolderName').html(folderData.FolderName);
                         // folderInfo
                         $('#folderInfoPath').html(folderData.FolderPath);
                         $('#folderInfoRoot').html(folderData.Rootfolder);
@@ -636,52 +623,59 @@ function addPgLinkButton(folderId, labelText) {
                         $('#folderInfoTotalSubDirs').html(folderData.TotalChildFolders).toLocaleString();
                         $('#folderInfoTotalChildFiles').html(folderData.TotalChildFiles).toLocaleString();
                     }
+                    // beta mode
+                    $('.adminLink').show();
                 },
                 error: function (jqXHR) {
-                    $('#ctxTxtModelName').html("");
+                    $('#ctxFolderName').html("error");
                     logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "get singleImage details");
                 }
             });
         } catch (e) {
-            $('#ctxTxtModelName').html("");
+            $('#ctxFolderName').html("catch error");
             logOggleError("CAT", folderId, e, "get folder details")
         }
     }
 
     function oggleContextMenuHtml() {
-        return `<div id='ctxTxtModelName' class='ctxItem' onclick='oggleCtxMenuAction(\"showDialog\")'>model name</div>
+         //   case "Image tags":
+         //   case "folder tags":
+        return `
+        <div id='ctxImageName'  class='ctxItem' onclick='oggleCtxMenuAction(\"imageDialog\")'>model name</div>
+        <div id='ctxFolderName' class='ctxItem' onclick='oggleCtxMenuAction(\"folderDialog\")'>folder name</div>
         <div id='ctxSeeMore'    class='ctxItem' onclick='oggleCtxMenuAction(\"see more\")'>see more of her</div>
         <div id='ctxNewTab'     class='ctxItem' onclick='oggleCtxMenuAction(\"openInNewTab\")'>Open in new tab</div>
         <div id='ctxFantasy'    class='ctxItem' onclick='oggleCtxMenuAction(\"fantasy\")'>Write a fantasy about this image</div>
         <div id='ctxComment'    class='ctxItem' onclick='oggleCtxMenuAction(\"comment\")'>Comment</div>
-        <div id='ctxRank'    class='ctxItem' onclick='oggleCtxMenuAction(\"rank\")'>rank this image</div>
+        <div id='ctxRank'       class='ctxItem' onclick='oggleCtxMenuAction(\"rank\")'>rank this image</div>
         <div id='ctxExplode'    class='ctxItem' onclick='oggleCtxMenuAction(\"explode\")'>full screen</div>
         <div id='ctxSaveAs'     class='ctxItem' onclick='oggleCtxMenuAction(\"saveAs\")'>save as</div>
         <div id='ctxssClose'    class='ctxItem' onclick='oggleCtxMenuAction(\"closeSlideshow\")'>close slideshow</div>
         <div id='ctxLinks'      class='ctxItem' onclick='oggleCtxMenuAction(\"showLinks\")'>Show Links</div>
-        <div id='linkInfoContainer' class='contextMenuInnerContainer'></div>
+        <div id='showLinksContainer'     class='contextMenuInnerContainer'></div>
         <div id='ctxDownLoad'   class='ctxItem' onclick='oggleCtxMenuAction(\"download\")'>download folder</div>
-        <div id='ctxImageInfo'  class='ctxItem' onclick='oggleCtxMenuAction(\"info\")'>Show Image info</div>
+        <div id='ctxImageInfo'  class='ctxItem' onclick='oggleCtxMenuAction(\"imageInfo\")'>Show Image Info</div>
+        <div id='ctxFolderInfo' class='ctxItem' onclick='oggleCtxMenuAction(\"folderInfo\")'>Show Folder Info</div>
         <div id='imageInfoContainer' class='contextMenuInnerContainer'>
-            <div><span class='ctxItem'>file name</span><span id='imageInfoFileName' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>folder path</span><span id='imageInfoFolderPath' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>link id</span><input id='imageInfoLinkId'></input></div>
+            <div><label>file name</label>  <span id='imageInfoFileName' class='ctxInfoValue'></span></div>
+            <div><label>folder path</label><span id='imageInfoFolderPath' class='ctxInfoValue'></span></div>
+            <div><label>link id</label>    <input id='imageInfoLinkId'></input></div>
             <div>
-                <span class='ctxItem'>height</span><span id='imageInfoHeight' class='ctxInfoValue'></span>" +
-                <span class='ctxItem'>width</span><span id='imageInfoWidth' class='ctxInfoValue'></span>" +
-                <span class='ctxItem'>size</span><span id='imageInfoSize' class='ctxInfoValue'></span>
+                <label>height</label><span id='imageInfoHeight' class='ctxInfoValue'></span>" +
+                <label>width</label> <span id='imageInfoWidth'  class='ctxInfoValue'></span>" +
+                <label>size</label>  <span id='imageInfoSize'   class='ctxInfoValue'></span>
             </div>
-            <div><span class='ctxItem'>last modified</span><span id='imageInfoLastModified' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>external link</span><span id='imageInfoExternalLink' class='ctxInfoValue'></span></div>
+            <div><label>last modified</label><span id='imageInfoLastModified' class='ctxInfoValue'></span></div>
+            <div><label>external link</label><span id='imageInfoExternalLink' class='ctxInfoValue'></span></div>
         </div>
         <div id='folderInfoContainer' class='contextMenuInnerContainer'>
-            <div><span class='ctxItem'>folder path</span><span id='folderInfoPath' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>root folder</span><span id='folderInfoRoot' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>folder type</span><span id='folderInfoType' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>files</span><span id='folderInfoFileCount' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>subfolders</span><span id='folderInfoSubDirs' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>total subfolders</span><span id='folderInfoTotalSubDirs' class='ctxInfoValue'></span></div>
-            <div><span class='ctxItem'>total child files</span><span id='folderInfoTotalChildFiles' class='ctxInfoValue'></span></div>
+            <div><label>folder path</label>      <span id='folderInfoPath' class='ctxInfoValue'></span></div>
+            <div><label>root folder</label>      <span id='folderInfoRoot' class='ctxInfoValue'></span></div>
+            <div><label>folder type</label>      <span id='folderInfoType' class='ctxInfoValue'></span></div>
+            <div><label>files</label>            <span id='folderInfoFileCount' class='ctxInfoValue'></span></div>
+            <div><label>subfolders</label>       <span id='folderInfoSubDirs' class='ctxInfoValue'></span></div>
+            <div><label>total subDirs</label>    <span id='folderInfoTotalSubDirs' class='ctxInfoValue'></span></div>
+            <div><label>total child files</label><span id='folderInfoTotalChildFiles' class='ctxInfoValue'></span></div>
         </div>
         <div id='ctxShowAdmin' class='adminLink' onclick='$(\"#linkAdminContainer\").toggle()'>Admin</div>
             <div id='linkAdminContainer' class='contextMenuInnerContainer'>
@@ -707,19 +701,11 @@ function addPgLinkButton(folderId, labelText) {
                 else
                     alert("You must be logged in to download an album");
                 break;
-            case "showDialog": {
-                if ($('#ctxTxtModelName').html() === "unknown model") {
-                    showUnknownModelDialog(pmenuType, pimgSrc, pLinkId, pfolderId);
-                }
-                else
-                    //if ((dirTreeArray[0].FolderType == "multiFolder") || (dirTreeArray[0].FolderType == "multiModel")) {
-                    if (pmenuType === "Folder")
-                        showFolderInfoDialog(pfolderId);
-                    else
-                        showFileDetailsDialog(pfolderId);
+
+            case "imageDialog": showFileDetailsDialog(pfolderId); break;
+            case "folderDialog": showFolderInfoDialog(pfolderId); break;
                 $("#contextMenuContainer").fadeOut();
                 break;
-            }
             case "closeSlideshow":
                 closeViewer("context menu");
                 break;
@@ -739,7 +725,6 @@ function addPgLinkButton(folderId, labelText) {
                 break;
             }
             case "explode": {
-                //explodeImage();
                 window.open(pimgSrc);
                 break;
             }
@@ -747,15 +732,9 @@ function addPgLinkButton(folderId, labelText) {
             case "folder tags":
                 openMetaTagDialog(pfolderId, plinkId);
                 break;
-            case "info":
-                if (pmenuType === "Folder")
-                    $('#folderInfoContainer').toggle();
-                else
-                    $('#imageInfoContainer').toggle();
-                break;
-            case "showLinks":
-                $('#linkInfoContainer').toggle();
-                break;
+            case "folderInfo": $('#folderInfoContainer').toggle(); break;
+            case "imageInfo": $('#imageInfoContainer').toggle(); break;
+            case "showLinks": $('#showLinksContainer').toggle(); break;
             case "archive":
                 showArchiveLinkDialog(plinkId, pfolderId, pimgSrc, pmenuType);
                 break;
@@ -1226,26 +1205,35 @@ function addPgLinkButton(folderId, labelText) {
     function showFolderInfoDialog(folderId) {
         try {  // GetQuickFolderInfo
             if (typeof pause === 'function') pause();
-            $("#centeredDialogTitle").html("loading");
+            //$("#centeredDialogTitle").html("loading");
             $("#centeredDialogContents").html(`
                 <div>
                     <div><input id='txtFolderName'></div>
                     <div id='summernoteContainer'></div>
                     <div id='folderInfoDialogFooter' class='folderDialogFooter'>
                         <div id='btnCatDlgEdit' class='folderCategoryDialogButton' onclick='editFolderDialog()'>Edit</div>
-                        <div id='btnCatDlgDone' class='folderCategoryDialogButton' onclick='doneEditing()'>Done</div>
-                        <div id='btnCatDlgLinks' class='folderCategoryDialogButton' onclick='showTrackbackDialog()'>Trackback Links</div>
+                        <div id='btnCatDlgDone' class='folderCategoryDialogButton' onclick='doneEditing()'>Cancel</div>
                     </div>
                 </div>`);
 
+            $("#btnCatDlgDone").hide()
+            $("#btnCatDlgEdit").on("click", function () {
+                if ($("#btnCatDlgEdit").html() == "Save") {
 
+                }
+                else {
+                    $("#btnCatDlgEdit").html("Save");
+                    $("#btnCatDlgDone").show()
+                }
+            });
+
+            editFolderDialog
 
             //$(".note-editable").css('font-size', '16px');
             //$('#centeredDialogContainer').css("top", 111);
             //$('#centeredDialogContainer').css("left", -350);
-            //$("#btnCatDlgDone").hide();
-            //$("#btnCatDlgLinks").hide();
-            //$('#summernoteContainer').summernote({ toolbar: "none" });
+            //$("#btnCatDlgEdit").hide();
+            $('#summernoteContainer').summernote({ toolbar: "none" });
             //$('#summernoteContainer').summernote('disable');
             $(".note-editable").css({ 'font-size': '16px', 'min-height': '186px' });
 
@@ -1268,42 +1256,12 @@ function addPgLinkButton(folderId, labelText) {
                     $('#albumPageLoadingGif').hide();
                     if (folderInfo.Success === "ok") {
                         $('#txtFolderName').val(folderInfo.FolderName);
-                        $('#txtHomeCountry').val(folderInfo.FolderName);
-                        $('#txtHometown').val(folderInfo.FolderName);
-                        $('#txtBorn').val(folderInfo.FolderName);
-                        $('#txtFolderName').val(folderInfo.FolderName);
-
-                        //objFolderInfo.FolderName = folderInfo.FolderName;
-                        //objFolderInfo.FolderName = $('#txtFolderName').val();
-                        //$('#modelInfoDialog').dialog('option', 'title', objFolderInfo.FolderName);
-                        //objFolderInfo.Born = $('#txtBorn').val();
-                        //objFolderInfo.Nationality = $('#txtNationality').val();
-                        //objFolderInfo.Measurements = $('#txtMeasurements').val();
-                        //objFolderInfo.Boobs = $('#selBoobs').val();
-                        //objFolderInfo.CommentText = $('#modelInfoDialogComment').summernote('code');
-                        //objFolderInfo.ExternalLinks = $('#externalLinks').summernote('code');
-                        //objFolderInfo.LinkStatus = $('#txtStatus').val();
-
-                        //$('#txtEdtFolderName').val(folderInfo.FolderName);
-                        //$("#centeredDialogTitle").html(folderInfo.FolderName);
-                        //$("#summernoteContainer").summernote("code", folderInfo.FolderComments);
-
-                        //$('#aboveImageContainerMessageArea').html("aFolderType: " + rtnFolderInfo.FolderType);
-                        //multiModel	488
-                        //multiFolder	394
-                        switch (folderInfo.FolderType) {
-                            case "singleModel":
-                            case "singleParent":
-                                showFullModelDetails(folderId);
-                                break;
-                            //case "singleChild":
-                            //    showFullModelDetails(folderInfo.Parent);
-                            //    break;
-                        }
 
                         //logEvent("SMD", folderId, calledFrom, "folder type: " + folderInfo.FolderType);
                     }
-                    else logOggleError("AJX", folderId, folderInfo.Success, "GetQuickFolderInfo");
+                    else {
+                        logOggleError("AJX", folderId, folderInfo.Success, "GetQuickFolderInfo");
+                    }
                 },
                 error: function (jqXHR) {
                     let errMsg = getXHRErrorDetails(jqXHR);

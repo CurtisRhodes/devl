@@ -74,12 +74,12 @@ function getSubFolders(folderId) {
                     if (!isNullorUndefined(obj.FolderImage))
                         imgSrc = settingsImgRepo + "/" + obj.FolderImage.replace(/'/g, '%27');
                     $('#imageContainer').append(`<div class='subFolderContainer'
-                        oncontextmenu='oggleContextMenu("subfolder","","` + obj.FolderId + `","` + imgSrc + `")'
+                        oncontextmenu='oggleContextMenu("subfolder","","` + obj.Id + `","` + imgSrc + `")'
                         onclick='folderClick(` + obj.Id + `,` + obj.IsStepChild + `)'>
                         <img id='` + randomId + `' class='folderImage' alt='' src='` + imgSrc + `' onerror=
                             'imageError(` + folderId + `,"` + obj.linkId + `","` + imgSrc + `","subFolder")'/>
-                        <div class='defaultSubFolderImage'>` + obj.FolderName + `"</div>
-                        <span Id='fc` + obj.FolderId + `'>` + folderCounts + `"</span></div>`);
+                        <div class='defaultSubFolderImage'>` + obj.FolderName + `</div>
+                        <span Id='fc` + obj.FolderId + `'>` + folderCounts + `</span></div>`);
                 });
                 resizeAlbumPage();
                 //resizeAlbumPage();
