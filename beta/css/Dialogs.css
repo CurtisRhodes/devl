@@ -10,3 +10,19 @@
     cursor: pointer;
 }
 
+.fileDetailsDialogImage {
+    height: 80px;
+}
+
+.fileDialogOuterContainer {
+    border: solid thick red;
+}
+
+.fileDialogTopSection {
+    border: solid thin blue;
+    display: flex;
+}
+    .fileDialogTopSection div {
+        display: inline-block;
+        border: solid thin #00ff21;
+    }

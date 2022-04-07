@@ -331,9 +331,9 @@ function addPgLinkButton(folderId, labelText) {
 
         clearSearch();
 
-        window.open("https://ogglefiles.com/beta/album.html?folder=" + selectedFolderId, "_blank");  // open in new tab
+        window.open("https://ogglebooble.com/album.html?folder=" + selectedFolderId, "_blank");  // open in new tab
 
-        var parentOpener = window.opener; window.opener = null; window.open("https://ogglefiles.com/beta/album.html?folder=" + selectedFolderId, "_blank"); window.opener = parentOpener;
+        var parentOpener = window.opener; window.opener = null; window.open("https://ogglebooble.com/album.html?folder=" + selectedFolderId, "_blank"); window.opener = parentOpener;
 
     }
 }
@@ -1079,70 +1079,67 @@ function addPgLinkButton(folderId, labelText) {
 }
 /*-- dialog windows --------------------------------------*/{
     function showFileDetailsDialog(folderId) {
-        try {  // GetQuickFolderInfo
+        try {
             if (typeof pause === 'function') pause();
-
+            $('#albumPageLoadingGif').show();
             $("#centeredDialogTitle").html("loading");
-
             $("#centeredDialogContents").html(`
-            <div class='flexbox'>
-                <div class='inline'>
-                    <table>
-                        <thead><tr><th></th></tr></thead>
-                        <tbody>
-                        <tr><td>name        </td><td><input id='txtFolderName'></input></td></tr>
-                        <tr><td>home country</td><td><input id='txtHomeCountry'></input></td></tr>
-                        <tr><td>hometown    </td><td><input id='txtHometown'></input></td></tr>
-                        <tr><td>nationality </td><td><input id='txtNationality'></input></td></tr>
-                        <tr><td>born        </td><td><input id='txtBorn'></input></td></tr>
-                        <tr><td>boobs       </td><td><select id='selBoobs' class='boobDropDown'>
-                                    <option value=0>Real</option><option value=1>Fake</option></td></tr>
-                        <tr><td>figure      </td><td><input id='txtMeasurements'></input></td></tr>
-                        <tbody>
-                    </table>
+            <div class='fileDialogOuterContainer'>
+                <div class='fileDialogTopSection'>
+                    <div id='fileDetailsSection' class='inline'>
+                        <table>
+                            <tr><td>name        </td><td><input id='txtFolderName'></input></td></tr>
+                            <tr><td>home country</td><td><input id='txtHomeCountry'></input></td></tr>
+                            <tr><td>hometown    </td><td><input id='txtHometown'></input></td></tr>
+                            <tr><td>nationality </td><td><input id='txtNationality'></input></td></tr>
+                            <tr><td>born        </td><td><input id='txtBorn'></input></td></tr>
+                            <tr><td>boobs       </td><td><select id='selBoobs' class='boobDropDown'>
+                                        <option value=0>Real</option><option value=1>Fake</option></td></tr>
+                            <tr><td>figure      </td><td><input id='txtMeasurements'></input></td></tr>
+                        </table>
+                    </div>
+                    <div id='fileImageSection' class='inline'>
+                        <img id='modelDialogThumbNailImage' src='https://common.ogglefiles.com/img/redballon.png' class='fileDetailsDialogImage' />
+                    </div>
                 </div>
-                <div class='inline'>
-                    <img id='modelDialogThumbNailImage' src='https://common.ogglefiles.com/img/redballon.png' class='folderDetailsDialogImage' />
+                <div class='fileDialogBotomSection'>
+                    <div id='summernoteFileContainer'></div>
                 </div>
-            </div>
-            <div id='summernoteContainer'></div>
-            <div id='folderInfoDialogFooter' class='folderDialogFooter'>
-                <div id='btnCatDlgEdit' class='folderCategoryDialogButton' onclick='editFolderDialog()'>Edit</div>
-                <div id='btnCatDlgDone' class='folderCategoryDialogButton' onclick='doneEditing()'>Done</div>
-                <div id='btnCatDlgLinks' class='folderCategoryDialogButton' onclick='showTrackbackDialog()'>Trackback Links</div>
+                <div id='folderInfoDialogFooter' class='folderDialogFooter'>
+                    <div id='btnFileDlgEdit'  class='folderCategoryDialogButton' onclick='editFolderDialog()'>Edit</div>
+                    <div id='btnFileDlgDone'  class='folderCategoryDialogButton' onclick='doneEditing()'>Done</div>
+                    <div id='btnTrackBkLinks' class='folderCategoryDialogButton' onclick='showTrackbackDialog()'>Trackback Links</div>
+                </div>
             </div>
             <div id='trackBackDialog' class='floatingDialogBox'></div>`);
 
-
-            //$(".note-editable").css('font-size', '16px');
-            //$('#centeredDialogContainer').css("top", 111);
-            //$('#centeredDialogContainer').css("left", -350);
-            //$("#btnCatDlgDone").hide();
-            //$("#btnCatDlgLinks").hide();
-            $('#summernoteContainer').summernote({ toolbar: "none" });
+            $('#summernoteFileContainer').summernote({ toolbar: [['codeview']] });
             //$('#summernoteContainer').summernote('disable');
             $(".note-editable").css({ 'font-size': '16px', 'min-height': '186px' });
-
-            //if (localStorage["IsLoggedIn"] == "false") {
-            //    showMyAlert("you must be logged in to edit folder comments");
-            //    $("#btnCatDlgEdit").hide();
-            //    $("#btnCatDlgLinks").hide();
-            //}
-
             $('#centeredDialogContainer').css({ "top": 33 + $(window).scrollTop() });
             $('#centeredDialogContainer').draggable().fadeIn();
-            $('#centeredDialogContainer').mouseleave(function () {
-                if (allowDialogClose)
-                    $('#centeredDialogContainer').fadeOut();
-            });
+
+            //<div id='btnFileDlgEdit'  class='folderCategoryDialogButton' onclick='editFolderDialog()'>Edit</div>
+            //<div id='btnFileDlgDone'  class='folderCategoryDialogButton' onclick='doneEditing()'>Done</div>
+            //<div id='btnTrackBkLinks' class='folderCategoryDialogButton' onclick='showTrackbackDialog()'>Trackback Links</div>
+
+
+
+
 
             let sql = "select * from CategoryFolder f " +
                 " left join FolderDetail d on f.Id = d.FolderId where FolderId=" + folderId;
             $.ajax({
                 url: "php/yagdrasselFetch.php?query=" + sql,
-                success: function (folderInfo) {
+                success: function (data) {
                     $('#albumPageLoadingGif').hide();
-                    if (folderInfo.Success === "ok") {
+                    if (data == false) {
+                        $("#centeredDialogTitle").html("lookup fail");
+                        logOggleError("AJX", folderId, "lookup fail", "file details dialog");
+                    }
+                    else {                     
+                        folderInfo
+                        $("#centeredDialogTitle").html("lookup fail");
                         $('#txtFolderName').val(folderInfo.FolderName);
                         $('#txtHomeCountry').val(folderInfo.FolderName);
                         $('#txtHometown').val(folderInfo.FolderName);
@@ -1150,41 +1147,31 @@ function addPgLinkButton(folderId, labelText) {
                         $('#txtFolderName').val(folderInfo.FolderName);
                         $("#centeredDialogTitle").html(folderInfo.FolderName);
 
-                        //objFolderInfo.Nationality = $('#txtNationality').val();
-                        //objFolderInfo.Measurements = $('#txtMeasurements').val();
-                        //objFolderInfo.Boobs = $('#selBoobs').val();
-                        //objFolderInfo.CommentText = $('#modelInfoDialogComment').summernote('code');
-                        //objFolderInfo.ExternalLinks = $('#externalLinks').summernote('code');
-                        //objFolderInfo.LinkStatus = $('#txtStatus').val();
-
-                        //$('#txtEdtFolderName').val(folderInfo.FolderName);
-                        //$("#centeredDialogTitle").html(folderInfo.FolderName);
-                        //$("#summernoteContainer").summernote("code", folderInfo.FolderComments);
-
-                        //$('#aboveImageContainerMessageArea').html("aFolderType: " + rtnFolderInfo.FolderType);
-                        //multiModel	488
-                        //multiFolder	394
-                        switch (folderInfo.FolderType) {
-                            case "singleModel":
-                            case "singleParent":
-                                showFullModelDetails(folderId);
-                                break;
-                            //case "singleChild":
-                            //    showFullModelDetails(folderInfo.Parent);
-                            //    break;
-                        }
-
                         //logEvent("SMD", folderId, calledFrom, "folder type: " + folderInfo.FolderType);
                     }
-                    else logOggleError("AJX", folderId, folderInfo.Success, "GetQuickFolderInfo");
                 },
                 error: function (jqXHR) {
+                    $('#albumPageLoadingGif').hide();
                     logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "show file details dialog");
+                    $("#centeredDialogTitle").html("php error: " + getXHRErrorDetails(jqXHR));
                 }
+            });
+
+
+            function centeringDialogClose() { // overide default
+                if ($("#btnFolderDlgEdit").html() == "Edit") {
+                    centeringDialogClose();
+                }
+            }
+
+            $('#centeredDialogContainer').mouseleave(function () {
+                if (allowDialogClose)
+                    $('#centeredDialogContainer').fadeOut();
             });
         }
         catch (e) {
             $('#albumPageLoadingGif').hide();
+            $("#centeredDialogTitle").html("program error: " + e);
             logOggleError("CAT", folderId, e, "show file details dialog");
         }
     }
@@ -1195,76 +1182,93 @@ function addPgLinkButton(folderId, labelText) {
             if (typeof pause === 'function') pause();
             $("#centeredDialogTitle").html("loading");
             $("#centeredDialogContents").html(`
-                <div>
-                    <div><input id='txtFolderName'></div>
-                    <div id='summernoteContainer'></div>
-                    <div id='folderInfoDialogFooter' class='folderDialogFooter'>
-                        <div id='btnCatDlgEdit' class='folderCategoryDialogButton' onclick='editFolderDialog()'>Edit</div>
-                        <div id='btnCatDlgDone' class='folderCategoryDialogButton' onclick='doneEditing()'>Cancel</div>
-                    </div>
+                <div id='folderNameMessage'></div>
+                <div><input id='txtFolderName'></div>
+                <div id='summernoteFolderContainer'></div>
+                <div id='folderInfoDialogFooter' class='folderDialogFooter'>
+                    <div id='btnFolderDlgEdit' class='folderCategoryDialogButton'>Edit</div>
+                    <div id='btnFolderDlgDone' class='folderCategoryDialogButton'>Cancel</div   
                 </div>`);
 
-            $('#summernoteContainer').summernote();
+            $('#summernoteFolderContainer').summernote({ toolbar: [['codeview']] });
+            //$(".note-btn.btn-codeview").on("click", codeViewClick);
+
+            //$('#summernoteFolderContainer').summernote('disable');
+            $('#txtFolderName').prop("disabled", true);
 
             $('#centeredDialogContainer').css({ "top": 33 + $(window).scrollTop() });
             $('#centeredDialogContainer').draggable().fadeIn();
 
-            //$(".note-editable").css('font-size', '16px');
-            //$('#centeredDialogContainer').css("top", 111);
-            //$('#centeredDialogContainer').css("left", -350);
-            //$("#btnCatDlgEdit").hide();
-            //$('#summernoteContainer').summernote({ toolbar: "none" });
-            //$('#summernoteContainer').summernote('disable');
-            //$(".note-editable").css({ 'font-size': '16px', 'min-height': '186px' });
-
+            $("#btnFolderDlgDone").on('click', function () {
+                $("#btnFolderDlgEdit").html("Edit");
+                $('#summernoteFolderContainer').summernote('enable');
+                $('#txtFolderName').prop("disabled", true);
+                $("#btnFolderDlgDone").hide();
+            }).hide();
+            function centeringDialogClose() {
+                //alert("overide default centeringDialogClose function");
+                if ($("#btnFolderDlgEdit").html() == "Edit") {
+                    centeringDialogClose();
+                }
+            }
+            $(".note-editable").css({ 'font-size': '16px', 'min-height': '186px', 'min-width': '355px' });
             //if (localStorage["IsLoggedIn"] == "false") {
             //    showMyAlert("you must be logged in to edit folder comments");
-            //    $("#btnCatDlgEdit").hide();
-            //    $("#btnCatDlgLinks").hide();
             //}
 
-
             $.ajax({
-                url: "php/yagdrasselFetch.php?query=select FolderName, FolderComments from CategoryFolder f left join FolderDetail d on f.Id = d.FolderId where f.Id=" + folderId,
+                url: "php/yagdrasselFetch.php?query=select FolderName, FolderComments, FolderType from CategoryFolder f " +
+                    "left join FolderDetail d on f.Id = d.FolderId where f.Id=" + folderId,
                 success: function (data) {
                     if (data != "false") {
                         folderInfo = JSON.parse(data);
-
                         $("#centeredDialogTitle").html(folderInfo.FolderName);
                         $('#txtFolderName').val(folderInfo.FolderName);
-                        $('#summernoteContainer').summernote("code", folderInfo.FolderComments);
+                        $('#summernoteFolderContainer').summernote("code", folderInfo.FolderComments);
 
-                        //logEvent("SMD", folderId, calledFrom, "folder type: " + folderInfo.FolderType);
-                        $("#btnCatDlgDone").hide()
-                        $("#btnCatDlgEdit").on("click", function () {
-                            if ($("#btnCatDlgEdit").html() == "Edit") {
-                                $("#btnCatDlgEdit").html("Save");
-                                $("#btnCatDlgDone").show();
+                        if (folderInfo.FolderType=='singleChild')
+                            $('#folderNameMessage').html("You are encouraged to edit this folder title")
+
+                        $("#btnFolderDlgDone").hide();
+                        $("#btnFolderDlgEdit").on("click", function () {
+                            if ($("#btnFolderDlgEdit").html() == "Edit") {
+                                $("#btnFolderDlgEdit").html("Save");
+                                $('#summernoteFolderContainer').summernote('enable');
+                                $('#txtFolderName').prop("disabled", false);
+                                $("#btnFolderDlgDone").show();
                             }
                             else {
                                 //updateFolderDetail();
-                                $.ajax({
-                                    type: "PUT",
-                                    url: "UpdateFolderDetail.php",
-                                    data: {
-                                        folderName: $('#txtFolderName').val(),
-                                        folderComments: $('#summernoteContainer').summernote("code")
-                                    },
-                                    success: function (success) {
-                                        if (success === "ok") {
-                                            displayStatusMessage("ok", "Folder info updated");
-                                            $("#btnCatDlgEdit").html("Edit");
-                                            $("#btnCatDlgDone").hide();
-                                            logOggleActivity("SMD", folderId, "folder info dialog");
+                                if (($('#txtFolderName').val() == folderInfo.FolderName) && ($('#summernoteFolderContainer').summernote("code") == folderInfo.FolderComments)) {
+                                    $('#folderNameMessage').html("nothing to update");
+                                }
+                                else {
+                                    $.ajax({
+                                        type: "PUT",
+                                        url: "php/updateFolderDetail.php",
+                                        data: {
+                                            folderId: folderId,
+                                            folderName: $('#txtFolderName').val(),
+                                            folderComments: $('#summernoteFolderContainer').summernote("code")
+                                        },
+                                        success: function (success) {
+                                            if (success.trim() === "ok") {
+                                                displayStatusMessage("ok", "Folder info updated");
+                                                $("#btnFolderDlgEdit").html("Edit");
+                                                $("#btnFolderDlgDone").hide();
+                                                logOggleActivity("SMD", folderId, "folder info dialog");
+                                            }
+                                            else {
+                                                $('#folderNameMessage').html("update failed");
+                                                logOggleError("AJX", folderId, success, "update folderDetail");
+                                            }
+                                        },
+                                        error: function (jqXHR) {
+                                            $('#folderNameMessage').html("update failed");
+                                            logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "update folderDetail");
                                         }
-                                        else {
-                                            logOggleError("AJX", folderId, success, "update folderDetail");
-                                        }
-                                    },
-                                    error: function (jqXHR) {
-                                        logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "update folderDetail");
-                                    }
-                                });
+                                    });
+                                }
                             }
                         });
 
@@ -1280,34 +1284,10 @@ function addPgLinkButton(folderId, labelText) {
                     logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "show folderInfo dialog");
                 }
             });
-
-
-
         }
         catch (e) {
             logOggleError("CAT", folderId, e, "show folderInfo dialog");
         }
-    }
-    function updateFolderDetail() {
-        loadGets();
-        $.ajax({
-            type: "PUT",
-            url: settingsArray.ApiServer + "api/FolderDetail/AddUpdate",
-            data: objFolderInfo,
-            success: function (success) {
-                if (success === "ok") {
-                    displayStatusMessage("ok", "Model info updated");
-                }
-                else {
-                    logOggleError("AJX", objFolderInfo.Id, success, "updateFolderDetail");
-                }
-            },
-            error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
-                if (!checkFor404(errMsg, folderId, functionName)) logOggleError("XHR", objFolderInfo.Id, errMsg, functionName);
-            }
-        });
     }
 
     function showImageCommentDialog(linkId, imgSrc, folderId, calledFrom) {
@@ -1385,47 +1365,6 @@ function addPgLinkButton(folderId, labelText) {
         //var dlgH = $('#centeredDialog').height();
     }
 
-    function showFullModelDetails(folderId) {
-        $('#albumPageLoadingGif').show();
-        $("#modelInfoDetails").html(modelInfoDetailHtml());
-        $('#readonlyPoserDetails').show();
-        $('#editablePoserDetails').hide();
-
-        //$('#btnCatDlgCancel').hide();
-        //$('#btnCatDlgMeta').hide();
-
-        $.ajax({
-            type: "GET",
-            url: settingsArray.ApiServer + "api/FolderDetail/GetFullFolderInfo?folderId=" + folderId,
-            success: function (folderInfo) {
-                $('#albumPageLoadingGif').hide();
-                if (folderInfo.Success === "ok") {
-                    objFolderInfo = folderInfo;
-                    $('#centeredDialogTitle').html(folderInfo.FolderName);
-                    $('#modelDialogThumbNailImage').attr("src", folderInfo.FolderImage);
-                    $('#txtFolderName').val(folderInfo.FolderName);
-                    $('#txtBorn').val(dateString(folderInfo.Birthday));
-                    $('#txtHomeCountry').val(folderInfo.HomeCountry);
-                    $('#txtHometown').val(folderInfo.HomeTown);
-                    $('#txtBoobs').val(((folderInfo.FakeBoobs) ? "fake" : "real"));
-                    $('#txtMeasurements').val(folderInfo.Measurements);
-                    setReadonlyFields();
-                    $("#btnCatDlgLinks").show();
-                    $("#summernoteContainer").summernote("code", folderInfo.FolderComments);
-                }
-                else {
-                    $('#albumPageLoadingGif').hide();
-                    logOggleError("AJX", folderId, folderInfo.Success, "show FullModelDetails");
-                }
-            },
-            error: function (jqXHR) {
-                $('#albumPageLoadingGif').hide();
-                let errMsg = getXHRErrorDetails(jqXHR);
-                if (!checkFor404(errMsg, folderId, "show FullModelDetails")) logOggleError("XHR", folderId, errMsg, "show FullModelDetails");
-            }
-        });
-    }
-
     function showRejectsDialog(linkId, folderId, imgSrc) {
         $('#centeredDialogTitle').html("move image to rejects");
         $('#centeredDialogContents').html(
@@ -1449,102 +1388,6 @@ function addPgLinkButton(folderId, labelText) {
         //}
         //    "        <div id='btnCatDlgMeta' class='folderCategoryDialogButton' onclick='addMetaTags()'>add meta tags</div>
 
-    }
-
-    // ADD EDIT FOLDER INFO
-    function setReadonlyFields() {
-        $('#readOnlyFolderName').html(objFolderInfo.FolderName);
-        $('#readOnlyBorn').html(isNullorUndefined(objFolderInfo.Birthday) ? "_ " : dateString(objFolderInfo.Birthday));
-        $('#readOnlyHomeCountry').html(isNullorUndefined(objFolderInfo.HomeCountry) ? " " : objFolderInfo.HomeCountry);
-        $('#readOnlyHometown').html(isNullorUndefined(objFolderInfo.HomeTown) ? " " : objFolderInfo.HomeTown);
-        $('#readOnlyBoobs').html(isNullorUndefined(objFolderInfo.FakeBoobs) ? 0 : objFolderInfo.FakeBoobs ? "fake" : "real");
-        $('#readOnlyMeasurements').html(isNullorUndefined(objFolderInfo.Measurements) ? " " : objFolderInfo.Measurements);
-    }
-    function editFolderDialog() {
-        if ($('#btnCatDlgEdit').html() === "Save") {
-            saveFolderDialog();
-            return;
-        }
-        allowDialogClose = false;
-
-        //objFolderInfo.FolderType = folderInfo.FolderType;
-        $('#divEdtFolderName').show();
-
-        $('#editablePoserDetails').show();
-        $('#readonlyPoserDetails').hide();
-        $('#btnCatDlgEdit').html("Save");
-        $('#summernoteContainer').summernote("destroy");
-        $('#summernoteContainer').summernote({
-            toolbar: [['codeview']],
-            height: "200"
-        });
-        $('#summernoteContainer').focus();
-        $('#summernoteContainer').summernote('focus');
-        //$(".note-editable").css('font-size', '16px');
-        //alert("summernote('code'):" + $('#summernoteContainer').summernote('code'))
-
-        $("#txtBorn").datepicker();
-        //$('#selBoobs').val(objFolderInfo.FakeBoobs ? 1 : 0).change();
-    }
-    function saveFolderDialog() {
-        $('#albumPageLoadingGif').show();
-        // LOAD GETS
-        // alternamtive folderName $('#txtFolderName').val(rtnFolderInfo.FolderName);
-        objFolderInfo.FolderName = $('#txtEdtFolderName ').val();
-        objFolderInfo.Birthday = $('#txtBorn').val();
-        objFolderInfo.HomeCountry = $('#txtHomeCountry').val();
-        objFolderInfo.HomeTown = $('#txtHometown').val();
-        objFolderInfo.Measurements = $('#txtMeasurements').val();
-        objFolderInfo.FakeBoobs = $('#selBoobs').val() == 1;
-        objFolderInfo.FolderComments = $('#summernoteContainer').summernote('code');
-        //folderInfo.ExternalLinks = $('#externalLinks').summernote('code');
-        //folderInfo.LinkStatus = $('#txtStatus').val();
-        $.ajax({
-            type: "PUT",
-            url: settingsArray.ApiServer + "/api/FolderDetail/AddUpdate",
-            data: objFolderInfo,
-            success: function (success) {
-                $('#albumPageLoadingGif').fadeOut();
-                if (success === "ok") {
-                    displayStatusMessage("ok", "category description updated");
-                    //awardCredits("FIE", objFolderInfo.Id);
-                    $("#btnCatDlgDone").show();
-                    $('#summernoteContainer').focus();
-                    $('#summernoteContainer').summernote('focus');
-                    $('#summernoteContainer').summernote('focus');
-                }
-                else {
-                    logOggleError("AJX", objFolderInfo.Id, success, "save folderDialog");
-                }
-            },
-            error: function (jqXHR) {
-                logOggleError("XHR", objFolderInfo.Id, getXHRErrorDetails(jqXHR), "save folderDialog");
-            }
-        });
-    }
-    function doneEditing() {
-        allowDialogClose = true;
-        $("#btnCatDlgDone").hide();
-        $('#btnCatDlgEdit').html("Edit");
-
-        $('#editablePoserDetails').hide();
-        $('#readonlyPoserDetails').show();
-        $('#summernoteContainer').summernote("destroy");
-        $('#summernoteContainer').summernote({
-            toolbar: "none",
-            height: "200"
-        });
-    }
-
-    function clearGets() {
-        $('#txtLinkHref').val('');
-        $('#txtLinkLabel').val('');
-        $('#txtFolderName').val('');
-        $('#txtBorn').val('');
-        $('#modelInfoDialogComment').html('');
-        $('#txtNationality').val('');
-        $('#txtStatus').val('');
-        $('#externalLinks').html('');
     }
 
     ///////////////// TRACKBACK DIALOG  ////////////
@@ -1776,3 +1619,162 @@ function displayFeedback() {
     alert("displayFeedback");
     //\"FLC\",\"feedback\", rootFolder + "\", folderId + "
 }
+
+
+//function showFullModelDetails(folderId) {
+//    $('#albumPageLoadingGif').show();
+//    $("#modelInfoDetails").html(modelInfoDetailHtml());
+//    $('#readonlyPoserDetails').show();
+//    $('#editablePoserDetails').hide();
+
+//    //$('#btnCatDlgCancel').hide();
+//    //$('#btnCatDlgMeta').hide();
+
+//    $.ajax({
+//        type: "GET",
+//        url: settingsArray.ApiServer + "api/FolderDetail/GetFullFolderInfo?folderId=" + folderId,
+//        success: function (folderInfo) {
+//            $('#albumPageLoadingGif').hide();
+//            if (folderInfo.Success === "ok") {
+//                objFolderInfo = folderInfo;
+//                $('#centeredDialogTitle').html(folderInfo.FolderName);
+//                $('#modelDialogThumbNailImage').attr("src", folderInfo.FolderImage);
+//                $('#txtFolderName').val(folderInfo.FolderName);
+//                $('#txtBorn').val(dateString(folderInfo.Birthday));
+//                $('#txtHomeCountry').val(folderInfo.HomeCountry);
+//                $('#txtHometown').val(folderInfo.HomeTown);
+//                $('#txtBoobs').val(((folderInfo.FakeBoobs) ? "fake" : "real"));
+//                $('#txtMeasurements').val(folderInfo.Measurements);
+//                setReadonlyFields();
+//                $("#btnCatDlgLinks").show();
+//                $("#summernoteContainer").summernote("code", folderInfo.FolderComments);
+//            }
+//            else {
+//                $('#albumPageLoadingGif').hide();
+//                logOggleError("AJX", folderId, folderInfo.Success, "show FullModelDetails");
+//            }
+//        },
+//        error: function (jqXHR) {
+//            $('#albumPageLoadingGif').hide();
+//            let errMsg = getXHRErrorDetails(jqXHR);
+//            if (!checkFor404(errMsg, folderId, "show FullModelDetails")) logOggleError("XHR", folderId, errMsg, "show FullModelDetails");
+//        }
+//    });
+//}
+//function updateFolderDetail() {
+    //    loadGets();
+    //    $.ajax({
+    //        type: "PUT",
+    //        url: settingsArray.ApiServer + "api/FolderDetail/AddUpdate",
+    //        data: objFolderInfo,
+    //        success: function (success) {
+    //            if (success === "ok") {
+    //                displayStatusMessage("ok", "Model info updated");
+    //            }
+    //            else {
+    //                logOggleError("AJX", objFolderInfo.Id, success, "updateFolderDetail");
+    //            }
+    //        },
+    //        error: function (jqXHR) {
+    //            let errMsg = getXHRErrorDetails(jqXHR);
+    //            let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
+    //            if (!checkFor404(errMsg, folderId, functionName)) logOggleError("XHR", objFolderInfo.Id, errMsg, functionName);
+    //        }
+    //    });
+    //}
+    // ADD EDIT FOLDER INFO
+    //function setReadonlyFields() {
+    //    $('#readOnlyFolderName').html(objFolderInfo.FolderName);
+    //    $('#readOnlyBorn').html(isNullorUndefined(objFolderInfo.Birthday) ? "_ " : dateString(objFolderInfo.Birthday));
+    //    $('#readOnlyHomeCountry').html(isNullorUndefined(objFolderInfo.HomeCountry) ? " " : objFolderInfo.HomeCountry);
+    //    $('#readOnlyHometown').html(isNullorUndefined(objFolderInfo.HomeTown) ? " " : objFolderInfo.HomeTown);
+    //    $('#readOnlyBoobs').html(isNullorUndefined(objFolderInfo.FakeBoobs) ? 0 : objFolderInfo.FakeBoobs ? "fake" : "real");
+    //    $('#readOnlyMeasurements').html(isNullorUndefined(objFolderInfo.Measurements) ? " " : objFolderInfo.Measurements);
+    //}
+    //function editFolderDialog() {
+    //    if ($('#btnCatDlgEdit').html() === "Save") {
+    //        saveFolderDialog();
+    //        return;
+    //    }
+    //    allowDialogClose = false;
+
+    //    //objFolderInfo.FolderType = folderInfo.FolderType;
+    //    $('#divEdtFolderName').show();
+
+    //    $('#editablePoserDetails').show();
+    //    $('#readonlyPoserDetails').hide();
+    //    $('#btnCatDlgEdit').html("Save");
+    //    $('#summernoteContainer').summernote("destroy");
+    //    $('#summernoteContainer').summernote({
+    //        toolbar: [['codeview']],
+    //        height: "200"
+    //    });
+    //    $('#summernoteContainer').focus();
+    //    $('#summernoteContainer').summernote('focus');
+    //    //$(".note-editable").css('font-size', '16px');
+    //    //alert("summernote('code'):" + $('#summernoteContainer').summernote('code'))
+
+    //    $("#txtBorn").datepicker();
+    //    //$('#selBoobs').val(objFolderInfo.FakeBoobs ? 1 : 0).change();
+    //}
+
+    //function saveFolderDialog() {
+    //    $('#albumPageLoadingGif').show();
+    //    // LOAD GETS
+    //    // alternamtive folderName $('#txtFolderName').val(rtnFolderInfo.FolderName);
+    //    objFolderInfo.FolderName = $('#txtEdtFolderName ').val();
+    //    objFolderInfo.Birthday = $('#txtBorn').val();
+    //    objFolderInfo.HomeCountry = $('#txtHomeCountry').val();
+    //    objFolderInfo.HomeTown = $('#txtHometown').val();
+    //    objFolderInfo.Measurements = $('#txtMeasurements').val();
+    //    objFolderInfo.FakeBoobs = $('#selBoobs').val() == 1;
+    //    objFolderInfo.FolderComments = $('#summernoteContainer').summernote('code');
+    //    //folderInfo.ExternalLinks = $('#externalLinks').summernote('code');
+    //    //folderInfo.LinkStatus = $('#txtStatus').val();
+    //    $.ajax({
+    //        type: "PUT",
+    //        url: settingsArray.ApiServer + "/api/FolderDetail/AddUpdate",
+    //        data: objFolderInfo,
+    //        success: function (success) {
+    //            $('#albumPageLoadingGif').fadeOut();
+    //            if (success === "ok") {
+    //                displayStatusMessage("ok", "category description updated");
+    //                //awardCredits("FIE", objFolderInfo.Id);
+    //                $("#btnCatDlgDone").show();
+    //                $('#summernoteContainer').focus();
+    //                $('#summernoteContainer').summernote('focus');
+    //                $('#summernoteContainer').summernote('focus');
+    //            }
+    //            else {
+    //                logOggleError("AJX", objFolderInfo.Id, success, "save folderDialog");
+    //            }
+    //        },
+    //        error: function (jqXHR) {
+    //            logOggleError("XHR", objFolderInfo.Id, getXHRErrorDetails(jqXHR), "save folderDialog");
+    //        }
+    //    });
+    //}
+    //function doneEditing() {
+    //    allowDialogClose = true;
+    //    $("#btnCatDlgDone").hide();
+    //    $('#btnCatDlgEdit').html("Edit");
+
+    //    $('#editablePoserDetails').hide();
+    //    $('#readonlyPoserDetails').show();
+    //    $('#summernoteContainer').summernote("destroy");
+    //    $('#summernoteContainer').summernote({
+    //        toolbar: "none",
+    //        height: "200"
+    //    });
+    //}
+
+    //function clearGets() {
+    //    $('#txtLinkHref').val('');
+    //    $('#txtLinkLabel').val('');
+    //    $('#txtFolderName').val('');
+    //    $('#txtBorn').val('');
+    //    $('#modelInfoDialogComment').html('');
+    //    $('#txtNationality').val('');
+    //    $('#txtStatus').val('');
+    //    $('#externalLinks').html('');
+    //}

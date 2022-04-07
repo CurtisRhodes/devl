@@ -2,11 +2,89 @@
     background-color: #dcd7be;
 }
 
+.dashboardVisibleSection {
+    display: none;
+}
+
+.workAreaHeaderArea {
+    float: left;
+    width: 100%;
+}
+.workAreaHeader {
+    background-color: var(--brucheumBlue);
+    color: #fff;
+    width: 100%;
+}
+
+.workAreaHeaderContainer {
+    display: flex;
+}
+
+.workAreaHeaderTitle {
+    width: 100%;
+    font-size: 22px;
+    text-align: center;
+}
+
+.workAreaDisplayContainer {
+    padding: 4px;
+    margin-left: 5px;
+    overflow-y: auto;
+}
+
+.dialogDirTreeCarat {
+    height: 25px;
+    cursor: pointer;
+    margin-left: 1px;
+}
+
+
 .dashboardTopContainer {
     padding-top: 11px;
     padding-bottom: 3px;
     border-bottom: #decd6f 3px solid;
 }
+
+.fullScreenContainer {
+    display: block;
+}
+
+.fullScreenSection {
+    border: solid 4px var(--oggleBorderColor); /*#cd49d3;*/
+    width: 100%;
+    margin-right: 33px;
+}
+
+.dashboardContainerColumn {
+    float: left;
+    overflow: auto;
+    display: inline-block;
+    background-color: var(--oggleBackgroundColor);
+}
+
+.xxdashboardRightContainerColumn {
+    float: right;
+    border: solid thin #111;
+    background-color: var(--oggleBackgroundColor);
+    /*max-width: 30%;*/
+}
+
+.dashboardTreeContainer {
+    /*
+    float: right;
+    display: inline-block;
+    min-width: 400px;
+    width: 15%;
+    background-color: #eae9ae;
+        */
+    overflow: auto;
+    margin-bottom: 4px;
+    border-bottom: solid 4px #999;
+    border-left: solid .5px #555;
+    min-height: 106px;
+}
+
+
 
 .dashboardFileList {
     display: inline-block;
@@ -92,45 +170,6 @@ flexbox {
     padding-right: 4px;
 }
 
-.fullScreenContainer {
-    display: block;
-}
-
-.fullScreenSection {
-    display: none;
-    border: solid 4px var(--oggleBorderColor); /*#cd49d3;*/
-    width: 100%;
-    margin-right: 33px;
-}
-
-.dashboardContainerColumn {
-    float: left;
-    overflow: auto;
-    display: inline-block;
-    background-color: var(--oggleBackgroundColor);
-}
-
-.xxdashboardRightContainerColumn {
-    float: right;
-    border: solid thin #111;
-    background-color: var(--oggleBackgroundColor);
-    /*max-width: 30%;*/
-}
-
-.dashboardTreeContainer {
-    /*
-    float: right;
-    display: inline-block;
-    min-width: 400px;
-    width: 15%;
-    background-color: #eae9ae;
-        */
-    overflow: auto;
-    margin-bottom: 4px;
-    border-bottom: solid 4px #999;
-    border-left: solid .5px #555;
-    min-height: 106px;
-}
 
 .linkContainer {
     display: inline;
@@ -261,43 +300,6 @@ flexbox {
     background-color: bisque;
 }
 
-.workAreaHeader {
-    background-color: var(--brucheumBlue);
-    color: #fff;
-    width: 100%;
-}
-
-.workAreaHeaderContainer {
-    display: flex;
-}
-
-.workAreaHeaderTitle {
-    width: 100%;
-    font-size: 22px;
-    text-align: center;
-}
-
-.workAreaHeaderArea {
-    float: left;
-    width: 100%;
-}
-
-.workAreaHeaderDetailRow {
-}
-
-.workAreaContainer {
-    height: inherit;
-    /*border-left: solid 3px var(--oggleBorderColor);
-    border-right: solid 3px var(--oggleBorderColor);
-    border-bottom: solid 0.75px var(--oggleBorderColor);*/
-    /*background-color: var(--oggleContainerBackgroundColor);*/
-}
-
-.workAreaDisplayContainer {
-    padding: 4px;
-    margin-left: 5px;
-    overflow-y: auto;
-}
 .reportSection {
     display: none;
     padding: 4px;

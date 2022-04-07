@@ -419,7 +419,7 @@ function clickViewAlbum(labelClick) {
             case 4: clickFolderId = footerLabelClickId; carouselButtonClicked = "footerLabel"; break;// footer 
         }
         pause();
-        window.location.href = "https://ogglefiles.com/beta/album.html?folder=" + clickFolderId;  //  open page in same window
+        window.location.href = "https://ogglebooble.com/album.html?folder=" + clickFolderId;  //  open page in same window
     } catch (e) {
         logOggleError("CAT", -88845, e, "click view album");
     }

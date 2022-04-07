@@ -55,7 +55,7 @@ function loadImageResults(vLink) {
         if (vLink.FolderId !== vLink.SrcId) {
             $('#' + vLink.LinkId + '').append(`<div class='knownModelIndicator'>
                 <img src='https://common.ogglefiles.com/img/foh01.png' title='`+ vLink.SrcFolder + `' 
-                    onclick='window.open(\"https://ogglefiles.com/beta/album.html?folder=\"` + vLink.SrcId + `'/></div>`);
+                    onclick='window.open(\"https://ogglebooble.com/album.html?folder=\"` + vLink.SrcId + `'/></div>`);
         }
     }
 }
@@ -257,7 +257,7 @@ function setBreadcrumbs(folderId,folderType, rootFolder) {
                         else {
                             //addBreadcrumb(parent, breadcrumbItem[0].FolderName, "activeBreadCrumb"));
                             $('#breadcrumbContainer').prepend("<div class='activeBreadCrumb' " +
-                                "onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" +
+                                "onclick='window.location.href=\"https://ogglebooble.com/album.html?folder=" +
                                 breadcrumbItem[0].Id + "\"'>" + breadcrumbItem[0].FolderName + "</div>");
                             parent = breadcrumbItem[0].Parent;
                         }
@@ -327,10 +327,10 @@ function addTrackbackLinks(folderId) {
 function folderClick(folderId, isStepChild) {
     try {
         if (isStepChild == 1)
-            window.open("https://ogglefiles.com/beta/album.html?folder=" + folderId, "_blank");  // open in new tab
+            window.open("https://ogglebooble.com/album.html?folder=" + folderId, "_blank");  // open in new tab
         else {
             // report event pare hit
-            window.location.href = "https://ogglefiles.com/beta/album.html?folder=" + folderId;  //  open page in same window
+            window.location.href = "https://ogglebooble.com/album.html?folder=" + folderId;  //  open page in same window
         }
         //" onclick='rtpe(\"SUB\",\"called from: " + folderId + "\",\"" + folder.DirectoryName + "\"," + folder.FolderId + ")'>\n" +
     } catch (e) {
@@ -342,10 +342,10 @@ function showPageHits(folderId) {
     try {
         $.ajax({
             type: "GET",
-            url: "php/registroFetch.php?query=select format(count(*),0) from PageHit where PageId=" + folderId,
+            url: "php/registroFetch.php?query=select count(*) as Hits from PageHit where PageId=" + folderId,
             success: function (data) {
-                let pgc = JSON.parse(data)[0];
-                $('#footerPagehit').html("page hits: " + pgc);
+                //let pgc = JSON.parse(data);
+                $('#footerPagehit').html("page hits: " + data);
             },
             error: function (jqXHR) {
                 logOggleError("CAT", folderId, getXHRErrorDetails(jqXHR), "verify VisitorId")

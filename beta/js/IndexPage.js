@@ -52,7 +52,7 @@ function launchIndexPage(pageContext) {
                             "<div class='latestContentBoxLabel'>" + jdata[i].FolderName + "</div>" +
                             "<img id='lt" + jdata[i].FolderId + "' class='latestContentBoxImage' alt='img/redballon.png' \nsrc='" + thisItemSrc + "' \n" +
                             " onerror='imageError(\"" + jdata[i].FolderId + "\",\"" + thisItemSrc + "\",'LatestUpdatedGalleries'\")'\n" +
-                            "\nonclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + jdata[i].FolderId + "\" ' />" +
+                            "\nonclick='window.location.href=\"https://ogglebooble.com/album.html?folder=" + jdata[i].FolderId + "\" ' />" +
                             "<div class='latestContentBoxDateLabel'>updated: " + dateString2(jdata[i].Acquired) + "</span></div>" +
                             "</div>");
                     }
@@ -96,7 +96,7 @@ function launchIndexPage(pageContext) {
                                 "<div class='latestContentBoxLabel'>" + obj.FolderName + "</div>" +
                                 "<img id='lt" + obj.Id + "' class='latestContentBoxImage' " +
                                 "alt='Images/redballon.png' src='" + thisItemSrc + "' " +
-                                "onclick='window.location.href=\"https://ogglefiles.com/beta/album.html?folder=" + obj.Id + "\" ' /></div>");
+                                "onclick='window.location.href=\"https://ogglebooble.com/album.html?folder=" + obj.Id + "\" ' /></div>");
                         });
 
                         $('#imgRandomGalleries').on("click", function () {

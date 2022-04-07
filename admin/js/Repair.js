@@ -118,6 +118,8 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
                                         //let physcialDirFiles = jallFiles.filter(node => node.type == "dir");
                                         let physcialImageFileRows = jallFiles.filter(node => node.type == "file");
                                         let removeOrphansStatus = renameImagesStatus = addMissingStatus = "done";
+
+
                                         if (physcialImageFileRows.length > 0) {
                                             let removeOrphansStatus = renameImagesStatus = addMissingStatus = "not started";
                                             let desiredFileNamePrefix = catFolder.actualFolderName;
@@ -232,13 +234,7 @@ function removeOrphanImageRows(physcialImageFileRows, databaseImageFilesRows, ro
         let asyncBlock1 = setInterval(function () {
             $.each(databaseImageFilesRows, function (idx, databaseImageFile) {
                 if (abandon) return;
-
                 let physcialFileRow = physcialImageFileRows.filter(node => encodeURI(node.name) == encodeURI(databaseImageFile.FileName));
-
-
-
-
-
                 if (physcialFileRow.length == 0) {
                     // we have a data record with no physcial file
                     if (removeOrphans)
@@ -367,22 +363,19 @@ function addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows, data
     let rowsTpProcess = physcialImageFileRows.length;
     addImageRows = 0;
     let asyncBlock5 = setInterval(function () {
+        $.each()
+
+
+        
         $.each(physcialImageFileRows, function (idx, physcialImageFile) {
             if (abandon) return;
-            rowsProcessed++;
             let rowOk = false;
             databaseImageFilesRows.every(v => {
                 if (encodeURI(v.FileName) == encodeURI(physcialImageFile.name)) {
                     rowOk = true;
-                    return false;
                 }
             });
-            // let fidx = $.find(physcialImageFile.name, databaseImageFilesRows);
-            // if () == -1) {
-            //let correspondingDbRow = databaseImageFilesRows.filter(db => encodeURI(db.FileName) == encodeURI(physcialImageFile.name));
-            //if (correspondingDbRow.length == 0) {
             if (!rowOk) {
-
                 // verify file exists.  Whet if it's a link?
                 let guidPart = physcialImageFile.name.substr(physcialImageFile.name.indexOf("_") + 1, 36);
                 if (!isGuid(guidPart)) {
@@ -411,7 +404,7 @@ function addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows, data
                             }
                             else {
                                 switch (addImageFileSuccess.trim()) {
-                                    case '23000':
+                                    case '23000': // Integrity constraint violation
                                         repairReport.comparisonProblems++;
                                         //repairReport.errors.push("Insert failed (" + folderId + ") Id: " + guidPart + " already exists");
                                         break;
@@ -440,6 +433,8 @@ function addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows, data
                     //alert("rename process taking too long")
                 }
             }
+            rowsProcessed++;
+            showRepairReport();
         });
         if (rowsProcessed >= rowsTpProcess) {
             clearInterval(asyncBlock5);
@@ -449,7 +444,7 @@ function addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows, data
     return "done";
 }
 
-lastFolderId = -33;
+lastFolderId = -1;
 function updateRepairReport(folderId) {
     if (folderId != lastFolderId) {
         lastFolderId = folderId;

@@ -37,7 +37,7 @@
             <img id='dashBoardLoadingGif' alt="spinner" title="loading" class='loadingGif' src='https://common.ogglefiles.com/img/loader.gif' />
 
             <div id='dashboardContainer' class='fullScreenContainer'>
-                <div id="dashboardTopRow" class="dashboardTopContainer">
+                <div id="dashboardTopRow" class="dashboardTopContainer dashboardVisibleSection">
                     <div class="flexbox">
                         <div>
                             Active Folder<input id="txtCurrentActiveFolder" class="roundedInput" style="width:77%" readonly="readonly" />
@@ -51,7 +51,7 @@
                     </div>
                 </div>
 
-                <div id="dashboardFileListContainer" class="dashboardFileList">
+                <div id="dashboardFileListContainer" class="dashboardFileList dashboardVisibleSection">
                     <div id="dashboardFileListHeader" class="dashboardFileListHeader">
                         <div id="dashboardFileListHeaderTitle">ffff</div>
                         <img height="31" title='you may use the {esc} key'
@@ -61,7 +61,7 @@
                     <div id="dashboardFileList"></div>
                 </div>
 
-                <div id='addImageLinkDialog' class='fullScreenSection'>
+                <div id='addImageLinkDialog' class='fullScreenSection dashboardVisibleSection'>
                     <div id='addLinkCrudArea' class='addLinkCrudArea'>
                         <div class='flexbox'>
                             <label>link  </label><input id='txtImageLink' tabindex='1' class='roundedInput' onblur='previewLinkImage()' />
@@ -75,23 +75,21 @@
                     <img id='imgLinkPreview' class='linkImage' alt="preview image " />
                 </div>
 
-                <div id='moveManySection' class='fullScreenSection'>
-                    <div id='moveManyHeader' class='workAreaHeader'>
-                        <div class='workAreaHeaderArea'>
-                            <div id='moveManyTitle' class='workAreaHeaderTitle'>Move Many</div>
-                            <div class='workAreaHeaderDetailRow'>
-                                <div class='moveManyHeaderLabel'>source</div><input id='txtMoveManySource' class='roundedInput' style='width:65%' readonly='readonly' /><br />" +
-                                <div class='moveManyHeaderLabel'>destination</div>
-                                <input id='txtMoveManyDestination' class='roundedInput' style='width:65%' readonly='readonly' />" +
-                                <img class='dialogDirTreeButton' src='https://common.ogglefiles.com/img/caretDown.png' onclick='$("\#mmDirTreeContainer\").toggle()' />
-                                <div class='floatRight'><input type='checkbox' id='mmCkSelectAll' onclick='mmSelectAll()'>  Select All</div>
-                            </div>
+                <div id='moveManySection' class='fullScreenSection dashboardVisibleSection'>
+                    <div class='dashboardTopContainer'>
+                        <div id='moveManyTitle' class='workAreaHeaderTitle'>Move Many</div>
+                        <div class='workAreaCloseButton'>
+                            <img style='height:25px' src='https://common.ogglefiles.com/img/close.png' onclick='showDefaultWorkArea()'>
                         </div>
-                        <!--<div class='workAreaCloseButton'>
-                    <img style='height:25px' src='https://common.ogglefiles.com/img/close.png' onclick='showDefaultWorkArea()'>
-                </div>-->
+                        <div class='workAreaHeaderDetailRow'>
+                            <div class='moveManyHeaderLabel'>source</div>
+                            <input id='txtMoveManySource' class='roundedInput' style='width:65%' readonly='readonly' /><br />" +
+                            <div class='moveManyHeaderLabel'>destination</div>
+                            <input id='txtMoveManyDestination' class='roundedInput' style='width:65%' readonly='readonly' />" +
+                            <img class='dialogDirTreeCarat' src='https://common.ogglefiles.com/img/caretDown.png' onclick='$("\#mmDirTreeContainer\").toggle()' />
+                            <div class='floatRight'><input type='checkbox' id='mmCkSelectAll' onclick='mmSelectAll()'>  Select All</div>
+                        </div>
                     </div>
-                    <div id='mmDirTreeContainer' class='floatingDirTreeContainer'></div>
                     <div id='moveManyImageArea' class='workAreaDisplayContainer'></div>
                     <div id='moveManyFooter' class='workareaFooter'>
                         <button id='moveManyButton' onclick='moveCheckedImages(" + mmSourceFolderId + ")'>Move</button>
@@ -99,24 +97,25 @@
                     </div>
                 </div>
 
-                <div id='sortToolSection' class='fullScreenSection'>
-                    <div id='sortToolHeader' class='workAreaHeader'>
+                <div id='mmDirTreeContainer' class='floatingDirTreeContainer'></div>
+                <div id='moveManyImageArea' class='workAreaDisplayContainer'></div>
+
+                <div id='sortToolSection' class='fullScreenSection dashboardVisibleSection'>
+                    <div id='sortToolHeader' class='dashboardTopContainer'>
                         <div id='sortTableHeader' class='workAreaHeaderTitle'></div>
                         <div class='workAreaCloseButton'>
                             <img style='height:25px' src='https://common.ogglefiles.com/img/close.png' onclick='showDefaultWorkArea()'>
                         </div>
                     </div>
-                    <div>
-                        <div id='sortToolImageArea' class='workAreaDisplayContainer'></div>
-                        <div id='sortToolFooter' class='workareaFooter'>
-                            <button class="sortButton" onclick='updateSortOrder()'>ReSort</button>
-                            <button class="sortButton" onclick='autoIncrimentSortOrder()'>AutoIncriment</button>
-                            <button class="sortButton" onclick='saveSortOrder()'>Save</button>
-                        </div>
+                    <div id='sortToolImageArea' class='workAreaDisplayContainer'></div>
+                    <div id='sortToolFooter' class='workareaFooter'>
+                        <button class="sortButton" onclick='updateSortOrder()'>ReSort</button>
+                        <button class="sortButton" onclick='autoIncrimentSortOrder()'>AutoIncriment</button>
+                        <button class="sortButton" onclick='saveSortOrder()'>Save</button>
                     </div>
                 </div>
 
-                <div id='sqlSandboxSection' class='fullScreenSection flexbox'>
+                <div id='sqlSandboxSection' class='fullScreenSection flexbox dashboardVisibleSection'>
                     <div class="flexContainer">
                         <div class="vertMenu inline">
                             <div onclick='changeFolderType()'>change folder type</div>

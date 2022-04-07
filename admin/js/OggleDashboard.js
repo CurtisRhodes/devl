@@ -180,7 +180,7 @@ function importNewImages() {
 
 // PHP DISK OPERATIONS
 function showReportsSection() {
-    $('.fullScreenSection').hide();
+    $('.dashboardVisibleSection').hide();
     $('#reportsSection').show();
     setLeftMenu("reports");
     $('#reportsMiddleColumn').css("width", $('#dashboardContainer').width() - $('#reportsLeftColumn').width());
@@ -269,7 +269,7 @@ function updateFolderCounts() {
             alert("select a folder");
             return;
         }
-        $('.fullScreenSection').hide();
+        $('.dashboardVisibleSection').hide();
         $('#dashboardTopRow').hide();
         $('#dirTreeContainer').hide();
         $('#sortToolSection').show();
@@ -398,7 +398,7 @@ function updateFolderCounts() {
 }
 
 function showDefaultWorkArea() {
-    $('.fullScreenSection').hide();
+    $('.dashboardVisibleSection').hide();
     $('#dashboardTopRow').show();
     $('#dirTreeContainer').show();
 }
@@ -410,7 +410,7 @@ function dashboardDialogBoxClose(calledFrom) {
 }
 
 function sqlSandbox() {
-    $('.fullScreenSection').hide();
+    $('.dashboardVisibleSection').hide();
     $('#sqlSandboxSection').show();
 }
 
@@ -539,7 +539,7 @@ function folderCountTest() {
             alert("select a folder");
             return;
         }
-        $('.fullScreenSection').hide();
+        $('.dashboardVisibleSection').hide();
         $('#dirTreeContainer').hide();
         $('#dashboardTopRow').hide();
 
