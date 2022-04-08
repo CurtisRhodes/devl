@@ -135,7 +135,7 @@ function performCreateNewFolder(newFolderName, sortOrder) {
             url: "php/createNewFolder.php",
             type: "POST",
             data: {
-                parentId: $('#txtActiveFolderId').val(),
+                parentId: $('#txtActiveFolderId').val(), 
                 folderPath: folderPath,
                 //newFolderName: $('#txtNewFolderTitle').val(),
                 newFolderName: newFolderName,

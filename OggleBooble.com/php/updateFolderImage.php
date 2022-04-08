@@ -13,9 +13,9 @@
             $sql = "UPDATE CategoryFolder SET FolderImage=".$folderImage." WHERE Id=".$folderId;
         }
         if($level == 'parent') {
-            $cmd = $pdo->query("select Parent from CategoryFolder where Id = ".$folderId);
+            $cmd = $pdo->query("select * from CategoryFolder where Id = ".$folderId);
             $catRow = $cmd->fetch();
-            $sql = "UPDATE CategoryImageLink SET FolderImage=".$folderImage." WHERE  Id=".$catRow[Id];
+            $sql = "UPDATE CategoryImageLink SET FolderImage=".$folderImage." WHERE  Id=".$catRow[Parent];
         }
 
         $stmt= $pdo->prepare($sql);

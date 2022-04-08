@@ -35,7 +35,8 @@ function captureKeydownEvent(event) {
                 // new visitor comming in from an external link
             }
         }
-        if (isNullorUndefined(sessionStorage["VisitLogged"])) {
+        if (isNullorUndefined(sessionStorage["VisitLogged"]))
+        {
             logVisit("verify");
         }
 
@@ -853,23 +854,22 @@ function addPgLinkButton(folderId, labelText) {
                             displayStatusMessage("ok", "Welcome back ");
                     }
                     else {
-                        switch (success.trim()) {
-                            case '23000':
-                                //logOggleError("",)
-                                break;
-                            case '42000':
-                            default:
-                                alert("logVisit: " + success);
+                        if (success.trim() == 'code: 23000') {
+                            // duplicate
+                        }
+                        else {
+                            logOggleError("Cat", -09755, success.trim(), "log visit")
+                            //alert("logVisit: " + success);
                         }
                     }
                     sessionStorage["VisitLogged"] = "yes";
                 },
-                error: function (jqXHR, exception) {
-                    alert("LogVisit jqXHR : " + getXHRErrorDetails(jqXHR, exception));
+                error: function (jqXHR) {
+                    logOggleError("Cat", -09756, getXHRErrorDetails(jqXHR), "log visit")
                 }
             });
         } catch (e) {
-            logOggleError("Cat", folderId, e, "log visit")
+            logOggleError("Cat", -09757, e, "log visit")
         }
     }
 

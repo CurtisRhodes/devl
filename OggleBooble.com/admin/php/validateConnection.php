@@ -17,6 +17,6 @@
     if ($link->connect_error) {
         die('<p>Failed to connect to registro: '. $link->connect_error .'</p>');
     } else {
-        echo '<p>registro Connection to MySQL server successfully established.</p>';
+        echo '<p>registro Connection successfully established.</p>';
     }
 ?>

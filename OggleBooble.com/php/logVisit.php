@@ -18,12 +18,12 @@
             $success = 'ok';
         }
         else {
-            $success = $stmt1Success;
+            $success = 'code: '.$stmt1Success;
         }
         $pdo = null;
     }
     catch(Exception $e) {
-        $success = $e->getMessage();
+        $success = 'e: '.$e->getMessage();
     }
     echo $success;
 

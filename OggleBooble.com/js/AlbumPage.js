@@ -38,25 +38,29 @@ function getAlbumImages(folderId, islargeLoad) {
 
 function loadImageResults(vLink) {
     let imgSrc = 'https://common.ogglefiles.com/img/redballon.png';
-    if (!isNullorUndefined(vLink.FileName))
-        imgSrc = settingsImgRepo + "/" + vLink.FileName.replace(/'/g, '%27');
+    try {
+        if (!isNullorUndefined(vLink.FileName))
+            imgSrc = settingsImgRepo + "/" + vLink.FileName.replace(/'/g, '%27');
 
-    if (vLink.FileName.endsWith("mpg") || vLink.FileName.endsWith("mp4")) {
-        $('#imageContainer').append(`
+        if (vLink.FileName.endsWith("mpg") || vLink.FileName.endsWith("mp4")) {
+            $('#imageContainer').append(`
             <div class='intividualImageContainer' oncontextmenu='oggleContextMenu("video","` + vLink + `)'>
               <video id='" + vLink.LinkId + "' controls='controls' class='thumbImage' poster='` + posterFolder + vLink.Poster + `'>
                <source src='` + imgSrc + `' type='video/mp4' label='label'></video></div>`);
-    }
-    else {
-        $('#imageContainer').append(`<div id='` + vLink.LinkId + `' class='intividualImageContainer'>
+        }
+        else {
+            $('#imageContainer').append(`<div id='` + vLink.LinkId + `' class='intividualImageContainer'>
             <img class='thumbImage' src='` + imgSrc + `' onerror='imageError(` + vLink.FolderId + `,"` + vLink.LinkId + `","album")'
             oncontextmenu='oggleContextMenu("image","` + vLink.LinkId + `",` + vLink.FolderId + `,"` + imgSrc + `")'
             onclick='viewImage("` + imgSrc + `","` + vLink.LinkId + `")'/></div>`);
-        if (vLink.FolderId !== vLink.SrcId) {
-            $('#' + vLink.LinkId + '').append(`<div class='knownModelIndicator'>
+            if (vLink.FolderId !== vLink.SrcId) {
+                $('#' + vLink.LinkId + '').append(`<div class='knownModelIndicator'>
                 <img src='https://common.ogglefiles.com/img/foh01.png' title='`+ vLink.SrcFolder + `' 
                     onclick='window.open(\"https://ogglebooble.com/album.html?folder=\"` + vLink.SrcId + `'/></div>`);
+            }
         }
+    } catch (e) {
+        logOggleError("CAT", vLink.Id, e, "loadImageResults");
     }
 }
 
@@ -107,7 +111,7 @@ function getAlbumPageInfo(folderId, islargeLoad) {
 
                 setBreadcrumbs(folderId, catfolder.FolderType, catfolder.RootFolder);
 
-                resetHeader(catfolder);
+                setColors(catfolder);
 
                 addTrackbackLinks(folderId);
 
@@ -162,7 +166,7 @@ function getAlbumPageInfo(folderId, islargeLoad) {
     }
 }
 
-function resetHeader(catfolder) {
+function setColors(catfolder) {
     switch (catfolder.RootFolder) {
         case "playboy":
         case "centerfold":

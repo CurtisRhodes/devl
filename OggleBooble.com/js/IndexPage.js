@@ -11,6 +11,7 @@ function launchIndexPage(pageContext) {
 
     if (pageContext == "playboy") {
         $('body').css({ "background-color": "#000", "color": "#fff" });
+        $('#oggleHeader').css("background-color", "#000");
         $('#carouselContainer').css("background-color", "#000");
         $('#oggleHeader').css("color", "#f2e289");
     }
@@ -28,9 +29,11 @@ function launchIndexPage(pageContext) {
 
     verifyUser("index page");
 
-    //    $('#betaMessage').html("reformat hard drive")
-    //        .css({ "top": 111, "left": 50 })
-    //        .on("click", function () { showMessageContainer() }).show();
+    $('#betaMessage').html("promo")
+        .css({ "top": 111, "left": 50 })
+        .on("click", function () {
+            showMessageContainer()
+        }).show();
 }
 
 /*-- php -------------------------------------------*/{
@@ -124,7 +127,7 @@ function launchIndexPage(pageContext) {
     //    $('#spnUserName').html(getCookieValue("UserName", "reset OggleHeader"));
 
 
-/*-- message slide out -----------------------------*/{
+/*-- promo message -----------------------------*/{
     const messageBoxSlideSpeed = 50, messageBoxTop = 222;
     let currPos, destPos, offscreen, promoMessageRotator;
 
@@ -134,18 +137,18 @@ function launchIndexPage(pageContext) {
     }
 
     function showMessageContainer(messageId) {
-        $('#promoMessagesContainer').css("top", messageBoxTop);
-
-
         $('#promoMessagesContents').html(`
-            <div class=""clickable onclick="testConnection()">verify connection</div>
+
+            <div class='clickable underline' onclick='testConnection()' >verify connection</div>
             <div id="testConnectionResut"></div >
         `);
-        offscreen = 0 - $('#promoMessagesContainer').width() - 100;
+
+        //offscreen = 0 - $('#promoMessagesContainer').width() - 100;
 
 
-        $('#testConnectionResut').html("promoContainerWidth: " + $('#promoMessagesContainer').width() + "<br/>offscreen: " + offscreen);
+        //$('#testConnectionResut').html("promoContainerWidth: " + $('#promoMessagesContainer').width() + "<br/>offscreen: " + offscreen);
 
+        $('#promoMessagesContainer').css("top", messageBoxTop);
         currPos = offscreen;
         destPos = 50;
         $('#promoMessagesContainer').css("left", currPos).show();

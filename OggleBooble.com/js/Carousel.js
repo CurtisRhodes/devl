@@ -485,12 +485,12 @@ function carouselHtml() {
         "           <div id='knownModelLabel' class='categoryTitleLabel' onclick='clickViewAlbum(3)'></div>\n" +
         "           <div id='imageTopLabel' class='categoryTitleLabel' onclick='clickViewAlbum(2)'></div>\n" +
         "           <div id='carouselFooterLabel' class='categoryTitleLabel' onclick='clickViewAlbum(4)'></div>\n" +
-        "           <img class='assuranceArrows' onclick='assuranceArrowClick(\"back\")' src='img/leftArrowOpaque02.png'/>\n" +
-        "           <img id='thisCarouselImage' class='carouselImage' src='img/ingranaggi3.gif' " +
+        "           <img class='assuranceArrows' onclick='assuranceArrowClick(\"back\")' src='https://common.ogglefiles.com/img/leftArrowOpaque02.png'/>\n" +
+        "           <img id='thisCarouselImage' class='carouselImage' src='https://common.ogglefiles.com/img/ingranaggi3.gif' " +
         "               onerror='imgErrorThrown()'" +
         "               oncontextmenu='carouselContextMenu()'" +
         "               onclick='clickViewAlbum(1)' />\n" +
-        "           <img class='assuranceArrows' onclick='assuranceArrowClick(\"foward\")' src='img/rightArrowOpaque02.png'/>\n" +
+        "           <img class='assuranceArrows' onclick='assuranceArrowClick(\"foward\")' src='https://common.ogglefiles.com/img/rightArrowOpaque02.png'/>\n" +
         "       </div>\n" +
         "  </div>\n" +
 
