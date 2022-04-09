@@ -229,7 +229,7 @@ function mailMe() {
 
         //changeFavoriteIcon("redBallon");
         //document.title = "document.title";
-        $('#topHeaderRow').html("topHeaderRow");
+        $('#topRowLeftContainer').html("topRowLeftContainer");
         $('#headerMessage').html("");
         $('#topRowRightContainer').html("");
         $('#breadcrumbContainer').html("");
@@ -239,7 +239,7 @@ function mailMe() {
             case "oggleIndex":
                 document.title = "OggleBooble : Home of the Big Naturals";
                 $('#fancyHeaderTitle').html("OggleBooble");
-                $('#topHeaderRow').html("Home of the Big Naturals");
+                $('#topRowLeftContainer').html("Home of the Big Naturals");
                 $('#hdrBtmRowSec3').append(bannerLink('every playboy centerfold', 'https://ogglebooble.com/index.html?spa=playboy'));
                 $('#hdrBtmRowSec3').append(bannerLink('Oggle Porn', 'https://ogglebooble.com/index.html?spa=porn'));
                 break;
@@ -282,13 +282,13 @@ function mailMe() {
             case "brucheum":
                 $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/house.gif");
                 $('#fancyHeaderTitle').html("The Brucheum");
-                $('#topHeaderRow').html("");
+                $('#topRowLeftContainer').html("");
                 $('#searchBox').hide();
                 showLogin(false);
                 break;
             case "slideshow":
                 $('#fancyHeaderTitle').html("OggleBooble");
-                $('#topHeaderRow').html("Slideshow");
+                $('#topRowLeftContainer').html("Slideshow");
                 break;
             case "oggleAlbum":
                 $('#fancyHeaderTitle').html("OggleBooble");
@@ -297,18 +297,18 @@ function mailMe() {
                 //$('#hdrBtmRowSec3').append(bannerLink("softcore", 5233));
                 //$('#hdrBtmRowSec3').append(bannerLink("Gent Archive", 846));
                 //$('#hdrBtmRowSec3').append(bannerLink("Bond Girls", 10326));
-                //$('#topHeaderRow').html("Home of the Big Naturals");
+                //$('#topRowLeftContainer').html("Home of the Big Naturals");
                 break;
             case "OggleDashboard":
                 $('#fancyHeaderTitle').html("OggleBooble.com");
-                $('#topHeaderRow').html("admin");
+                $('#topRowLeftContainer').html("admin");
                 $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/adminPanel01.png");
                 $('#fancyHeaderTitle').html("Oggle Dashboard");
                 break;
             case "admin":
                 document.title = "admin : Brucheum.com";
                 $('#fancyHeaderTitle').html("Brucheum.com");
-                $('#topHeaderRow').html("admin");
+                $('#topRowLeftContainer').html("admin");
                 $('#searchBox').hide();
                 break;
             case "IntelDesign":
@@ -320,13 +320,13 @@ function mailMe() {
                 document.title = "blog : CurtisRhodes.com";
                 $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/house.gif");
                 $('#fancyHeaderTitle').html("CurtisRhodes.com");
-                $('#topHeaderRow').html("blog");
+                $('#topRowLeftContainer').html("blog");
                 $('#searchBox').hide();
                 break;
             }
             case "index": {
                 changeFavoriteIcon("redBallon");
-                $('#topHeaderRow').html("Home of the Big Naturals");
+                $('#topRowLeftContainer').html("Home of the Big Naturals");
                 //document.title = "welcome : OggleBooble";
                 break;
             }
@@ -367,7 +367,7 @@ function mailMe() {
         switch (headerContext) {
             case "oggleIndex":
             case "oggleAlbum": {
-                $('#topHeaderRow').html(
+                $('#topRowLeftContainer').html(
                     "<span class='bigTits' onclick='headerMenuClick(\"boobs\",3)'>BIG Naturals</span></a > organized by\n" +
                     "<span onclick='headerMenuClick(\"boobs\",3916)'>poses, </span>\n" +
                     "<span onclick='headerMenuClick(\"boobs\",136)'> positions,</span>\n" +
@@ -389,7 +389,7 @@ function mailMe() {
                 //$('#breadcrumbContainer').append("<a class='activeBreadCrumb' href=\"javascript:showReportsSection();\">Intelligent Design</a>");
                 break;
             case "soft": {
-                $('#topHeaderRow').html(
+                $('#topRowLeftContainer').html(
                     "<span onclick='headerMenuClick(\"soft\",379)'>pussy, </span>\n" +
                     "<span onclick='headerMenuClick(\"soft\",420)'>boob suckers, </span>\n" +
                     "<span onclick='headerMenuClick(\"soft\",498)'>big tit lezies, </span>\n" +
@@ -399,7 +399,7 @@ function mailMe() {
                 break;
             }
             case "playboy":
-                $('#topHeaderRow').html(
+                $('#topRowLeftContainer').html(
                     "<span onclick='headerMenuClick(\"playboyIndex\",3796)'>cybergirls, </span>\n" +
                     "<span onclick='headerMenuClick(\"playboyIndex\",6368)'>playboy plus, </span>\n" +
                     "<span onclick='headerMenuClick(\"playboyIndex\",6095)'>muses, </span>\n" +
@@ -410,7 +410,7 @@ function mailMe() {
                 );
                 break;
             case "playboyIndex":
-                $('#topHeaderRow').html(
+                $('#topRowLeftContainer').html(
                     "<span onclick='headerMenuClick(\"playboyIndex\",3796)'>cybergirls, </span>\n" +
                     //"<span onclick='headerMenuClick(\"playboyIndex\",4015)'>pictorials, </span>\n" +
                     "<span onclick='headerMenuClick(\"playboyIndex\",6368)'>playboy plus, </span>\n" +
@@ -450,7 +450,7 @@ function mailMe() {
                 // <div id='hdrBtmRowSec3' class='hdrBtmRowOverflow'></div>\n" +
                 break;
             case "porn": {
-                $('#topHeaderRow').html(
+                $('#topRowLeftContainer').html(
                     "<span onclick='headerMenuClick(\"porn\",243)'>cock suckers, </span>\n" +
                     "<span onclick='headerMenuClick(\"porn\",460)'>titty fuck, </span>\n" +
                     "<span onclick='headerMenuClick(\"porn\",426)'>penetration, </span>\n" +
@@ -460,7 +460,7 @@ function mailMe() {
                 break;
             }
             case "sluts": {
-                $('#topHeaderRow').html(
+                $('#topRowLeftContainer').html(
                     "<span onclick='headerMenuClick(\"porn\",1174)'>big titters gone bad, </span>\n" +
                     "<span onclick='headerMenuClick(\"porn\",3728)'>blonde cocksuckers, </span>\n" +
                     "<span onclick='headerMenuClick(\"porn\",4271)'>retro porn stars, </span>\n" +
@@ -578,9 +578,9 @@ function mailMe() {
                    <img id='divSiteLogo' title='home' class='siteLogo' src='https://common.ogglefiles.com/img/redballon.png'/>
                </div>\n
                <div class='headerBodyContainer'>
-                   <div class='flexContainer'>
+                   <div id='topHeaderRow' class='flexContainer'>
                        <div id='fancyHeaderTitle' onclick='headerTitleClick()' class='calligraphyTitle'></div >
-                       <div id='topHeaderRow' class='hdrTopRowMenu'></div>
+                       <div id='topRowLeftContainer' class='hdrTopRowMenu'></div>
                        <div id='topRowMiddleContainer'></div>
                        <div id='topRowRightContainer'></div>
                        <div id='searchBox' class='oggleSearchBox'>

@@ -94,7 +94,7 @@ function getSubFolders(folderId) {
     }
 }
 
-function getAlbumPageInfo(folderId, islargeLoad) {
+async function getAlbumPageInfo(folderId, islargeLoad) {
     try {
         let infoStart = Date.now();
         if (isNullorUndefined(folderId)) {
@@ -109,9 +109,9 @@ function getAlbumPageInfo(folderId, islargeLoad) {
                 $('#albumTopRow').show();
                 $('#seoPageName').html(catfolder.FolderName);
 
-                setBreadcrumbs(folderId, catfolder.FolderType, catfolder.RootFolder);
+                setBreadcrumbs(catfolder);
 
-                setColors(catfolder);
+                setColors(catfolder.RootFolder, catfolder.FolderName);
 
                 addTrackbackLinks(folderId);
 
@@ -166,61 +166,7 @@ function getAlbumPageInfo(folderId, islargeLoad) {
     }
 }
 
-function setColors(catfolder) {
-    switch (catfolder.RootFolder) {
-        case "playboy":
-        case "centerfold":
-        case "cybergirl":
-        case "magazine":
-        case "muses":
-        case "plus":
-            displayHeader("playboy");
-            displayFooter("playboy");
-            document.title = catfolder.FolderName + " : OggleBooble";
-            $('body').css({ "background-color": "#000", "color": "#fff" });
-            $('#oggleHeader').css("background-color", "#000");
-            $('#carouselContainer').css("background-color", "#000");
-            break;
-        case "bond":
-            displayHeader("bond");
-            displayHeader("porn");
-            displayFooter("porn");
-            document.title = catfolder.FolderName + " : OggleBooble";
-            break;
-        case "porn":
-            document.title = catfolder.FolderName + " : OgglePorn";
-            $('#oggleHeader').css("background-color", "darkorange");
-            $('body').css({ "background-color": "darksalmon", "color": "#fff" });
-            $('#carouselContainer').css("background-color", "darksalmon");
-            //$('#topHeaderRow').css("color", "#f2e289");
-            //$('#activeBreadCrumb').css("color", "#f2e289");
-            //$('#carouselContainer').css("background-color", "darksalmon");
-            displayHeader("porn");
-            displayFooter("porn");
-            break;
-        case "sluts":
-            document.title = catfolder.FolderName + " : OggleSluts";
-            $('#oggleHeader').css("background-color", "deeppink");
-            $('body').css("background-color", "palevioletred");
-            displayHeader("sluts");
-            displayFooter("porn");
-            break;
-        case "soft":
-            document.title = catfolder.FolderName + " : OggleSoftcore";
-            $('#oggleHeader').css("background-color", "deeppink");
-            $('body').css({ "background-color": "darksalmon", "color": "#fff" });
-            displayHeader("soft");
-            displayFooter("porn");
-            break;
-        default:
-            document.title = catfolder.FolderName + " : OggleBooble";
-            displayHeader("oggleAlbum");
-            displayFooter("oggleAlbum");
-    }
-
-}
-
-function setBreadcrumbs(folderId,folderType, rootFolder) {
+function setBreadcrumbs(catfolder) {
     try {
         //$('#aboveImageContainerMessageArea').html('loading breadcrumbs');
         $('#breadcrumbContainer').html("<img style='height:27px' src='https://common.ogglefiles.com/img/loader.gif'/>");
@@ -228,21 +174,21 @@ function setBreadcrumbs(folderId,folderType, rootFolder) {
             url: "php/yagdrasselFetchAll.php?query=Select * from VwDirTree",
             success: function (data) {
                 let dirTreeArray = JSON.parse(data);
-                let breadcrumbItem = dirTreeArray.filter(function (item) { return item.Id === folderId; });
+                let breadcrumbItem = dirTreeArray.filter(function (item) { return item.Id === catfolder.Id; });
                 if (breadcrumbItem.length == 0) {
                     $('#breadcrumbContainer').html("no good");
                     return;
                 }
 
-                switch (folderType) {
+                switch (catfolder.FolderType) {
                     case "singleModel":
                     case "singleParent":  // showFileDetailsDialog
                         $('#breadcrumbContainer').html("<div class='inactiveBreadCrumb' " +
-                            "onclick='showFileDetailsDialog(" + folderId + ")'>" + breadcrumbItem[0].FolderName + "</div>");
+                            "onclick='showFileDetailsDialog(" + catfolder.Id + ")'>" + breadcrumbItem[0].FolderName + "</div>");
                         break;
                     default: // showFolderInfoDialog
                         $('#breadcrumbContainer').html("<div class='inactiveBreadCrumb' " +
-                            "onclick='showFolderInfoDialog(" + folderId + ")'>" + breadcrumbItem[0].FolderName + "</div>");
+                            "onclick='showFolderInfoDialog(" + catfolder.Id + ")'>" + breadcrumbItem[0].FolderName + "</div>");
                 }
 
                 let parent = breadcrumbItem[0].Parent;
@@ -267,13 +213,15 @@ function setBreadcrumbs(folderId,folderType, rootFolder) {
                         }
                     }
                 }
-                switch (rootFolder) {
+
+                switch (catfolder.RootFolder) {
                     case "playboy":
                     case "centerfold":
                     case "cybergirl":
                     case "magazine":
                     case "muses":
                     case "plus":
+                        $('.inactiveBreadCrumb').css({ "color": "wheat" });
                         $('.activeBreadCrumb').css("color", "#f2e289");
                         break;
                 }
@@ -286,6 +234,62 @@ function setBreadcrumbs(folderId,folderType, rootFolder) {
         });
     } catch (e) {
         logOggleError("CAT", folderId, e, "set breadcrumbs");
+    }
+}
+
+function setColors(rootFolder, folderName) {
+    switch (rootFolder) {
+        case "playboy":
+        case "centerfold":
+        case "cybergirl":
+        case "magazine":
+        case "muses":
+        case "plus":
+            displayHeader("playboy");
+            displayFooter("playboy");
+            document.title = folderName + " : OggleBooble";
+            $('body').css({ "background-color": "#000", "color": "#fff" });
+            $('.inactiveBreadCrumb').css({ "color": "wheat" });
+            $('.activeBreadCrumb').css("color", "#f2e289");
+            $('#topRowLeftContainer').css({ "color": "wheat" });
+            $('#oggleHeader').css("background-color", "#000");
+            $('#carouselContainer').css("background-color", "#000");
+            break;
+        case "bond":
+            displayHeader("bond");
+            displayHeader("porn");
+            displayFooter("porn");
+            document.title = folderName + " : OggleBooble";
+            break;
+        case "porn":
+            document.title = folderName + " : OgglePorn";
+            $('#oggleHeader').css("background-color", "darkorange");
+            $('body').css({ "background-color": "darksalmon", "color": "#fff" });
+            $('#carouselContainer').css("background-color", "darksalmon");
+            //$('#topHeaderRow').css("color", "#f2e289");
+            //$('#activeBreadCrumb').css("color", "#f2e289");
+            //$('#carouselContainer').css("background-color", "darksalmon");
+            displayHeader("porn");
+            displayFooter("porn");
+            break;
+        case "sluts":
+            document.title = folderName + " : OggleSluts";
+            $('#oggleHeader').css("background-color", "deeppink");
+            $('body').css("background-color", "palevioletred");
+            displayHeader("sluts");
+            displayFooter("porn");
+            break;
+        case "soft":
+            document.title = folderName + " : OggleSoftcore";
+            $('#oggleHeader').css("background-color", "deeppink");
+            $('body').css({ "background-color": "darksalmon", "color": "#fff" });
+            displayHeader("soft");
+            displayFooter("porn");
+            break;
+        default:
+            document.title = folderName + " : OggleBooble";
+            displayHeader("oggleAlbum");
+            displayFooter("oggleAlbum");
     }
 }
 
