@@ -352,8 +352,9 @@ function showPageHits(folderId) {
             type: "GET",
             url: "php/registroFetch.php?query=select count(*) as Hits from PageHit where PageId=" + folderId,
             success: function (data) {
-                //let pgc = JSON.parse(data);
-                $('#footerPagehit').html("page hits: " + data);
+                let pgHits = JSON.parse(data);
+                //let pgHits = JSON.parse(data);
+                $('#footerPagehit').html("page hits: " + pgHits.Hits);
             },
             error: function (jqXHR) {
                 logOggleError("CAT", folderId, getXHRErrorDetails(jqXHR), "verify VisitorId")

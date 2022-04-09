@@ -109,7 +109,7 @@ async function processFolder(folderId) {
 
                                     processLinks(catFolder, subfolders, imageFiles, physcialFiles);
 
-                                    return;
+                                    return true;
                                 },
                                 error: function (jqXHR) {
                                     $('#dashBoardLoadingGif').hide();
@@ -150,6 +150,8 @@ async function processLinks(catFolder, subfolders, imageFiles, physcialFiles) {
     await addMissingImageFiles(catFolder, imageFiles, physcialFiles);
 
     subfolders.forEach(async (subfolder) => {
+
+
         await processFolder(subfolder.Id);
     });
     

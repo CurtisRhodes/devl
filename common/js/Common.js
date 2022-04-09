@@ -714,7 +714,7 @@ function mailMe() {
                     $('#footerCol4').append();
                     $('#footerCol5').append();
                     $('#footerCol6').append(`
-                        <div class='clickable' onclick='window.open("https://ogglefiles.com/admin/OggleDashboard.html")'>dashboard</div>`
+                        <div class='clickable' onclick='window.open("https://admin.ogglebooble.com")'>dashboard</div>`
                     );
                     $('#footerCol7').html();
                     break;
