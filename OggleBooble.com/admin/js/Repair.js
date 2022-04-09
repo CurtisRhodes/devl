@@ -81,7 +81,117 @@ function performRepairLinks() {
     let rootFolderId = $('#txtActiveFolderId').val();
     dashboardDialogBoxClose("addNewImages");
 
-    repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans);
+    processFolder(rootFolderId);
+    // repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans);
+}
+
+async function processFolder(folderId) {
+    // 1. get single catfolder row 
+    $.ajax({
+        url: "php/yagdrasselFetchAll.php?query=select * from CategoryFolder where Id=" + folderId,
+        success: function (data) {
+            let rootFolderRow = JSON.parse(data);
+            // 2. get its subfolders
+            $.ajax({
+                url: 'php/yagdrasselFetchAll.php?query=select * from CategoryFolder where Parent=' + folderId,
+                success: function (data) {
+                    let subfolders  = JSON.parse(data);
+                    // 3.  get image files
+                    $.ajax({
+                        url: 'php/yagdrasselFetchAll.php?query=select * from ImageFile where FolderId=' + folderId,
+                        success: function (data) {
+                            let imageFiles = JSON.parse(data);
+                            // 3.  get physcial files
+                            $.ajax({
+                                url: "php/getOggleFolder.php?path=../../danni/" + rootFolderRow.FolderPath + "&folderId=" + folderId,
+                                success: function (data) {
+                                    let physcialFiles = JSON.parse(data);
+
+                                    processLinks(subfolders, imageFiles, physcialFiles);
+
+                                },
+                                error: function (jqXHR) {
+                                    $('#dashBoardLoadingGif').hide();
+                                    let errMsg = getXHRErrorDetails(jqXHR);
+                                    alert("get child folders XHR: " + errMsg);
+                                }
+                            });
+                        },
+                        error: function (jqXHR) {
+                            $('#dashBoardLoadingGif').hide();
+                            let errMsg = getXHRErrorDetails(jqXHR);
+                            alert("get child folders XHR: " + errMsg);
+                        }
+                    });
+                },
+                error: function (jqXHR) {
+                    $('#dashBoardLoadingGif').hide();
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    alert("get child folders XHR: " + errMsg);
+                }
+            });
+        },
+        error: function (jqXHR) {
+            $('#dashBoardLoadingGif').hide();
+            let errMsg = getXHRErrorDetails(jqXHR);
+            alert("get child folders XHR: " + errMsg);
+        }
+    });
+}
+
+async function processLinks(subfolders, imageFiles, physcialFiles) {
+
+    await removeOrphanImageRows(physcialFiles, imageFiles);
+
+    
+
+
+    //await processFolder(obj.Id);
+
+    //$.each(subfolders, function (idx, obj) {
+    //    await processFolder(obj.Id);
+    //});
+
+}
+
+async function removeOrphanImageRows(physcialFiles, imageFiles) {
+    if (imageFiles.lastFolderId > 0) {
+        let rowsToProcess = imageFiles.length;
+        $.each(imageFiles, function (idx, imageFile) {
+            if (abandon) return;
+            let physcialFileRow = physcialFiles.filter(node => encodeURI(node.name) == encodeURI(imageFile.FileName));
+            if (physcialFileRow.length == 0) {
+                // we have a data record with no physcial file
+                $.ajax({
+                    type: "GET",
+                    url: "php/removeImageFile.php?imageFileId=" + imageFile.Id,
+                    success: function (removeImageFileSuccess) {
+                        if (removeImageFileSuccess.trim().startsWith("ok")) {
+                            repairReport.imageRowsRemoved.push("(" + rootFolderId + ")  " + databaseImageFile.FileName);
+                        }
+                        else {
+                            console.log(removeImageFileSuccess);
+                            repairReport.errors.push("<div style='color:red'>add image file error: " + removeImageFileSuccess + "</div>");
+                        }
+                        rowsProcessed++;
+                    },
+                    error: function (jqXHR) {
+                        let errMsg = getXHRErrorDetails(jqXHR)
+                        repairReport.errors.push("<div style='color:red'>add image file XHR error: " + errMsg + "</div>");
+                        rowsProcessed++;
+                    }
+                });
+            }
+            else
+                rowsProcessed++;
+            if (rowsProcessed == rowsToProcess)
+                return;
+            repairReport.physcialFilesProcessed++;
+            showRepairReport();
+        });
+    }
+    else
+        return;
 }
 
 function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
@@ -99,6 +209,7 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
                             return;
                         }
                         let jchildDirs = JSON.parse(childDirs);
+
                         // GET IMAGEFILE ROWS FROM DATABASE
                         $.ajax({
                             url: "php/yagdrasselFetchAll.php?query=select * from ImageFile where FolderId=" + rootFolderId,
@@ -106,92 +217,91 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
                                 let databaseImageFilesRows = JSON.parse(imageFiles);
                                 let fullPath = "../../danni/" + catFolder.FolderPath;
                                 // GET PHYSCIAL FILES AS PER SCANDIR
-                                $.ajax({
-                                    url: "php/getOggleFolder.php?path=" + fullPath + "&folderId=" + rootFolderId,
-                                    success: function (allFiles) {
-                                        if (allFiles == "false") {
-                                            repairReport.errors.push("parentDirInfo folder not found: " + fullPath);
-                                            showRepairReport();
-                                            return;
-                                        }
-                                        let jallFiles = JSON.parse(allFiles);
-                                        //let physcialDirFiles = jallFiles.filter(node => node.type == "dir");
-                                        let physcialImageFileRows = jallFiles.filter(node => node.type == "file");
-                                        let removeOrphansStatus = renameImagesStatus = addMissingStatus = "done";
 
 
-                                        if (physcialImageFileRows.length > 0) {
-                                            let removeOrphansStatus = renameImagesStatus = addMissingStatus = "not started";
-                                            let desiredFileNamePrefix = catFolder.actualFolderName;
-                                            if (catFolder.FolderType == "singleChild")
-                                                desiredFileNamePrefix = catFolder.ParentName;
+
+                                $.each(jallFiles, function (idx,) {
 
 
-                                            // 1. REMOVE ORPHANS
-                                            if (removeOrphansStatus == "not started") {
-                                                removeOrphansStatus = "running";
-                                                removeOrphansStatus = removeOrphanImageRows(physcialImageFileRows, databaseImageFilesRows, rootFolderId);
-                                            }
 
-                                            // 2. RENAME
-                                            let renameInterval = setInterval(function () {
-                                                if (removeOrphansStatus == "done") {
-                                                    clearInterval(renameInterval);
-                                                    renameImagesStatus = "running";
-                                                    renameImagesStatus = renameImageFiles(desiredFileNamePrefix, fullPath, physcialImageFileRows);
-                                                }
-                                            }, 50);
-
-                                            // 2. ADD MISSING
-                                            let addMissingInterval = setInterval(function () {
-                                                if (removeOrphansStatus == "done")
-                                                    if (renameImagesStatus == "done") {
-                                                        clearInterval(addMissingInterval);
-                                                        addMissingStatus = "running";
-                                                        addMissingStatus = addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows,
-                                                            databaseImageFilesRows, rootFolderId, fullPath);
-                                                    }
-                                            }, 50);
+                                })
 
 
-                                            // COMPARE PHYSCIAL DIRECTORIES WITH DATABSE CATEGORYFOLDER ROWS
-                                            //if (physcialDirFiles.length > 0) {
-                                            //    $.each(physcialDirFiles, function (idx, physcialDirectory) {
-                                            //        let dbChildFolder = jchildDirs.filter(node => encodeURI(node.actualFolderName) == encodeURI(physcialDirectory.name));
-                                            //        if (dbChildFolder.length == 0) {
-                                            //            repairReport.missingPhyscialDirectories.push("no CategoryFolder row for: (" + rootFolderId + ") " + physcialDirectory.name);
-                                            //        }
-                                            //    });
-                                            //}
 
-                                        }
-                                        repairReport.FoldersProcessed++;
-                                        let recurrInterval = setInterval(function () {
-                                            if (removeOrphansStatus == "done") {
-                                                if (renameImagesStatus == "done") {
-                                                    if (addMissingStatus == "done") {
-                                                        clearInterval(recurrInterval);
-                                                        if (recurr)
-                                                            $.each(jchildDirs, function (idx, childFolder) {
-                                                                repairImagesRecurr(childFolder.Id, recurr, addNew, removeOrphans);
-                                                            });
-                                                    }
-                                                    else console.log("add missing status: " + addMissingStatus);
-                                                }
-                                                else console.log("rename images status: " + renameImagesStatus);
-                                            }
-                                            else console.log("remove orphan status: " + removeOrphansStatus);
-                                        }, 500);
 
-                                        //alert("and done");  //    $('body').off();       
-                                        showRepairReport();
-                                    },
-                                    error: function (jqXHR) {
-                                        $('#dashBoardLoadingGif').hide();
-                                        let errMsg = getXHRErrorDetails(jqXHR);
-                                        alert("get getOggleFolder AJX: " + errMsg);
+                                //let physcialDirFiles = jallFiles.filter(node => node.type == "dir");
+                                let physcialImageFileRows = jallFiles.filter(node => node.type == "file");
+                                let removeOrphansStatus = renameImagesStatus = addMissingStatus = "done";
+
+
+                                if (physcialImageFileRows.length > 0) {
+
+
+
+                                    let removeOrphansStatus = renameImagesStatus = addMissingStatus = "not started";
+                                    let desiredFileNamePrefix = catFolder.actualFolderName;
+                                    if (catFolder.FolderType == "singleChild")
+                                        desiredFileNamePrefix = catFolder.ParentName;
+
+
+                                    // 1. REMOVE ORPHANS
+                                    if (removeOrphansStatus == "not started") {
+                                        removeOrphansStatus = "running";
+                                        removeOrphanImageRows(physcialImageFileRows, databaseImageFilesRows, rootFolderId).then(removeOrphansStatus = "done");
                                     }
-                                });
+
+                                    // 2. RENAME
+                                    let renameInterval = setInterval(function () {
+                                        if (removeOrphansStatus == "done") {
+                                            clearInterval(renameInterval);
+                                            renameImagesStatus = "running";
+                                            renameImagesStatus = renameImageFiles(desiredFileNamePrefix, fullPath, physcialImageFileRows);
+                                        }
+                                    }, 50);
+
+                                    // 2. ADD MISSING
+                                    let addMissingInterval = setInterval(function () {
+                                        if (removeOrphansStatus == "done")
+                                            if (renameImagesStatus == "done") {
+                                                clearInterval(addMissingInterval);
+                                                addMissingStatus = "running";
+                                                addMissingStatus = addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows,
+                                                    databaseImageFilesRows, rootFolderId, fullPath);
+                                            }
+                                    }, 50);
+
+
+                                    // COMPARE PHYSCIAL DIRECTORIES WITH DATABSE CATEGORYFOLDER ROWS
+                                    //if (physcialDirFiles.length > 0) {
+                                    //    $.each(physcialDirFiles, function (idx, physcialDirectory) {
+                                    //        let dbChildFolder = jchildDirs.filter(node => encodeURI(node.actualFolderName) == encodeURI(physcialDirectory.name));
+                                    //        if (dbChildFolder.length == 0) {
+                                    //            repairReport.missingPhyscialDirectories.push("no CategoryFolder row for: (" + rootFolderId + ") " + physcialDirectory.name);
+                                    //        }
+                                    //    });
+                                    //}
+
+                                }
+                                repairReport.FoldersProcessed++;
+                                let recurrInterval = setInterval(function () {
+                                    if (removeOrphansStatus == "done") {
+                                        if (renameImagesStatus == "done") {
+                                            if (addMissingStatus == "done") {
+                                                clearInterval(recurrInterval);
+                                                if (recurr)
+                                                    $.each(jchildDirs, function (idx, childFolder) {
+                                                        repairImagesRecurr(childFolder.Id, recurr, addNew, removeOrphans);
+                                                    });
+                                            }
+                                            else console.log("add missing status: " + addMissingStatus);
+                                        }
+                                        else console.log("rename images status: " + renameImagesStatus);
+                                    }
+                                    else console.log("remove orphan status: " + removeOrphansStatus);
+                                }, 500);
+
+                                //alert("and done");  //    $('body').off();       
+                                showRepairReport();
                             },
                             error: function (jqXHR) {
                                 $('#dashBoardLoadingGif').hide();
@@ -203,14 +313,14 @@ function repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans) {
                     error: function (jqXHR) {
                         $('#dashBoardLoadingGif').hide();
                         let errMsg = getXHRErrorDetails(jqXHR);
-                        alert("get child folders XHR: " + errMsg);
+                        alert("get getOggleFolder AJX: " + errMsg);
                     }
                 });
             },
             error: function (jqXHR) {
                 $('#dashBoardLoadingGif').hide();
                 let errMsg = getXHRErrorDetails(jqXHR);
-                alert("get CategoryFolder XHR: " + errMsg);
+                alert("get child folders XHR: " + errMsg);
             }
         });
     } catch (e) {
@@ -223,71 +333,6 @@ function isGuid(value) {
     var regex = /[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}/i;
     var match = regex.exec(value);
     return match != null;
-}
-
-function removeOrphanImageRows(physcialImageFileRows, databaseImageFilesRows, rootFolderId) {
-    let timer1 = Date.now();
-    let rowsProcessed = 0;
-    let rowsTpProcess = databaseImageFilesRows.length;
-    if (asyncBlock1 == null) {
-
-        let asyncBlock1 = setInterval(function () {
-            $.each(databaseImageFilesRows, function (idx, databaseImageFile) {
-                if (abandon) return;
-                let physcialFileRow = physcialImageFileRows.filter(node => encodeURI(node.name) == encodeURI(databaseImageFile.FileName));
-                if (physcialFileRow.length == 0) {
-                    // we have a data record with no physcial file
-                    if (removeOrphans)
-                        $.ajax({
-                            type: "GET",
-                            url: "php/removeImageFile.php?imageFileId=" + databaseImageFile.Id,
-                            success: function (removeImageFileSuccess) {
-                                if (removeImageFileSuccess.trim().startsWith("ok")) {
-                                    repairReport.imageRowsRemoved.push("(" + rootFolderId + ")  " + databaseImageFile.FileName);
-                                }
-                                else {
-                                    console.log(removeImageFileSuccess);
-                                    repairReport.errors.push("<div style='color:red'>add image file error: " + removeImageFileSuccess + "</div>");
-                                }
-                                showRepairReport();
-                                rowsProcessed++;
-                            },
-                            error: function (jqXHR) {
-                                let errMsg = getXHRErrorDetails(jqXHR)
-                                repairReport.errors.push("<div style='color:red'>add image file XHR error: " + errMsg + "</div>");
-                                showRepairReport();
-                                rowsProcessed++;
-                            }
-                        });
-                    else {
-                        repairReport.orphanImages.push("unneeded imageFile row: (" + rootFolderId + ") " + imageFile.FileName);
-                        showRepairReport();
-                        rowsProcessed++;
-                    }
-                }
-                else {
-                    rowsProcessed++;
-                }
-                if (!testing) {
-                    let delta = Date.now() - timer1;
-                    if (delta > 5001) {
-                        if (clearInterval != null) {
-                            clearInterval(asyncBlock1);
-                            asyncBlock1 = null;
-                            //alert("remove orphans process taking too long")
-                        }
-                    }
-                }
-                repairReport.physcialFilesProcessed++;
-            });
-            if (rowsProcessed >= rowsTpProcess) {
-                clearInterval(asyncBlock1);
-                asyncBlock1 = null;
-                showRepairReport();
-            }
-        }, 820);
-    }
-    return "done";
 }
 
 function renameImageFiles(desiredFileNamePrefix, path, physcialImageFileRows) {
@@ -363,10 +408,6 @@ function addMissingImageFiles(desiredFileNamePrefix, physcialImageFileRows, data
     let rowsTpProcess = physcialImageFileRows.length;
     addImageRows = 0;
     let asyncBlock5 = setInterval(function () {
-        $.each()
-
-
-        
         $.each(physcialImageFileRows, function (idx, physcialImageFile) {
             if (abandon) return;
             let rowOk = false;

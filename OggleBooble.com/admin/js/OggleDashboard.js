@@ -232,9 +232,12 @@ function updateFolderCounts() {
         let sStart = Date.now();
         $('#dashBoardLoadingGif').show();
         let rootPath = $('#txtCurrentActiveFolder').val().trim();
+
+        let rootPath2 = $('#txtActiveFolderId').val() + "&rootPath=" + rootPath;
+
         $.ajax({
             type: "GET",
-            url: "php/getFolderCounts.php?rootId=" + $('#txtActiveFolderId').val() + "&rootPath=" + rootPath,
+            url: "php/getFolderCounts.php?rootId=" + rootPath2,
             success: function (data) {
                 $('#dashBoardLoadingGif').hide();
                 let returnObject = JSON.parse(data);
