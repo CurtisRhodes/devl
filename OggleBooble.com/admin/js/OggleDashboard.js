@@ -1,6 +1,6 @@
 ﻿// let settingsImgRepo = 'https ://img.brucheum.com/';
 // let settingsImgRepo = 'st21569.ispot.cc/danni/';
-let settingsImgRepo = 'https://ogglefiles.com/danni/';
+const settingsImgRepo = 'https://ogglefiles.com/danni/';
 let startRoot = 10326;
 
 // LOAD DIR TREE

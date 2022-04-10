@@ -1,4 +1,7 @@
-﻿const settingsImgRepo = 'https://ogglefiles.com/danni/';
+﻿//const settingsImgRepo = 'https://ogglefiles.com/danni/';
+const settingsImgRepo = 'https://ogglebooble.com/danni/';
+
+
 let slideshowVisible = false, imageViewerVisible = false;
 
 function captureKeydownEvent(event) {
