@@ -56,7 +56,7 @@ function loadImageResults(vLink) {
             if (vLink.FolderId !== vLink.SrcId) {
                 $('#' + vLink.LinkId + '').append(`<div class='knownModelIndicator'>
                 <img src='https://common.ogglefiles.com/img/foh01.png' title='`+ vLink.SrcFolder + `' 
-                    onclick='window.open(\"https://ogglebooble.com/album.html?folder=\"` + vLink.SrcId + `'/></div>`);
+                    onclick='window.open(\"https://ogglebooble.com/album.html?folder=` + vLink.SrcId + `\")'/></div>`);
             }
         }
     } catch (e) {

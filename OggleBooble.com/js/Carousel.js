@@ -4,7 +4,7 @@ let carouselFooterHeight = 40, intervalReady = true, initialImageLoad = false, i
     vCarouselInterval = null, lastImageIndex = 0, lastErrorThrown = 0,
     mainImageClickId, knownModelLabelClickId, imageTopLabelClickId, footerLabelClickId,
     jsCarouselSettings, arryItemsShownCount = 0, totalArryItemsShownCount = 0,
-    cacheSize = 45, carouselRoot;
+    cacheSize = 45, carouselRoot, imgIn = 0.0, imgOut = 1.0;
 
 function launchCarousel(pageContext) {
     try {
@@ -93,6 +93,11 @@ function intervalBody() {
                 intervalReady = false;
                 imageIndex = Math.floor(Math.random() * carouselRows.length);
 
+                while (withinLast100()){
+                    console.log(carouselRows[imageIndex].ImageFileName + " alreday shown");
+                    imageIndex = Math.floor(Math.random() * carouselRows.length);
+                }
+
                 if (arryItemsShownCount > carouselRows.length) {
                     if (confirm("items shown: " + arryItemsShownCount + "  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
                         loadImages(true);
@@ -101,17 +106,34 @@ function intervalBody() {
                     totalArryItemsShownCount += arryItemsShownCount;
                     arryItemsShownCount = 0;
                 }
-                let loadFunctionHandled = false;
-                $('#thisCarouselImage').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow").load(function () {
-                    if (!loadFunctionHandled) {
-                        loadFunctionHandled = true;
-                        arryItemsShownCount++;
-                        resizeCarousel();
-                        setLabelLinks(imageIndex);
-                        $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
-                        imageHistory.push(imageIndex);
-                        intervalReady = true;
-                    }
+
+                $('#albumPageLoadingGif').show();
+                $('#carouselImage0').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow").load(function () {
+                    $('#albumPageLoadingGif').hide();
+                    resizeCarousel();
+                    imgIn = 0.0, imgOut = 1.0;
+                    next = 0.0, curr = 1.0;
+                    let opTrans = setInterval(function () {
+                        imgIn += 0.05;
+                        imgOut -= 0.05;
+                        $('#carouselImage0').css('opacity', imgIn);
+                        $('#carouselImage1').css('opacity', imgOut);
+
+                        if (imgIn >= 1.0) {
+                            clearInterval(opTrans);
+                            opTrans = null;
+                            $('#carouselImage1').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName);
+                            $('#carouselImage1').css('opacity', 1);
+                            $('#carouselImage0').css('opacity', 0);
+
+                            arryItemsShownCount++;
+                            resizeCarousel();
+                            setLabelLinks(imageIndex);
+                            $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
+                            imageHistory.push(imageIndex);
+                            intervalReady = true;
+                        }
+                    }, 280);
                 });
             }
         }
@@ -216,7 +238,7 @@ function setLabelLinks(llIdx) {
 
 function setLabelLinksPositions() {
     let containerTop = $('#carouselImageInnerContainer').offset().top;
-    let containerBottom = $('#thisCarouselImage').height() + $('#carouselImageInnerContainer').offset().top - $('#carouselFooterLabel').height() - 10;
+    let containerBottom = $('.carouselImage').height() + $('#carouselImageInnerContainer').offset().top - $('#carouselFooterLabel').height() - 10;
 
     $("#imageTopLabel").offset({
         top: containerTop,
@@ -321,11 +343,10 @@ function refreshCache(forceRefresh) {
     }
 }
 
-function insureUnique100() {
+function withinLast100() {
     let alreadyShow = false;
     try {
         if (!isNullorUndefined(imageHistory.find(h => h == imageIndex))) {
-            console.log(carouselRows[imageIndex].ImageFileName + " alreday shown");
             alreadyShow = true;
         }
 
@@ -400,7 +421,7 @@ function assuranceArrowClick(direction) {
             pause();
             let popimageIndex = imageHistory[imageHistory.length - 1];
             let popimage = settingsImgRepo + carouselRows[popimageIndex].ImageFileName;
-            $('#thisCarouselImage').attr('src', popimage);
+            $('#carouselImage1').attr('src', popimage);
             setLabelLinks(popimageIndex);
         }
     }
@@ -442,8 +463,8 @@ function imgErrorThrown() {
         if (lastErrorThrown != imageIndex) {
             lastErrorThrown = imageIndex;
 
-            $('#thisCarouselImage').attr('src', "https://common.ogglefiles.com/img/redballon.png");
-            $('#thisCarouselImage').css('height', window.innerHeight * .5);
+            $('#carouselImage1').attr('src', "https://common.ogglefiles.com/img/redballon.png");
+            $('.carouselImage').css('height', window.innerHeight * .5);
 
             //logOggleError("ILF", 11, carouselRows[imageIndex].ImageFileName + " not found", "carousel");
             //logOggleError("ILF", 11, carouselRows[imageIndex].ImageFileName+ " not found", "carousel");
@@ -456,13 +477,27 @@ function imgErrorThrown() {
 
 function resizeCarousel() {
     try {
-        $('#thisCarouselImage').css('height', window.innerHeight * .62);
-        let marginOffsetWidth = ($('#carouselImageOutterContainer').width() / 2) - ($('#carouselImageInnerContainer').width() / 2);
-        $('#carouselImageInnerContainer').css('margin-left', marginOffsetWidth);
 
         if (typeof carouselImageInnerContainer === 'object') {
+            let imgHeight = window.innerHeight * .62;
 
-            let imageW = $('#carouselImageInnerContainer').width();
+            let marginOffsetWidth = ($('#carouselImageOutterContainer').width() / 2) - ($('#carouselImageInnerContainer').width() / 2);
+            $('#carouselImageInnerContainer').css('margin-left', marginOffsetWidth);
+
+            let imageT = $('#oggleHeader').height();
+            $('.carouselImage').css({
+                'height': imgHeight,
+                "min-width": 400,
+                'top': imageT + 5,
+                "left": marginOffsetWidth + 50
+            });
+
+            let imageW = $('.carouselImage').width();
+            $('#doubleImageContainer').css({
+                'height': imgHeight,
+                "width": imageW,
+                "left": marginOffsetWidth + 50
+            });
 
             $('#carouselControls').css({
                 "width": imageW - 100,
@@ -486,10 +521,13 @@ function carouselHtml() {
         "           <div id='imageTopLabel' class='categoryTitleLabel' onclick='clickViewAlbum(2)'></div>\n" +
         "           <div id='carouselFooterLabel' class='categoryTitleLabel' onclick='clickViewAlbum(4)'></div>\n" +
         "           <img class='assuranceArrows' onclick='assuranceArrowClick(\"back\")' src='https://common.ogglefiles.com/img/leftArrowOpaque02.png'/>\n" +
-        "           <img id='thisCarouselImage' class='carouselImage' src='https://common.ogglefiles.com/img/ingranaggi3.gif' " +
+        "           <div id='doubleImageContainer' class='imageStablizer'>" +
+        "               <img id='carouselImage0' class='carouselImage'/>" +
+        "               <img id='carouselImage1' class='carouselImage' src='https://common.ogglefiles.com/img/ingranaggi3.gif' " +
         "               onerror='imgErrorThrown()'" +
         "               oncontextmenu='carouselContextMenu()'" +
         "               onclick='clickViewAlbum(1)' />\n" +
+        "           </div>" +
         "           <img class='assuranceArrows' onclick='assuranceArrowClick(\"foward\")' src='https://common.ogglefiles.com/img/rightArrowOpaque02.png'/>\n" +
         "       </div>\n" +
         "  </div>\n" +

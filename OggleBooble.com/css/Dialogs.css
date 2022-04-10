@@ -15,7 +15,6 @@
 }
 
 .fileDialogOuterContainer {
-    border: solid thick red;
 }
 
 .fileDialogTopSection {
@@ -25,4 +24,5 @@
     .fileDialogTopSection div {
         display: inline-block;
         border: solid thin #00ff21;
+        color: #000;
     }

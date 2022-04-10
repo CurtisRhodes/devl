@@ -35,8 +35,7 @@ function captureKeydownEvent(event) {
                 // new visitor comming in from an external link
             }
         }
-        if (isNullorUndefined(sessionStorage["VisitLogged"]))
-        {
+        if (isNullorUndefined(sessionStorage["VisitLogged"])) {
             logVisit("verify");
         }
 
@@ -854,22 +853,23 @@ function addPgLinkButton(folderId, labelText) {
                             displayStatusMessage("ok", "Welcome back ");
                     }
                     else {
-                        if (success.trim() == 'code: 23000') {
-                            // duplicate
-                        }
-                        else {
-                            logOggleError("Cat", -09755, success.trim(), "log visit")
-                            //alert("logVisit: " + success);
+                        switch (success.trim()) {
+                            case '23000':
+                                //logOggleError("",)
+                                break;
+                            case '42000':
+                            default:
+                                alert("logVisit: " + success);
                         }
                     }
                     sessionStorage["VisitLogged"] = "yes";
                 },
-                error: function (jqXHR) {
-                    logOggleError("Cat", -09756, getXHRErrorDetails(jqXHR), "log visit")
+                error: function (jqXHR, exception) {
+                    alert("LogVisit jqXHR : " + getXHRErrorDetails(jqXHR, exception));
                 }
             });
         } catch (e) {
-            logOggleError("Cat", -09757, e, "log visit")
+            logOggleError("Cat", folderId, e, "log visit")
         }
     }
 
@@ -1091,10 +1091,11 @@ function addPgLinkButton(folderId, labelText) {
                             <tr><td>name        </td><td><input id='txtFolderName'></input></td></tr>
                             <tr><td>home country</td><td><input id='txtHomeCountry'></input></td></tr>
                             <tr><td>hometown    </td><td><input id='txtHometown'></input></td></tr>
-                            <tr><td>nationality </td><td><input id='txtNationality'></input></td></tr>
                             <tr><td>born        </td><td><input id='txtBorn'></input></td></tr>
                             <tr><td>boobs       </td><td><select id='selBoobs' class='boobDropDown'>
-                                        <option value=0>Real</option><option value=1>Fake</option></td></tr>
+                                                        <option value=0>Real</option>
+                                                        <option value=1>Fake</option>
+                                                </td></tr>
                             <tr><td>figure      </td><td><input id='txtMeasurements'></input></td></tr>
                         </table>
                     </div>
@@ -1115,20 +1116,16 @@ function addPgLinkButton(folderId, labelText) {
 
             $('#summernoteFileContainer').summernote({ toolbar: [['codeview']] });
             //$('#summernoteContainer').summernote('disable');
+            // <tr><td>nationality </td><td><input id='txtNationality'></input></td></tr>
             $(".note-editable").css({ 'font-size': '16px', 'min-height': '186px' });
             $('#centeredDialogContainer').css({ "top": 33 + $(window).scrollTop() });
-            $('#centeredDialogContainer').draggable().fadeIn();
+            $('#centeredDialogContainer').draggable().show();
 
-            //<div id='btnFileDlgEdit'  class='folderCategoryDialogButton' onclick='editFolderDialog()'>Edit</div>
-            //<div id='btnFileDlgDone'  class='folderCategoryDialogButton' onclick='doneEditing()'>Done</div>
-            //<div id='btnTrackBkLinks' class='folderCategoryDialogButton' onclick='showTrackbackDialog()'>Trackback Links</div>
-
-
-
-
-
-            let sql = "select * from CategoryFolder f " +
-                " left join FolderDetail d on f.Id = d.FolderId where FolderId=" + folderId;
+            let sql = `select f.Id, FolderName, HomeCountry, HomeTown, FakeBoobs, FolderComments, Measurements, Birthday, concat(f.FolderPath,'/',i.FileName) as src
+                        from CategoryFolder f
+                        left join FolderDetail d on f.Id = d.FolderId
+                        left join ImageFile i on f.FolderImage = i.Id
+                        where f.Id =` + folderId;
             $.ajax({
                 url: "php/yagdrasselFetch.php?query=" + sql,
                 success: function (data) {
@@ -1137,15 +1134,14 @@ function addPgLinkButton(folderId, labelText) {
                         $("#centeredDialogTitle").html("lookup fail");
                         logOggleError("AJX", folderId, "lookup fail", "file details dialog");
                     }
-                    else {                     
-                        folderInfo
-                        $("#centeredDialogTitle").html("lookup fail");
+                    else {
+                        folderInfo = JSON.parse(data);
                         $('#txtFolderName').val(folderInfo.FolderName);
-                        $('#txtHomeCountry').val(folderInfo.FolderName);
-                        $('#txtHometown').val(folderInfo.FolderName);
-                        $('#txtBorn').val(folderInfo.FolderName);
-                        $('#txtFolderName').val(folderInfo.FolderName);
-                        $("#centeredDialogTitle").html(folderInfo.FolderName);
+                        $('#txtHomeCountry').val(folderInfo.HomeCountry);
+                        $('#txtHometown').val(folderInfo.HomeTown);
+                        $('#txtBorn').val(folderInfo.Birthday);
+                        $("#txtMeasurements").html(folderInfo.Measurements);
+                        $("#modelDialogThumbNailImage").attr("src", folderInfo.src);
 
                         //logEvent("SMD", folderId, calledFrom, "folder type: " + folderInfo.FolderType);
                     }
@@ -1159,14 +1155,15 @@ function addPgLinkButton(folderId, labelText) {
 
 
             function centeringDialogClose() { // overide default
-                if ($("#btnFolderDlgEdit").html() == "Edit") {
+                if ($("#btnFolderDlgEdit").html() == "xxxEdit") {
                     centeringDialogClose();
                 }
             }
 
             $('#centeredDialogContainer').mouseleave(function () {
-                if (allowDialogClose)
+                if ($("#btnFolderDlgEdit").html() == "xxxEdit") {
                     $('#centeredDialogContainer').fadeOut();
+                }
             });
         }
         catch (e) {
@@ -1342,7 +1339,9 @@ function addPgLinkButton(folderId, labelText) {
                    <div class='inline'><img class='dialogDirTreeButton' src='/Images/caretDown.png' "
                        onclick='$(\"#linkManipulateDirTree\").toggle()'/></div>
                    <div id='linkManipulateClick'></div>
-                   <div id='linkManipulateDirTree' class='hideableDropDown'><img class='ctxloadingGif' title='loading gif' alt='' src='Images/loader.gif' /></div>
+                   <div id='linkManipulateDirTree' class='hideableDropDown'>
+                        <img class='ctxloadingGif' title='loading gif' alt='' src='https://common.ogglefiles.com/img/loader.gif'/>
+                   </div>
                </div>`;
 
         $('#centeredDialogContents').html(dirTreeDialogHtml);
