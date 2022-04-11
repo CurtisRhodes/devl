@@ -6,29 +6,30 @@
         $pdo = pdoConn();
 
         $folderId = $_POST['folderId'];
-        $folderName = $_POST['folderImage'];
+        $folderName = $_POST['folderName'];
         $folderComments = $_POST['folderComments'];
 
-        if($level == 'folder') {
-            $sql = "UPDATE CategoryFolder SET FolderName=".$folderName." WHERE Id=".$folderId;
-        }
-        $cmd= $pdo->prepare($sql);
-        $cmd->execute();
+//        $sql = "UPDATE CategoryFolder SET FolderName=".$folderName." WHERE Id=".$folderId;
+//        $cmd= $pdo->prepare($sql);
+//        $cmd->execute();
 
-        $cmd = $pdo->query("select * from FolderDetail where FolderId = ".$folderId);
-        $folderDetailRow = $cmd->fetch();
-        if($folderDetailRow == 'false') {
-            $sql = "insert FolderDetail (FolderId,FolderComments) values(.$folderId.,'.$folderComments.');
-            $stmt= $pdo->prepare($sql);
-            $stmt->execute();        
-        }
-        else {
-            $sql = "UPDATE FolderDetail SET FolderComments ='".$folderComments."' WHERE FolderId=".$folderId;
-            $stmt= $pdo->prepare($sql);
-            $stmt->execute();
-        }
+//        $cmd1 = $pdo->query("select * from CategoryFolder where Id=".$folderId);
+//        $result = $cmd1->fetchAll();
 
-        $success = "ok";
+//       if($result == "false") {
+            $success = "$folderId: ".$folderId;
+//            $sql = "insert FolderDetail (FolderId,FolderComments) values(.$folderId.,'.$folderComments.');
+//            $stmt= $pdo->prepare($sql);
+//            $stmt->execute();        
+//       }
+//       else {
+//            $success = "update folderDetail";
+//            $sql = "UPDATE FolderDetail SET FolderComments ='".$folderComments."' WHERE FolderId=".$folderId;
+//           $stmt= $pdo->prepare($sql);
+//            $stmt->execute();
+//        }
+        
+//        $success = "ok";
 
         $pdo = null;
     }

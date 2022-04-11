@@ -379,8 +379,8 @@ function addPgLinkButton(folderId, labelText) {
             // let calledFrom = "noneya";
             console.log("imageError: IMG. folder: " + folderId + ", linkId: " + linkId + ", calledFrom: " + calledFrom);
 
-            $('#' + linkId).attr('src', 'https://common.ogglefiles.com/img/redballonSmall.png');
-            logOggleError("ILF", folderId, "linkId: " + linkId, calledFrom);
+            $('#' + linkId).attr('src', 'https://common.ogglefiles.com/img/redballon.png');
+            
 
         } catch (e) {
             logOggleError("CAT", folderId, e, "image error")
@@ -940,12 +940,12 @@ function addPgLinkButton(folderId, labelText) {
                             break;
                         case '42000':
                         default:
-                            alert("logVisit: php error code: " + success);
+                            logOggleError("AJX", -988, "php error code: " + success, "add visitor");
                     }
                 }
             },
-            error: function (jqXHR, exception) {
-                alert("log PageHit error: " + getXHRErrorDetails(jqXHR, exception));
+            error: function (jqXHR) {
+                logOggleError("XHR", -988, getXHRErrorDetails(jqXHR), "add visitor");
             }
         });
 
@@ -1204,11 +1204,13 @@ function addPgLinkButton(folderId, labelText) {
                 $('#summernoteFolderContainer').summernote('enable');
                 $('#txtFolderName').prop("disabled", true);
                 $("#btnFolderDlgDone").hide();
-            }).hide();
+            });
             function centeringDialogClose() {
                 //alert("overide default centeringDialogClose function");
                 if ($("#btnFolderDlgEdit").html() == "Edit") {
-                    centeringDialogClose();
+                    $("#vailShell").fadeOut();
+                    $('#centeredDialogContainer').fadeOut();
+                    if (typeof resume === 'function') resume();
                 }
             }
             $(".note-editable").css({ 'font-size': '16px', 'min-height': '186px', 'min-width': '355px' });
@@ -1243,13 +1245,15 @@ function addPgLinkButton(folderId, labelText) {
                                     $('#folderNameMessage').html("nothing to update");
                                 }
                                 else {
+                                    let txtComments = encodeURI($('#summernoteFolderContainer').summernote("code"));
+                                    let test1 = $('#txtFolderName').val();
                                     $.ajax({
-                                        type: "PUT",
+                                        type: "POST",
                                         url: "php/updateFolderDetail.php",
                                         data: {
                                             folderId: folderId,
                                             folderName: $('#txtFolderName').val(),
-                                            folderComments: $('#summernoteFolderContainer').summernote("code")
+                                            folderComments: txtComments
                                         },
                                         success: function (success) {
                                             if (success.trim() === "ok") {
