@@ -4,7 +4,7 @@ let carouselFooterHeight = 40, intervalReady = true, initialImageLoad = false, i
     vCarouselInterval = null, lastImageIndex = 0, lastErrorThrown = 0,
     mainImageClickId, knownModelLabelClickId, imageTopLabelClickId, footerLabelClickId,
     jsCarouselSettings, arryItemsShownCount = 0, totalArryItemsShownCount = 0,
-    cacheSize = 45, carouselRoot, imgIn = 0.0, imgOut = 1.0;
+    cacheSize = 45, carouselRoot, imgIn = 0.0, imgOut = 1.0, fadeInSpeed = 185;
 
 function launchCarousel(pageContext) {
     try {
@@ -133,7 +133,7 @@ function intervalBody() {
                             imageHistory.push(imageIndex);
                             intervalReady = true;
                         }
-                    }, 280);
+                    }, fadeInSpeed);
                 });
             }
         }

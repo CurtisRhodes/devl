@@ -1124,7 +1124,8 @@ function addPgLinkButton(folderId, labelText) {
             $('#centeredDialogContainer').css({ "top": 33 + $(window).scrollTop() });
             $('#centeredDialogContainer').draggable().show();
 
-            let sql = `select f.Id, FolderName, HomeCountry, HomeTown, FakeBoobs, FolderComments, Measurements, Birthday, concat(f.FolderPath,'/',i.FileName) as src
+            let sql = `select f.Id, FolderName, HomeCountry, HomeTown, FakeBoobs, FolderComments,
+                            Measurements, Birthday, concat(f.FolderPath,'/',i.FileName) as src
                         from CategoryFolder f
                         left join FolderDetail d on f.Id = d.FolderId
                         left join ImageFile i on f.FolderImage = i.Id
@@ -1191,13 +1192,28 @@ function addPgLinkButton(folderId, labelText) {
                 </div>`);
 
             $('#summernoteFolderContainer').summernote({ toolbar: [['codeview']] });
-            //$(".note-btn.btn-codeview").on("click", codeViewClick);
+            $(".note-editable").css({ 'font-size': '16px', 'min-height': '186px', 'min-width': '355px' });
 
-            //$('#summernoteFolderContainer').summernote('disable');
+            $('#summernoteFolderContainer').summernote('disable');
             $('#txtFolderName').prop("disabled", true);
-
             $('#centeredDialogContainer').css({ "top": 33 + $(window).scrollTop() });
-            $('#centeredDialogContainer').draggable().fadeIn();
+            $('#centeredDialogContainer').draggable().show();
+
+            $("#btnFolderDlgDone").hide();
+
+            $("#btnFolderDlgEdit").on("click", function () {
+                if ($("#btnFolderDlgEdit").html() == "Edit") {
+                    $("#btnFolderDlgEdit").html("Save");
+                    $('#summernoteFolderContainer').summernote('enable');
+                    $('#txtFolderName').prop("disabled", false);
+                    $("#btnFolderDlgDone").show();
+                    $('#summernoteFolderContainer').summernote('enable');
+                    $('.note-editable').trigger('focus');
+                }
+                else {
+                    updateFolderDetail(folderId);
+                }
+            });
 
             $("#btnFolderDlgDone").on('click', function () {
                 $("#btnFolderDlgEdit").html("Edit");
@@ -1205,6 +1221,7 @@ function addPgLinkButton(folderId, labelText) {
                 $('#txtFolderName').prop("disabled", true);
                 $("#btnFolderDlgDone").hide();
             });
+
             function centeringDialogClose() {
                 //alert("overide default centeringDialogClose function");
                 if ($("#btnFolderDlgEdit").html() == "Edit") {
@@ -1213,10 +1230,6 @@ function addPgLinkButton(folderId, labelText) {
                     if (typeof resume === 'function') resume();
                 }
             }
-            $(".note-editable").css({ 'font-size': '16px', 'min-height': '186px', 'min-width': '355px' });
-            //if (localStorage["IsLoggedIn"] == "false") {
-            //    showMyAlert("you must be logged in to edit folder comments");
-            //}
 
             $.ajax({
                 url: "php/yagdrasselFetch.php?query=select FolderName, FolderComments, FolderType from CategoryFolder f " +
@@ -1231,50 +1244,6 @@ function addPgLinkButton(folderId, labelText) {
                         if (folderInfo.FolderType=='singleChild')
                             $('#folderNameMessage').html("You are encouraged to edit this folder title")
 
-                        $("#btnFolderDlgDone").hide();
-                        $("#btnFolderDlgEdit").on("click", function () {
-                            if ($("#btnFolderDlgEdit").html() == "Edit") {
-                                $("#btnFolderDlgEdit").html("Save");
-                                $('#summernoteFolderContainer').summernote('enable');
-                                $('#txtFolderName').prop("disabled", false);
-                                $("#btnFolderDlgDone").show();
-                            }
-                            else {
-                                //updateFolderDetail();
-                                if (($('#txtFolderName').val() == folderInfo.FolderName) && ($('#summernoteFolderContainer').summernote("code") == folderInfo.FolderComments)) {
-                                    $('#folderNameMessage').html("nothing to update");
-                                }
-                                else {
-                                    let txtComments = encodeURI($('#summernoteFolderContainer').summernote("code"));
-                                    let test1 = $('#txtFolderName').val();
-                                    $.ajax({
-                                        type: "POST",
-                                        url: "php/updateFolderDetail.php",
-                                        data: {
-                                            folderId: folderId,
-                                            folderName: $('#txtFolderName').val(),
-                                            folderComments: txtComments
-                                        },
-                                        success: function (success) {
-                                            if (success.trim() === "ok") {
-                                                displayStatusMessage("ok", "Folder info updated");
-                                                $("#btnFolderDlgEdit").html("Edit");
-                                                $("#btnFolderDlgDone").hide();
-                                                logOggleActivity("SMD", folderId, "folder info dialog");
-                                            }
-                                            else {
-                                                $('#folderNameMessage').html("update failed");
-                                                logOggleError("AJX", folderId, success, "update folderDetail");
-                                            }
-                                        },
-                                        error: function (jqXHR) {
-                                            $('#folderNameMessage').html("update failed");
-                                            logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "update folderDetail");
-                                        }
-                                    });
-                                }
-                            }
-                        });
 
                         $('#centeredDialogContainer').mouseleave(function () {
                             centeringDialogClose();
@@ -1291,6 +1260,45 @@ function addPgLinkButton(folderId, labelText) {
         }
         catch (e) {
             logOggleError("CAT", folderId, e, "show folderInfo dialog");
+        }
+    }
+
+    function updateFolderDetail(folderId) {
+        if (($('#txtFolderName').val() == folderInfo.FolderName) && ($('#summernoteFolderContainer').summernote("code") == folderInfo.FolderComments)) {
+            $('#folderNameMessage').html("nothing to update");
+        }
+        else {
+            let txtComments = encodeURI($('#summernoteFolderContainer').summernote("code"));
+
+            $.ajax({
+                type: "POST",
+                url: "php/updateFolderDetail.php",
+                data: {
+                    folderId: folderId,
+                    folderName: $('#txtFolderName').val(),
+                    folderComments: txtComments
+                },
+                success: function (success) {
+                    if (success.trim().startsWith("ok")) {
+                        displayStatusMessage("ok", "Folder info updated");
+                        $('#folderNameMessage').html(success.trim());
+                        $("#btnFolderDlgEdit").html("Edit");
+                        $("#btnFolderDlgDone").hide();
+                        $('#summernoteFolderContainer').summernote('disable');
+                        $('#txtFolderName').prop("disabled", true);
+                        logOggleActivity("SMD", folderId, "folder info dialog");
+                    }
+                    else {
+                        $('#folderNameMessage').html("update failed: " + success.trim());
+                        logOggleError("AJX", folderId, success, "update folderDetail");
+                    }
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    $('#folderNameMessage').html("<span style='color:red'>" + errMsg + "</span>");
+                    logOggleError("XHR", folderId, errMsg, "update folderDetail");
+                }
+            });
         }
     }
 
