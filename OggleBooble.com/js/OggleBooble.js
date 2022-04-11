@@ -164,8 +164,7 @@ function captureKeydownEvent(event) {
                 }
             },
             error: function (jqXHR) {
-                logOggleError("XHR", -67769, getXHRErrorDetails(jqXHR), "check localStorage VisitorId")
-                alert("perform IpLookup: " + errMsg);
+                logOggleError("XHR", -67769, getXHRErrorDetails(jqXHR), "check localStorage VisitorId");                
             }
         });
     }
@@ -317,13 +316,11 @@ function addPgLinkButton(folderId, labelText) {
                         }
                     },
                     error: function (jqXHR) {
-                        $('#albumPageLoadingGif').hide();
-                        let errMsg = getXHRErrorDetails(jqXHR);
-                        $('#randomGalleriesContainer').html(errMsg)
+                        logOggleError("AJX", -444, getXHRErrorDetails(jqXHR), "perform search");
                     }
                 });
             } catch (e) {
-                alert(e);
+                logOggleError("CAT", -444, e, "perform search");
             }
         }
     }
@@ -365,22 +362,19 @@ function addPgLinkButton(folderId, labelText) {
                 },
                 error: function (jqXHR) {
                     let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("Error log error: " + errMsg);
+                    console.log("Error log error: " + errMsg);
                 }
             });
         } catch (e) {
-            alert("Error log CATCH error: " + e);
             console.log("logOggle error not working: " + e);
         }
     }
 
     function imageError(folderId, linkId, calledFrom) {
         try {
-            // let calledFrom = "noneya";
             console.log("imageError: IMG. folder: " + folderId + ", linkId: " + linkId + ", calledFrom: " + calledFrom);
-
             $('#' + linkId).attr('src', 'https://common.ogglefiles.com/img/redballon.png');
-            
+            logOggleError("IMG", folderId, linkId, calledFrom);
 
         } catch (e) {
             logOggleError("CAT", folderId, e, "image error")
@@ -416,38 +410,30 @@ function addPgLinkButton(folderId, labelText) {
     function logOggleEvent(eventCode, folderId, calledFrom) {
         try {
             visitorId = getCookieValue("VisitorId", "log Activity");
-            try {
-                let visitorId = getCookieValue("VisitorId", calledFrom + "/logOggleError");
-                $.ajax({
-                    type: "POST",
-                    url: "php/logActivity.php",
-                    data: {
-                        eventCode: eventCode,
-                        folderId: folderId,
-                        visitorId: visitorId,
-                        calledFrom: calledFrom
-                    },
-                    success: function (success) {
-                        if (success.trim() == "ok") {
-                            console.log("activity logged.  VisitorId: " + visitorId + "  Code: " + activityCode + "  calledFrom: " + calledFrom);
-                        }
-                        else {
-                            console.log("log OggleActivity fail: " + success);
-                            logOggleError("AJX", folderId, success, "log OggleActivity");
-                        }
-                    },
-                    error: function (jqXHR) {
-                        let errMsg = getXHRErrorDetails(jqXHR);
-                        logOggleError("XHR", folderId, errMsg, "log OggleActivity")
-                        alert("Error log error: " + errMsg);
+            $.ajax({
+                type: "POST",
+                url: "php/logActivity.php",
+                data: {
+                    eventCode: eventCode,
+                    folderId: folderId,
+                    visitorId: visitorId,
+                    calledFrom: calledFrom
+                },
+                success: function (success) {
+                    if (success.trim() == "ok") {
+                        console.log("activity logged.  VisitorId: " + visitorId + "  Code: " + activityCode + "  calledFrom: " + calledFrom);
                     }
-                });
-            } catch (e) {
-                console.error("logOggle error not working: " + e);
-            }
-
+                    else {
+                        console.log("log OggleActivity fail: " + success);
+                        logOggleError("AJX", folderId, success, "log OggleActivity");
+                    }
+                },
+                error: function (jqXHR) {
+                    logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "log OggleActivity")
+                }
+            });
         } catch (e) {
-            logOggleError("CAT", folderId, e, "log OggleActivity")
+            logOggleError("CAT", folderId, e, "log Oggle event")
         }
     }
 }
@@ -785,12 +771,14 @@ function addPgLinkButton(folderId, labelText) {
                         $("#imageContextMenu").fadeOut();
                     }
                     else {
+                        displayStatusMessage("error", success.trim());
                         logOggleError("AJX", folderId, success, "setFolderImage");
                     }
                 },
                 error: function (jqXHR) {
                     let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("setFolderImage: " + errMsg);
+                    displayStatusMessage("error", errMsg);
+                    logOggleError("XHR", folderId, errMsg, "set folder image");
                 }
             });
         } catch (e) {
@@ -826,13 +814,14 @@ function addPgLinkButton(folderId, labelText) {
                     displayStatusMessage("ok", "image moved to rejects");
                 }
                 else {
-                    alert("move to rejects: " + success);
-                    //logOggleError("AJX", 3908, success, "perform MoveImageToRejects");
+                    displayStatusMessage("error", success.trim());
+                    logOggleError("AJX", 3908, success.trim(), "move to rejects");
                 }
             },
             error: function (jqXHR) {
                 let errMsg = getXHRErrorDetails(jqXHR);
-                alert("move to rejects: " + errMsg);
+                displayStatusMessage("error", errMsg);
+                logOggleError("XHR", 3908, errMsg, "move to rejects");
             }
         });
     }
@@ -862,6 +851,8 @@ function addPgLinkButton(folderId, labelText) {
                                 break;
                             case '42000':
                             default:
+                                logOggleError("AJX", -5477, success.trim(), "log visit");
+
                                 alert("logVisit: " + success);
                         }
                     }

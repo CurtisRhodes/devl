@@ -32,6 +32,10 @@ function buildDirTree(startNode) {
                 largetxtstring += "</div>";
                 $('#dirTreeContainer').html(largetxtstring);
 
+                //  save dirtree as a txt file. (AGAIN)
+
+
+
                 delta = (Date.now() - startTime) / 1000;
                 console.log("loading html tree took: " + delta.toFixed(3));
 
@@ -50,21 +54,34 @@ function buildDirTree(startNode) {
 function traverseDirTree(thisNode) {
     let subNodes = dirTreeArray.filter(node => node.Parent == thisNode.Id);
     dirTreeTab += dirTreeTabIndent;
+
     $.each(subNodes, function (idx, subNode) {
         let randomId = create_UUID();
+
         largetxtstring += dirTreeNode(subNode, randomId);
-        if (subNode.SubFolderCount > 0) {
+
+        if (thisNode.TotalChildFiles > 500) {
             if (dirTreeTab > maxExpandDepth) {
-                largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer' style='display:none' >";
+                largetxtstring += "<div id='CC" + randomId + "' folderId=" + subNode.Id + " class='expadoContainer' style='display:none'>unloaded</div>";
             }
             else {
-                largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer' >";
+                largetxtstring += "<div id='CC" + randomId + "' folderId=" + subNode.Id + " class='expadoContainer'>unloaded</div>";
             }
+        }
+        else {
+            if (subNode.SubFolderCount > 0) {
+                if (dirTreeTab > maxExpandDepth) {
+                    largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer' style='display:none' >";
+                }
+                else {
+                    largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer' >";
+                }
 
-            if (subNode.IsStepChild === "0")
-                traverseDirTree(subNode);
+                if (subNode.IsStepChild === "0")
+                    traverseDirTree(subNode);
 
-            largetxtstring += "</div>";
+                largetxtstring += "</div>";
+            }
         }
     });
     dirTreeTab -= dirTreeTabIndent;
@@ -101,7 +118,7 @@ function dirTreeNode(node, randomId) {
                 + "<span id='TT" + randomId + "' onclick='toggleDirTree(\"" + randomId + "\")'>" + expandMode + "</span>"
                 + "<div class='" + treeNodeClass + "' onclick='commonDirTreeClick(\"" + node.FolderPath + "\"," + node.Id + ")' "
                 + "\n oncontextmenu='showDirTreeContextMenu(" + node.Id + ")' "
-                + "\n onmouseover='showFolderImage(\"" + folderImage + "\")' "
+                + "\n onmouseover='showMouseoverImage(\"" + folderImage + "\")' "
                 + "\n onmouseout='hideFolderImage()'>" + node.FolderName + "</div>"
                 + " <span class='fileCount'>: " + showFileCountTxt(node) + "</span>"
                 + "</div>\n";
@@ -112,12 +129,11 @@ function dirTreeNode(node, randomId) {
     return treeNodeTxt;
 }
 
-function showFolderImage(link) {
+function showMouseoverImage(link) {
     $('.dirTreeImageContainer').css("top", event.clientY - 100);
     $('.dirTreeImageContainer').css("left", event.clientX + 10);
     $('.customDirTreeImage').attr("src", link);
     $('.dirTreeImageContainer').show();
- //   $('#badgesContainer').html(link);
 }
 
 function showFileCountTxt(vwDirNode) {
@@ -151,8 +167,50 @@ function toggleDirTree(randomId) {
         if ($('#TT' + randomId + '').html() === "[+]") {
             $('#TT' + randomId + '').html("[-]");
             $('#CC' + randomId + '').show();
+
+            if ($('#CC' + randomId + '').html() == "unloaded") {
+                traverseDeeper($('#CC' + randomId + '').prop("folderId"));
+
+
+            }
         }
     }
+}
+
+function traverseDeeper(folderId) {
+
+    let subNodes = dirTreeArray.filter(node => node.Parent == thisNode.Id);
+    dirTreeTab += dirTreeTabIndent;
+
+    $.each(subNodes, function (idx, subNode) {
+        let randomId = create_UUID();
+        largetxtstring += dirTreeNode(subNode, randomId);
+        if (thisNode.TotalChildFiles > 500) {
+            if (dirTreeTab > maxExpandDepth) {
+                largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer' style='display:none'>unloaded</div>";
+            }
+            else {
+                largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer'>unloaded</div>";
+            }
+        }
+        else {
+            if (subNode.SubFolderCount > 0) {
+                if (dirTreeTab > maxExpandDepth) {
+                    largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer' style='display:none' >";
+                }
+                else {
+                    largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer' >";
+                }
+
+                if (subNode.IsStepChild === "0")
+                    traverseDirTree(subNode);
+
+                largetxtstring += "</div>";
+            }
+        }
+    });
+    dirTreeTab -= dirTreeTabIndent;
+    $('#dirTreeContainer').html(largetxtstring + "</div>");
 }
 
 function commonDirTreeClick(danniPath, folderId) {
@@ -168,27 +226,27 @@ function commonDirTreeClick(danniPath, folderId) {
                 $('#txtCurrentActiveFolder').val(danniPath);
                 $('#txtActiveFolderId').val(folderId);
                 break;
-            case "catListDialog":
-                window.location.href = "\album.html?folder=" + folderId;
-                break;
-            case "linkManipulateDirTree":
-                $('#dirTreeResults').html(pSelectedTreeFolderPath);
-                break;
-            case "moveFolder":
-                dSelectedTreeId = folderId;
-                $('#txtNewMoveDestiation').val(danniPath);
-                $('#moveFolderDirTreeContainer').fadeOut();
-                break;
-            case "moveMany":
-                $('#txtMoveManyDestination').val(pSelectedTreeFolderPath);
-                $('#mmDirTreeContainer').fadeOut();
-                break;
-            case "stepchild":
-                $('#txtscSourceFolderName').val(pSelectedTreeFolderPath);
-                $('#scDirTreeContainer').fadeOut();
-                activeDirTree = "dashboard";
-                break;
-            default:
+        //    case "catListDialog":
+        //        window.location.href = "\album.html?folder=" + folderId;
+        //        break;
+        //    case "linkManipulateDirTree":
+        //        $('#dirTreeResults').html(pSelectedTreeFolderPath);
+        //        break;
+        //    case "moveFolder":
+        //        dSelectedTreeId = folderId;
+        //        $('#txtNewMoveDestiation').val(danniPath);
+        //        $('#moveFolderDirTreeContainer').fadeOut();
+        //        break;
+        //    case "moveMany":
+        //        $('#txtMoveManyDestination').val(pSelectedTreeFolderPath);
+        //        $('#mmDirTreeContainer').fadeOut();
+        //        break;
+        //    case "stepchild":
+        //        $('#txtscSourceFolderName').val(pSelectedTreeFolderPath);
+        //        $('#scDirTreeContainer').fadeOut();
+        //        activeDirTree = "dashboard";
+        //        break;
+        //    default:
         }
     } catch (e) {
         logError("CAT", folderId, e, "common dirTree click");

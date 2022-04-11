@@ -4,7 +4,7 @@ let carouselFooterHeight = 40, intervalReady = true, initialImageLoad = false, i
     vCarouselInterval = null, lastImageIndex = 0, lastErrorThrown = 0,
     mainImageClickId, knownModelLabelClickId, imageTopLabelClickId, footerLabelClickId,
     jsCarouselSettings, arryItemsShownCount = 0, totalArryItemsShownCount = 0,
-    cacheSize = 45, carouselRoot, imgIn = 0.0, imgOut = 1.0, fadeInSpeed = 185;
+    cacheSize = 45, carouselRoot, imgIn = 0.0, imgOut = 1.0, fadeInSpeed = 135;
 
 function launchCarousel(pageContext) {
     try {
@@ -93,50 +93,70 @@ function intervalBody() {
                 intervalReady = false;
                 imageIndex = Math.floor(Math.random() * carouselRows.length);
 
-                while (withinLast100()){
+                while (withinLast100()) {
                     console.log(carouselRows[imageIndex].ImageFileName + " alreday shown");
                     imageIndex = Math.floor(Math.random() * carouselRows.length);
                 }
 
                 if (arryItemsShownCount > carouselRows.length) {
-                    if (confirm("items shown: " + arryItemsShownCount + "  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
-                        loadImages(true);
-                        imageIndex = Math.floor(Math.random() * carouselRows.length);
-                    }
+                    //if (confirm("items shown: " + arryItemsShownCount + "  carouselRows.length: " + carouselRows.length + "\nadd more images")) {
+                    //    loadImages(true);
+                    //    imageIndex = Math.floor(Math.random() * carouselRows.length);
+                    //}
+                    console.log("adding more images");
+                    loadImages(true);
                     totalArryItemsShownCount += arryItemsShownCount;
                     arryItemsShownCount = 0;
                 }
 
-                $('#albumPageLoadingGif').show();
-                $('#carouselImage0').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName).fadeIn("slow").load(function () {
-                    $('#albumPageLoadingGif').hide();
-                    resizeCarousel();
-                    imgIn = 0.0, imgOut = 1.0;
-                    next = 0.0, curr = 1.0;
-                    let opTrans = setInterval(function () {
-                        imgIn += 0.05;
-                        imgOut -= 0.05;
-                        $('#carouselImage0').css('opacity', imgIn);
-                        $('#carouselImage1').css('opacity', imgOut);
+                let loadAcknowledged = false;
+                $('#indexPageLoadingGif').show();
+                try {
+                    $('#carouselImage0')
+                        .attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName)
+                        .load(function () {
+                            if (!loadAcknowledged) {
+                                loadAcknowledged = true;
+                                $('#indexPageLoadingGif').hide();
+                                resizeCarousel();
+                                imgIn = 0.0, imgOut = 1.0;
+                                next = 0.0, curr = 1.0;
+                                let opTrans = setInterval(function () {
+                                    imgIn += 0.05;
+                                    imgOut -= 0.05;
+                                    $('#carouselImage0').css('opacity', imgIn);
+                                    $('#carouselImage1').css('opacity', imgOut);
 
-                        if (imgIn >= 1.0) {
-                            clearInterval(opTrans);
-                            opTrans = null;
-                            $('#carouselImage1').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName);
+                                    if (imgIn >= 1.0) {
+                                        clearInterval(opTrans);
+                                        opTrans = null;
+                                        $('#carouselImage1').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName);
+                                        $('#carouselImage1').css('opacity', 1);
+                                        $('#carouselImage0').css('opacity', 0);
+
+                                        arryItemsShownCount++;
+                                        resizeCarousel();
+                                        setLabelLinks(imageIndex);
+                                        $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
+                                        imageHistory.push(imageIndex);
+                                        intervalReady = true;
+                                    }
+                                    else
+                                        intervalReady = false;
+                                }, fadeInSpeed);
+                            }  //  loadAcknowledged
+                        }).error(function () {
+                            $('#carouselImage1').attr('src', 'https://common.ogglefiles.com/img/ingranaggi3.gif');
                             $('#carouselImage1').css('opacity', 1);
-                            $('#carouselImage0').css('opacity', 0);
-
-                            arryItemsShownCount++;
-                            resizeCarousel();
-                            setLabelLinks(imageIndex);
-                            $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
-                            imageHistory.push(imageIndex);
                             intervalReady = true;
-                        }
-                    }, fadeInSpeed);
-                });
-            }
-        }
+                            logOggleError("IMG", carouselRows[imageIndex].FolderId, "z", "interval body");
+                        });  // load
+                } catch (e) {
+                    $('#indexPageLoadingGif').hide();
+                    logOggleError("CAT", carouselRows[imageIndex].FolderId, e, "interval body");
+                }
+            }  //  intervalReady 
+        } // paused
         else {
             $('#pauseButton').html("|");
             intervalReady = true;
@@ -289,7 +309,7 @@ function loadImages(forceCacheRefresh) {
                 }
             },
             error: function (jqXHR) {
-                $('#albumPageLoadingGif').hide();
+                $('#indexPageLoadingGif').hide();
                 logOggleError("XHR", -88854, getXHRErrorDetails(jqXHR), "load carousel images");
             }
         });

@@ -668,7 +668,7 @@ function mailMe() {
                 <div class='clickable' onclick='showFeedbackDialog()'>Feedback</div>
              </div>
              <div id='footerCol2' class='footerCol'>
-                <div class='clickable' onclick='window.open("https://ogglefiles.com/blog")'>Blog</div>
+                <div class='clickable' onclick='window.open("https://blog.ogglebooble.com/OggleBlog.html")'>Blog</div>
              </div>
              <div id='footerCol3' class='footerCol'>
                 <div class='clickable' onclick='window.location.href="mailto:curtishrhodes@hotmail.com"'>email site developer</div>

@@ -537,6 +537,7 @@ function folderCountTest() {
 // MOVE MANY
 {
     let mmSourceFolderId, mmSelectedTreeFolderPath;
+
     function showMoveManyDialog(cx) {
         if (isNullorUndefined($('#txtCurrentActiveFolder').val())) {
             alert("select a folder");
@@ -558,6 +559,39 @@ function folderCountTest() {
             $('#moveManyTitle').html("Archive Many");
             $('#moveManyButton').html("Archive");
         }
+        $('#txtMoveManySource').html($('#txtCurrentActiveFolder').val());
+        $('#txtMoveManySource').html("Archive");
+
+        $.ajax({
+            url: "php/yagdrasselFetchAll.php?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val() + " order by SortOrder",
+            success: function (imgLinks) {
+                $('#dashBoardLoadingGif').hide();
+                if (imgLinks.indexOf("error") > -1)
+                    $('#sortToolImageArea').html(imgLinks);
+                else {
+                    $('#moveManyImageArea').html("");
+                    let links = JSON.parse(imgLinks);
+                    moveManyArray = [];
+                    $.each(links, function (ndx, obj) {
+                        $('#moveManyImageArea').append("<div class='sortBox'><img class='sortBoxImage' src='" +
+                            settingsImgRepo + obj.FileName + "'/>" +
+                            "<br/><input class='sortBoxInput' id=" + obj.LinkId + " value=" + obj.SortOrder + "></input></div>");
+                        moveManyArray.push({
+                            FolderId: $('#txtActiveFolderId').val(),
+                            ItemId: obj.LinkId,
+                            ImageSrc: settingsImgRepo + obj.FileName,
+                            SortOrder: obj.SortOrder
+                        });
+                    });
+                    $('#dashBoardLoadingGif').hide();
+                    $('#dataifyInfo').html(daInfoMessage + " done");
+                }
+            },
+            error: function (jqXHR) {
+                let errMsg = getXHRErrorDetails(jqXHR);
+                logError("AJX", $('#txtActiveFolderId').val(), errMsg, "move many");
+            }
+        });
 
         $('#moveManySection').show();
     }
@@ -617,8 +651,6 @@ function folderCountTest() {
             }
         });
     }
-
-
     function loadMMcheckboxes() {
         $('#dashBoardLoadingGif').fadeIn();
         let imgRepo = settingsArray.ImageRepo;
@@ -649,14 +681,12 @@ function folderCountTest() {
             }
         });
     }
-
     function mmSelectAll() {
         if ($('#mmCkSelectAll').is(":checked"))
             $('.loadManyCheckbox').prop("checked", true);
         else
             $('.loadManyCheckbox').prop("checked", false);
     }
-
     function moveCheckedImages() {
         if (mmSourceFolderId == pSelectedTreeId) {
             alert("select a destination");
