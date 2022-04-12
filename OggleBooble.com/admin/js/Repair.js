@@ -328,7 +328,7 @@ async function renameImageFiles(catFolder, physcialFiles) {
             }
             else {
                 if (physcialFile.name.startsWith(desiredFileNamePrefix)) {
-                    repairReport.errors.push("<div style='color:red'>why am I renaming: " + physcialImageFile.name + " ?</div>");
+                    repairReport.errors.push("<div style='color:red'>why am I renaming: " + physcialFile.name + " ?</div>");
                     sameFileName = true;
                 }
             }
@@ -340,9 +340,9 @@ async function renameImageFiles(catFolder, physcialFiles) {
                        // ? path = " + settingsImgRepo + catFolder.FolderPath + " & oldFileName=" + physcialFile.name + "& newFileName=" + newFileName,
                     success: function (success) {
                         if (success == "ok") {
-                            repairReport.physcialFilesRenamed.push(physcialImageFile.name + " to: " + newFileName);
+                            repairReport.physcialFilesRenamed.push(physcialFile.name + " to: " + newFileName);
                             // now update array
-                            physcialImageFile.name = newFileName;
+                            physcialFile.name = newFileName;
                             showRepairReport();
                         }
                         else {

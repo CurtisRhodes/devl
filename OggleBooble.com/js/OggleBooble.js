@@ -1,29 +1,10 @@
 ﻿//const settingsImgRepo = 'https://ogglefiles.com/danni/';
 const settingsImgRepo = 'https://ogglebooble.com/danni/';
-
-
 let slideshowVisible = false, imageViewerVisible = false;
-
-function captureKeydownEvent(event) {
-    if (slideshowVisible)
-        doSlideShowKdownEvents(event);
-    else
-        if (imageViewerVisible) {
-            if (event.keyCode === 27)
-                closeImageViewer();
-        }
-        else
-            if (document.activeElement.id == "txtSearch")
-                searchBoxKeyDown(event);
-//            else {
-//                let activeElement = document.activeElement.id;
-//                $('#topRowRightContainer').html("activeElement: " + activeElement);
-//            }
-}
-
 
 /*-- verify user -----------------------------------*/{
     function verifyUser(calledFrom) {
+
         if (isNullorUndefined(sessionStorage["VisitorIdVerified"])) {
             //sessionStorage["VisitorIdVerified"] = "ok";
             let cookeiVisitorId = getCookieValue("VisitorId");
@@ -1383,6 +1364,27 @@ function addPgLinkButton(folderId, labelText) {
         $('#centeredDialogContainer').draggable().fadeIn();
     }
 }
+
+
+
+function captureKeydownEvent(event) {
+    if (slideshowVisible)
+        doSlideShowKdownEvents(event);
+    else
+        if (imageViewerVisible) {
+            if (event.keyCode === 27)
+                closeImageViewer();
+        }
+        else
+            if (document.activeElement.id == "txtSearch")
+                searchBoxKeyDown(event);
+    //            else {
+    //                let activeElement = document.activeElement.id;
+    //                $('#topRowRightContainer').html("activeElement: " + activeElement);
+    //            }
+}
+
+
 
 /*--   zzzdialog windows --------------------------------------*/{
     function modelInfoDetailHtml() {

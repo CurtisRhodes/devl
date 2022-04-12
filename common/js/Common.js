@@ -229,7 +229,7 @@ function mailMe() {
 
         //changeFavoriteIcon("redBallon");
         //document.title = "document.title";
-        $('#topRowLeftContainer').html("topRowLeftContainer");
+        $('#topRowLeftContainer').html("");
         $('#headerMessage').html("");
         $('#topRowRightContainer').html("");
         $('#breadcrumbContainer').html("");
@@ -269,8 +269,8 @@ function mailMe() {
             case "bond":
                 $('#divSiteLogo').attr("src", "https://common.ogglefiles.com/img/boogle007.png");
                 $('#fancyHeaderTitle').html("Bond Girls");
-                $('#hdrBtmRowSec3').append(bannerLink('back to OggleBooble', 'https://ogglebooble.com/index.html'));
-                $('#hdrBtmRowSec3').append(bannerLink('every playboy centerfold', 'https://ogglebooble.com/index.html?spa=playboy'));
+                $('#topRowRightContainer').append(bannerLink('back to OggleBooble', 'https://ogglebooble.com/index.html'));
+                $('#topRowRightContainer').append(bannerLink('every playboy centerfold', 'https://ogglebooble.com/index.html?spa=playboy'));
                 changeFavoriteIcon("bond");
                 break;
             case "soft":

@@ -245,8 +245,6 @@ function setColors(rootFolder, folderName) {
         case "magazine":
         case "muses":
         case "plus":
-            displayHeader("playboy");
-            displayFooter("playboy");
             document.title = folderName + " : OggleBooble";
             $('body').css({ "background-color": "#000", "color": "#fff" });
             $('.inactiveBreadCrumb').css({ "color": "wheat" });
@@ -256,10 +254,11 @@ function setColors(rootFolder, folderName) {
             $('#carouselContainer').css("background-color", "#000");
             break;
         case "bond":
-            displayHeader("bond");
-            displayHeader("porn");
-            displayFooter("porn");
             document.title = folderName + " : OggleBooble";
+            displayHeader("bond");
+            displayFooter("porn");
+            $('#oggleHeader').css("background-color", "#ffcc66");
+            $('body').css({ "background-color": "#000", "color": "#fff" });
             break;
         case "porn":
             document.title = folderName + " : OgglePorn";
