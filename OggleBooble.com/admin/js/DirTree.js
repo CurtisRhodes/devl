@@ -60,15 +60,16 @@ function traverseDirTree(thisNode) {
 
         largetxtstring += dirTreeNode(subNode, randomId);
 
-        if (thisNode.TotalChildFiles > 500) {
-            if (dirTreeTab > maxExpandDepth) {
-                largetxtstring += "<div id='CC" + randomId + "' folderId=" + subNode.Id + " class='expadoContainer' style='display:none'>unloaded</div>";
-            }
-            else {
-                largetxtstring += "<div id='CC" + randomId + "' folderId=" + subNode.Id + " class='expadoContainer'>unloaded</div>";
-            }
-        }
-        else {
+        //if (thisNode.TotalChildFiles > 500) {
+        //    if (dirTreeTab > maxExpandDepth) {
+        //        largetxtstring += "<div id='CC" + randomId + "' folderId=" + subNode.Id + " class='expadoContainer' style='display:none'>unloaded</div>";
+        //    }
+        //    else {
+        //        largetxtstring += "<div id='CC" + randomId + "' folderId=" + subNode.Id + " class='expadoContainer'>unloaded</div>";
+        //    }
+        //}
+        //else 
+        {
             if (subNode.SubFolderCount > 0) {
                 if (dirTreeTab > maxExpandDepth) {
                     largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer' style='display:none' >";
@@ -97,6 +98,7 @@ function dirTreeNode(node, randomId) {
         }
         else {
             let expandMode = "[-]";
+
             if (node.SubFolderCount == 0)
                 expandMode = "├";
             else {

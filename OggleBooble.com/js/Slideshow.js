@@ -1,4 +1,4 @@
-const slideShowImgRepo = 'https://ogglefiles.com/danni/';
+const slideShowImgRepo = 'https://ogglebooble.com/danni/';
 const slideSpeed = 33, slideIncrement = 88;
 
 let slideShowSpeed = 5000, imageArray = [], imageViewerIndex = 0, spSessionCount = 0, tempImgSrc = new Image(),
@@ -12,6 +12,9 @@ function showSlideshowViewer(folderId, startLink, isLargeLoad) {
 
     $('#albumContentArea').fadeOut();        
     $('#slideshowContent').show();
+    $('#slideshowContent').show();
+    $("#vailShell").hide();
+    $('#slideshowContent').css('opacity', 1);
     spSessionCount = 0;
     loadSlideshowItems(folderId, startLink, isLargeLoad);
     resizeSlideshow();
@@ -92,6 +95,7 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                         $('#slideshowImageContainer').css('left', 0 - imageWidth / 2);
                         $('#albumPageLoadingGif').hide();
                     };
+
                     let delta = (Date.now() - infoStart) / 1000;
                     console.log("getGalleyInfo took: " + delta.toFixed(3));
                 }
@@ -135,8 +139,6 @@ function getFolderDetails(folderId) {
                     $('#rightClickArea').on("click", function () { slide("next", folderId) });
                     $('.hiddenClickArea').on("dblclick", function () { toggleSlideshow(); });
                     $('.hiddenClickArea').on("contextmenu", function () { slideshowContextMenu() });
-
-                    // $('#btnExplodeImage').on('click', showMaxSizeViewer(slideShowImgRepo + imageArray[imageViewerIndex].FileName, 'slideshow'));
                 }
             },
             error: function (jqXHR) {
@@ -330,7 +332,6 @@ function incrementIndex(direction) {
     }
 }
 
-
 function slideshowContextMenu() {
     isPaused = true;
     pos = {};
@@ -378,8 +379,8 @@ function showSlideshowHeader() {
                         src='https://common.ogglefiles.com/img/speedDialSlower.png'/>
             </div>
         </div>
-        <div id='btnExplodeImage' class='slideshowHeaderButtonContainer'>
-            <img class='slideshowHeaderButton' title='explode image'
+        <div class='slideshowHeaderButtonContainer'>
+            <img id='btnExplodeImage' class='slideshowHeaderButton' title='explode image' onclick='explodeoRama()'
                 src='https://common.ogglefiles.com/img/expand02.png'/>
         </div>
         <div class='slideshowHeaderButtonContainer' onclick='closeSlideshow();'>

@@ -1037,7 +1037,6 @@ function addPgLinkButton(folderId, labelText) {
             $('#singleImageOuterContainer').hide();
             $("#divSlideshowButton").hide();
             $("#viewerCloseButton").hide();
-            $("#vailShell").hide();
             $('body').off();
 
             showSlideshowViewer(currentFolderId, currentImagelinkId, false)
