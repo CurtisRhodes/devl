@@ -254,4 +254,3 @@ function commonDirTreeClick(danniPath, folderId) {
         logError("CAT", folderId, e, "common dirTree click");
     }
 }
-

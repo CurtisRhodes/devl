@@ -271,6 +271,8 @@ async function processAddMissingImageRows(folderId) {
 
 }
 
+
+
 async function removeOrphanImageRows(physcialFiles, imageFiles, folderId) {
     let rowsToProcess = imageFiles.length;
     let rowsProcessed = 0;
@@ -306,7 +308,7 @@ async function removeOrphanImageRows(physcialFiles, imageFiles, folderId) {
         else
             rowsProcessed++;
 
-        repairReport.physcialFilesProcessed++;
+        repairReport.imageFilesProcessed++;
         showRepairReport();
         if (rowsProcessed == rowsToProcess)
             return;
@@ -328,110 +330,50 @@ async function renameImageFiles(catFolder, imageFiles, physcialFiles) {
             physcialFileNameOk = false;
         let guidPart = physcialFile.name.substr(physcialFile.name.indexOf("_") + 1, 36);
         if (!isGuid(guidPart)) {
-            console.log("no rename. add new");
+            guidPart = create_UUID();
+            physcialFileNameOk = false;
         }
         if (!physcialFileNameOk) {
             let newFileName = desiredFileNamePrefix + "_" + guidPart + ext;
-            let imageFileMatches = imageFiles.filter(imageFile => encodeURI(imageFile.FileName) == encodeURI(newFileName));
-            if (imageFileMatches > 0) {
-                console.log("good and valid");
-                $.ajax({
-                    async: false,
-                    url: "php/renameFile.php?path=" + "../../danni/" + catFolder.FolderPath + "&oldFileName=" + physcialFile.name + "&newFileName=" + newFileName,
-                    // ? path = " + settingsImgRepo + catFolder.FolderPath + " & oldFileName=" + physcialFile.name + "& newFileName=" + newFileName,
-                    success: function (success) {
-                        if (success == "ok") {
-                            repairReport.physcialFilesRenamed.push(physcialFile.name + " to: " + newFileName);
-                            // now update array
-                            physcialFile.name = newFileName;
-                            showRepairReport();
-                        }
-                        else {
-                            repairReport.errors.push("<div style='color:red'>rename file error: " + success + "</div>");
-                            showRepairReport();
-                        }
-                        rowsProcessed++;
-                    },
-                    error: function (jqXHR) {
-                        let errMsg = getXHRErrorDetails(jqXHR);
-                        repairReport.errors.push("<div style='color:red'>rename file XHR error: " + errMsg + "</div>");
+            //let imageFileMatches = imageFiles.filter(imageFile => encodeURI(imageFile.FileName) == encodeURI(newFileName));
+            //if (imageFileMatches > 0) {
+            //console.log("good and valid");
+            $.ajax({
+                async: false,
+                url: "php/renameFile.php?path=" + "../../danni/" + catFolder.FolderPath + "&oldFileName=" + physcialFile.name + "&newFileName=" + newFileName,
+                // ? path = " + settingsImgRepo + catFolder.FolderPath + " & oldFileName=" + physcialFile.name + "& newFileName=" + newFileName,
+                success: function (success) {
+                    if (success == "ok") {
+                        repairReport.physcialFilesRenamed.push(physcialFile.name + " to: " + newFileName);
+                        // now update array
+                        physcialFile.name = newFileName;
                         showRepairReport();
-                        rowsProcessed++;
                     }
-                });
-            }
-            else {
-                console.log("no rename. add new");
-                rowsProcessed++;
-            }
+                    else {
+                        repairReport.errors.push("<div style='color:red'>rename file error: " + success + "</div>");
+                        showRepairReport();
+                    }
+                    rowsProcessed++;
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    repairReport.errors.push("<div style='color:red'>rename file XHR error: " + errMsg + "</div>");
+                    showRepairReport();
+                    rowsProcessed++;
+                }
+            });
+            //    }
+            //    else {
+            //        console.log("no rename. add new");
+            //        rowsProcessed++;
+            //    }
         }
         else
             rowsProcessed++;
 
-        //repairReport.imageFilesProcessed++;
-        showRepairReport();
+        repairReport.physcialFilesProcessed++;
         if (rowsProcessed == rowsToProcess) {
-            return true;
-        }
-    });
-
-    $.each(imageFiles, function (idx, imageFile) {
-        if (abandon) return;
-        let physcialFileRow = physcialFiles.filter(physcialFile => encodeURI(physcialFile.name) == encodeURI(imageFile.FileName));
-        if (physcialFileRow.length == 0) {
-            let sameFileName = true;
-            let ext = physcialFile.name.substring(physcialFile.name.length - 4);
-            let physcialFilePrefix = physcialFile.name.substr(1, physcialFile.name.indexOf("_"));
-            if (physcialFilePrefix != desiredFileNamePrefix)
-                sameFileName = false;
-
-            let guidPart = physcialFile.name.substr(physcialFile.name.indexOf("_") + 1, 36);
-            if (!isGuid(guidPart)) {
-                guidPart = create_UUID();
-                sameFileName = false;
-            }
-            else {
-                if (!sameFileName) {
-                    let newFileName = desiredFileNamePrefix + "_" + guidPart + ext;
-
-                    if (guidPart == imageFile.FileName.substr(physcialFile.name.indexOf("_") + 1, 36)) {
-                        repairReport.errors.push("<div style='color:red'>file name already exists: " + newFileName + "==" + imageFile.FileName + "</div>");
-                    }
-                    else {
-                        $.ajax({
-                            async: false,
-                            url: "php/renameFile.php?path=" + "../../danni/" + catFolder.FolderPath + "&oldFileName=" + physcialFile.name + "&newFileName=" + newFileName,
-                            // ? path = " + settingsImgRepo + catFolder.FolderPath + " & oldFileName=" + physcialFile.name + "& newFileName=" + newFileName,
-                            success: function (success) {
-                                if (success == "ok") {
-                                    repairReport.physcialFilesRenamed.push(physcialFile.name + " to: " + newFileName);
-                                    // now update array
-                                    physcialFile.name = newFileName;
-                                    showRepairReport();
-                                }
-                                else {
-                                    repairReport.errors.push("<div style='color:red'>rename file error: " + success + "</div>");
-                                    showRepairReport();
-                                }
-                                rowsProcessed++;
-                            },
-                            error: function (jqXHR) {
-                                let errMsg = getXHRErrorDetails(jqXHR);
-                                repairReport.errors.push("<div style='color:red'>rename file XHR error: " + errMsg + "</div>");
-                                showRepairReport();
-                                rowsProcessed++;
-                            }
-                        });
-                    }
-                }
-            }
-            }
-        else {
-            rowsProcessed++;
-        }
-        repairReport.imageFilesProcessed++;
-        showRepairReport();
-        if (rowsProcessed == rowsToProcess) {
+            showRepairReport();
             return true;
         }
     });

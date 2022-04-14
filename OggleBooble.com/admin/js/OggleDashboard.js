@@ -559,7 +559,6 @@ function folderCountTest() {
             $('#moveManyTitle').html("Archive Many");
             $('#moveManyButton').html("Archive");
         }
-        $('#txtMoveManySource').html($('#txtCurrentActiveFolder').val());
         $('#txtMoveManySource').html("Archive");
 
         $.ajax({
@@ -573,9 +572,8 @@ function folderCountTest() {
                     let links = JSON.parse(imgLinks);
                     moveManyArray = [];
                     $.each(links, function (ndx, obj) {
-                        $('#moveManyImageArea').append("<div class='sortBox'><img class='sortBoxImage' src='" +
-                            settingsImgRepo + obj.FileName + "'/>" +
-                            "<br/><input class='sortBoxInput' id=" + obj.LinkId + " value=" + obj.SortOrder + "></input></div>");
+                        $('#moveManyImageArea').append("<div class='sortBox'><img class='sortBoxImage' src='" + settingsImgRepo + "/" + obj.FileName + "'/>" +
+                            "<br/><input type='checkbox' class='loadManyCheckbox' imageId=" + obj.LinkId + "></input></div>");
                         moveManyArray.push({
                             FolderId: $('#txtActiveFolderId').val(),
                             ItemId: obj.LinkId,
@@ -584,7 +582,7 @@ function folderCountTest() {
                         });
                     });
                     $('#dashBoardLoadingGif').hide();
-                    $('#dataifyInfo').html(daInfoMessage + " done");
+                    //$('#dataifyInfo').html(daInfoMessage + " done");
                 }
             },
             error: function (jqXHR) {
@@ -594,93 +592,9 @@ function folderCountTest() {
         });
 
         $('#moveManySection').show();
+        $('#txtMoveManySource').val($('#txtCurrentActiveFolder').val());
     }
 
-    function showMoveManyTool(cx) {
-
-        $('#txtMoveManySource').val(mmSelectedTreeFolderPath);
-        $('#moveManyImageArea').css("height", $('#dashboardContainer').height() - $('#moveManyHeader').height());
-        resizeDashboardPage();
-        $('#sortTableHeader').html(pSelectedTreeFolderPath.replace(".OGGLEBOOBLE.COM", "").replace("/Root/", "").replace(/%20/g, " ")
-            + "(" + $('#txtActiveFolderId').val() + ")");
-        $('#dashBoardLoadingGif').fadeIn();
-
-        $('#dataifyInfo').append("loading sorted images");
-
-
-        mmSourceFolderId = $('#txtActiveFolderId').val();
-        mmSelectedTreeFolderPath = $('#txtCurrentActiveFolder').val();
-        //activeDirTree = "moveMany";
-        //loadDirectoryTree(1, "mmDirTreeContainer", true);
-        //showHtmlDirTree("mmDirTreeContainer");
-        loadMMcheckboxes();
-        if (isNullorUndefined($('#txtActiveFolderId').val())) {
-            alert("select a folder");
-            return;
-        }
-
-        //imgLinks.Links = db.VwLinks.Where(l => l.FolderId == folderId).OrderBy(l => l.SortOrder).ToList();
-        $.ajax({
-            url: "php/yagdrasselFetchAll.php?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val() + " order by SortOrder",
-            success: function (imgLinks) {
-                $('#dashBoardLoadingGif').hide();
-                if (imgLinks.indexOf("error") > -1)
-                    $('#sortToolImageArea').html(imgLinks);
-                else {
-                    $('#sortToolImageArea').html("");
-                    let links = JSON.parse(imgLinks);
-                    sortOrderArray = [];
-                    $.each(links, function (ndx, obj) {
-                        $('#sortToolImageArea').append("<div class='sortBox'><img class='sortBoxImage' src='" +
-                            settingsImgRepo + obj.FileName + "'/>" +
-                            "<br/><input class='sortBoxInput' id=" + obj.LinkId + " value=" + obj.SortOrder + "></input></div>");
-                        sortOrderArray.push({
-                            FolderId: $('#txtActiveFolderId').val(),
-                            ItemId: obj.LinkId,
-                            ImageSrc: settingsImgRepo + obj.FileName,
-                            SortOrder: obj.SortOrder
-                        });
-                    });
-                    $('#dashBoardLoadingGif').hide();
-                    $('#dataifyInfo').html(daInfoMessage + " done");
-                }
-            },
-            error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                logError("AJX", $('#txtActiveFolderId').val(), errMsg, "showSortTool");
-            }
-        });
-    }
-    function loadMMcheckboxes() {
-        $('#dashBoardLoadingGif').fadeIn();
-        let imgRepo = settingsArray.ImageRepo;
-        $.ajax({
-            type: "GET",
-            //db.VwLinks.Where(l => (l.FolderId == folderId) && (l.FolderId == l.SrcId)).OrderBy(l => l.SortOrder).ToList();
-            url: "php/yagdrasselFetchAll?query=select * from VwLinks where FolderId=" + $('#txtActiveFolderId').val(),
-            success: function (imgLinks) {
-                $('#dashBoardLoadingGif').hide();
-                if (imgLinks != "error") {
-                    $('#moveManyImageArea').html("");
-                    let jLinks = JSON.parse(imgLinks)
-                    $.each(jLinks, function (ndx, obj) {
-                        $('#moveManyImageArea').append("<div class='sortBox'><img class='sortBoxImage' src='" + imgRepo + "/" + obj.FileName + "'/>" +
-                            "<br/><input type='checkbox' class='loadManyCheckbox' imageId=" + obj.LinkId + "></input></div>");
-                    });
-                    $('#moveManyCountContainer').html(imgLinks.Links.length.toLocaleString());
-                }
-                else {
-                    logError("AJX", mmSourceFolderId, imgLinks.Success, "getDeepFolderCounts");
-                    alert("load MMcheckboxes AJXC error: " + imgLinks);
-                }
-            },
-            error: function (jqXHR) {
-                let errMsg = getXHRErrorDetails(jqXHR);
-                alert("load MMcheckboxes XHR error: " + errMsg);
-                //if (!checkFor404(errMsg, mmSourceFolderId, "loadMMcheckboxes")) logError("XHR", mmSourceFolderId, errMsg, "loadMMcheckboxes");
-            }
-        });
-    }
     function mmSelectAll() {
         if ($('#mmCkSelectAll').is(":checked"))
             $('.loadManyCheckbox').prop("checked", true);
@@ -807,89 +721,59 @@ function folderCountTest() {
     }
 }
 
-//        string ftpRepo = imgRepo.Substring(7);
-//        var dbDestFolder = db.CategoryFolders.Where(i => i.Id == moveManyModel.DestinationFolderId).First();
-//        string destFtpPath = ftpHost + ftpRepo + "/" + dbDestFolder.FolderPath;
+function showAddStepChildDialog() {
+    let cfSsorceFolderId = pSelectedTreeId;  // captured before 
+    $('#dashboardDialogTitle').html("Create Stepchild Folder");
+    $('#dashboardDialogContents').html(
+        "    <div><span>child folder</span><input id='txtStepParent' class='txtLinkPath roundedInput' readonly='readonly'></input></div>\n" +
+        "    <div><span>new parent folder</span><input id='txtscSourceFolderName' class='roundedInput' readonly='readonly'></input>\n" +
+        "       <img class='dialogDirTreeButton' src='/Images/caretDown.png' onclick='$(\"#scDirTreeContainer\").toggle()'/></div>\n" +
+        "    <div><span>new name</span><input id='txtscNewFolderName' class='roundedInput'></input></div>\n" +
+        "    <div><span>new link</span><input id='txtCustomFolderLink' class='roundedInput'></input></div>\n" +
+        "    <div class='roundendButton' onclick='perfomAddStepChildFolder(" + cfSsorceFolderId + ")'>Create Stepchild</div>\n" +
+        "       <div id='scDirTreeContainer' class='floatingDirTreeContainer'></div>\n");
+    $("#txtStepParent").val(pSelectedTreeFolderPath);
+    activeDirTree = "stepchild";
+    showHtmlDirTree("scDirTreeContainer");
+    //loadDirectoryTree(1, "scDirTreeContainer", false);
+    $('#dashboardDialog').fadeIn();
+}
+function perfomAddStepChildFolder(cfSsorceFolderId) {
+    //alert("sorceFolderId: " + cfSsorceFolderId + "  DestinationId: " + pSelectedTreeId);
+    $('#dashBoardLoadingGif').show();
+    $.ajax({
+        type: "POST",
+        url: settingsArray.ApiServer + "api/CatFolder/AddStepChild",
+        data: {
+            SourceFileId: cfSsorceFolderId,
+            DestinationId: pSelectedTreeId,
+            LinkId: $('#txtCustomFolderLink').val(),
+            FolderName: $('#txtscNewFolderName').val(),
+            SortOrder: 1998
+        },
+        success: function (success) {
+            $('#dashBoardLoadingGif').hide();
+            $('#dataifyInfo').hide();
+            if (success === "ok") {
+                displayStatusMessage("ok", "folder " + $('#txtscSourceFolderName').val() + " added as stepchild to " + $('#txtStepParent').val());
+                logDataActivity({
+                    VisitorId: getCookieValue("VisitorId", "perfom AddStepChildFolder"),
+                    ActivityCode: "CSF",  // Create Folder Stepchild
+                    FolderId: pSelectedTreeId,
+                    Details: "linkId: " + $('#txtCustomFolderLink').val() + " DestinationId: " + pSelectedTreeId
+                });
 
-//        if (!FtpUtilies.DirectoryExists(destFtpPath))
-//            FtpUtilies.CreateDirectory(destFtpPath);
+                $('#txtNewFolderParent').val('');
+                $('.txtPartialDirTreePath').val('');
+                //$('#moveFolderCrud').dialog("close");
+            }
+            else
+                alert("add stepchild: " + success);
+        },
+        error: function (xhr) {
+            $('#dashBoardLoadingGif').hide();
+            alert("add stepchild xhr error: " + getXHRErrorDetails(xhr));
+        }
+    });
+}
 
-//        var dbSourceFolder = db.CategoryFolders.Where(f => f.Id == moveManyModel.SourceFolderId).First();
-//        string sourceFtpPath = ftpHost + ftpRepo + "/" + dbSourceFolder.FolderPath;
-
-//        ImageFile dbImageFile = null;
-//        string oldFileName;
-//        string newFileName;
-//        string linkId;
-//        int sortOrder;
-//        for (int i = 0; i < moveManyModel.ImageLinkIds.Length; i++)
-//        {
-//            linkId = moveManyModel.ImageLinkIds[i];
-//            if (moveManyModel.Context == "copy") //only
-//            {
-//                db.CategoryImageLinks.Add(new MySqlDataContext.CategoryImageLink()
-//                                {
-//                        ImageCategoryId = dbDestFolder.Id,
-//                        ImageLinkId = linkId,
-//                        SortOrder = 9876
-//                    });
-//                db.SaveChanges();
-//            }
-//            else {
-//                dbImageFile = db.ImageFiles.Where(f => f.Id == linkId).First();
-//                oldFileName = dbImageFile.FileName;
-//                string ext = dbImageFile.FileName.Substring(dbImageFile.FileName.LastIndexOf("."));
-
-//                if (dbDestFolder.FolderType == "singleChild") {
-//                    var destinationParent = db.CategoryFolders.Where(f => f.Id == dbDestFolder.Parent).First();
-//                    newFileName = destinationParent.FolderName + "_" + linkId + ext;
-//                }
-//                else
-//                    newFileName = dbDestFolder.FolderName + "_" + linkId + ext;
-
-//                if (dbDestFolder.Parent == dbSourceFolder.Id)
-//                    newFileName = oldFileName;
-
-//                success = FtpUtilies.MoveFile(sourceFtpPath + "/" + oldFileName, destFtpPath + "/" + newFileName);
-//                if (success == "ok") {
-//                    dbImageFile.FolderId = moveManyModel.DestinationFolderId;
-//                    dbImageFile.FileName = newFileName;
-//                    db.SaveChanges();
-
-//                    var oldLink = db.CategoryImageLinks.Where(l => l.ImageCategoryId == dbSourceFolder.Id && l.ImageLinkId == linkId).First();
-//                    sortOrder = oldLink.SortOrder;
-//                    if (moveManyModel.Context == "move") {
-//                        db.CategoryImageLinks.Remove(oldLink);
-//                        db.SaveChanges();
-//                    }
-
-//                    db.CategoryImageLinks.Add(new CategoryImageLink()
-//                                    {
-//                            ImageCategoryId = dbDestFolder.Id,
-//                            ImageLinkId = linkId,
-//                            SortOrder = sortOrder
-//                        });
-//                    db.SaveChanges();
-//                    // SIGNAR
-//                }
-//                else
-//                    return success;
-//            }
-//        }
-//        db.SaveChanges();
-//        success = "ok";
-//    }
-//    catch (Exception ex)
-//    {
-//        success = Helpers.ErrorDetails(ex);
-//        if (db != null)
-//            db.Dispose();
-//    }
-//}
-//            }
-//            catch (Exception ex)
-//{
-//    success += Helpers.ErrorDetails(ex);
-//}
-//return success;
-//        }
