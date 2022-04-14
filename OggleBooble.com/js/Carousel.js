@@ -24,7 +24,7 @@ function launchCarousel(pageContext) {
             resizeCarousel();
         });
     } catch (e) {
-        logOggleError("BUG", -355, e, "launch carousel");
+        logOggleError("BUG", -35501, e, "launch carousel");
     }
 }
 
@@ -53,7 +53,7 @@ function loadFromCache() {
         console.log("loaded " + carouselRows.length + " from " + carouselRoot + " cache");
     }
     catch (e) {
-        logOggleError("BUG", -355, e, "load from cache");
+        logOggleError("BUG", -35502, e, "load from cache");
     }
 }
 
@@ -78,11 +78,11 @@ function startCarousel(calledFrom) {
                 }, rotationSpeed);
             }
             else {
-                logOggleError("BUG", -355, "failed to start carousel. carouselRows.length: " + carouselRows.length(), "start carousel");
+                logOggleError("BUG", -35503, "failed to start carousel. carouselRows.length: " + carouselRows.length(), "start carousel");
             }
         }
     } catch (e) {
-        logOggleError("BUG", -355, e, "start carousel");
+        logOggleError("BUG", -35504, e, "start carousel");
     }
 }
 
@@ -149,7 +149,7 @@ function intervalBody() {
                             $('#carouselImage1').attr('src', 'https://common.ogglefiles.com/img/ingranaggi3.gif');
                             $('#carouselImage1').css('opacity', 1);
                             intervalReady = true;
-                            logOggleError("IMG", carouselRows[imageIndex].FolderId, "z", "interval body");
+                            logOggleError("ILF", carouselRows[imageIndex].FolderId, "z", "interval body");
                         });  // load
                 } catch (e) {
                     $('#indexPageLoadingGif').hide();

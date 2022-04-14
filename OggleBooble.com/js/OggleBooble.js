@@ -10,7 +10,7 @@ let slideshowVisible = false, imageViewerVisible = false;
             let cookeiVisitorId = getCookieValue("VisitorId");
             if (cookeiVisitorId == "cookie not found") {
                 sessionStorage["VisitorIdVerified"] = "ok";
-                ipifyLookup();
+                ipifyLookup("verify user");
             }
             else {
                 verifyVisitorId(cookeiVisitorId);
@@ -32,7 +32,7 @@ let slideshowVisible = false, imageViewerVisible = false;
                 url: "php/registroFetch.php?query=Select * from Visitor where VisitorId='" + visitorId + "'",
                 success: function (data) {
                     if (data == "false") {
-                        ipifyLookup();
+                        ipifyLookup("verify visitor Id");
                     }
                     else {
                         sessionStorage["VisitorIdVerified"] = "ok";
@@ -47,14 +47,14 @@ let slideshowVisible = false, imageViewerVisible = false;
         }
     }
 
-    function ipifyLookup() {
+    function ipifyLookup(calledFrom) {
         try {
             $.ajax({
                 type: "GET",
                 url: "https://api.ipify.org",
                 success: function (ipifyRtrnIP) {
                     if (isNullorUndefined(ipifyRtrnIP)) {
-                        logOggleError("", -88817, "ipify empty response", "ipify lookup")
+                        logOggleError("XHR", -88817, "ipify empty response", "ipify lookup")
                     }
                     else {
                         // ipify success // checkVisitor(ipifyRtrnIP, calledFrom);
@@ -70,8 +70,7 @@ let slideshowVisible = false, imageViewerVisible = false;
                                     let visitorRow = JSON.parse(data);
                                     if (localStorage["VisitorId"] == visitorRow.VisitorId) {
                                         //sessionStorage["VisitorIdVerified"] = "ok";
-                                        logOggleError("BUG", -67736, "just told cookie not found", "ipify lookup")
-
+                                        logOggleError("BUG", -67736, "just told cookie not found", "ipify lookup/" + calledFrom);
                                     }
                                     else {
                                         logOggleActivity("CV2", -88812, "lookup Ip Address");  // local storage does not match visitorId for IP
@@ -87,7 +86,7 @@ let slideshowVisible = false, imageViewerVisible = false;
                     }
                 },
                 error: function (jqXHR) {
-                    logOggleError("XHR", -67700, getXHRErrorDetails(jqXHR), "lookup Ip Address")
+                    logOggleError("XHR", -67700, getXHRErrorDetails(jqXHR), "ipify lookup/" + calledFrom);
                 }
             });
         }
@@ -123,17 +122,15 @@ let slideshowVisible = false, imageViewerVisible = false;
     }
 
     function checklocalStorageVisitorId(ipVisitorId, ipifyRtrnIP) {
+        let currentlocalStorageVisitorId = localStorage["VisitorId"];
         $.ajax({
             type: "GET",
-            url: "php/registroFetch.php?query=Select * from Visitor where VisitorId='" + localStorage["VisitorId"] + "'",
+            url: "php/registroFetch.php?query=Select * from Visitor where VisitorId='" + currentlocalStorageVisitorId + "'",
             success: function (data) {
                 if (data == "false") {
                     localStorage["VisitorId"] = ipVisitorId;
-                    localStorage["VisitorId"] = ipVisitorId;
-                    localStorage["VisitorId"] = ipVisitorId;
-                    localStorage["VisitorId"] = ipVisitorId;
                     rebuildCookie();
-                    logOggleError("BUG", -35400, "localStorage has bad VisitorId");
+                    logOggleError("BUG", -35400, "currentlocalStorage: " + currentlocalStorageVisitorId + " changed to: " + ipifyRtrnIP);
                 }
                 else {
                     // localStorage["VisitorId"] ok
@@ -355,7 +352,7 @@ function addPgLinkButton(folderId, labelText) {
         try {
             console.log("imageError: IMG. folder: " + folderId + ", linkId: " + linkId + ", calledFrom: " + calledFrom);
             $('#' + linkId).attr('src', 'https://common.ogglefiles.com/img/redballon.png');
-            logOggleError("IMG", folderId, linkId, calledFrom);
+            logOggleError("ILF", folderId, linkId, calledFrom);
 
         } catch (e) {
             logOggleError("CAT", folderId, e, "image error")
@@ -827,14 +824,12 @@ function addPgLinkButton(folderId, labelText) {
                     }
                     else {
                         switch (success.trim()) {
-                            case '23000':
+                            case 'code: 23000':
                                 //logOggleError("",)
                                 break;
                             case '42000':
                             default:
                                 logOggleError("AJX", -5477, success.trim(), "log visit");
-
-                                alert("logVisit: " + success);
                         }
                     }
                     sessionStorage["VisitLogged"] = "yes";
