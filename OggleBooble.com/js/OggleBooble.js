@@ -397,7 +397,7 @@ function addPgLinkButton(folderId, labelText) {
                 },
                 success: function (success) {
                     if (success.trim() == "ok") {
-                        console.log("activity logged.  VisitorId: " + visitorId + "  Code: " + activityCode + "  calledFrom: " + calledFrom);
+                        console.log("activity logged.  VisitorId: " + visitorId + "  Code: " + eventCode + "  calledFrom: " + calledFrom);
                     }
                     else {
                         console.log("log OggleActivity fail: " + success);
@@ -1084,6 +1084,7 @@ function addPgLinkButton(folderId, labelText) {
             $('#summernoteFileContainer').summernote({ toolbar: [['codeview']] });
             // <tr><td>nationality </td><td><input id='txtNationality'></input></td></tr>
             $(".note-editable").css({ 'font-size': '16px', 'min-height': '186px' });
+            $('#txtBorn').datepicker();
             $('#centeredDialogContainer').css({ "top": 33 + $(window).scrollTop() });
             $('#centeredDialogContainer').draggable().show();
 
@@ -1093,37 +1094,13 @@ function addPgLinkButton(folderId, labelText) {
             $('#summernoteFileContainer').summernote('disable');
 
             $("#fileDetailsSection input").prop("disabled", true);
-            $('#btnFileDlgEdit').on("click", function () {
-                if ($('#btnCatDlgEdit').html() === "Save") {
-                    saveFolderDialog();
-                    $('#btnCatDlgEdit').html("Edit");
-                    $('#btnFileDlgDone').hide();
-                    $('#btnTrackBkLinks').hide();
-                    $("#fileDetailsSection input").prop("disabled", true);
-                    $('#summernoteFileContainer').summernote('disable');
-                }
-                else {
-                    $('#btnCatDlgEdit').html("Save");                    
-                    $('#btnFileDlgDone').show();
-                    $('#btnTrackBkLinks').show();
-                    $("#fileDetailsSection input").prop("disabled", false);
-                    $('#summernoteFileContainer').summernote('enable');
-                    $('.note-editable').trigger('focus');
-                }
-            });
 
-            $('#btnFileDlgDone').on("click", function () {
-                $('#btnCatDlgEdit').html("Edit");
-                $('#btnFileDlgDone').hide();
-                $('#btnTrackBkLinks').hide();
-                $("#fileDetailsSection input").css("enabled", false);
-            });
-
-            let sql = `select f.Id, FolderName, HomeCountry, HomeTown, FakeBoobs, FolderComments,
-                            Measurements, Birthday, concat(f.FolderPath,'/',i.FileName) as src
+            let sql = `select f.Id, f.FolderName, HomeCountry, HomeTown, FakeBoobs, FolderComments,
+                            Measurements, Birthday, concat(f2.FolderPath,'/',i.FileName) as src
                         from CategoryFolder f
                         left join FolderDetail d on f.Id = d.FolderId
                         left join ImageFile i on f.FolderImage = i.Id
+                        left join CategoryFolder f2 on i.FolderId = f2.Id
                         where f.Id =` + folderId;
             $.ajax({
                 url: "php/yagdrasselFetch.php?query=" + sql,
@@ -1140,12 +1117,15 @@ function addPgLinkButton(folderId, labelText) {
                         $('#txtHomeCountry').val(folderInfo.HomeCountry);
                         $('#txtHometown').val(folderInfo.HomeTown);
                         $('#txtBorn').val(folderInfo.Birthday);
-                        $("#txtMeasurements").html(folderInfo.Measurements);
+                        $("#txtMeasurements").val(folderInfo.Measurements);
+                        $('#summernoteFileContainer').summernote('code', folderInfo.FolderComments);
 
-                        $("#modelDialogThumbNailImage").css("height", $("#fileDetailsSection").height());
+                        let fdSectionHeight = $("#fileDetailsSection").height();
+                        $("#modelDialogThumbNailImage").css("height", fdSectionHeight);
+
                         $("#modelDialogThumbNailImage").attr("src", settingsImgRepo + folderInfo.src);
 
-                        //logEvent("SMD", folderId, calledFrom, "folder type: " + folderInfo.FolderType);
+                        logOggleEvent("SMD", folderId, "file details dialog")
                     }
                 },
                 error: function (jqXHR) {
@@ -1155,8 +1135,33 @@ function addPgLinkButton(folderId, labelText) {
                 }
             });
 
+            $('#btnFileDlgEdit').on("click", function () {
+                if ($('#btnFileDlgEdit').html() === "Save") {
+                    saveFolderDialog(folderId);
+                    $('#btnFileDlgEdit').html("Edit");
+                    $('#btnFileDlgDone').hide();
+                    $('#btnTrackBkLinks').hide();
+                    $("#fileDetailsSection input").prop("disabled", true);
+                    $('#summernoteFileContainer').summernote('disable');
+                }
+                else {
+                    $('#btnFileDlgEdit').html("Save");
+                    $('#btnFileDlgDone').show();
+                    $('#btnTrackBkLinks').show();
+                    $("#fileDetailsSection input").prop("disabled", false);
+                    $('#summernoteFileContainer').summernote('enable');
+                    $('.note-editable').trigger('focus');
+                }
+            });
+
+            $('#btnFileDlgDone').on("click", function () {
+                $('#btnFileDlgEdit').html("Edit");
+                $('#btnFileDlgDone').hide();
+                $('#btnTrackBkLinks').hide();
+                $("#fileDetailsSection input").css("enabled", false);
+            });
             $('#centeredDialogContainer').mouseleave(function () {
-                if ($("#btnFolderDlgEdit").html() == "xEdit") {
+                if ($("#btnFileDlgEdit").html() == "Edit") {
                     $('#centeredDialogContainer').fadeOut();
                 }
             });
@@ -1167,13 +1172,14 @@ function addPgLinkButton(folderId, labelText) {
             logOggleError("CAT", folderId, e, "show file details dialog");
         }
     }
-    function saveFolderDialog() {
+    function saveFolderDialog(folderId) {
         if (($('#txtFolderName').val() == folderInfo.FolderName) && ($('#summernoteFolderContainer').summernote("code") == folderInfo.FolderComments)) {
             $('#folderNameMessage').html("nothing to update");
         }
         else {
-            let txtComments = encodeURI($('#summernoteFileContainer').summernote("code"));
-
+            //let txtComments = encodeURI($('#summernoteFileContainer').summernote("code"));
+            let txtComments = $('#summernoteFileContainer').summernote("code");
+            let birthday = $('#txtBorn').val();
             $.ajax({
                 type: "POST",
                 url: "php/updateFileInfo.php",
@@ -1182,7 +1188,7 @@ function addPgLinkButton(folderId, labelText) {
                     folderName: $('#txtFolderName').val(),
                     country: $('#txtHomeCountry').val(),
                     city: $('#txtHometown').val(),
-                    dob: $('#txtBorn').val(),
+                    dob: birthday,
                     boobs: $('#selBoobs').val(),
                     figure: $('#txtMeasurements').val(),
                     folderComments: txtComments
@@ -1681,94 +1687,6 @@ function displayFeedback() {
     //\"FLC\",\"feedback\", rootFolder + "\", folderId + "
 }
 
-
-//function showFullModelDetails(folderId) {
-//    $('#albumPageLoadingGif').show();
-//    $("#modelInfoDetails").html(modelInfoDetailHtml());
-//    $('#readonlyPoserDetails').show();
-//    $('#editablePoserDetails').hide();
-
-//    //$('#btnCatDlgCancel').hide();
-//    //$('#btnCatDlgMeta').hide();
-
-//    $.ajax({
-//        type: "GET",
-//        url: settingsArray.ApiServer + "api/FolderDetail/GetFullFolderInfo?folderId=" + folderId,
-//        success: function (folderInfo) {
-//            $('#albumPageLoadingGif').hide();
-//            if (folderInfo.Success === "ok") {
-//                objFolderInfo = folderInfo;
-//                $('#centeredDialogTitle').html(folderInfo.FolderName);
-//                $('#modelDialogThumbNailImage').attr("src", folderInfo.FolderImage);
-//                $('#txtFolderName').val(folderInfo.FolderName);
-//                $('#txtBorn').val(dateString(folderInfo.Birthday));
-//                $('#txtHomeCountry').val(folderInfo.HomeCountry);
-//                $('#txtHometown').val(folderInfo.HomeTown);
-//                $('#txtBoobs').val(((folderInfo.FakeBoobs) ? "fake" : "real"));
-//                $('#txtMeasurements').val(folderInfo.Measurements);
-//                setReadonlyFields();
-//                $("#btnCatDlgLinks").show();
-//                $("#summernoteContainer").summernote("code", folderInfo.FolderComments);
-//            }
-//            else {
-//                $('#albumPageLoadingGif').hide();
-//                logOggleError("AJX", folderId, folderInfo.Success, "show FullModelDetails");
-//            }
-//        },
-//        error: function (jqXHR) {
-//            $('#albumPageLoadingGif').hide();
-//            let errMsg = getXHRErrorDetails(jqXHR);
-//            if (!checkFor404(errMsg, folderId, "show FullModelDetails")) logOggleError("XHR", folderId, errMsg, "show FullModelDetails");
-//        }
-//    });
-//}
-//function updateFolderDetail() {
-    //    loadGets();
-    //    $.ajax({
-    //        type: "PUT",
-    //        url: settingsArray.ApiServer + "api/FolderDetail/AddUpdate",
-    //        data: objFolderInfo,
-    //        success: function (success) {
-    //            if (success === "ok") {
-    //                displayStatusMessage("ok", "Model info updated");
-    //            }
-    //            else {
-    //                logOggleError("AJX", objFolderInfo.Id, success, "updateFolderDetail");
-    //            }
-    //        },
-    //        error: function (jqXHR) {
-    //            let errMsg = getXHRErrorDetails(jqXHR);
-    //            let functionName = arguments.callee.toString().match(/function ([^\(]+)/)[1];
-    //            if (!checkFor404(errMsg, folderId, functionName)) logOggleError("XHR", objFolderInfo.Id, errMsg, functionName);
-    //        }
-    //    });
-    //}
-    // ADD EDIT FOLDER INFO
-    //function setReadonlyFields() {
-    //    $('#readOnlyFolderName').html(objFolderInfo.FolderName);
-    //    $('#readOnlyBorn').html(isNullorUndefined(objFolderInfo.Birthday) ? "_ " : dateString(objFolderInfo.Birthday));
-    //    $('#readOnlyHomeCountry').html(isNullorUndefined(objFolderInfo.HomeCountry) ? " " : objFolderInfo.HomeCountry);
-    //    $('#readOnlyHometown').html(isNullorUndefined(objFolderInfo.HomeTown) ? " " : objFolderInfo.HomeTown);
-    //    $('#readOnlyBoobs').html(isNullorUndefined(objFolderInfo.FakeBoobs) ? 0 : objFolderInfo.FakeBoobs ? "fake" : "real");
-    //    $('#readOnlyMeasurements').html(isNullorUndefined(objFolderInfo.Measurements) ? " " : objFolderInfo.Measurements);
-    //}
-    //    allowDialogClose = false;
-
-    //    //objFolderInfo.FolderType = folderInfo.FolderType;
-    //    $('#divEdtFolderName').show();
-
-    //    $('#editablePoserDetails').show();
-    //    $('#readonlyPoserDetails').hide();
-    //    $('#btnCatDlgEdit').html("Save");
-    //    $('#summernoteContainer').summernote("destroy");
-    //    $('#summernoteContainer').summernote({
-    //        toolbar: [['codeview']],
-    //        height: "200"
-    //    });
-    //    $('#summernoteContainer').focus();
-    //    $('#summernoteContainer').summernote('focus');
-    //    //$(".note-editable").css('font-size', '16px');
-    //    //alert("summernote('code'):" + $('#summernoteContainer').summernote('code'))
 
     //    $("#txtBorn").datepicker();
     //    //$('#selBoobs').val(objFolderInfo.FakeBoobs ? 1 : 0).change();

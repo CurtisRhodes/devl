@@ -10,6 +10,7 @@
         $folderComments = $_POST['folderComments'];
         $country = $_POST['country'];
         $city = $_POST['city'];
+     // $dob = date_format($_POST['dob'], 'Y-m-d');
         $dob = $_POST['dob'];
         $boobs = $_POST['boobs'];
         $figure = $_POST['figure'];
@@ -43,8 +44,8 @@
                 }
             }
             else {
-                $sql = "UPDATE FolderDetail SET FolderComments='".$folderComments."', HomeCountry=".$country."', HomeTown='".$city."', Birthday='"
-                        .$dob."', FakeBoobs=".$boobs.", Measurements='".$figure."' WHERE FolderId=".$folderId;
+                $sql = "UPDATE FolderDetail SET FolderComments='".$folderComments."', HomeCountry='".$country."', HomeTown='".$city."',".
+                    " Birthday='".$dob."', FakeBoobs=".$boobs.", Measurements='".$figure."' WHERE FolderId=".$folderId;
                 $stmt= $pdo->prepare($sql);
                 $stmt->execute();
                 $stmt1Success = $stmt->errorCode();
@@ -52,7 +53,10 @@
                     $success = 'ok update';
                 }
                 else {
-                    $success = $stmt1Success." update";
+                    if($stmt1Success=='27000')
+                        $success = "date format: ".$dob;
+                    else
+                        $success = $stmt1Success." update";
                 }
             }
         }
