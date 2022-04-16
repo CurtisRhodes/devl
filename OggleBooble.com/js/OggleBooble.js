@@ -80,7 +80,6 @@ let slideshowVisible = false, imageViewerVisible = false;
                             },
                             error: function (jqXHR) {
                                 logOggleError("XHR", -67769, getXHRErrorDetails(jqXHR), "ipify lookup")
-                                alert("perform IpLookup: " + errMsg);
                             }
                         });
                     }
@@ -142,7 +141,7 @@ let slideshowVisible = false, imageViewerVisible = false;
                 }
             },
             error: function (jqXHR) {
-                logOggleError("XHR", -67769, getXHRErrorDetails(jqXHR), "check localStorage VisitorId");                
+                logOggleError("XHR", -67769, getXHRErrorDetails(jqXHR), "check localStorage VisitorId");
             }
         });
     }
@@ -167,12 +166,11 @@ let slideshowVisible = false, imageViewerVisible = false;
                     }
                     else {
                         switch (success.trim()) {
-                            case '23000':
-                                //logOggleError("",);  // duplicate page hit
+                            case '23000': // duplicate page hit
                                 break;
                             case '42000':
                             default:
-                            //alert("logVisit: php error code: " + success);
+                                logOggleError("AJX", folderId, "php code: " + success.trim(), "record hit source");
                         }
                     }
                 },
@@ -834,8 +832,8 @@ function addPgLinkButton(folderId, labelText) {
                     }
                     sessionStorage["VisitLogged"] = "yes";
                 },
-                error: function (jqXHR, exception) {
-                    alert("LogVisit jqXHR : " + getXHRErrorDetails(jqXHR, exception));
+                error: function (jqXHR) {
+                    logOggleError("XHR", -547705, getXHRErrorDetails(jqXHR), "log visit");
                 }
             });
         } catch (e) {
@@ -866,12 +864,12 @@ function addPgLinkButton(folderId, labelText) {
                                 break;
                             case '42000':
                             default:
-                            //alert("logVisit: php error code: " + success);
+                                logOggleError("AJX", folderId, "php code: " + success.trim(), "log page hit");
                         }
                     }
                 },
                 error: function (jqXHR, exception) {
-                    alert("log PageHit error: " + getXHRErrorDetails(jqXHR, exception));
+                    logOggleError("", folderId, getXHRErrorDetails(jqXHR, exception), "log page hit");
                 }
             });
         }
@@ -880,7 +878,7 @@ function addPgLinkButton(folderId, labelText) {
     function addVisitor(ipResponse) {
         visitorId = create_UUID();
 
-//        alert("visitorId:" + visitorId + "  $city: " + ipResponse.city + ", $region: " + ipResponse.region +
+//        console.log("visitorId:" + visitorId + "  $city: " + ipResponse.city + ", $region: " + ipResponse.region +
 //            "\ncountry: " + ipResponse.country + "  loc: " + ipResponse.loc + " ip: " + ipResponse.ip);
 
 
@@ -1189,7 +1187,6 @@ function addPgLinkButton(folderId, labelText) {
             });
 
             function centeringDialogClose() {
-                //alert("overide default centeringDialogClose function");
                 if ($("#btnFolderDlgEdit").html() == "Edit") {
                     $("#vailShell").fadeOut();
                     $('#centeredDialogContainer').fadeOut();
@@ -1312,7 +1309,6 @@ function addPgLinkButton(folderId, labelText) {
     }
 
     function showDirTreeDialog(imgSrc, menuType, title) {
-        //alert("showDirTreeDialog.  menuType: " + menuType);
         slideShowButtonsActive = false;
         let dirTreeDialogHtml = `<div>
                    <div class='inline'><img id='linkManipulateImage' class='copyDialogImage' src='" + imgSrc + "'/></div>
