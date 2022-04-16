@@ -1074,19 +1074,50 @@ function addPgLinkButton(folderId, labelText) {
                     <div id='summernoteFileContainer'></div>
                 </div>
                 <div id='folderInfoDialogFooter' class='folderDialogFooter'>
-                    <div id='btnFileDlgEdit'  class='folderCategoryDialogButton' onclick='editFolderDialog()'>Edit</div>
-                    <div id='btnFileDlgDone'  class='folderCategoryDialogButton' onclick='doneEditing()'>Done</div>
+                    <div id='btnFileDlgEdit'  class='folderCategoryDialogButton' >Edit</div>
+                    <div id='btnFileDlgDone'  class='folderCategoryDialogButton' onclick='doneEditing()'>Cancel</div>
                     <div id='btnTrackBkLinks' class='folderCategoryDialogButton' onclick='showTrackbackDialog()'>Trackback Links</div>
                 </div>
             </div>
             <div id='trackBackDialog' class='floatingDialogBox'></div>`);
 
             $('#summernoteFileContainer').summernote({ toolbar: [['codeview']] });
-            //$('#summernoteContainer').summernote('disable');
             // <tr><td>nationality </td><td><input id='txtNationality'></input></td></tr>
             $(".note-editable").css({ 'font-size': '16px', 'min-height': '186px' });
             $('#centeredDialogContainer').css({ "top": 33 + $(window).scrollTop() });
             $('#centeredDialogContainer').draggable().show();
+
+            
+            $('#btnFileDlgDone').hide();
+            $('#btnTrackBkLinks').hide();
+            $('#summernoteFileContainer').summernote('disable');
+
+            $("#fileDetailsSection input").prop("disabled", true);
+            $('#btnFileDlgEdit').on("click", function () {
+                if ($('#btnCatDlgEdit').html() === "Save") {
+                    saveFolderDialog();
+                    $('#btnCatDlgEdit').html("Edit");
+                    $('#btnFileDlgDone').hide();
+                    $('#btnTrackBkLinks').hide();
+                    $("#fileDetailsSection input").prop("disabled", true);
+                    $('#summernoteFileContainer').summernote('disable');
+                }
+                else {
+                    $('#btnCatDlgEdit').html("Save");                    
+                    $('#btnFileDlgDone').show();
+                    $('#btnTrackBkLinks').show();
+                    $("#fileDetailsSection input").prop("disabled", false);
+                    $('#summernoteFileContainer').summernote('enable');
+                    $('.note-editable').trigger('focus');
+                }
+            });
+
+            $('#btnFileDlgDone').on("click", function () {
+                $('#btnCatDlgEdit').html("Edit");
+                $('#btnFileDlgDone').hide();
+                $('#btnTrackBkLinks').hide();
+                $("#fileDetailsSection input").css("enabled", false);
+            });
 
             let sql = `select f.Id, FolderName, HomeCountry, HomeTown, FakeBoobs, FolderComments,
                             Measurements, Birthday, concat(f.FolderPath,'/',i.FileName) as src
@@ -1104,12 +1135,15 @@ function addPgLinkButton(folderId, labelText) {
                     }
                     else {
                         folderInfo = JSON.parse(data);
+                        $("#centeredDialogTitle").html(folderInfo.FolderName);
                         $('#txtFolderName').val(folderInfo.FolderName);
                         $('#txtHomeCountry').val(folderInfo.HomeCountry);
                         $('#txtHometown').val(folderInfo.HomeTown);
                         $('#txtBorn').val(folderInfo.Birthday);
                         $("#txtMeasurements").html(folderInfo.Measurements);
-                        $("#modelDialogThumbNailImage").attr("src", folderInfo.src);
+
+                        $("#modelDialogThumbNailImage").css("height", $("#fileDetailsSection").height());
+                        $("#modelDialogThumbNailImage").attr("src", settingsImgRepo + folderInfo.src);
 
                         //logEvent("SMD", folderId, calledFrom, "folder type: " + folderInfo.FolderType);
                     }
@@ -1121,15 +1155,8 @@ function addPgLinkButton(folderId, labelText) {
                 }
             });
 
-
-            function centeringDialogClose() { // overide default
-                if ($("#btnFolderDlgEdit").html() == "xxxEdit") {
-                    centeringDialogClose();
-                }
-            }
-
             $('#centeredDialogContainer').mouseleave(function () {
-                if ($("#btnFolderDlgEdit").html() == "xxxEdit") {
+                if ($("#btnFolderDlgEdit").html() == "xEdit") {
                     $('#centeredDialogContainer').fadeOut();
                 }
             });
@@ -1138,6 +1165,45 @@ function addPgLinkButton(folderId, labelText) {
             $('#albumPageLoadingGif').hide();
             $("#centeredDialogTitle").html("program error: " + e);
             logOggleError("CAT", folderId, e, "show file details dialog");
+        }
+    }
+    function saveFolderDialog() {
+        if (($('#txtFolderName').val() == folderInfo.FolderName) && ($('#summernoteFolderContainer').summernote("code") == folderInfo.FolderComments)) {
+            $('#folderNameMessage').html("nothing to update");
+        }
+        else {
+            let txtComments = encodeURI($('#summernoteFileContainer').summernote("code"));
+
+            $.ajax({
+                type: "POST",
+                url: "php/updateFileInfo.php",
+                data: {
+                    folderId: folderId,
+                    folderName: $('#txtFolderName').val(),
+                    country: $('#txtHomeCountry').val(),
+                    city: $('#txtHometown').val(),
+                    dob: $('#txtBorn').val(),
+                    boobs: $('#selBoobs').val(),
+                    figure: $('#txtMeasurements').val(),
+                    folderComments: txtComments
+                },
+                success: function (success) {
+                    if (success.trim().startsWith("ok")) {
+                        displayStatusMessage("ok", "Folder info updated");
+
+                        logOggleActivity("SMD", folderId, "folder info dialog");
+                    }
+                    else {
+                        $('#centeredDialogTitle').html("update failed: " + success.trim());
+                        logOggleError("AJX", folderId, success, "update folderDetail");
+                    }
+                },
+                error: function (jqXHR) {
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    $('#centeredDialogTitle').html("<span style='color:red'>" + errMsg + "</span>");
+                    logOggleError("XHR", folderId, errMsg, "update folderDetail");
+                }
+            });
         }
     }
 
@@ -1171,7 +1237,6 @@ function addPgLinkButton(folderId, labelText) {
                     $('#summernoteFolderContainer').summernote('enable');
                     $('#txtFolderName').prop("disabled", false);
                     $("#btnFolderDlgDone").show();
-                    $('#summernoteFolderContainer').summernote('enable');
                     $('.note-editable').trigger('focus');
                 }
                 else {
@@ -1225,7 +1290,6 @@ function addPgLinkButton(folderId, labelText) {
             logOggleError("CAT", folderId, e, "show folderInfo dialog");
         }
     }
-
     function updateFolderDetail(folderId) {
         if (($('#txtFolderName').val() == folderInfo.FolderName) && ($('#summernoteFolderContainer').summernote("code") == folderInfo.FolderComments)) {
             $('#folderNameMessage').html("nothing to update");
@@ -1688,11 +1752,6 @@ function displayFeedback() {
     //    $('#readOnlyBoobs').html(isNullorUndefined(objFolderInfo.FakeBoobs) ? 0 : objFolderInfo.FakeBoobs ? "fake" : "real");
     //    $('#readOnlyMeasurements').html(isNullorUndefined(objFolderInfo.Measurements) ? " " : objFolderInfo.Measurements);
     //}
-    //function editFolderDialog() {
-    //    if ($('#btnCatDlgEdit').html() === "Save") {
-    //        saveFolderDialog();
-    //        return;
-    //    }
     //    allowDialogClose = false;
 
     //    //objFolderInfo.FolderType = folderInfo.FolderType;
