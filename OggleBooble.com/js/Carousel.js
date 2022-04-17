@@ -68,10 +68,15 @@ function startCarousel(calledFrom) {
         else {
             if (carouselRows.length > 10) {
                 $('#footerMessage1').html("started carousel from: " + calledFrom);
+
+                // load first image
+                imageIndex = Math.floor(Math.random() * carouselRows.length);
+                $('#carouselImage0').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName);
+                resizeCarousel();
+                setLabelLinks(imageIndex);
+
                 $('#carouselImageInnerContainer').show();
                 intervalReady = true;
-
-                setLabelLinks(imageIndex);
                 intervalBody();
                 vCarouselInterval = setInterval(function () {
                     intervalBody();

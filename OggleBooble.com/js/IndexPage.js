@@ -39,7 +39,7 @@ function launchIndexPage(pageContext) {
 /*-- php -------------------------------------------*/{
     function getLatestUpdatedGalleries(spaType) {
         try {
-            $('#latestUpdatesContainer').html('<img class="tinyloadingGif" src="img/loader.gif"/>');
+            $('#latestUpdatesContainer').html('<img class="tinyloadingGif" src="https://common.ogglefiles.com/img/loader.gif"/>');
             if (spaType == "oggleIndex")
                 spaType = "boobs";
 
@@ -65,11 +65,11 @@ function launchIndexPage(pageContext) {
                     }).show();
                 },
                 error: function (jqXHR) {
-                    logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "get updated galleries");
+                    logOggleError("XHR", -518801, getXHRErrorDetails(jqXHR), "get updated galleries");
                 }
             });
         } catch (e) {
-            logOggleError("CAT", folderId, e, "get updated galleries");
+            logOggleError("CAT", -518802, e, "get updated galleries");
         }
     }
 

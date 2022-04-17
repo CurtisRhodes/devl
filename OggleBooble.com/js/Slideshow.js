@@ -1,4 +1,3 @@
-const slideShowImgRepo = 'https://ogglebooble.com/danni/';
 const slideSpeed = 33, slideIncrement = 88;
 
 let slideShowSpeed = 5000, imageArray = [], imageViewerIndex = 0, spSessionCount = 0, tempImgSrc = new Image(),
@@ -88,7 +87,7 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                         imageViewerIndex++;
                     }
 
-                    tempImgSrc.src = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
+                    tempImgSrc.src = settingsImgRepo + imageArray[imageViewerIndex].FileName;
                     tempImgSrc.onload = function () {
                         $('#slideshowImage').attr("src", tempImgSrc.src);
                         let imageWidth = $('#slideshowImageContainer').outerWidth();
@@ -178,7 +177,7 @@ function slide(direction) {
                     $('#slideshowLoadingGif').show()
             }, 250);
             incrementIndex(direction);
-            tempImgSrc.src = slideShowImgRepo + imageArray[imageViewerIndex].FileName;
+            tempImgSrc.src = settingsImgRepo + imageArray[imageViewerIndex].FileName;
             tempImgSrc.onload = function () {
                 showLoadingGif = false;
                 $('#slideshowLoadingGif').hide();
@@ -338,7 +337,7 @@ function slideshowContextMenu() {
     pos.x = event.clientX;
     pos.y = event.clientY;
     oggleContextMenu("slideshow", pos,
-        slideShowImgRepo + imageArray[imageViewerIndex].FileName,
+        settingsImgRepo + imageArray[imageViewerIndex].FileName,
         imageArray[imageViewerIndex].LinkId,
         imageArray[imageViewerIndex].FolderId,
         imageArray[imageViewerIndex].FolderName);

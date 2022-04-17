@@ -1,4 +1,7 @@
 ﻿//const settingsImgRepo = 'https://ogglefiles.com/danni/';
+//const settingsImgRepo = 'https://ogglefiles.com/danni/';
+//const settingsImgRepo = 'https://ogglefiles.com/danni/';
+//const settingsImgRepo = 'https://ogglefiles.com/danni/';
 const settingsImgRepo = 'https://ogglebooble.com/danni/';
 let slideshowVisible = false, imageViewerVisible = false;
 
@@ -778,6 +781,27 @@ function addPgLinkButton(folderId, labelText) {
         $('#centeredDialogContainer').draggable().fadeIn();
     }
 
+    function showCopyLinkDialog(linkId, menuType, imgSrc) {
+        $("#centeredDialogContents").html(`
+            <div class='fileDialogOuterContainer'>
+                <div class='fileDialogTopSection'>
+                    <div id='fileDetailsSection' class='inline'>
+                    </div>
+                    <div id='fileImageSection' class='inline'>
+                        <img id='modelDialogThumbNailImage' src='https://common.ogglefiles.com/img/redballon.png' class='fileDetailsDialogImage' />
+                    </div>
+                </div>
+                <div id='folderInfoDialogFooter' class='folderDialogFooter'>
+                    <div id='btnFileDlgEdit'  class='folderCategoryDialogButton' >Edit</div>
+                    <div id='btnFileDlgDone'  class='folderCategoryDialogButton' onclick='doneEditing()'>Cancel</div>
+                    <div id='btnTrackBkLinks' class='folderCategoryDialogButton' onclick='showTrackbackDialog()'>Trackback Links</div>
+                </div>
+            </div>`);
+
+        //showDirTreeDialog(imgSrc, menuType, "Caterogize Link");
+        //$('#linkManipulateClick').html("<div class='roundendButton' onclick='perfomCopyLink(\"" + linkId + "\")'>Caterogize</div>");
+    }
+
     function performMoveImageToRejects(linkId, folderId) {
 
         //let rejectReason = $('input[name="rdoRejectImageReasons"]:checked').val();
@@ -1371,13 +1395,6 @@ function addPgLinkButton(folderId, labelText) {
         };
     }
 
-    function showCopyLinkDialog(linkId, menuType, imgSrc) {
-
-        slideShowButtonsActive = false;
-        //showDirTreeDialog(imgSrc, menuType, "Caterogize Link");
-        $('#linkManipulateClick').html("<div class='roundendButton' onclick='perfomCopyLink(\"" + linkId + "\")'>Caterogize</div>");
-    }
-
     function showDirTreeDialog(imgSrc, menuType, title) {
         slideShowButtonsActive = false;
         let dirTreeDialogHtml = `<div>
@@ -1424,8 +1441,6 @@ function addPgLinkButton(folderId, labelText) {
         $('#centeredDialogContainer').draggable().fadeIn();
     }
 }
-
-
 
 function captureKeydownEvent(event) {
     if (slideshowVisible)

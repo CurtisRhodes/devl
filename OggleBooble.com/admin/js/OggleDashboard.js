@@ -1,5 +1,6 @@
 ﻿// let settingsImgRepo = 'https ://img.brucheum.com/';
 // let settingsImgRepo = 'st21569.ispot.cc/danni/';
+//const settingsImgRepo = 'https://ogglefiles.com/danni/';
 const settingsImgRepo = 'https://ogglebooble.com/danni/';
 let startRoot = 10326;
 
@@ -451,6 +452,19 @@ function logLocalError(errorCode, folderId, errorMessage, calledFrom) {
     });
 }
 
+function testRejisto() {
+    $.ajax({    //create an ajax request to display.php
+        type: "GET",
+        url: "php/testRejisto.php",
+        success: function (data) {
+            $("#rightSideWorkarea").html(data);            
+        },
+        error: function (jqXHR) {
+            $("#rightSideWorkarea").html("response: [" + data + "]  xhr: " + getXHRErrorDetails(jqXHR));
+            //console.log(response);
+        }
+    });
+}
 function testHitConnection() {
     //alert("url: php/validateConnection.php")
     $.ajax({    //create an ajax request to display.php
