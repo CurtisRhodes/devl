@@ -151,7 +151,7 @@ function intervalBody() {
                                 }, fadeInSpeed);
                             }  //  loadAcknowledged
                         }).error(function () {
-                            $('#carouselImage1').attr('src', 'https://common.ogglefiles.com/img/ingranaggi3.gif');
+                            $('#carouselImage1').attr('src', 'https://common.ogglebooble.com/img/ingranaggi3.gif');
                             $('#carouselImage1').css('opacity', 1);
                             intervalReady = true;
                             logOggleError("ILF", carouselRows[imageIndex].FolderId, "z", "interval body");
@@ -488,7 +488,7 @@ function imgErrorThrown() {
         if (lastErrorThrown != imageIndex) {
             lastErrorThrown = imageIndex;
 
-            $('#carouselImage1').attr('src', "https://common.ogglefiles.com/img/redballon.png");
+            $('#carouselImage1').attr('src', "https://common.ogglebooble.com/img/redballon.png");
             $('.carouselImage').css('height', window.innerHeight * .5);
 
             //logOggleError("ILF", 11, carouselRows[imageIndex].ImageFileName + " not found", "carousel");
@@ -545,15 +545,15 @@ function carouselHtml() {
         "           <div id='knownModelLabel' class='categoryTitleLabel' onclick='clickViewAlbum(3)'></div>\n" +
         "           <div id='imageTopLabel' class='categoryTitleLabel' onclick='clickViewAlbum(2)'></div>\n" +
         "           <div id='carouselFooterLabel' class='categoryTitleLabel' onclick='clickViewAlbum(4)'></div>\n" +
-        "           <img class='assuranceArrows' onclick='assuranceArrowClick(\"back\")' src='https://common.ogglefiles.com/img/leftArrowOpaque02.png'/>\n" +
+        "           <img class='assuranceArrows' onclick='assuranceArrowClick(\"back\")' src='https://common.ogglebooble.com/img/leftArrowOpaque02.png'/>\n" +
         "           <div id='doubleImageContainer' class='imageStablizer'>" +
         "               <img id='carouselImage0' class='carouselImage'/>" +
-        "               <img id='carouselImage1' class='carouselImage' src='https://common.ogglefiles.com/img/ingranaggi3.gif' " +
+        "               <img id='carouselImage1' class='carouselImage' src='https://common.ogglebooble.com/img/ingranaggi3.gif' " +
         "               onerror='imgErrorThrown()'" +
         "               oncontextmenu='carouselContextMenu()'" +
         "               onclick='clickViewAlbum(1)' />\n" +
         "           </div>" +
-        "           <img class='assuranceArrows' onclick='assuranceArrowClick(\"foward\")' src='https://common.ogglefiles.com/img/rightArrowOpaque02.png'/>\n" +
+        "           <img class='assuranceArrows' onclick='assuranceArrowClick(\"foward\")' src='https://common.ogglebooble.com/img/rightArrowOpaque02.png'/>\n" +
         "       </div>\n" +
         "  </div>\n" +
 
@@ -561,7 +561,7 @@ function carouselHtml() {
         "   <div class='floatingDialogHeader'>" +
         "       <div class='floatingDialogTitle'>Carousel Settings</div>" +
         "       <div class='dialogCloseButton'>" +
-        "       <img src='https://common.ogglefiles.com/img/close.png' onclick='resume(); $(\"#carouselSettingsDialog\").hide();'/></div>\n" +
+        "       <img src='https://common.ogglebooble.com/img/close.png' onclick='resume(); $(\"#carouselSettingsDialog\").hide();'/></div>\n" +
         "   </div>\n" +
         "   <div class='floatingDialogContents'>\n" +
         "       <input type='checkbox' id='ckCenterfold'></input> Include Centerfolds<br/>\n" +

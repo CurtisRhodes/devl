@@ -112,7 +112,7 @@ function dirTreeNode(node, randomId) {
 
             let folderImage;
             if (node.FolderImage == null)
-                folderImage = "https://common.ogglefiles.com/img/redballon.png";
+                folderImage = "https://common.ogglebooble.com/img/redballon.png";
             else
                 folderImage = settingsImgRepo + node.FolderImage;
 

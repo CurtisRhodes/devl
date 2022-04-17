@@ -1,0 +1,639 @@
+﻿:root {
+    --brucheumBlue: #74bac3;
+    --borderColor: #f5d82c;
+    --innerBorderColor: gold;
+    --brucheumBlue: #74bac3;
+    --oggleBackgroundColor: #c1bad1; /*#fef;  #f7eef7  #b081b1 #f8e8e8 */
+    --oggleContainerBackgroundColor: #93b798; /* #bc61e4; #d1f5f3; #f8e8e8 */
+    --oggleDialogBackgroundColor: #c4c6ae;
+    --oggleBorderColor: #b200ff; /* #f1cff7; #acdde4; */
+    --ogglePurple: #79078f;
+    --buttonBackgroundColor: #acdde4;
+    --normalFont: 15px;
+    --ogglgeTextColor: #000;
+    --oggleTitleColor: #7f2c8f;
+    --ogglgeSubTitleColor: #490157;
+    --thumbnailBorderColor: #74bac3; /* hot pink #ff00dc   */
+    --ogglgeHeaderBarColor: #decd6f; /*#c79bbe*/
+    --oggleHeaderBoarderTop: #40767d 3px solid;
+    --oggleHeaderBackgroundColor: #74bac3;
+    --oggleHeaderBoarderBottom: #decd6f 11px solid;
+    --oggleHeaderSelectBackgroundColor: #74bac3;
+    --oggleContainerFooterColor: #d1f5f3;
+    --flitterYellow: #fbf0b4;
+    --opaqueImageLabel: rgba(178, 0, 255, 0.46);
+    --oggleLabelColor: #b200ff;
+}
+
+body {
+    font-family: Verdana;
+    font-size: var(--normalFont);
+    margin: 0;
+}
+
+.threeColumnLayout {
+    width: 100%;
+    display: flex;
+}
+
+    .threeColumnLayout .leftColumn {
+        float: left;
+    }
+
+    .threeColumnLayout .middleColumn {
+        float: left;
+        width: 100%;
+        height: inherit;
+        max-height: inherit;
+    }
+
+    .threeColumnLayout .rightColumn {
+        float: left;
+    }
+
+.dataArea {
+    border:solid thin #40767d;
+    min-height: 100px;
+}
+
+.loadingGif {
+    position: absolute;
+    left: 150px;    
+    height: 77px;
+    z-index: 31;
+    display: none;
+}
+
+.tinyloadingGif {
+    height: 40px;
+    margin: 3px;
+}
+
+.roundendButton {
+    margin: 9px;
+    padding: 7px;
+    display: inline-block;
+    text-align: center;
+    background-color: var(--buttonBackgroundColor);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+
+.pornBodyColors {
+    background-color: #ffcccc;
+}
+.hoverTab {
+    float: left;
+    display: inline-block;
+    margin-top: 1px;
+    border-radius: 5px;
+}
+    .hoverTab a {
+        cursor: pointer;
+        color: black;
+        padding: 8px;
+        text-decoration: none;
+        padding: 5px 5px;
+        border-radius: 1px;
+    }
+        .hoverTab a:hover {
+            text-decoration: underline;
+            background-color: #fef;
+        }
+
+.roundedButton {
+    display: inline-block;
+    text-align: center;
+    background: var(--brucheumBlue);
+    color: #000;
+    border-radius: 6px;
+    padding: 8px 20px;
+    cursor: pointer;
+}
+
+.roundedInput {
+    display: inline-block;
+    font-size: var(--normalFont);
+    border-radius: 4px;
+    padding: 2px;
+    margin-top: 4px;
+}
+
+.centeringOuterShell {
+    position: absolute;
+    left: 50%;
+    margin: 0;
+}
+
+.centeringInnerShell {
+    position: relative;
+    left: -50%;
+    margin: 0;
+}
+
+.clickable {
+    cursor: pointer;
+}
+.underline {
+    text-decoration: underline;
+}
+.digit {
+    width: 36px;
+}
+.inline {
+    display: inline-block;
+}
+
+.floatLeft {
+    float: left;
+}
+
+.forceRight {
+    position: absolute;
+    right: 20px;
+}
+
+.floatRight {
+    float: right;
+}
+
+.align-right {
+    text-align: right;
+}
+
+.displayHidden {
+    display: none;
+}
+
+.inlineFull {
+    display: inline-block;
+    width: 100%;
+}
+
+.flexContainer {
+    display: flex;
+}
+
+.explodeCusor {
+    cursor: zoom-out;
+}
+
+.severityOk {
+    background-color: rgba(80, 206, 83, 0.71);
+}
+
+.severityWarning {
+    background-color: #e6de3b;
+}
+
+.severityError {
+    background-color: #c64e4e;
+}
+
+/*-- Header -----------------------------------*/
+.stickyHeader {
+    position: sticky;
+    top: 0;
+    margin: 0;
+    width: 100%;
+    display: flex;
+    z-index: 10;
+    border-top: #40767d 3px solid;
+    border-bottom: #decd6f 3px solid;
+    background: var(--brucheumBlue);
+}
+
+
+.siteLogoContainer {
+    float: left;
+    padding-top: 2px;
+    padding-left: 2px;
+}
+
+.siteLogo {
+    height: 50px;
+    cursor: pointer;
+}
+
+.calligraphyTitle {
+    font-size: 28px;
+    padding-right: 6px;
+    padding-top: 1px;
+    margin-right: 11px;
+    margin-bottom: -10px;
+    font-family: 'Lucida Calligraphy';
+}
+
+.headerBodyContainer {
+    float: left;
+    width: 100%;
+}
+
+.fullWidthFlexContainer {
+    width: 100%;
+    display: flex;
+    padding-top: 3px;
+    justify-content:  space-between;
+}
+.bottomRowSection1 {
+    float: left;
+    display: flex;
+}
+.bottomLeftHeaderArea {
+    padding: 8px;
+    float: left;
+}
+.badgesSection {
+    display: flex;
+    float: left;
+}
+
+.hdrTopRowMenu {
+    font-size: 20px;
+    display: inline-block;
+    font-family: Comic Sans MS;
+    color: var(--oggleTitleColor);
+    vertical-align: top;
+    padding-left: 28px;
+    margin-right: 8px;
+    margin-top: 1px;
+    padding: 0;
+    cursor: pointer;
+}
+.headerBannerButton {
+    font-size: 15px;
+    display: inline-block;
+    border: solid 2px #000;
+    border-radius: 10px;
+    padding: 2.5px;
+    color: #000;
+    background-color: aliceblue;
+    margin: 4px;
+    cursor: pointer;
+}
+
+    .headerBannerButton a {
+        text-decoration: none;
+    }
+
+
+/*-- vert menu -----------------------------------*/
+
+.vertMenu {
+    margin-top: 88px;
+
+
+}
+
+.vertMenu div {
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    margin: 14px 6px;
+    padding: 8px 20px;
+    border-radius: 4px;
+    white-space: nowrap;
+    color: #000;
+    background-color: #74bac3;
+}
+
+/*-- breadcrumbs -----------------------------------*/
+
+.breadCrumbArea {
+    float: left;
+    display: inline-block;
+    min-width: 222px;
+    margin-right: 7px;
+    margin-top: 5px;
+    cursor: pointer;
+}
+    .breadCrumbArea div {
+        display: inline-block;
+        font-size: 14px;
+        padding-left: 11px;
+        color: var(--oggleTitleColor);
+    }
+
+.activeBreadCrumb {
+    margin-left: 10px;
+    cursor: pointer;
+    text-decoration: underline;
+    float: left;
+}
+
+.inactiveBreadCrumb {
+    margin-left: 20px;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    float: left;
+}
+
+/*-- Login -----------------------------------*/
+.loginArea {
+    position: absolute;
+    right: 30px;
+    margin-top: 5px;
+}
+
+/*-------------------------------------*/
+.linkBlocksContainer {
+    border: solid 4px #448927;
+    border-radius: 8px;
+    min-height: 300px;
+}
+
+.linkBlock {
+    display: inline-block;
+    border: solid 4px #448927;
+    border-radius: 8px;
+    margin: 6px;
+}
+
+    .linkBlock div {
+        padding: 44px;
+        cursor: pointer;
+        background-color: #84d8d8;
+    }
+
+.modalVail {
+    display: none; /*Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 19; /* Sit on top */
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+
+/*-- Search -----------------------------------*/
+.oggleSearchBox {
+    position: absolute;
+    right: 5px;
+    margin-top: 8px;
+    /*border: solid thin black;*/
+}
+
+.oggleSearchBoxText {
+    border-radius: 10px;
+    color: #000 !important;
+}
+
+.buttonSection {
+    display: flex;
+}
+    .buttonSection div {
+        display: inline-block;
+        cursor: pointer;
+    }
+
+
+.searchResultsDropdown {
+    display: none;
+    border: solid thin black;
+    background-color: var(--oggleBackgroundColor);
+    padding: 2px;
+    z-index: 200;
+    max-height: 555px;
+    overflow-y: auto;
+}
+
+    .searchResultsDropdown li {
+        color: #000;
+        list-style-type: none;
+        padding: 3px;
+        cursor: pointer;
+    }
+
+        .searchResultsDropdown li:hover {
+            color: red;
+            cursor: pointer;
+        }
+/*-- Dialog box -----------------------------------*/
+
+.floatingDialogContainer {
+    position: absolute;
+    z-index: 25;
+    border: solid 2px var(--oggleBorderColor);
+    background-color: var(--oggleBackgroundColor);
+    display: none;
+}
+
+.floatingButton {
+    display: none;
+    position: absolute;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.floatingDialogContents {
+    padding: 15px;
+}
+
+.floatingDialogHeader {
+    border: none;
+    background-color: var(--brucheumBlue);
+    color: #fff;
+    display: inline-flex;
+    width: 100%;
+    cursor: grabbing;
+}
+
+.floatingDialogTitle {
+    float: left;
+    padding: 2px 8px;
+    width: 100%;
+    white-space: nowrap;
+    font-size: 16px;
+    text-align: center;
+}
+
+.dialogCloseButton {
+    float: right;
+    padding-top: 5px;
+    padding-right: 15px;
+    cursor: pointer;
+}
+
+    .dialogCloseButton img {
+        height: 25px;
+    }
+
+
+.siteLogoContainer {
+    float: left;
+    padding-top: 2px;
+    padding-left: 2px;
+}
+
+/*-- dir tree -----------------------------------*/
+
+.floatingDirTreeImage {
+    position: absolute;
+    display: none;
+    z-index: 102;
+}
+
+    .floatingDirTreeImage img {
+        /*border: solid thin ;*/
+        border: solid 2px var(--oggleBorderColor);
+        height: 100px;
+        width: 100px;
+    }
+
+.floatingDirTreeContainer {
+    position: absolute;
+    border: solid 2px var(--oggleBorderColor);
+    background-color: var(--oggleBackgroundColor);
+    display: none;
+    max-height: 450px;
+    overflow-y: auto;
+    right: 50px;
+    top: 130px;
+    z-index: 5;
+}
+
+/*-- footer -----------------------------------*/
+footer {
+    margin-top: 4px;
+    border-top: solid 4px #feb236;
+    font-family: Arial;
+    background-color: #000;
+    color: #eee;
+}
+
+    footer .footerCol {
+        padding-top: 8px;
+        float: left;
+        min-width: 200px;
+    }
+
+        footer .footerCol div {
+            padding: 8px;
+            text-align: center;
+        }
+
+            footer .footerCol div a {
+                text-decoration: none;
+                color: #fff;
+            }
+
+    footer .footerFooter {
+        display: flex;
+        width: 100%;
+        background-color: #212121;
+        padding-bottom: 2px;
+    }
+
+    footer .footerFooterMessage {
+        padding-left: 12px;
+    }
+
+/*-- context menu -----------------------------------*/
+
+.ctxloadingGif {
+    height: 27px;
+}
+.ogContextMenuFocusShell {
+    position: absolute;
+    padding: 22px;
+    background-color: #c4c6ae21;
+    display: none;
+    z-index: 500;
+}
+.ogContextMenu {
+    background: var(--oggleDialogBackgroundColor);
+    border: solid 2px var(--borderColor);
+    padding: 8px 10px;
+    color: black;
+    z-index: 520;
+}
+    .ogContextMenu div {
+        padding: 8px;
+        margin: 2px;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+.ogItemHover {
+    text-decoration: underline;
+}
+
+.contextMenuInnerContainer {
+    display: none;
+}
+
+.ctxDialogImage {
+    height: 200px;
+}
+.ctxItem {
+    display: none;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 13px;
+    margin-right: 3px;
+    cursor: pointer;
+}
+    .ctxItem:hover {
+        text-decoration: underline;
+    }
+
+.contextMenuInnerContainer div {
+    /*    line-height: 21px;*/
+    padding: 0 !important;
+}
+    .contextMenuInnerContainer div:hover {
+        text-decoration: underline;
+    }
+
+.ctxInfoValue {
+    background-color: #f3f3f3;
+    border: solid 0.3px #e6d990;
+    font-size: 13px;
+    max-width: 200px;
+    overflow-x: auto;
+}
+
+
+/*-- jquery datepicker -----------------------------------*/
+.ui-datepicker {
+    width: 17em;
+    padding: .2em .2em 0;
+    display: none;
+    background: #4F6828;
+}
+
+    .ui-datepicker .ui-datepicker-title {
+        margin: 0 2.3em;
+        line-height: 1.8em;
+        text-align: center;
+        color: #FFFFFF;
+        background: #4F6828;
+    }
+
+    .ui-datepicker table {
+        width: 100%;
+        font-size: .7em;
+        border-collapse: collapse;
+        font-family: verdana;
+        margin: 0 0 .4em;
+        color: #000000;
+        background: #DCEAC8;
+    }
+
+    .ui-datepicker td {
+        border: 0;
+        padding: 1px;
+    }
+
+        .ui-datepicker td span,
+        .ui-datepicker td a {
+            display: block;
+            padding: .8em;
+            text-align: right;
+            text-decoration: none;
+        }
+

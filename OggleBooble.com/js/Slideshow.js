@@ -369,22 +369,22 @@ function showSlideshowHeader() {
         <div class='flexContainer'>
             <div class='inline clickable' onclick='adjustSlideshowSpeed("faster")'>
                 <img id='fasterSlideshow' class='slideshowHeaderButton' title='faster'
-                        src='https://common.ogglefiles.com/img/speedDialFaster.png'/>
+                        src='https://common.ogglebooble.com/img/speedDialFaster.png'/>
             </div>
             <div id='txtSlideshow' class='sldeshowHeaderTextContainer clickable'
                 title='double click toggles slideshow' onclick='toggleSlideshow()'>start slideshow</div>
             <div class='clickable' onclick='adjustSlideshowSpeed("slower")'>
                 <img id='slowerSlideshow' class='slideshowHeaderButton' title='slower'
-                        src='https://common.ogglefiles.com/img/speedDialSlower.png'/>
+                        src='https://common.ogglebooble.com/img/speedDialSlower.png'/>
             </div>
         </div>
         <div class='slideshowHeaderButtonContainer'>
             <img id='btnExplodeImage' class='slideshowHeaderButton' title='explode image' onclick='explodeoRama()'
-                src='https://common.ogglefiles.com/img/expand02.png'/>
+                src='https://common.ogglebooble.com/img/expand02.png'/>
         </div>
         <div class='slideshowHeaderButtonContainer' onclick='closeSlideshow();'>
             <img class='slideshowHeaderButton' title='you may use the {esc} key'
-                    src='https://common.ogglefiles.com/img/close.png' />
+                    src='https://common.ogglebooble.com/img/close.png' />
         </div>
       </div>`
     );

@@ -37,7 +37,7 @@ function getAlbumImages(folderId, islargeLoad) {
 }
 
 function loadImageResults(vLink) {
-    let imgSrc = 'https://common.ogglefiles.com/img/redballon.png';
+    let imgSrc = 'https://common.ogglebooble.com/img/redballon.png';
     try {
         if (!isNullorUndefined(vLink.FileName))
             imgSrc = settingsImgRepo + "/" + vLink.FileName.replace(/'/g, '%27');
@@ -55,7 +55,7 @@ function loadImageResults(vLink) {
             onclick='viewImage("` + imgSrc + `","` + vLink.LinkId + `")'/></div>`);
             if (vLink.FolderId !== vLink.SrcId) {
                 $('#' + vLink.LinkId + '').append(`<div class='knownModelIndicator'>
-                <img src='https://common.ogglefiles.com/img/foh01.png' title='`+ vLink.SrcFolder + `' 
+                <img src='https://common.ogglebooble.com/img/foh01.png' title='`+ vLink.SrcFolder + `' 
                     onclick='window.open(\"https://ogglebooble.com/album.html?folder=` + vLink.SrcId + `\")'/></div>`);
             }
         }
@@ -74,7 +74,7 @@ function getSubFolders(folderId) {
                     if (obj.SubFolderCount > 0)
                         folderCounts = "(" + obj.SubFolderCount + "/" + Number(obj.FileCount + obj.TotalChildFiles).toLocaleString() + ")";
 
-                    let imgSrc = 'https://common.ogglefiles.com/img/RenStimpy8.jpg'
+                    let imgSrc = 'https://common.ogglebooble.com/img/RenStimpy8.jpg'
                     if (!isNullorUndefined(obj.FolderImage))
                         imgSrc = settingsImgRepo + "/" + obj.FolderImage.replace(/'/g, '%27');
                     $('#imageContainer').append(`<div class='subFolderContainer'
@@ -109,9 +109,12 @@ async function getAlbumPageInfo(folderId, islargeLoad) {
                 $('#albumTopRow').show();
                 $('#seoPageName').html(catfolder.FolderName);
 
-                setBreadcrumbs(catfolder);
+                displayHeader(catfolder.RootFolder);
+                displayFooter(catfolder.RootFolder);
 
                 setColors(catfolder.RootFolder, catfolder.FolderName);
+
+                setBreadcrumbs(catfolder);
 
                 addTrackbackLinks(folderId);
 
@@ -169,7 +172,7 @@ async function getAlbumPageInfo(folderId, islargeLoad) {
 function setBreadcrumbs(catfolder) {
     try {
         //$('#aboveImageContainerMessageArea').html('loading breadcrumbs');
-        $('#breadcrumbContainer').html("<img style='height:27px' src='https://common.ogglefiles.com/img/loader.gif'/>");
+        $('#breadcrumbContainer').html("<img style='height:27px' src='https://common.ogglebooble.com/img/loader.gif'/>");
         $.ajax({
             url: "php/yagdrasselFetchAll.php?query=Select * from VwDirTree",
             success: function (data) {

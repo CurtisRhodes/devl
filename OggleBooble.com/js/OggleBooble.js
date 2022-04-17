@@ -352,7 +352,7 @@ function addPgLinkButton(folderId, labelText) {
     function imageError(folderId, linkId, calledFrom) {
         try {
             console.log("imageError: IMG. folder: " + folderId + ", linkId: " + linkId + ", calledFrom: " + calledFrom);
-            $('#' + linkId).attr('src', 'https://common.ogglefiles.com/img/redballon.png');
+            $('#' + linkId).attr('src', 'https://common.ogglebooble.com/img/redballon.png');
             logOggleError("ILF", folderId, linkId, calledFrom);
 
         } catch (e) {
@@ -479,7 +479,7 @@ function addPgLinkButton(folderId, labelText) {
             let getSingleImageDetailsStart = Date.now();
 
             $('.ctxItem').hide();
-            $('#ctxImageName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='https://common.ogglefiles.com/img/loader.gif'/>");
+            $('#ctxImageName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='https://common.ogglebooble.com/img/loader.gif'/>");
             $('#ctxComment').show();
             $('#ctxExplode').show();
             $('#ctxImageInfo').show();
@@ -564,7 +564,7 @@ function addPgLinkButton(folderId, labelText) {
         try {
 
             $('.ctxItem').hide();
-            $('#ctxFolderName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='https://common.ogglefiles.com/img/loader.gif'/>");
+            $('#ctxFolderName').show().html("<img title='loading gif' alt='' class='ctxloadingGif' src='https://common.ogglebooble.com/img/loader.gif'/>");
             $('#ctxComment').show();
             $('#ctxSeeMore').html("more like her").show();
             $('#ctxDownLoad').show();
@@ -785,16 +785,14 @@ function addPgLinkButton(folderId, labelText) {
         $("#centeredDialogContents").html(`
             <div class='fileDialogOuterContainer'>
                 <div class='fileDialogTopSection'>
-                    <div id='fileDetailsSection' class='inline'>
-                    </div>
                     <div id='fileImageSection' class='inline'>
-                        <img id='modelDialogThumbNailImage' src='https://common.ogglefiles.com/img/redballon.png' class='fileDetailsDialogImage' />
+                        <img id='modelDialogThumbNailImage' src='` + settingsImgRepo + imgSrc + `' class='fileDetailsDialogImage' />
+                    </div>
+                    <div id='fileDetailsSection' class='inline'>
                     </div>
                 </div>
                 <div id='folderInfoDialogFooter' class='folderDialogFooter'>
-                    <div id='btnFileDlgEdit'  class='folderCategoryDialogButton' >Edit</div>
-                    <div id='btnFileDlgDone'  class='folderCategoryDialogButton' onclick='doneEditing()'>Cancel</div>
-                    <div id='btnTrackBkLinks' class='folderCategoryDialogButton' onclick='showTrackbackDialog()'>Trackback Links</div>
+                    <div class='folderCategoryDialogButton'>Copy</div>
                 </div>
             </div>`);
 
@@ -1091,7 +1089,7 @@ function addPgLinkButton(folderId, labelText) {
                         </table>
                     </div>
                     <div id='fileImageSection' class='inline'>
-                        <img id='modelDialogThumbNailImage' src='https://common.ogglefiles.com/img/redballon.png' class='fileDetailsDialogImage' />
+                        <img id='modelDialogThumbNailImage' src='https://common.ogglebooble.com/img/redballon.png' class='fileDetailsDialogImage' />
                     </div>
                 </div>
                 <div class='fileDialogBotomSection'>
@@ -1404,7 +1402,7 @@ function addPgLinkButton(folderId, labelText) {
                        onclick='$(\"#linkManipulateDirTree\").toggle()'/></div>
                    <div id='linkManipulateClick'></div>
                    <div id='linkManipulateDirTree' class='hideableDropDown'>
-                        <img class='ctxloadingGif' title='loading gif' alt='' src='https://common.ogglefiles.com/img/loader.gif'/>
+                        <img class='ctxloadingGif' title='loading gif' alt='' src='https://common.ogglebooble.com/img/loader.gif'/>
                    </div>
                </div>`;
 

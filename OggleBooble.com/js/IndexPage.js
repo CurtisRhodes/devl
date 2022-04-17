@@ -39,7 +39,7 @@ function launchIndexPage(pageContext) {
 /*-- php -------------------------------------------*/{
     function getLatestUpdatedGalleries(spaType) {
         try {
-            $('#latestUpdatesContainer').html('<img class="tinyloadingGif" src="https://common.ogglefiles.com/img/loader.gif"/>');
+            $('#latestUpdatesContainer').html('<img class="tinyloadingGif" src="https://common.ogglebooble.com/img/loader.gif"/>');
             if (spaType == "oggleIndex")
                 spaType = "boobs";
 

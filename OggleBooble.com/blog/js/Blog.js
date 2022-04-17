@@ -147,7 +147,7 @@ function displayNewEntryArea() {
 
     $('#blogPageTitle').html("new blog entry");
     $('#btnAddEdit').html("Add");
-    $("#imgBlogJog").attr("src", "https://common.ogglefiles.com/img/redballon.png");
+    $("#imgBlogJog").attr("src", "https://common.ogglebooble.com/img/redballon.png");
     $("#txtEntryTile").val("I know you are but what am I");
 
 }
