@@ -22,7 +22,7 @@ function getAlbumImages(folderId, islargeLoad) {
             function (data) {
                 // let vlinks = JSON.parse(data);
                 $.each(data, function (idx, vLink) {
-                    loadImageResults(vLink);
+                    loadaSingleImage(vLink, islargeLoad);
                 });
                 if (islargeLoad)
                     $('#albumPageLoadingGif').hide();
@@ -36,7 +36,7 @@ function getAlbumImages(folderId, islargeLoad) {
     }
 }
 
-function loadImageResults(vLink) {
+function loadaSingleImage(vLink, islargeLoad) {
     let imgSrc = 'https://common.ogglebooble.com/img/redballon.png';
     try {
         if (!isNullorUndefined(vLink.FileName))
@@ -52,7 +52,7 @@ function loadImageResults(vLink) {
             $('#imageContainer').append(`<div id='` + vLink.LinkId + `' class='intividualImageContainer'>
             <img class='thumbImage' src='` + imgSrc + `' onerror='imageError(` + vLink.FolderId + `,"` + vLink.LinkId + `","album")'
             oncontextmenu='oggleContextMenu("image","` + vLink.LinkId + `",` + vLink.FolderId + `,"` + imgSrc + `")'
-            onclick='viewImage("` + imgSrc + `","` + vLink.LinkId + `")'/></div>`);
+            onclick='viewImage("` + imgSrc + `","` + vLink.LinkId + `,` + islargeLoad + `")'/></div>`);
             if (vLink.FolderId !== vLink.SrcId) {
                 $('#' + vLink.LinkId + '').append(`<div class='knownModelIndicator'>
                 <img src='https://common.ogglebooble.com/img/foh01.png' title='`+ vLink.SrcFolder + `' 
@@ -60,7 +60,7 @@ function loadImageResults(vLink) {
             }
         }
     } catch (e) {
-        logOggleError("CAT", vLink.Id, e, "loadImageResults");
+        logOggleError("CAT", vLink.Id, e, "load a single image");
     }
 }
 
@@ -120,9 +120,11 @@ async function getAlbumPageInfo(folderId, islargeLoad) {
 
                 showPageHits(folderId);
 
+                $('#footerPageType').html(catfolder.FolderType);
+
                 switch (catfolder.FolderType) {
                     case "multiFolder":
-                    case "singleParent":                        
+                    case "singleParent":
                         $('#slideShowClick').hide();
                         $('#largeLoadButton').show();
                         $('#deepSlideshowButton').show();

@@ -34,7 +34,7 @@ function showPageHitsReport() {
 function hitsByPageReport(pageHitDate) {
 
     let sql = `select  count(*) as Hits, PageId, FolderName, RootFolder 
-                from PageHit h join st21569_yagdrassel.CategoryFolder f on f.Id = h.PageId
+                from PageHit h join oggleboo_yagdrassel.CategoryFolder f on f.Id = h.PageId
                 where Occured='`+ pageHitDate +`' group by PageId, FolderName, Rootfolder
                 order by count(*) desc`;
     $.ajax({
@@ -114,7 +114,7 @@ function showDailyErrorReport() {
     // error summary report
     let sql = `select format(count(*), 0) as Count, ErrorCode, Description, CalledFrom, max(Occured) as Occured 
                 from ErrorLog e left join RefCode r on e.ErrorCode = r.RefCode
-                left join st21569_yagdrassel.CategoryFolder f on f.Id = e.FolderId
+                left join oggleboo_yagdrassel.CategoryFolder f on f.Id = e.FolderId
                 where date(Occured)="` + todayString() + `"
                 group by ErrorCode, Description, CalledFrom
                 order by count(*) desc`;
@@ -140,6 +140,7 @@ function showDailyErrorReport() {
         }
     });
 }
+
 function errorDetailReport(errorCode) {
 
     let sql = `select ErrorCode, r.Description, CalledFrom, FolderId, f.FolderName, ErrorMessage, City,Region,Country, e.Occured

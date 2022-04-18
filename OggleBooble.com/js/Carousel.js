@@ -37,7 +37,7 @@ function loadFromCache() {
             return;
         }
         if (isNullorUndefined(window.localStorage[carouselRoot])) {
-            loadImages(true);
+            loadImages(true, isEmergency: true);
             displayStatusMessage("error", "no " + carouselRoot + " cache found. Please wait...");
             console.log("no " + carouselRoot + " cache found");
             return;
@@ -71,11 +71,13 @@ function startCarousel(calledFrom) {
 
                 // load first image
                 imageIndex = Math.floor(Math.random() * carouselRows.length);
-                $('#carouselImage0').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName);
-                resizeCarousel();
+                $('#carouselImage1').attr('src', settingsImgRepo + carouselRows[imageIndex].ImageFileName);
                 setLabelLinks(imageIndex);
-
+                $('#carouselImage1').css('opacity', 1);
+                resizeCarousel();
+                resizeCarousel();
                 $('#carouselImageInnerContainer').show();
+                resizeCarousel();
                 intervalReady = true;
                 intervalBody();
                 vCarouselInterval = setInterval(function () {
@@ -139,12 +141,14 @@ function intervalBody() {
                                         $('#carouselImage1').css('opacity', 1);
                                         $('#carouselImage0').css('opacity', 0);
 
-                                        arryItemsShownCount++;
-                                        resizeCarousel();
+
                                         setLabelLinks(imageIndex);
+
+                                        arryItemsShownCount++;
                                         $('#footerMessage1').html("image " + imageIndex.toLocaleString() + " of " + carouselRows.length.toLocaleString());
                                         imageHistory.push(imageIndex);
                                         intervalReady = true;
+                                        resizeCarousel();
                                     }
                                     else
                                         intervalReady = false;
@@ -444,7 +448,8 @@ function assuranceArrowClick(direction) {
     else {
         if (imageHistory.length > 1) {
             pause();
-            let popimageIndex = imageHistory[imageHistory.length - 1];
+            //pause();
+            let popimageIndex = imageHistory[imageHistory.length - 2];
             let popimage = settingsImgRepo + carouselRows[popimageIndex].ImageFileName;
             $('#carouselImage1').attr('src', popimage);
             setLabelLinks(popimageIndex);

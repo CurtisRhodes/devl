@@ -1,8 +1,4 @@
-﻿//const settingsImgRepo = 'https://ogglefiles.com/danni/';
-//const settingsImgRepo = 'https://ogglefiles.com/danni/';
-//const settingsImgRepo = 'https://ogglefiles.com/danni/';
-//const settingsImgRepo = 'https://ogglefiles.com/danni/';
-const settingsImgRepo = 'https://ogglebooble.com/danni/';
+﻿const settingsImgRepo = 'https://ogglebooble.com/danni/';
 let slideshowVisible = false, imageViewerVisible = false;
 
 /*-- verify user -----------------------------------*/{
@@ -198,6 +194,10 @@ function addPgLinkButton(folderId, labelText) {
         //"   <div class='clickable' onclick='location.href=\"album.html?folder=" + folderId + "\"'>" + labelText + "</div>" +
         "   <div class='clickable' onclick='rtpe(\"HB2\",\"" + hdrRootFolder + "\"," + hdrFolderId + "," + folderId + ")'>" + labelText + "</div>" +
         "</div>\n";
+}
+function displayFeedback() {
+    alert("displayFeedback");
+    //\"FLC\",\"feedback\", rootFolder + "\", folderId + "
 }
 
 /*-- search --------------------------------------------*/{
@@ -702,28 +702,24 @@ function addPgLinkButton(folderId, labelText) {
                 break;
             case "folderInfo": $('#folderInfoContainer').toggle(); break;
             case "imageInfo": $('#imageInfoContainer').toggle(); break;
-            case "showLinks": $('#showLinksContainer').toggle(); break;
+            case "showLinks": $('#showLinksContainer').toggle();
+                break;
             case "archive":
-                showArchiveLinkDialog(plinkId, pfolderId, pimgSrc, pmenuType);
-                break;
-            case "copy":
-                showCopyLinkDialog(plinkId, pmenuType, pimgSrc);
-                $("#imageContextMenu").fadeOut();
-                break;
             case "move":
-                showMoveLinkDialog(plinkId, pfolderId, pmenuType, pimgSrc);
-                $("#imageContextMenu").fadeOut();
+            case "copy":
+                showCopyDialog(plinkId, "copy", pimgSrc);
+                $('#contextMenuContainer').fadeOut();
                 break;
             case "remove":
-                $("#imageContextMenu").fadeOut();
+                $("#contextMenuContainer").fadeOut();
                 attemptRemoveLink(plinkId, pfolderId, pimgSrc);
                 break;
             case "delete":
-                $("#imageContextMenu").fadeOut();
+                $("#contextMenuContainer").fadeOut();
                 deleteLink(plinkId, pfolderId, pimgSrc);
                 break;
             case "reject":
-                $("#imageContextMenu").fadeOut();
+                $("#contextMenuContainer").fadeOut();
                 showRejectsDialog(plinkId, pfolderId, pimgSrc);
                 break;
             case "setF":
@@ -738,7 +734,7 @@ function addPgLinkButton(folderId, labelText) {
         }
     }
 }
-/*-- context menu actions ---------------------------------*/{
+/*-- context menu actions ------------------------------*/{
     function setFolderImage(filinkId, folderId, level) {
         try {
             $.ajax({
@@ -747,7 +743,7 @@ function addPgLinkButton(folderId, labelText) {
                 success: function (success) {
                     if (success.trim().startsWith("ok")) {
                         displayStatusMessage("ok", level + " image set for " + folderId);
-                        $("#imageContextMenu").fadeOut();
+                        $("#contextMenuContainer").fadeOut();
                     }
                     else {
                         displayStatusMessage("error", success.trim());
@@ -781,27 +777,60 @@ function addPgLinkButton(folderId, labelText) {
         $('#centeredDialogContainer').draggable().fadeIn();
     }
 
-    function showCopyLinkDialog(linkId, menuType, imgSrc) {
+    function showCopyDialog(linkId, menuType, imgSrc) {
+        $("#centeredDialogTitle").html(menuType + " image");
         $("#centeredDialogContents").html(`
-            <div class='fileDialogOuterContainer'>
-                <div class='fileDialogTopSection'>
-                    <div id='fileImageSection' class='inline'>
-                        <img id='modelDialogThumbNailImage' src='` + settingsImgRepo + imgSrc + `' class='fileDetailsDialogImage' />
-                    </div>
-                    <div id='fileDetailsSection' class='inline'>
-                    </div>
+        <div class='fileDialogOuterContainer'>
+            <div class='flexContainer'>
+                <div id='fileDetailsSection' class='inline'>
+                    <div class='dialogButton' onClick='moveCopyImage("` + linkId + `","copy")'>copy</div>
+                    <div class='dialogButton' onClick='moveCopyImage("` + linkId + `","move")'>move</div>
+                    <div class='dialogButton' onClick='moveCopyImage("` + linkId + `","archive")'>archive</div>
+                    <div class='dialogButton' onClick='moveCopyImage("` + linkId + `","link")'>link</div>
                 </div>
-                <div id='folderInfoDialogFooter' class='folderDialogFooter'>
-                    <div class='folderCategoryDialogButton'>Copy</div>
+                <div id='fileImageSection' class='inline'>
+                    <img id='modelDialogThumbNailImage' src='` + imgSrc + `' class='moveCopyDialogImage' />
                 </div>
-            </div>`);
+            </div>
+            <div id='copyDialogDirTreeContainer' class='folderDialogFooter'>
+            <div id='showCopyDialogFooter' class='folderDialogFooter'>
+            </div>
+        </div>`);
+        // $('#copyDialogDirTreeContainer').html("<div class='roundendButton' onclick='perfomCopyLink(\"" + linkId + "\")'>Caterogize</div>");
 
-        //showDirTreeDialog(imgSrc, menuType, "Caterogize Link");
-        //$('#linkManipulateClick').html("<div class='roundendButton' onclick='perfomCopyLink(\"" + linkId + "\")'>Caterogize</div>");
+        $('#centeredDialogContainer').css({ "top": 33 + $(window).scrollTop() });
+        $('#centeredDialogContainer').draggable().show();
+    }
+
+    function moveCopyImage(linkId, cMode) {
+        let newParent = 33;
+        switch (cMode) {
+            case "soft":
+                let sql = "UPDATE ImageFile set FolderId=" + newParent + " where Id='" + linkId + "'";
+                $.ajax({
+                    url: "php/CopyMoveImage.php?mode=" + cMode + "imageId=" + linkId + "&destFolder=",
+                    success: function () {
+                    },
+                    error: function () {
+                    }
+                });
+                break;
+            default:
+        }
+        if (cMode == "soft") {
+        }
+        else {
+            $.ajax({
+                url: "php/physciallyMoveImage.php?imageId=" + linkId + "&destFolder=",
+                success: function () {
+                },
+                error: function () {
+                }
+            });
+        }
     }
 
     function performMoveImageToRejects(linkId, folderId) {
-
         //let rejectReason = $('input[name="rdoRejectImageReasons"]:checked').val();
         $('#albumPageLoadingGif').show();
         $.ajax({
@@ -952,7 +981,8 @@ function addPgLinkButton(folderId, labelText) {
 }
 /*-- exploding image view ------------------------------*/{
     const viewerOffsetTop = 44, explodeSpeed = 22, heightIncrement = 22;
-    let viewerH, viewerMaxH;
+
+    let viewerH, viewerMaxH, isSlideShowLargeLoad;
 
     function showMaxSizeViewer(imgSrc, calledFrom) {
         //logEvent("EXP", folderId, pFolderName, linkId);
@@ -961,7 +991,7 @@ function addPgLinkButton(folderId, labelText) {
             $("#slideshowCtxMenuContainer").hide();
         }
         else {
-            $("#imageContextMenu").hide();
+            $("#contextMenuContainer").hide();
             $('#viewerImage').attr("src", imgSrc);
         }
         $("#vailShell").show().on("click", function () { closeExploderDiv() });
@@ -970,8 +1000,9 @@ function addPgLinkButton(folderId, labelText) {
         //replaceFullPage(imgSrc);
     }
 
-    function viewImage(imgSrc, linkId) {
+    function viewImage(imgSrc, linkId, isLargeLoad) {
         currentImagelinkId = linkId;
+        isSlideShowLargeLoad = isLargeLoad;
         imageViewerVisible = true;
         viewerH = 50;
         let parentPos = $('#visableArea').offset();
@@ -988,9 +1019,7 @@ function addPgLinkButton(folderId, labelText) {
         $('#singleImageOuterContainer').show();
         viewerMaxH = $('#visableArea').height() + viewerOffsetTop - 55;
         incrementExplode();
-
         $('#viewerImage').on('click', showMaxSizeViewer(imgSrc, 'album'));
-
     }
 
     function incrementExplode() {
@@ -1053,8 +1082,7 @@ function addPgLinkButton(folderId, labelText) {
             $("#divSlideshowButton").hide();
             $("#viewerCloseButton").hide();
             $('body').off();
-
-            showSlideshowViewer(currentFolderId, currentImagelinkId, false)
+            showSlideshowViewer(currentFolderId, currentImagelinkId, isSlideShowLargeLoad)
         } catch (e) {
             logOggleError("CAT", -874, e, "show slideshow")
         }
@@ -1096,9 +1124,9 @@ function addPgLinkButton(folderId, labelText) {
                     <div id='summernoteFileContainer'></div>
                 </div>
                 <div id='folderInfoDialogFooter' class='folderDialogFooter'>
-                    <div id='btnFileDlgEdit'  class='folderCategoryDialogButton' >Edit</div>
-                    <div id='btnFileDlgDone'  class='folderCategoryDialogButton' onclick='doneEditing()'>Cancel</div>
-                    <div id='btnTrackBkLinks' class='folderCategoryDialogButton' onclick='showTrackbackDialog()'>Trackback Links</div>
+                    <div id='btnFileDlgEdit'  class='dialogButton' >Edit</div>
+                    <div id='btnFileDlgDone'  class='dialogButton' onclick='doneEditing()'>Cancel</div>
+                    <div id='btnTrackBkLinks' class='dialogButton' onclick='showTrackbackDialog()'>Trackback Links</div>
                 </div>
             </div>
             <div id='trackBackDialog' class='floatingDialogBox'></div>`);
@@ -1245,8 +1273,8 @@ function addPgLinkButton(folderId, labelText) {
                 <div><input id='txtFolderName'></div>
                 <div id='summernoteFolderContainer'></div>
                 <div id='folderInfoDialogFooter' class='folderDialogFooter'>
-                    <div id='btnFolderDlgEdit' class='folderCategoryDialogButton'>Edit</div>
-                    <div id='btnFolderDlgDone' class='folderCategoryDialogButton'>Cancel</div   
+                    <div id='btnFolderDlgEdit' class='dialogButton'>Edit</div>
+                    <div id='btnFolderDlgDone' class='dialogButton'>Cancel</div   
                 </div>`);
 
             $('#summernoteFolderContainer').summernote({ toolbar: [['codeview']] });
@@ -1440,6 +1468,7 @@ function addPgLinkButton(folderId, labelText) {
     }
 }
 
+
 function captureKeydownEvent(event) {
     if (slideshowVisible)
         doSlideShowKdownEvents(event);
@@ -1457,16 +1486,14 @@ function captureKeydownEvent(event) {
     //            }
 }
 
-
-
-/*--   zzzdialog windows --------------------------------------*/{
+/*--   zzzdialog windows --------------------------------------
     function modelInfoDetailHtml() {
 
         //if (localStorage["IsLoggedIn"] == "true") {
         //    $('#folderInfoDialogFooter').append(
-        //        "        <div id='btnCatDlgLinks' class='folderCategoryDialogButton' onclick='showTrackbackDialog()'>Trackback Links</div>\n");
+        //        "        <div id='btnCatDlgLinks' class='dialogButton' onclick='showTrackbackDialog()'>Trackback Links</div>\n");
         //}
-        //    "        <div id='btnCatDlgMeta' class='folderCategoryDialogButton' onclick='addMetaTags()'>add meta tags</div>
+        //    "        <div id='btnCatDlgMeta' class='dialogButton' onclick='addMetaTags()'>add meta tags</div>
 
     }
 
@@ -1492,9 +1519,9 @@ function captureKeydownEvent(event) {
                    <ul id='ulExistingLinks'></ul>" +
                </div>
                <div class='folderDialogFooter'>
-                   <div id='btnTbDlgAddEdit' class='folderCategoryDialogButton' onclick='tbAddEdit()'>add</div>
-                   <div id='btnTbDlgDelete' class='folderCategoryDialogButton displayHidden' onclick='tbDelete()'>delete</div>
-                   <div id='btnTbAddCancel' class='folderCategoryDialogButton' onclick='btnTbAddCancel()'>Cancel</div>
+                   <div id='btnTbDlgAddEdit' class='dialogButton' onclick='tbAddEdit()'>add</div>
+                   <div id='btnTbDlgDelete' class='dialogButton displayHidden' onclick='tbDelete()'>delete</div>
+                   <div id='btnTbAddCancel' class='dialogButton' onclick='btnTbAddCancel()'>Cancel</div>
                </div>
             </div>`);
 
@@ -1621,8 +1648,8 @@ function captureKeydownEvent(event) {
             "   </div>" +
             "</div>" +
             "<div id='poserDialogFooter' class='folderDialogFooter'>\n" +
-            "   <div id='btnPoserSave' style='margin-left:114px;'  class='folderCategoryDialogButton' onclick='poserSave(\"" + linkId + "\"," + folderId + ")'>save</div>\n" +
-            "   <div id='btnPoserCancel' class='folderCategoryDialogButton' onclick='centeringDialogClose()'>cancel</div>\n" +
+            "   <div id='btnPoserSave' style='margin-left:114px;'  class='dialogButton' onclick='poserSave(\"" + linkId + "\"," + folderId + ")'>save</div>\n" +
+            "   <div id='btnPoserCancel' class='dialogButton' onclick='centeringDialogClose()'>cancel</div>\n" +
             "</div>";
 
 
@@ -1646,8 +1673,8 @@ function captureKeydownEvent(event) {
             toolbar: [['codeview']],
             height: "100"
         });
-        $("#btnPoserSave").hide();
-        $("#btnPoserCancel").hide();
+        //$("#btnPoserSave").hide();
+        //$("#btnPoserCancel").hide();
         allowDialogClose = true;
     }
     function IamThisModel() {
@@ -1693,15 +1720,7 @@ function captureKeydownEvent(event) {
 
         //openMetaTagDialog(categoryFolderId);
     }
-}
-
-function displayFeedback() {
-    alert("displayFeedback");
-    //\"FLC\",\"feedback\", rootFolder + "\", folderId + "
-}
-
-
-    //    $("#txtBorn").datepicker();
+}//    $("#txtBorn").datepicker();
     //    //$('#selBoobs').val(objFolderInfo.FakeBoobs ? 1 : 0).change();
     //}
 
@@ -1765,3 +1784,4 @@ function displayFeedback() {
     //    $('#txtStatus').val('');
     //    $('#externalLinks').html('');
     //}
+*/

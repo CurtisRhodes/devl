@@ -674,9 +674,10 @@ function mailMe() {
                 <div class='clickable' onclick='window.location.href="mailto:curtishrhodes@hotmail.com"'>email site developer</div>
              </div>
              <div id='footerCol4' class='footerCol'>
+                <div id='footerPageType'></div>
              </div>
              <div id='footerCol5' class='footerCol'>
-                <div id='footerPagehit'></div>
+                <div id='footerPagehit'>5</div>
              </div>
              <div id='footerCol6' class='footerCol'>
                 <div class='clickable' onclick='window.open("https://www.paypal.com/donate/?hosted_button_id=M5UE6B2RJ9NFY")'
@@ -708,28 +709,21 @@ function mailMe() {
                 case "root":
                 case "special":
                 case "index": {
-                    $('#footerCol1').html(`
+                    $('#footerCol1').append(`
                         <div class='clickable' onclick='window.location.href=\"index.html?spa=3909\", \"_blank\"'>OgglePorn</div>
                         <div class='clickable' onclick='window.location.href=\"index.html?folderId=1142\", \"_blank\"'>Centerfolds</div>\n`);
-                    $('#footerCol2').html(`
+                    $('#footerCol2').append(`
                         <div class='clickable' onclick='showCatListDialog(2)'>Category List</div>
                         <div class='clickable' onclick='showCatListDialog(3)'>Babes List</div>\n`);
                     break;
                 }
                 case "playboy":
-                    $('#footerCol1').html(`
+                    $('#footerCol1').append(`
                         <div class='clickable' onclick='window.location.href=\"index.html?spa=3909\", \"_blank\"'>OgglePorn</div>
                         <div class='clickable' onclick='window.location.href=\"index.html?folderId=1142\", \"_blank\"'>Centerfolds</div>\n`);
-                    $('#footerCol2').html(`
+                    $('#footerCol2').append(`
                         <div class='clickable' onclick='showCatListDialog(2)'>Category List</div>
                         <div class='clickable' onclick='showCatListDialog(3)'>Babes List</div>\n`);
-                    break;
-                    //$('#footerCol2').append();
-                    //$('#footerCol3').append();
-                    //$('#footerCol4').append();
-                    //$('#footerCol5').append();
-                    //$('#footerCol6').append();
-                    //$('#footerCol7').html();
                     break;
                 case "slideshow":
                     $('#footerCol2').append(`
@@ -740,12 +734,12 @@ function mailMe() {
                     <div class='clickable' onclick='footerItemClick(1)'>Search</div>                    
                     <div class='clickable' onclick='footerItemClick(1)'>Advertize</div>`
                     );
-                    $('#footerCol4').append();
-                    $('#footerCol5').append();
+                    //$('#footerCol4').append();
+                    //$('#footerCol5').append();
                     $('#footerCol6').append(`
                         <div class='clickable' onclick='window.open("https://admin.ogglebooble.com")'>dashboard</div>`
                     );
-                    $('#footerCol7').html();
+                    //$('#footerCol7').html();
                     break;
                 default: {
                     $('#footerCol1').html("<div>unhandled domain: " + footerContext + "</div>\n");

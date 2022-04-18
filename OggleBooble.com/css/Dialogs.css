@@ -1,6 +1,6 @@
 
 
-.folderCategoryDialogButton {
+.dialogButton {
     display: inline-block;
     text-align: center;
     background: var(--brucheumBlue);
@@ -8,8 +8,11 @@
     border-radius: 6px;
     padding: 8px 20px;
     cursor: pointer;
+    margin-bottom: 4px;
 }
-
+.moveCopyDialogImage {
+    height: 166px;
+}
 .fileDetailsDialogImage {
     height: 80px;
 }

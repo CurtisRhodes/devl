@@ -379,7 +379,7 @@ function showSlideshowHeader() {
             </div>
         </div>
         <div class='slideshowHeaderButtonContainer'>
-            <img id='btnExplodeImage' class='slideshowHeaderButton' title='explode image' onclick='explodeoRama()'
+            <img id='btnExplodeImage' class='slideshowHeaderButton' title='explode image' onclick='explodeCarouselImage()'
                 src='https://common.ogglebooble.com/img/expand02.png'/>
         </div>
         <div class='slideshowHeaderButtonContainer' onclick='closeSlideshow();'>
@@ -388,6 +388,10 @@ function showSlideshowHeader() {
         </div>
       </div>`
     );
+}
+
+function explodeCarouselImage() {
+    window.open(settingsImgRepo + imageArray[imageViewerIndex].FileName);
 }
 
 function resizeSlideshow() {

@@ -155,11 +155,6 @@
     border: solid 2px #000;
     overflow-y: auto;
 }
-flexbox {
-    width: 100%;
-    display: -webkit-flex;
-}
-
 .flexbox input {
 
     width: 88%;

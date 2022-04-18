@@ -16,7 +16,7 @@ function buildDirTree(startNode) {
 
                 dirTreeArray = JSON.parse(data);
 
-                startTime = Date.now();
+                           
                 let rootNode = dirTreeArray.filter(node => node.Id == startNode)[0];
                 let randomId = create_UUID();
 
@@ -26,7 +26,7 @@ function buildDirTree(startNode) {
 
                 $('#txtCurrentActiveFolder').val(rootNode.FolderPath);
                 $('#txtActiveFolderId').val(rootNode.Id);
-
+             
                 traverseDirTree(rootNode);
 
                 largetxtstring += "</div>";
@@ -54,6 +54,16 @@ function buildDirTree(startNode) {
 function traverseDirTree(thisNode) {
     let subNodes = dirTreeArray.filter(node => node.Parent == thisNode.Id);
     dirTreeTab += dirTreeTabIndent;
+
+    //let rootNode = dirTreeArray.filter(node => node.Id == startNode)[0];
+    //let randomId = create_UUID();
+    //largetxtstring = dirTreeNode(rootNode, randomId);
+    //largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer'>";
+
+    //$('#dirTreeContainer').html(dirTreeArray[0].treeNodeTxt);
+
+    //$('#txtCurrentActiveFolder').val(rootNode.FolderPath);
+    //$('#txtActiveFolderId').val(rootNode.Id);
 
     $.each(subNodes, function (idx, subNode) {
         let randomId = create_UUID();
