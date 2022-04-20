@@ -1,10 +1,12 @@
-﻿// let settingsImgRepo = 'https ://img.brucheum.com/';
-// let settingsImgRepo = 'st21569.ispot.cc/danni/';
-//const settingsImgRepo = 'https://ogglefiles.com/danni/';
-const settingsImgRepo = 'https://ogglebooble.com/danni/';
+﻿const settingsImgRepo = 'https://ogglebooble.com/danni/';
 let startRoot = 10326;
 
 // LOAD DIR TREE
+
+function dirTreeJson() {
+    createDirTreeJson();
+}
+
 function showBuildDirTreeDialog() {
     $('#dashboardFileListContainer').hide();
     $('#dashboardDialogBoxTitle').html("Build Dir Tree");
@@ -113,7 +115,7 @@ function performAutoCreateNewFolders() {
 
         if (loopCounter == numNewFolder) {
             clearInterval(mySlowLoop);
-            $('#dataifyInfo').html("ok. " + Number($('#txtNumAutoCreate').val() + " new folders created");
+            $('#dataifyInfo').html("ok. " + $('#txtNumAutoCreate').val() + " new folders created");
         }
         else
             $('#dataifyInfo').html("creating new folder " + folderName);
@@ -204,7 +206,7 @@ function showFiles() {
                     $('#dashboardFileList').html("folder not found: " + path);
                 }
                 else {
-                    if ( isNullorUndefined(data)) {
+                    if (isNullorUndefined(data)) {
                         $('#dashboardFileList').html("data: " + data);
                     }
                     else {
@@ -546,7 +548,6 @@ function folderCountTest() {
         logCatch("update Folder Count", e);
     }
 }
-
 
 // MOVE MANY
 {
