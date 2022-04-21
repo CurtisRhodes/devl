@@ -1468,7 +1468,6 @@ function displayFeedback() {
     }
 }
 
-
 function captureKeydownEvent(event) {
     if (slideshowVisible)
         doSlideShowKdownEvents(event);

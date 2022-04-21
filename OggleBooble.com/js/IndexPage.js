@@ -9,19 +9,25 @@ function launchIndexPage(pageContext) {
     displayFooter(pageContext);
     //promoMessagesContainer
 
-    if (pageContext == "playboy") {
-        $('body').css({ "background-color": "#000", "color": "#fff" });
-        $('#oggleHeader').css("background-color", "#000");
-        $('#carouselContainer').css("background-color", "#000");
-        $('#oggleHeader').css("color", "#f2e289");
+    switch (pageContext) {
+        case "oggleIndex":
+            logPageHit(3908);
+            break;
+        case "playboy":
+            $('body').css({ "background-color": "#000", "color": "#fff" });
+            $('#oggleHeader').css("background-color", "#000");
+            $('#carouselContainer').css("background-color", "#000");
+            $('#oggleHeader').css("color", "#f2e289");
+            logPageHit(72);
+            break;
+        case "porn":
+            $('body').css({ "background-color": "darksalmon", "color": "#fff" });
+            $('#carouselContainer').css("background-color", "darksalmon");
+            $('#oggleHeader').css("background-color", "darkorange");
+            logPageHit(3909);
+            break;
+        default:
     }
-
-    if (pageContext == "porn") {
-        $('body').css({ "background-color": "darksalmon", "color": "#fff" });
-        $('#carouselContainer').css("background-color", "darksalmon");
-        $('#oggleHeader').css("background-color", "darkorange");
-    }
-
 
     launchCarousel(pageContext);
     getRandomGalleries(pageContext);
