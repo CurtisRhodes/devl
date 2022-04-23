@@ -274,7 +274,6 @@ async function processRenameImages(folderId) {
     });
 }
 
-
 async function removeOrphanImageRows(physcialFiles, imageFiles, folderId) {
     let rowsToProcess = imageFiles.length;
     let rowsProcessed = 0;
@@ -379,6 +378,8 @@ async function renameImageFiles(catFolder, imageFiles, physcialFiles) {
         }
     });
 }
+
+
 async function addMissingImageFiles(catFolder, imageFiles, physcialFiles) {
     let desiredFileNamePrefix = catFolder.FolderName;
     if (catFolder.FolderType == "singleChild")
@@ -434,8 +435,29 @@ async function addMissingImageFiles(catFolder, imageFiles, physcialFiles) {
                     else {
                         switch (addImageFileSuccess.trim()) {
                             case '23000': // Integrity constraint violation
-                                repairReport.comparisonProblems++;
-                                //repairReport.errors.push("Insert failed (" + folderId + ") Id: " + guidPart + " already exists");
+                                $.ajax({
+                                    url: "php/yagdrasselFetch.php?query=select FolderId from ImageFile where Id='" + guidPart + "'",
+                                    data: data,
+                                    success: function (data) {
+                                        if (data == "false") {
+                                            repairReport.errors.push("Lookup failed (" + catFolder.Id + ") " + newFileName + " error: " + addImageFileSuccess.trim());
+                                        }
+                                        else {
+                                            let realFolder = JSON.parse(data);
+                                            if (realFolder.FolderId != catFolder.Id) {
+                                                repairReport.errors.push("unable to add (" + catFolder.Id + ") " + newFileName + " already in: " + realFolder.FolderId);
+                                                showRepairReport();
+                                            }
+                                            else
+                                                repairReport.comparisonProblems++;
+                                        }
+                                    },
+                                    error: function (jqXHR) {
+                                        // let errMsg = getXHRErrorDetails(jqXHR);
+                                        repairReport.errors.push("<div style='color:red'>(" + catFolder.Id + ") " + idx + " missing image: " + physcialFile.name + "</div>");
+                                        showRepairReport();
+                                    }
+                                });
                                 break;
                             case '42000':
                                 repairReport.errors.push("Insert failed (" + catFolder.Id + ") unhandled exception " +

@@ -122,6 +122,7 @@ async function getAlbumPageInfo(folderId, islargeLoad) {
 
                 $('#footerPageType').html(catfolder.FolderType);
 
+                // BottomfileCount
                 switch (catfolder.FolderType) {
                     case "multiFolder":
                     case "singleParent":
@@ -129,7 +130,7 @@ async function getAlbumPageInfo(folderId, islargeLoad) {
                         $('#largeLoadButton').show();
                         $('#deepSlideshowButton').show();
                         if (catfolder.Files > 0) 
-                            $('#albumBottomfileCount').html(catfolder.Files + "/" + catfolder.SubFolders);                        
+                            $('#albumBottomfileCount').html("{" + catfolder.Files + "}" + catfolder.TotalSubFolders + "/" + Number(catfolder.TotalChildFiles).toLocaleString());
                         else
                             $('#albumBottomfileCount').html(catfolder.TotalSubFolders + "/" + Number(catfolder.TotalChildFiles).toLocaleString());
                         break;
@@ -255,7 +256,7 @@ function setColors(rootFolder, folderName) {
             $('.inactiveBreadCrumb').css({ "color": "wheat" });
             $('.activeBreadCrumb').css("color", "#f2e289");
             $('#topRowLeftContainer').css({ "color": "wheat" });
-            $('#oggleHeader').css("background-color", "#000");
+            $('#oggleHeader').css("background-color", "#ff6600");
             $('#carouselContainer').css("background-color", "#000");
             break;
         case "bond":
