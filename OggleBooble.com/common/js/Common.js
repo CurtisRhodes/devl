@@ -248,6 +248,7 @@ function mailMe() {
             case "muses":
             case "playboyIndex":
             case "playboy":
+            case "playboyIndex":
                 document.title = "Every Playboy Centerfold : OggleBooble";
                 $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/playboyBallon.png");
                 $('#fancyHeaderTitle').html("Every Playboy Centerfold");

@@ -1,6 +1,6 @@
 <?php
 
-include('settings.php');
+include('yagdrassel.php');
 $pdo = pdoConn();
 
 $query = $_GET['query'];

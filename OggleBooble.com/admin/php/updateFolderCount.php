@@ -11,7 +11,7 @@
         $fileCount = count($scanned_directory);
 
 
-        include('settings.php');
+        include('yagdrassel.php');
         $pdo = pdoConn();
 
         $sql = "UPDATE CategoryFolder SET Files=".$fileCount." WHERE Id=".$folderId;

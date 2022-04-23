@@ -1,7 +1,7 @@
 <?php
     try
     {
-        include('settings.php');
+        include('yagdrassel.php');
         $pdo = pdoConn();
 
         $rootPath = $_GET['rootPath'];

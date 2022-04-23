@@ -37,7 +37,7 @@ function loadFromCache() {
             return;
         }
         if (isNullorUndefined(window.localStorage[carouselRoot])) {
-            loadImages(true, isEmergency: true);
+            loadImages(true);
             displayStatusMessage("error", "no " + carouselRoot + " cache found. Please wait...");
             console.log("no " + carouselRoot + " cache found");
             return;
@@ -183,7 +183,7 @@ function setLabelLinks(llIdx) {
         //$("#knownModelLabel").fadeOut();
                 
         let carouselItem = carouselRows[llIdx];
-        if (carouselItem.carouselRoot == "centerfold") {
+        if (carouselItem.RootFolder == "centerfold") {
             if (carouselItem.RealRoot == "centerfold")
                 $('#imageTopLabel').html("Playboy Playmate: " + carouselItem.PlayboyYear);
             else {
