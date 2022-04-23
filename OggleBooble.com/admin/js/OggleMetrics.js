@@ -15,7 +15,6 @@ function showPageHitsReport() {
             let tableKlude = "<table>";  // <th><tr><td colspan=2 text-algn='center'>PageHit Summary</td><tr></th>";
             $.each(errorSummary, function (idx, obj) {
                 tableKlude += "<td class='clickable underline' onclick='hitsByPageReport(\"" + obj.Occured + "\")'>" + obj.FormattedDate + "</td>";
-
             });
             tableKlude += "</tr><tbody></tr>"
             $.each(errorSummary, function (idx, obj) {
@@ -32,7 +31,6 @@ function showPageHitsReport() {
 }
 
 function hitsByPageReport(pageHitDate) {
-
     let sql = `select  count(*) as Hits, PageId, FolderName, RootFolder 
                 from PageHit h join oggleboo_yagdrassel.CategoryFolder f on f.Id = h.PageId
                 where Occured='`+ pageHitDate +`' group by PageId, FolderName, Rootfolder
