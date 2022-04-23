@@ -179,7 +179,7 @@ function setBreadcrumbs(catfolder) {
             url: "php/yagdrasselFetchAll.php?query=Select * from VwDirTree",
             success: function (data) {
                 let dirTreeArray = JSON.parse(data);
-                let breadcrumbItem = dirTreeArray.filter(function (item) { return item.Id === catfolder.Id; });
+                let breadcrumbItem = dirTreeArray.filter(function (item) { return (item.Id === catfolder.Id) && (item.IsStepChild == 0); });
                 if (breadcrumbItem.length == 0) {
                     $('#breadcrumbContainer').html("no good");
                     return;
@@ -199,7 +199,7 @@ function setBreadcrumbs(catfolder) {
                 let parent = breadcrumbItem[0].Parent;
 
                 while (parent > 0) {
-                    breadcrumbItem = dirTreeArray.filter(function (item) { return item.Id == parent; });
+                    breadcrumbItem = dirTreeArray.filter(function (item) { return (item.Id === parent) && (item.IsStepChild == 0); });
                     if (isNullorUndefined(breadcrumbItem)) {
                         parent = 99;
                         $('#breadcrumbContainer').prepend("item: " + parent + " isNullorUndefined");

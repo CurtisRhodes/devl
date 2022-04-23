@@ -5,15 +5,20 @@ function launchIndexPage(pageContext) {
 
     showLogin(false);
 
+    launchCarousel(pageContext);
+    getRandomGalleries(pageContext);
+    getLatestUpdatedGalleries(pageContext);
     displayHeader(pageContext);
     displayFooter(pageContext);
     //promoMessagesContainer
 
     if (pageContext == "playboy") {
+        displayHeader("playboyIndex");
         $('body').css({ "background-color": "#000", "color": "#fff" });
         $('#oggleHeader').css("background-color", "#000");
         $('#carouselContainer').css("background-color", "#000");
         $('#oggleHeader').css("color", "#f2e289");
+        $('#topRowLeftContainer').css("color", "#f2e289");
     }
 
     if (pageContext == "porn") {
@@ -23,9 +28,6 @@ function launchIndexPage(pageContext) {
     }
 
 
-    launchCarousel(pageContext);
-    getRandomGalleries(pageContext);
-    getLatestUpdatedGalleries(pageContext);
 
     verifyUser("index page");
 

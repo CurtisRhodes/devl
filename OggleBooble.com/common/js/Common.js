@@ -244,6 +244,7 @@ function mailMe() {
                 $('#hdrBtmRowSec3').append(bannerLink('Oggle Porn', 'https://ogglebooble.com/index.html?spa=porn'));
                 break;
             case "playboy":
+            case "playboyIndex":
                 document.title = "Every Playboy Centerfold : OggleBooble";
                 $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/playboyBallon.png");
                 $('#fancyHeaderTitle').html("Every Playboy Centerfold");

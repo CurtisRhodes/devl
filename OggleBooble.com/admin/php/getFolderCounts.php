@@ -81,7 +81,7 @@
                     }
                 }
 
-                $cmd = $pdo->query("select sum(Files) as totalChildSum from CategoryFolder where Parent=".$folderId);
+                $cmd = $pdo->query("select sum(Files) + sum(TotalChildFiles) as totalChildSum from CategoryFolder where Parent=".$folderId);
                 $filesSum = $cmd->fetch();
                 $childFilesSum = $filesSum[totalChildSum];
 

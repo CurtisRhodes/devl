@@ -95,51 +95,56 @@ async function processRemoveOrphans(folderId) {
         url: "php/yagdrasselFetch.php?query=select f.Id, f.FolderName, p.FolderName as ParentName, f.FolderPath, f.FolderType " +
             " from CategoryFolder f join CategoryFolder p on p.Id = f.Parent where f.Id=" + folderId,
         success: function (data) {
-            let catFolder = JSON.parse(data);
-            // 2. get its subfolders
-            $.ajax({
-                url: 'php/yagdrasselFetchAll.php?query=select Id from CategoryFolder where Parent=' + folderId,
-                success: function (data) {
-                    let subfolders = JSON.parse(data);
-                    // 3.  get image files
-                    $.ajax({
-                        url: 'php/yagdrasselFetchAll.php?query=select * from ImageFile where FolderId=' + folderId,
-                        success: function (data) {
-                            let imageFiles = JSON.parse(data);
-                            // 3.  get physcial files
-                            $.ajax({
-                                url: "php/getOggleFolder.php?path=" + "../../danni/" + catFolder.FolderPath + "&folderId=" + folderId,
-                                success: function (data) {
-                                    let jallFiles = JSON.parse(data);
-                                    let physcialFiles = jallFiles.filter(node => node.type == "file");
+            if (data == "false") {
+                repairReport.errors.push("<div style='color:red'process RemoveOrphans (get cat folder) XHR error: " + data + "</div>");
+            }
+            else {
+                let catFolder = JSON.parse(data);
+                // 2. get its subfolders
+                $.ajax({
+                    url: 'php/yagdrasselFetchAll.php?query=select Id from CategoryFolder where Parent=' + folderId,
+                    success: function (data) {
+                        let subfolders = JSON.parse(data);
+                        // 3.  get image files
+                        $.ajax({
+                            url: 'php/yagdrasselFetchAll.php?query=select * from ImageFile where FolderId=' + folderId,
+                            success: function (data) {
+                                let imageFiles = JSON.parse(data);
+                                // 3.  get physcial files
+                                $.ajax({
+                                    url: "php/getOggleFolder.php?path=" + "../../danni/" + catFolder.FolderPath + "&folderId=" + folderId,
+                                    success: function (data) {
+                                        let jallFiles = JSON.parse(data);
+                                        let physcialFiles = jallFiles.filter(node => node.type == "file");
 
-                                    removeOrphanImageRows(physcialFiles, imageFiles, folderId);
+                                        removeOrphanImageRows(physcialFiles, imageFiles, folderId);
 
-                                    subfolders.forEach(async (subfolder) => {
-                                        await processRemoveOrphans(subfolder.Id);
-                                    });
-                                },
-                                error: function (jqXHR) {
-                                    $('#dashBoardLoadingGif').hide();
-                                    let errMsg = getXHRErrorDetails(jqXHR);
-                                    repairReport.errors.push("<div style='color:red'process RemoveOrphans (get Image Files) AJX error: " + errMsg + "</div>");
-                                }
-                            });
-                        },
-                        error: function (jqXHR) {
-                            $('#dashBoardLoadingGif').hide();
-                            let errMsg = getXHRErrorDetails(jqXHR);
-                            repairReport.errors.push("<div style='color:red'process (get Image file) RemoveOrphans XHR error: " + errMsg + "</div>");
-                            //alert("get child folders XHR: " + errMsg);
-                        }
-                    });
-                },
-                error: function (jqXHR) {
-                    $('#dashBoardLoadingGif').hide();
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    repairReport.errors.push("<div style='color:red'process RemoveOrphans (get sub folders) XHR error: " + errMsg + "</div>");
-                }
-            });
+                                        subfolders.forEach(async (subfolder) => {
+                                            await processRemoveOrphans(subfolder.Id);
+                                        });
+                                    },
+                                    error: function (jqXHR) {
+                                        $('#dashBoardLoadingGif').hide();
+                                        let errMsg = getXHRErrorDetails(jqXHR);
+                                        repairReport.errors.push("<div style='color:red'process RemoveOrphans (get Image Files) AJX error: " + errMsg + "</div>");
+                                    }
+                                });
+                            },
+                            error: function (jqXHR) {
+                                $('#dashBoardLoadingGif').hide();
+                                let errMsg = getXHRErrorDetails(jqXHR);
+                                repairReport.errors.push("<div style='color:red'process (get Image file) RemoveOrphans XHR error: " + errMsg + "</div>");
+                                //alert("get child folders XHR: " + errMsg);
+                            }
+                        });
+                    },
+                    error: function (jqXHR) {
+                        $('#dashBoardLoadingGif').hide();
+                        let errMsg = getXHRErrorDetails(jqXHR);
+                        repairReport.errors.push("<div style='color:red'process RemoveOrphans (get sub folders) XHR error: " + errMsg + "</div>");
+                    }
+                });
+            }
         },
         error: function (jqXHR) {
             $('#dashBoardLoadingGif').hide();
@@ -184,28 +189,29 @@ async function processAddMissingImageRows(folderId) {
                                 error: function (jqXHR) {
                                     $('#dashBoardLoadingGif').hide();
                                     let errMsg = getXHRErrorDetails(jqXHR);
-                                    alert("get child folders XHR: " + errMsg);
+                                    repairReport.errors.push("<div style='color:red'add missing (get physcial folder) XHR error: " + errMsg + "</div>");
+
                                 }
                             });
                         },
                         error: function (jqXHR) {
                             $('#dashBoardLoadingGif').hide();
                             let errMsg = getXHRErrorDetails(jqXHR);
-                            alert("get child folders XHR: " + errMsg);
+                            repairReport.errors.push("<div style='color:red'add missing (get child folder) XHR error: " + errMsg + "</div>");
                         }
                     });
                 },
                 error: function (jqXHR) {
                     $('#dashBoardLoadingGif').hide();
                     let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("get child folders XHR: " + errMsg);
+                    repairReport.errors.push("<div style='color:red'add missing (get cat folders) XHR error: " + errMsg + "</div>");
                 }
             });
         },
         error: function (jqXHR) {
             $('#dashBoardLoadingGif').hide();
             let errMsg = getXHRErrorDetails(jqXHR);
-            alert("get child folders XHR: " + errMsg);
+            repairReport.errors.push("<div style='color:red'add missing (get physcial folder) XHR error: " + errMsg + "</div>");
         }
     });
 
@@ -248,28 +254,28 @@ async function processRenameImages(folderId) {
                                 error: function (jqXHR) {
                                     $('#dashBoardLoadingGif').hide();
                                     let errMsg = getXHRErrorDetails(jqXHR);
-                                    alert("get child folders XHR: " + errMsg);
+                                    repairReport.errors.push("<div style='color:red'rename (get physcial files) XHR error: " + errMsg + "</div>");
                                 }
                             });
                         },
                         error: function (jqXHR) {
                             $('#dashBoardLoadingGif').hide();
                             let errMsg = getXHRErrorDetails(jqXHR);
-                            alert("get child folders XHR: " + errMsg);
+                            repairReport.errors.push("<div style='color:red'rename (get image files) XHR error: " + errMsg + "</div>");
                         }
                     });
                 },
                 error: function (jqXHR) {
                     $('#dashBoardLoadingGif').hide();
                     let errMsg = getXHRErrorDetails(jqXHR);
-                    alert("get child folders XHR: " + errMsg);
+                    repairReport.errors.push("<div style='color:red'rename (get child folders) XHR error: " + errMsg + "</div>");
                 }
             });
         },
         error: function (jqXHR) {
             $('#dashBoardLoadingGif').hide();
             let errMsg = getXHRErrorDetails(jqXHR);
-            alert("get child folders XHR: " + errMsg);
+            repairReport.errors.push("<div style='color:red'rename (get cat folder) XHR error: " + errMsg + "</div>");
         }
     });
 }

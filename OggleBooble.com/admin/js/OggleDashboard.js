@@ -113,8 +113,8 @@ function performAutoCreateNewFolders() {
 
         if (loopCounter == numNewFolder) {
             clearInterval(mySlowLoop);
-            $('#dataifyInfo').html("ok. " + Number($('#txtNumAutoCreate').val() + " new folders created");
-        }
+            $('#dataifyInfo').html("ok. " + $('#txtNumAutoCreate').val() + " new folders created");
+        }   
         else
             $('#dataifyInfo').html("creating new folder " + folderName);
     }, 770);
