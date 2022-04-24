@@ -46,9 +46,8 @@ function createDirTreeJson() {
 function recurseDirTree(nodeId) {
     try {
         let jsonResultsItem = lookupRecurr(nodeId);
-        if (isNullorUndefined(jsonResultsItem))
-            alert("total fail");
-        else {
+
+        if (!isNullorUndefined(jsonResultsItem)) {
             let subNodes = dirTreeArray.filter(node => node.Parent == nodeId);
             $.each(subNodes, function (idx, subNode) {
                 if (subNode.IsStepChild == 0) {
@@ -63,55 +62,72 @@ function recurseDirTree(nodeId) {
             });
             $.each(subNodes, function (idx, subNode) {
                 if (subNode.IsStepChild == 0) {
-                    setTimeout(function () {
-                        recurseDirTree(subNode.Id);
-                    }, 1400);
+                    recurseDirTree(subNode.Id);
                 }
             });
         }
     } catch (e) {
         logAdminError("CAT", e, "recurseDirTree");
+        return -1;
     }
 }
 
 function lookupRecurr(searchNodeId) {
     try {
+        let success = null;
+        let ISaidStop = false;
         let jsonResultsRootItem = jsonResults.filter(node => node.Id == startNodeId)[0];
-        if (isNullorUndefined(jsonResultsRootItem)) {
-            alert("lookup fail");
-        }
-        else {
+        if (!isNullorUndefined(jsonResultsRootItem)) {
             if (searchNodeId == jsonResultsRootItem.Id)
-                return jsonResultsRootItem;
+                success = jsonResultsRootItem;
             else {
                 $.each(jsonResultsRootItem.nodes, function (idx, rootNode) {
-                    if (rootNode.Id == searchNodeId)
-                        return rootNode;
+                    if (!ISaidStop) {
+                        if (rootNode.Id == searchNodeId) {
+                            success = rootNode;
+                            ISaidStop = true;
+                        }
+                    }
                 });
-                $.each(jsonResultsRootItem.nodes, function (idx, rootNode) {
-                    if (rootNode.Id == searchNodeId)
-                        return rootNode;
-                });
-                $.each(jsonResultsRootItem.nodes, function (idx, subNode) {
-                    jsonResultsItem = jsonResults.filter(node => node.Id == subNode.Id);
-                    $.each(jsonResultsItem.nodes, function (idx, subNodeLevel2) {
-                        if (subNodeLevel2.Id == searchNodeId)
-                            return subNodeLevel2;
+                if (!ISaidStop) {
+                    $.each(jsonResultsRootItem.nodes, function (idx, rootNode) {
+                        if (!ISaidStop) {
+                            let nextLevelNodes = rootNode.nodes;
+                            $.each(nextLevelNodes, function (idx, nextLevelNode) {
+                                if (!ISaidStop) {
+                                    if (nextLevelNode.Id == searchNodeId) {
+                                        success = nextLevelNode;
+                                        ISaidStop = true;
+                                    }
+                                }
+                            });
+                        }
                     });
-                    $.each(jsonResultsItem.nodes, function (idx, subNodeLevel2) {
-                        jsonResultsSubItem = jsonResults.filter(node => node.Id == subNode.Id);
-                        $.each(jsonResultsSubItem.nodes, function (idx, subNodeLevel3) {
-                            if (subNodeLevel3.Id == searchNodeId)
-                                return subNodeLevel3;
+                    if (!ISaidStop) {
+                        $.each(jsonResultsRootItem.nodes, function (idx, rootNode) {
+                            if (!ISaidStop) {
+                                let nextLevelNodes = rootNode.nodes;
+                                $.each(nextLevelNodes, function (idx, nextLevelNode) {
+                                    thirdLevelNodes = nextLevelNode.nodes;
+                                    $.each(thirdLevelNodes, function (idx, thirdLevelNode) {
+                                        if (thirdLevelNode.Id == searchNodeId) {
+                                            ISaidStop = true;
+                                            return nextLevelNode;
+                                        }
+                                    });
+                                });
+                            }
                         });
-                        alert("may need to go another level deep");
-                    });
-                });
+                        if (!ISaidStop) {
+                            alert("may need to go another level deep");
+                        }
+                    }
+                }
             }
+            return success;
         }
     } catch (e) {
-        alert("llllooooo: " + e);
-
+        alert("see: " + e);
     }
 }
 
