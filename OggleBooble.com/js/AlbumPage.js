@@ -129,10 +129,10 @@ async function getAlbumPageInfo(folderId, islargeLoad) {
                         $('#slideShowClick').hide();
                         $('#largeLoadButton').show();
                         $('#deepSlideshowButton').show();
-                        if (catfolder.Files > 0) 
-                            $('#albumBottomfileCount').html("{" + catfolder.Files + "}" + catfolder.TotalSubFolders + "/" + Number(catfolder.TotalChildFiles).toLocaleString());
+                        if (catfolder.Files > 0)
+                            $('#albumBottomfileCount').html("{" + catfolder.Files + "}" + catfolder.SubFolders + "/" + Number(catfolder.TotalChildFiles).toLocaleString());
                         else
-                            $('#albumBottomfileCount').html(catfolder.TotalSubFolders + "/" + Number(catfolder.TotalChildFiles).toLocaleString());
+                            $('#albumBottomfileCount').html(catfolder.SubFolders + "/" + Number(catfolder.TotalChildFiles).toLocaleString());
                         break;
                     case "singleModel":
                     case "multiModel":
