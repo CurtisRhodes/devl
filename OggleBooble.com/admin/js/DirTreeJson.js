@@ -45,9 +45,10 @@ function createDirTreeJson() {
 
 function recurseDirTree(nodeId) {
     try {
-        let jsonResultsItem = lookupRecurr(nodeId);
-
-        if (!isNullorUndefined(jsonResultsItem)) {
+        let jsonResultsItem = deepLookup(nodeId);
+        if (isNullorUndefined(jsonResultsItem))
+            console.log(nodeId + " sb a terminal node");
+        else {
             let subNodes = dirTreeArray.filter(node => node.Parent == nodeId);
             $.each(subNodes, function (idx, subNode) {
                 if (subNode.IsStepChild == 0) {
@@ -68,67 +69,102 @@ function recurseDirTree(nodeId) {
         }
     } catch (e) {
         logAdminError("CAT", e, "recurseDirTree");
-        return -1;
     }
 }
 
-function lookupRecurr(searchNodeId) {
+function deepLookup(searchNodeId) {
+    let resultFound = false;
+    let success = null;
     try {
-        let success = null;
-        let ISaidStop = false;
         let jsonResultsRootItem = jsonResults.filter(node => node.Id == startNodeId)[0];
-        if (!isNullorUndefined(jsonResultsRootItem)) {
-            if (searchNodeId == jsonResultsRootItem.Id)
-                success = jsonResultsRootItem;
-            else {
+        if (searchNodeId == jsonResultsRootItem.Id)
+            success = jsonResultsRootItem;
+        else {
+            $.each(jsonResultsRootItem.nodes, function (idx, rootNode) {
+                if (rootNode.Id == searchNodeId) {
+                    resultFound = true;
+                    success = rootNode;
+                    return false;
+                }
+            });
+            if (!resultFound) {
                 $.each(jsonResultsRootItem.nodes, function (idx, rootNode) {
-                    if (!ISaidStop) {
-                        if (rootNode.Id == searchNodeId) {
-                            success = rootNode;
-                            ISaidStop = true;
-                        }
-                    }
-                });
-                if (!ISaidStop) {
-                    $.each(jsonResultsRootItem.nodes, function (idx, rootNode) {
-                        if (!ISaidStop) {
-                            let nextLevelNodes = rootNode.nodes;
-                            $.each(nextLevelNodes, function (idx, nextLevelNode) {
-                                if (!ISaidStop) {
-                                    if (nextLevelNode.Id == searchNodeId) {
-                                        success = nextLevelNode;
-                                        ISaidStop = true;
-                                    }
-                                }
-                            });
+                    let subNodes = rootNode.nodes;
+                    $.each(subNodes, function (idx, subNode) {
+                        if (subNode.Id == searchNodeId) {
+                            resultFound = true;
+                            success = subNode;
+                            return false;
                         }
                     });
-                    if (!ISaidStop) {
-                        $.each(jsonResultsRootItem.nodes, function (idx, rootNode) {
-                            if (!ISaidStop) {
-                                let nextLevelNodes = rootNode.nodes;
-                                $.each(nextLevelNodes, function (idx, nextLevelNode) {
-                                    thirdLevelNodes = nextLevelNode.nodes;
-                                    $.each(thirdLevelNodes, function (idx, thirdLevelNode) {
-                                        if (thirdLevelNode.Id == searchNodeId) {
-                                            ISaidStop = true;
-                                            return nextLevelNode;
+                });
+                if (!resultFound) {
+                    $.each(jsonResultsRootItem.nodes, function (idx, rootNode) {
+                        let subNodes = rootNode.nodes;
+                        if (!resultFound) {
+                            $.each(subNodes, function (idx, subNode) {
+                                if (!resultFound) {
+                                    let nextlevelNodes = subNode.nodes;
+                                    $.each(nextlevelNodes, function (idx, nextlevelNode) {
+                                        if (nextlevelNode.Id == searchNodeId) {
+                                            resultFound = true;
+                                            success = nextlevelNode;
+                                            return false;
                                         }
                                     });
-                                });
-                            }
-                        });
-                        if (!ISaidStop) {
-                            alert("may need to go another level deep");
-                        }
-                    }
+                                    if (!resultFound) {
+                                        $.each(nextlevelNodes, function (idx, nextlevelNode) {
+                                            let thirdLevelNodes = nextlevelNode.nodes;
+                                            $.each(thirdLevelNodes, function (idx, thirdLevelNode) {
+                                                if (thirdLevelNode.Id == searchNodeId) {
+                                                    resultFound = true;
+                                                    success = thirdLevelNode;
+                                                    return false;
+                                                }
+                                            });
+                                        });
+                                        if (!resultFound) {
+                                            $.each(nextlevelNodes, function (idx, nextlevelNode) {
+                                                let thirdLevelNodes = nextlevelNode.nodes;
+                                                $.each(thirdLevelNodes, function (idx, thirdLevelNode) {
+                                                    let fouthLevelNodes = thirdLevelNode.nodes;
+                                                    $.each(fouthLevelNodes, function (idx, fouthLevelNode) {
+                                                        if (fouthLevelNode.Id == searchNodeId) {
+                                                            resultFound = true;
+                                                            success = fouthLevelNode;
+                                                            return false;
+                                                        }
+                                                    });
+                                                    if (!resultFound) {
+                                                        $.each(fouthLevelNodes, function (idx, fouthLevelNode) {
+                                                            let fithLevelNodes = fouthLevelNode.nodes;
+                                                            $.each(fithLevelNodes, function (idx, fithLevelNode) {
+                                                                if (fithLevelNode.Id == searchNodeId) {
+                                                                    resultFound = true;
+                                                                    success = fouthLevelNode;
+                                                                    return false;
+                                                                }
+                                                            });
+                                                        });
+                                                    } else return false;
+                                                    if (!resultFound) {
+                                                        alert("may need to go another level deep");
+                                                    }
+                                                });
+                                            });
+                                        } else return false;
+                                    } else return false;
+                                } else return false;
+                            });
+                        } else return false;
+                    });
                 }
             }
-            return success;
         }
     } catch (e) {
-        alert("see: " + e);
+        alert("deep search: " + e);
     }
+    return success;
 }
 
 function saveFile() {
