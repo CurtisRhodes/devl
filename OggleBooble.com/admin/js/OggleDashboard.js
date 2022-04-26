@@ -167,7 +167,6 @@ function logAdminError(errorCode, errorMessage, calledFrom) {
     alert(errorCode + ", " + errorMessage + " calledFrom: " + calledFrom);
 }
 
-
 // ADD NEW IMAGES
 function showImportDialog() {
     $('#dashboardDialogTitle').html("add new images");

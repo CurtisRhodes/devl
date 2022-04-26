@@ -147,9 +147,7 @@ function deepLookup(searchNodeId) {
                                                             });
                                                         });
                                                     } else return false;
-                                                    if (!resultFound) {
-                                                        alert("may need to go another level deep");
-                                                    }
+                                                    // if (!resultFound) { alert("may need to go another level deep"); }
                                                 });
                                             });
                                         } else return false;
