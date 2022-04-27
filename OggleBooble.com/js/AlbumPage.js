@@ -252,12 +252,12 @@ function setColors(rootFolder, folderName) {
         case "muses":
         case "plus":
             document.title = folderName + " : OggleBooble";
-            $('body').css({ "background-color": "#000", "color": "#fff" });
+            $('body').css({ "background-color": "#bdbeb8", "color": "#fff" });
             $('.inactiveBreadCrumb').css({ "color": "wheat" });
             $('.activeBreadCrumb').css("color", "#f2e289");
             $('#topRowLeftContainer').css({ "color": "wheat" });
             $('#oggleHeader').css("background-color", "#ff6600");
-            $('#carouselContainer').css("background-color", "#000");
+            $('#carouselContainer').css("background-color", "#bdbeb8");
             break;
         case "bond":
             document.title = folderName + " : OggleBooble";
