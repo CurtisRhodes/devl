@@ -80,7 +80,9 @@ function traverseDirTree(thisNode) {
         //}
         //else 
         {
-            if (subNode.SubFolderCount > 0) {
+
+            // if (subNode.SubFolderCount > 0)
+            {
                 if (dirTreeTab > maxExpandDepth) {
                     largetxtstring += "<div id='CC" + randomId + "' class='expadoContainer' style='display:none' >";
                 }

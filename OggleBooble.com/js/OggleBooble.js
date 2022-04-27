@@ -8,7 +8,6 @@ let slideshowVisible = false, imageViewerVisible = false;
             //sessionStorage["VisitorIdVerified"] = "ok";
             let cookeiVisitorId = getCookieValue("VisitorId");
             if (cookeiVisitorId == "cookie not found") {
-                sessionStorage["VisitorIdVerified"] = "ok";
                 ipifyLookup("verify user");
             }
             else {
@@ -21,7 +20,6 @@ let slideshowVisible = false, imageViewerVisible = false;
         if (isNullorUndefined(sessionStorage["VisitLogged"])) {
             logVisit("verify");
         }
-
     }
 
     function verifyVisitorId(visitorId) {
@@ -38,7 +36,7 @@ let slideshowVisible = false, imageViewerVisible = false;
                     }
                 },
                 error: function (jqXHR) {
-                    logOggleError("CAT", folderId, getXHRErrorDetails(jqXHR), "verify VisitorId")
+                    logOggleError("XHR", -42500, getXHRErrorDetails(jqXHR), "verify VisitorId")
                 }
             });
         } catch (e) {
@@ -53,7 +51,9 @@ let slideshowVisible = false, imageViewerVisible = false;
                 url: "https://api.ipify.org",
                 success: function (ipifyRtrnIP) {
                     if (isNullorUndefined(ipifyRtrnIP)) {
+
                         logOggleError("XHR", -88817, "ipify empty response", "ipify lookup")
+
                     }
                     else {
                         // ipify success // checkVisitor(ipifyRtrnIP, calledFrom);
@@ -62,8 +62,8 @@ let slideshowVisible = false, imageViewerVisible = false;
                             url: "php/registroFetch.php?query=Select * from Visitor where IpAddress='" + ipifyRtrnIP + "'",
                             success: function (data) {
                                 if (data == "false") {
+                                    // ipify IP not found.in Visitor table
                                     performIpInfo(ipifyRtrnIP);
-                                    //logOggleActivity("CV1", -88823, "lookup Ip Address"); // ipify IP not found.in Visitor table
                                 }
                                 else {
                                     let visitorRow = JSON.parse(data);
@@ -72,6 +72,7 @@ let slideshowVisible = false, imageViewerVisible = false;
                                         logOggleError("BUG", -67736, "just told cookie not found", "ipify lookup/" + calledFrom);
                                     }
                                     else {
+
                                         logOggleActivity("CV2", -88812, "lookup Ip Address");  // local storage does not match visitorId for IP
                                         checklocalStorageVisitorId(visitorRow.VisitorId, ipifyRtrnIP);
                                     }
@@ -109,8 +110,10 @@ let slideshowVisible = false, imageViewerVisible = false;
                 },
                 error: function (jqXHR) {
                     let errMsg = getXHRErrorDetails(jqXHR);
-                    logOggleActivity("IPX", -21277, "XHR error: " + errMsg);
-                    logOggleError("XHR", -21277, errMsg, "perform IpLookup");
+                    if (errMsg.indexOf("status: 0") > 0)
+                        addBadVisitor(ipAddress);
+                    else
+                        logOggleError("XHR", -67769, errMsg, "ip: " + ipAddress, "performIpInfo");
                 }
             });
         } catch (e) {
@@ -896,87 +899,130 @@ function displayFeedback() {
         //$('#footerMessage1').html("logging page hit");
         visitorId = getCookieValue("VisitorId", "log pageHit");
         if (visitorId == "cookie not found") {
-            logOggleActivity("PHC", folderId,"log pageHit")
-            ipifyLookup("log pageHit");
+            //  addBadVisitor
+            visitorId = create_UUID();
+            localStorage["VisitorId"] = visitorId;
+            setCookieValue("VisitorId", visitorId)
+            logOggleActivity("PHA", folderId, "log pageHit");
+            //ipifyLookup("log pageHit");
         }
-        else {
-            $.ajax({
-                type: "POST",
-                url: "php/logPageHit.php",
-                data: {
-                    visitorId: visitorId,
-                    pageId: folderId
-                },
-                success: function (success) {
-                    if (success.trim() != "ok") {
-                        switch (success.trim()) {
-                            case '23000':
-                                //logOggleError("",);  // duplicate page hit
-                                break;
-                            case '42000':
-                            default:
-                                logOggleError("AJX", folderId, "php code: " + success.trim(), "log page hit");
-                        }
-                    }
-                },
-                error: function (jqXHR, exception) {
-                    logOggleError("", folderId, getXHRErrorDetails(jqXHR, exception), "log page hit");
-                }
-            });
-        }
-    }
-
-    function addVisitor(ipResponse) {
-        visitorId = create_UUID();
-
-//        console.log("visitorId:" + visitorId + "  $city: " + ipResponse.city + ", $region: " + ipResponse.region +
-//            "\ncountry: " + ipResponse.country + "  loc: " + ipResponse.loc + " ip: " + ipResponse.ip);
-
-
         $.ajax({
             type: "POST",
-            url: "php/addVisitor.php",
+            url: "php/logPageHit.php",
             data: {
                 visitorId: visitorId,
-                ip: ipResponse.ip,
-                city: ipResponse.city,
-                region: ipResponse.region,
-                country: ipResponse.country,
-                loc: ipResponse.loc
+                pageId: folderId
             },
             success: function (success) {
-                if (success.trim() == "ok") {
-                    localStorage["VisitorId"] = visitorId;
-                    logVisit("new visitor");
-                }
-                else {
+                if (success.trim() != "ok") {
                     switch (success.trim()) {
                         case '23000':
                             //logOggleError("",);  // duplicate page hit
                             break;
                         case '42000':
                         default:
-                            logOggleError("AJX", -988, "php error code: " + success, "add visitor");
+                            logOggleError("AJX", folderId, "php code: " + success.trim(), "log page hit");
                     }
                 }
             },
-            error: function (jqXHR) {
-                logOggleError("XHR", -988, getXHRErrorDetails(jqXHR), "add visitor");
+            error: function (jqXHR, exception) {
+                logOggleError("", folderId, getXHRErrorDetails(jqXHR, exception), "log page hit");
             }
         });
+    }
 
-        //addVisitor({
-        //    city: "Dallas",
-        //    country: "US",
-        //    hostname: "072-190-028-092.res.spectrum.com",
-        //    ip: "72.190.28.92",
-        //    loc: "32.9322,-96.8353",
-        //    org: "AS11427 Charter Communications Inc",
-        //    postal: "75244",
-        //    region: "Texas",
-        //    timezone: "America/Chicago",
-        //    [[Prototype]]: Object
-        //});
+    function addVisitor(ipResponse) {
+        try {
+            visitorId = create_UUID();
+            $.ajax({
+                type: "POST",
+                url: "php/addVisitor.php",
+                data: {
+                    visitorId: visitorId,
+                    ip: ipResponse.ip,
+                    city: ipResponse.city,
+                    region: ipResponse.region,
+                    country: ipResponse.country,
+                    loc: ipResponse.loc
+                },
+                success: function (success) {
+                    if (success.trim() == "ok") {
+                        localStorage["VisitorId"] = visitorId;
+                        logVisit("new visitor");
+                    }
+                    else {
+                        switch (success.trim()) {
+                            case '23000':
+                                logOggleError("BPI", -36601, "Add Visitor Duplicate Ip: " + ipAddress);
+                                break;
+                            case '42000':
+                            default:
+                                logOggleError("AJX", -36602, "php error code: " + success, "add visitor");
+                        }
+                    }
+                },
+                error: function (jqXHR) {
+                    logOggleError("XHR", -36603, getXHRErrorDetails(jqXHR), "add visitor");
+                }
+            });
+
+            //addVisitor({
+            //    city: "Dallas",
+            //    country: "US",
+            //    hostname: "072-190-028-092.res.spectrum.com",
+            //    ip: "72.190.28.92",
+            //    loc: "32.9322,-96.8353",
+            //    org: "AS11427 Charter Communications Inc",
+            //    postal: "75244",
+            //    region: "Texas",
+            //    timezone: "America/Chicago",
+            //    [[Prototype]]: Object
+            //});
+        } catch (e) {
+            logOggleError("CAT", -36604, e, "add visitor");
+        }
+    }
+
+    function addBadVisitor(ipAddress) {
+        try {
+            visitorId = create_UUID();
+            $.ajax({
+                type: "POST",
+                url: "php/addVisitor.php",
+                data: {
+                    visitorId: visitorId,
+                    ip: ipAddress,
+                    city: "no ipInfo",
+                    region: "",
+                    country: "",
+                    loc: ""
+                },
+                success: function (success) {
+                    if (success.trim() == "ok") {
+                        localStorage["VisitorId"] = visitorId;
+                        setCookieValue("VisitorId", visitorId)
+                        logOggleActivity("IPX", -21277, "XHR error: unable to lookup ip: " + ipAddress);
+                        //logOggleError("XHR", -21277, errMsg, "perform IpLookup");
+                        logVisit("new visitor");
+                    }
+                    else {
+                        switch (success.trim()) {
+                            case '23000':
+                                logOggleError("BPI", -4251117, "Bad Visitor Duplicate Ip : " + ipAddress);
+                                break;
+                            case '42000':
+                            default:
+                                logOggleError("AJX", -4251115, "php error code: " + success, "add bad visitor");
+                        }
+                    }
+                },
+                error: function (jqXHR) {
+                    logOggleError("XHR", -4251114, getXHRErrorDetails(jqXHR), "add bad visitor");
+                }
+            });
+        } catch (e) {
+            logOggleError("CAT", -4251113, e, "add bad visitor");
+        }
     }
 }
 /*-- exploding image view ------------------------------*/{
