@@ -1,5 +1,6 @@
 const randomGalleriesCount = 11;
 let updatedGalleriesCount = 15;
+let indexPageId;
 
 function launchIndexPage(pageContext) {
 
@@ -11,23 +12,26 @@ function launchIndexPage(pageContext) {
 
     switch (pageContext) {
         case "oggleIndex":
-            logPageHit(3908);
+            indexPageId = 3908;
             break;
         case "playboy":
-            $('body').css({ "background-color": "#000", "color": "#fff" });
+            $('body').css({ "background-color": "#bdbeb8", "color": "#fff" });
             $('#oggleHeader').css("background-color", "#000");
-            $('#carouselContainer').css("background-color", "#000");
+            $('#carouselContainer').css("background-color", "#bdbeb8");
+            $('.hdrTopRowMenu').css("color", "#f2e289");
             $('#oggleHeader').css("color", "#f2e289");
-            logPageHit(72);
+            indexPageId = 72;
             break;
         case "porn":
             $('body').css({ "background-color": "darksalmon", "color": "#fff" });
             $('#carouselContainer').css("background-color", "darksalmon");
             $('#oggleHeader').css("background-color", "darkorange");
-            logPageHit(3909);
+            indexPageId = 3909;
             break;
         default:
     }
+    logPageHit(indexPageId);
+    getIndexPageInfo(indexPageId);
 
     launchCarousel(pageContext);
     getRandomGalleries(pageContext);
@@ -43,15 +47,43 @@ function launchIndexPage(pageContext) {
 }
 
 /*-- php -------------------------------------------*/{
-    function getLatestUpdatedGalleries(spaType) {
+    function getIndexPageInfo(indexPageId) {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "php/getIndexPageInfo.php?indexPageId=" + indexPageId,
+                success: function (data) {
+                    let jdata = JSON.parse(data);
+
+                    $('#footerPagehit').html('');
+
+
+
+                    $('#imgLatestUpdate').on("click", function () {
+                        updatedGalleriesCount += 11;
+                        getLatestUpdatedGalleries(spaType);
+                    }).show();
+
+                error: function (jqXHR) {
+                    logOggleError("XHR", -518801, getXHRErrorDetails(jqXHR), "get updated galleries");
+                }
+            });
+        } catch (e) {
+            logOggleError("CAT", -518802, e, "get updated galleries");
+        }
+    }
+
+    function getLatestUpdatedGalleries(pageContext) {
         try {
             $('#latestUpdatesContainer').html('<img class="tinyloadingGif" src="https://common.ogglebooble.com/img/loader.gif"/>');
-            if (spaType == "oggleIndex")
-                spaType = "boobs";
+
+
+            if (pageContext == "oggleIndex")
+                pageContext = "boobs";
 
             $.ajax({
                 type: "GET",
-                url: "php/getLatestUpdated.php?spaType=" + spaType + "&limit=" + updatedGalleriesCount,
+                url: "php/getLatestUpdated.php?spaType=" + pageContext + "&limit=" + updatedGalleriesCount,
                 success: function (data) {
                     $('#latestUpdatesContainer').html('');
                     let jdata = JSON.parse(data);
@@ -65,10 +97,7 @@ function launchIndexPage(pageContext) {
                             "<div class='latestContentBoxDateLabel'>updated: " + dateString2(jdata[i].Acquired) + "</span></div>" +
                             "</div>");
                     }
-                    $('#imgLatestUpdate').on("click", function () {
-                        updatedGalleriesCount += 11;
-                        getLatestUpdatedGalleries(spaType);
-                    }).show();
+                    $('#imgLatestUpdate').show();
                 },
                 error: function (jqXHR) {
                     logOggleError("XHR", -518801, getXHRErrorDetails(jqXHR), "get updated galleries");
@@ -110,7 +139,12 @@ function launchIndexPage(pageContext) {
 
                         $('#imgRandomGalleries').on("click", function () {
                             getRandomGalleries(pageContext);
-                            logOggleActivity
+
+
+                            logOggleActivity("RRG",)
+
+
+
                         }).show();
 
 

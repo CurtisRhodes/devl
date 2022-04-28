@@ -85,7 +85,11 @@ let slideshowVisible = false, imageViewerVisible = false;
                     }
                 },
                 error: function (jqXHR) {
+
                     logOggleError("XHR", -67700, getXHRErrorDetails(jqXHR), "ipify lookup/" + calledFrom);
+                    addBadVisitor("ipify fail");
+
+
                 }
             });
         }
@@ -152,7 +156,7 @@ let slideshowVisible = false, imageViewerVisible = false;
         try {
             visitorId = getCookieValue("VisitorId");
             if (visitorId == "cookie not found") {
-                ipifyLookup();
+                ipifyLookup("record hit source");
             }
             $.ajax({
                 type: "POST",
@@ -164,7 +168,7 @@ let slideshowVisible = false, imageViewerVisible = false;
                 },
                 success: function (success) {
                     if (success.trim() == "ok") {
-                        logOggleActivity("PHC", folderId, "record hit source");
+                        logOggleActivity("PHC", folderId, "siteCode: " + siteCode);
                     }
                     else {
                         switch (success.trim()) {
@@ -896,39 +900,43 @@ function displayFeedback() {
     }
 
     function logPageHit(folderId) {
-        //$('#footerMessage1').html("logging page hit");
-        visitorId = getCookieValue("VisitorId", "log pageHit");
-        if (visitorId == "cookie not found") {
-            //  addBadVisitor
-            visitorId = create_UUID();
-            localStorage["VisitorId"] = visitorId;
-            setCookieValue("VisitorId", visitorId)
-            logOggleActivity("PHA", folderId, "log pageHit");
-            //ipifyLookup("log pageHit");
-        }
-        $.ajax({
-            type: "POST",
-            url: "php/logPageHit.php",
-            data: {
-                visitorId: visitorId,
-                pageId: folderId
-            },
-            success: function (success) {
-                if (success.trim() != "ok") {
-                    switch (success.trim()) {
-                        case '23000':
-                            //logOggleError("",);  // duplicate page hit
-                            break;
-                        case '42000':
-                        default:
-                            logOggleError("AJX", folderId, "php code: " + success.trim(), "log page hit");
-                    }
-                }
-            },
-            error: function (jqXHR, exception) {
-                logOggleError("", folderId, getXHRErrorDetails(jqXHR, exception), "log page hit");
+        try {
+            //$('#footerMessage1').html("logging page hit");
+            visitorId = getCookieValue("VisitorId", "log pageHit");
+            if (visitorId == "cookie not found") {
+                //  addBadVisitor
+                visitorId = create_UUID();
+                localStorage["VisitorId"] = visitorId;
+                setCookieValue("VisitorId", visitorId)
+                logOggleActivity("PHV", folderId, "log pageHit");
+                //ipifyLookup("log pageHit");
             }
-        });
+            $.ajax({
+                type: "POST",
+                url: "php/logPageHit.php",
+                data: {
+                    visitorId: visitorId,
+                    pageId: folderId
+                },
+                success: function (success) {
+                    if (success.trim() != "ok") {
+                        switch (success.trim()) {
+                            case '23000':
+                                //logOggleError("",);  // duplicate page hit
+                                break;
+                            case '42000':
+                            default:
+                                logOggleError("AJX", folderId, "php code: " + success.trim(), "log page hit");
+                        }
+                    }
+                },
+                error: function (jqXHR, exception) {
+                    logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "log page hit");
+                }
+            });
+        } catch (e) {
+            logOggleError("CAT", folderId, e, "log page hit");
+        }
     }
 
     function addVisitor(ipResponse) {
@@ -985,6 +993,13 @@ function displayFeedback() {
 
     function addBadVisitor(ipAddress) {
         try {
+            let failureMessage = "no ipInfo";
+            visitorId = create_UUID();
+            if (ipAddress == "ipify fail") {
+                ipAddress = visitorId;
+                failureMessage = "ipify fail";
+            }
+
             visitorId = create_UUID();
             $.ajax({
                 type: "POST",
@@ -992,7 +1007,7 @@ function displayFeedback() {
                 data: {
                     visitorId: visitorId,
                     ip: ipAddress,
-                    city: "no ipInfo",
+                    city: failureMessage,
                     region: "",
                     country: "",
                     loc: ""
