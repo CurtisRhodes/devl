@@ -723,6 +723,10 @@ function mailMe() {
                     break;
                 }
                 case "playboy":
+                case "centerfold":
+                case "cybergirl":
+                case "muses":
+                case "playboyIndex":
                     $('#footerCol1').append(`
                         <div class='clickable' onclick='window.location.href=\"index.html?spa=3909\", \"_blank\"'>OgglePorn</div>
                         <div class='clickable' onclick='window.location.href=\"index.html?folderId=1142\", \"_blank\"'>Centerfolds</div>\n`);

@@ -1039,6 +1039,25 @@ function displayFeedback() {
             logOggleError("CAT", -4251113, e, "add bad visitor");
         }
     }
+
+    function showPageHits(folderId) {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "php/registroFetch.php?query=select count(*) as Hits from PageHit where PageId=" + folderId,
+                success: function (data) {
+                    let pgHits = JSON.parse(data);
+                    //let pgHits = JSON.parse(data);
+                    $('#footerPagehit').html("page hits: " + pgHits.Hits);
+                },
+                error: function (jqXHR) {
+                    logOggleError("CAT", folderId, getXHRErrorDetails(jqXHR), "verify VisitorId")
+                }
+            });
+        } catch (e) {
+            logOggleError("CAT", folderId, e, "verify VisitorId")
+        }
+    }
 }
 /*-- exploding image view ------------------------------*/{
     const viewerOffsetTop = 44, explodeSpeed = 22, heightIncrement = 22;

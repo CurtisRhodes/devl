@@ -31,7 +31,7 @@ function launchIndexPage(pageContext) {
         default:
     }
     logPageHit(indexPageId);
-    getIndexPageInfo(indexPageId);
+    showPageHits(indexPageId);
 
     launchCarousel(pageContext);
     getRandomGalleries(pageContext);
@@ -47,37 +47,10 @@ function launchIndexPage(pageContext) {
 }
 
 /*-- php -------------------------------------------*/{
-    function getIndexPageInfo(indexPageId) {
-        try {
-            $.ajax({
-                type: "GET",
-                url: "php/getIndexPageInfo.php?indexPageId=" + indexPageId,
-                success: function (data) {
-                    let jdata = JSON.parse(data);
-
-                    $('#footerPagehit').html('');
-
-
-
-                    $('#imgLatestUpdate').on("click", function () {
-                        updatedGalleriesCount += 11;
-                        getLatestUpdatedGalleries(spaType);
-                    }).show();
-
-                error: function (jqXHR) {
-                    logOggleError("XHR", -518801, getXHRErrorDetails(jqXHR), "get updated galleries");
-                }
-            });
-        } catch (e) {
-            logOggleError("CAT", -518802, e, "get updated galleries");
-        }
-    }
 
     function getLatestUpdatedGalleries(pageContext) {
         try {
             $('#latestUpdatesContainer').html('<img class="tinyloadingGif" src="https://common.ogglebooble.com/img/loader.gif"/>');
-
-
             if (pageContext == "oggleIndex")
                 pageContext = "boobs";
 
@@ -98,6 +71,18 @@ function launchIndexPage(pageContext) {
                             "</div>");
                     }
                     $('#imgLatestUpdate').show();
+
+                    $('#imgLatestUpdate').on("click", function () {
+                        updatedGalleriesCount += 15;
+
+
+
+                        logOggleEvent("LUC",)
+
+                    }).show();
+
+
+
                 },
                 error: function (jqXHR) {
                     logOggleError("XHR", -518801, getXHRErrorDetails(jqXHR), "get updated galleries");
