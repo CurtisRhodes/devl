@@ -105,6 +105,9 @@ async function processRemoveOrphans(folderId) {
                     url: 'php/yagdrasselFetchAll.php?query=select Id from CategoryFolder where Parent=' + folderId,
                     success: function (data) {
                         let subfolders = JSON.parse(data);
+
+                        let childCount = subfolders.length;
+
                         // 3.  get image files
                         $.ajax({
                             url: 'php/yagdrasselFetchAll.php?query=select * from ImageFile where FolderId=' + folderId,
@@ -116,6 +119,9 @@ async function processRemoveOrphans(folderId) {
                                     success: function (data) {
                                         let jallFiles = JSON.parse(data);
                                         let physcialFiles = jallFiles.filter(node => node.type == "file");
+
+
+
 
                                         removeOrphanImageRows(physcialFiles, imageFiles, folderId);
 

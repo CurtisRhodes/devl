@@ -5,7 +5,7 @@ $pdo = pdoConn();
 
 $blogId = $_GET['blogId'];
 
-$cmd = $pdo->query("select * from BlogEntry where Id='".$blogId."'");
+$cmd = $pdo->query("select * from BlogComment where Id='".$blogId."'");
 
 $results = $cmd->fetchAll();
 

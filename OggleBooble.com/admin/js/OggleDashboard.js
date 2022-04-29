@@ -428,7 +428,6 @@ function throwAnError() {
     logError("TST", 11, "test error", "oggle dashboard");
     //logLocalError("TST", 11, "test error", "oggle dashboard");
 }
-
 function logLocalError(errorCode, folderId, errorMessage, calledFrom) {
 
     let visitorId = "xxx"; // getCookieValue("VisitorId", calledFrom + "/logError");
@@ -457,11 +456,10 @@ function logLocalError(errorCode, folderId, errorMessage, calledFrom) {
         }
     });
 }
-
-function testRejisto() {
+function testWysiwyg() {
     $.ajax({    //create an ajax request to display.php
         type: "GET",
-        url: "php/testRejisto.php",
+        url: "php/testWysiwyg.php",
         success: function (data) {
             $("#rightSideWorkarea").html(data);            
         },

@@ -1,4 +1,4 @@
-// const settingsImgRepo = 'https: //ogglefiles.com/danni/';
+// const settingsImgRepo = 'https: //ogglebooble.com/danni/';
 
 let currentBlogObject = {
     BlogId: 0,
@@ -11,21 +11,9 @@ let currentBlogObject = {
 };
 
 function startOggleBlog() {
-
     loadDropDowns();
     currentBlogObject.CommentType = 'PBE';
     displayBlogList();
-
-    //$('#blogListRefDropDown'), 'BLG');
-    //$('#summernoteContainer').summernote();
-    //loadDropDown($('#selBlogEditCommentType'));
-    //$('#blogListArea').show();
-
-    //if (obj.RefCode == currentBlogObject.CommentType) {
-    //    $('#blogTitle').html(obj.RefDescription);
-    //    ddElement.append("<option selected='selected' value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
-    //}
-
 }
 
 function displayBlogList() {
@@ -263,7 +251,7 @@ function loadImage() {
 
     let srcFile = $('#txtLink').val();
 
-    let savedFile = "https://ogglefiles.com/blog/blog%20images/" + srcFile.name;
+    let savedFile = "https://ogglebooble.com/blog/blog%20images/" + srcFile.name;
 
     alert("srcFile: " + srcFile);
 
@@ -297,8 +285,6 @@ function btnNewCancelAction() {
     }
 }
 
-
-
 function loadDropDowns() {
     $.ajax({
         type: "GET",
@@ -308,8 +294,8 @@ function loadDropDowns() {
             $('#blogListRefDropDown').html("");
             $('#selBlogEditCommentType').html("");
             $.each(jData, function (idx, obj) {
-                $('#blogListRefDropDown').append("<option value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
-                $('#selBlogEditCommentType').append("<option value='" + obj.RefCode + "'>" + obj.RefDescription + "</option>");
+                $('#blogListRefDropDown').append("<option value='" + obj.RefCode + "'>" + obj.Description + "</option>");
+                $('#selBlogEditCommentType').append("<option value='" + obj.RefCode + "'>" + obj.Description + "</option>");
             });
         },
         error: function (jqXHR) {
@@ -318,7 +304,6 @@ function loadDropDowns() {
         }
     });
 }
-
 
 function logBlogError(errorCode, folderId, errorMessage, calledFrom) {
     try {
@@ -335,16 +320,18 @@ function logBlogError(errorCode, folderId, errorMessage, calledFrom) {
             },
             success: function (success) {
                 if (success.trim() == "ok") {
+                    alert("Error: " + errorMessage + " calledFrom: " + calledFrom);
                     console.log(errorCode + " error from: " + calledFrom + " error: " + errorMessage);
                 }
                 else {
+                    alert("Error log Ajax error: " + errorMessage + " calledFrom: " + calledFrom);
                     if (!success.trim().startsWith("2300"))
-                        console.log("log oggleerror fail: " + success);
+                        console.log("log oggleError fail: " + success + " calledFrom: " + calledFrom);
                 }
             },
             error: function (jqXHR) {
                 let errMsg = getXHRErrorDetails(jqXHR);
-                alert("Error log error: " + errMsg);
+                alert("Error log XHR error: " + errMsg);
             }
         });
     } catch (e) {
@@ -352,7 +339,6 @@ function logBlogError(errorCode, folderId, errorMessage, calledFrom) {
         console.log("logOggle error not working: " + e);
     }
 }
-
 
 function validateConnection() {
     $.ajax({
