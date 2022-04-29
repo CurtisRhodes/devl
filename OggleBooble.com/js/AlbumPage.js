@@ -1,5 +1,5 @@
 let currentFolderId, currentImagelinkId;
-const posterFolder = 'https://ogglefiles.com/danni/posters/';
+const posterFolder = 'https://ogglebooble.com/danni/posters/';
 
 function loadAlbumPage(folderId, islargeLoad) {
     currentFolderId = folderId;

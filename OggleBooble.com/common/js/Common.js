@@ -237,6 +237,7 @@ function mailMe() {
         $('#hdrBtmRowSec3').html("");
         switch (headerContext) {
             case "oggleIndex":
+            case "archive":
                 document.title = "OggleBooble : Home of the Big Naturals";
                 $('#fancyHeaderTitle').html("OggleBooble");
                 $('#topRowLeftContainer').html("Home of the Big Naturals");
@@ -255,6 +256,8 @@ function mailMe() {
                 $('#hdrBtmRowSec3').append(bannerLink('back to OggleBooble', 'https://ogglebooble.com/index.html'));
                 $('#hdrBtmRowSec3').append(bannerLink('Bond Girls', 'https://ogglebooble.com/album.html?folder=10326'));
                 changeFavoriteIcon("playboy");
+                $('#fancyHeaderTitle').css("cursor", "pointer");
+                $('#fancyHeaderTitle').on("click", function () { window.location.href = "https://ogglebooble.com/album.html?folder=1132" });
                 break;
             case "porn":
                 document.title = "OgglePorn : mostly blowjobs";
@@ -357,6 +360,7 @@ function mailMe() {
                 $('#headerMessage').html("ranker");
                 break;
             }
+            case "none": break;
             default:
                 console.log("headerContext " + headerContext + " not handled");
                 break;
@@ -371,14 +375,14 @@ function mailMe() {
     function setTopHeaderRow(headerContext) {
         switch (headerContext) {
             case "oggleIndex":
-            case "oggleAlbum": {
+            case "archive": {
                 $('#topRowLeftContainer').html(
                     "<span class='bigTits' onclick='headerMenuClick(\"boobs\",3)'>BIG Naturals</span></a > organized by\n" +
                     "<span onclick='headerMenuClick(\"boobs\",3916)'>poses, </span>\n" +
                     "<span onclick='headerMenuClick(\"boobs\",136)'> positions,</span>\n" +
                     "<span onclick='headerMenuClick(\"boobs\",159)'> topics,</span>\n" +
                     "<span onclick='headerMenuClick(\"boobs\",199)'> shape,</span>\n" +
-                    "<span onclick='headerMenuClick(\"boobs\",241)'> size,</span>\n");
+                    "<span onclick='headerMenuClick(\"boobs\",241)'> size</span>\n");
                     //"<span onclick='headerMenuClick(\"boobs\",4010)'> tit play</span>\n");
                 break;
             }
@@ -552,10 +556,6 @@ function mailMe() {
         }
     }
 
-    function headerTitleClick() {
-        alert("headerTitle: " + $('#oggleHeaderTitle').html());
-    }
-
     function showHamburger() {
         var picpos = $('#breadcrumbContainer').offset();
         var picLeft = Math.max(0, picpos.left + $('#hamburgerCtx').width());
@@ -584,8 +584,10 @@ function mailMe() {
                </div>\n
                <div class='headerBodyContainer'>
                    <div id='topHeaderRow' class='flexContainer'>
-                       <div id='fancyHeaderTitle' onclick='headerTitleClick()' class='calligraphyTitle'></div >
-                       <div id='topRowLeftContainer' class='hdrTopRowMenu'></div>
+                       <div id='fancyHeaderTitle' class='calligraphyTitle'></div >
+                       <div id='topRowLeftContainer' class='hdrTopRowMenu'>
+                            <a href="https://www.babepedia.com" onclick="javascript:window.open('https://www.babepedia.com/'); return false;">Babepedia</a>
+                       </div>
                        <div id='topRowMiddleContainer'></div>
                        <div id='topRowRightContainer'></div>
                        <div id='searchBox' class='oggleSearchBox'>
@@ -695,7 +697,7 @@ function mailMe() {
             <div class='footerFooterMessage' id='footerMessage1'></div>
             <div class='footerFooterMessage' id='footerMessage2'></div>
             <div class='forceRight'>Copyright &copy;` + new Date().getFullYear() + `  -
-                <div class='inline clickable' onclick='window.open("https://ogglefiles.com/node/IntelDesign.html")'">Intelligent Design SoftWare</div>
+                <div class='inline clickable' onclick='window.open("https://ogglebooble.com/node/IntelDesign.html")'">Intelligent Design SoftWare</div>
             </div>
         </div>`);
     }

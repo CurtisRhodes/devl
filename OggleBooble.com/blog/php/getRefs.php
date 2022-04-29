@@ -5,7 +5,7 @@ $pdo = pdoConn();
 
 $refType = $_GET['refType'];
 
-$cmd = $pdo->query("select RefCode, RefDescription from Ref where Reftype='".$refType."' order by RefDescription");
+$cmd = $pdo->query("select RefCode, Description from Ref where Reftype='".$refType."' order by Description");
 
 $results = $cmd->fetchAll();
 

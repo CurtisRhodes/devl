@@ -1,17 +1,17 @@
 ﻿<?php
 
-include('wysiwyg.php');
-$pdo = pdoConn();
+	include('wysiwyg.php');
+	$pdo = pdoConn();
 
-$commentType = $_GET['commentType'];
+	$commentType = $_GET['commentType'];
 
-$cmd = $pdo->query("select * from BlogEntry where CommentType='".$commentType."'");
+	$cmd = $pdo->query("select * from BlogComment where CommentType='".$commentType."'");
 
-$results = $cmd->fetchAll();
+	$results = $cmd->fetchAll();
 
-$cmd = null;
-$pdo = null;
+	$cmd = null;
+	$pdo = null;
 	
-echo json_encode($results);
+	echo json_encode($results);
 
 ?>
