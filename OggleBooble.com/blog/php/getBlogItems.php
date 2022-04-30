@@ -9,7 +9,6 @@
 
 	$results = $cmd->fetchAll();
 
-	$cmd = null;
 	$pdo = null;
 	
 	echo json_encode($results);

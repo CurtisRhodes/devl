@@ -133,6 +133,7 @@ function intervalBody() {
                                     imgOut -= 0.05;
                                     $('#carouselImage0').css('opacity', imgIn);
                                     $('#carouselImage1').css('opacity', imgOut);
+                                    resizeCarousel();
 
                                     if (imgIn >= 1.0) {
                                         clearInterval(opTrans);

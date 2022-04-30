@@ -1,10 +1,11 @@
 const randomGalleriesCount = 11;
 let updatedGalleriesCount = 15;
-let indexPageId;
+let indexPageId, currentPageContext;
 
 function launchIndexPage(pageContext) {
 
     showLogin(false);
+    currentPageContext = pageContext;
 
     displayHeader(pageContext);
     displayFooter(pageContext);
@@ -74,15 +75,9 @@ function launchIndexPage(pageContext) {
 
                     $('#imgLatestUpdate').on("click", function () {
                         updatedGalleriesCount += 15;
-
-
-
-                        logOggleEvent("LUC",)
-
+                        getLatestUpdatedGalleries(currentPageContext);
+                        logOggleEvent("LUC", -7887, currentPageContext);
                     }).show();
-
-
-
                 },
                 error: function (jqXHR) {
                     logOggleError("XHR", -518801, getXHRErrorDetails(jqXHR), "get updated galleries");

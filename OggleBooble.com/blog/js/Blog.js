@@ -14,26 +14,19 @@ function startOggleBlog() {
     loadDropDowns();
     currentBlogObject.CommentType = 'PBE';
     displayBlogList();
+
+    $('.blogSection').hide();
+    $('#blogListArea').show();
+
+    $('#leftColumnList').hide();
+    $('#leftColumnNew').show();
+    $('#leftColumnView').hide();
+    $('#leftColumnEdit').hide();
+
 }
 
 function displayBlogList() {
     try {
-        $('.blogSection').hide();
-        $('#blogListArea').show();
-
-        $('#leftColumnList').hide();
-        $('#leftColumnNew').show();
-        $('#leftColumnView').hide();
-        $('#leftColumnEdit').hide();
-
-        $('#blogListRefDropDown').val(currentBlogObject.CommentType);
-        $('#blogListRefDropDown').change(function () {
-            if ($('#ddCommentType').val() != currentBlogObject.CommentType) {
-                currentBlogObject.CommentType = $('#ddCommentType').val()
-                displayBlogList();
-            }
-        });
-
         $.ajax({
             type: "GET",
             url: "php/getBlogItems.php?commentType=" + currentBlogObject.CommentType,
@@ -46,10 +39,10 @@ function displayBlogList() {
                     $.each(jData, function (idx, blogComment) {
                         $('#blogArticleJogArea').append(`
                             <div class="blogArticleItem">
-                                <div><img class="articleJogImage" src="` + blogComment.JogImage + `"/></div>
+                                <div><img class="articleJogImage" src="` + blogComment.src + `"/></div>
                                 <div>
                                     <div class="blogListCommentTitle">` + blogComment.CommentTitle + `</div>
-                                    <div class="blogListCommentSummary">` + blogComment.Summary + `</div>
+                                    <div class="blogListCommentSummary">` + blogComment.CommentText.substr(0,100) + `</div>
                                 </div>
                                 <div class="blogListEditButton" onclick="displayEditArea('`+ blogComment.Id + `')">edit</div>
                             </div>`);
@@ -294,9 +287,22 @@ function loadDropDowns() {
             $('#blogListRefDropDown').html("");
             $('#selBlogEditCommentType').html("");
             $.each(jData, function (idx, obj) {
-                $('#blogListRefDropDown').append("<option value='" + obj.RefCode + "'>" + obj.Description + "</option>");
+                if (obj.RefCode == currentBlogObject.CommentType)
+                    $('#blogListRefDropDown').append("<option selected='selected' value='" + obj.RefCode + "'>" + obj.Description + "</option>");
+                else
+                    $('#blogListRefDropDown').append("<option value='" + obj.RefCode + "'>" + obj.Description + "</option>");
+
                 $('#selBlogEditCommentType').append("<option value='" + obj.RefCode + "'>" + obj.Description + "</option>");
             });
+
+            $('#blogListRefDropDown').change(function () {
+                if ($('#blogListRefDropDown').val() != currentBlogObject.CommentType) {
+                    currentBlogObject.CommentType = $('#blogListRefDropDown').val();
+                    displayBlogList();
+                }
+            });
+
+
         },
         error: function (jqXHR) {
             logBlogError("XHR", -21544, getXHRErrorDetails(jqXHR), "blog load dropDowns");
