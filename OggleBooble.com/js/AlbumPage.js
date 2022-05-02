@@ -9,6 +9,7 @@ function loadAlbumPage(folderId, islargeLoad) {
 }
 
 /*-- php -----------------------------------*/
+let getAlbumImagesFail = 0;
 function getAlbumImages(folderId, islargeLoad) {
     try {
         $('#albumPageLoadingGif').css("height", "27px");
@@ -20,6 +21,12 @@ function getAlbumImages(folderId, islargeLoad) {
 
         $.getJSON('php/yagdrasselFetchAll.php?query=' + sql,
             function (data) {
+                if (data.indexOf("Failed") > -1) {
+                    if (++getAlbumImagesFail > 5)
+                        logOggleError("AJX", catfolder, "getAlbumImages failed to connect", "getAlbumImages");
+                    else
+                        getAlbumImages(folderId, islargeLoad);
+                }
                 // let vlinks = JSON.parse(data);
                 $.each(data, function (idx, vLink) {
                     loadaSingleImage(vLink, islargeLoad);
@@ -105,6 +112,7 @@ async function getAlbumPageInfo(folderId, islargeLoad) {
             url: 'php/yagdrasselFetch.php?query=Select * from CategoryFolder where Id=' + folderId,
             success: function (data) {
                 let catfolder = JSON.parse(data);
+                // let catfolder = data;
                 $('#albumPageLoadingGif').hide();
                 $('#albumTopRow').show();
                 $('#seoPageName').html(catfolder.FolderName);
@@ -172,6 +180,7 @@ async function getAlbumPageInfo(folderId, islargeLoad) {
     }
 }
 
+let breadcrumbFetchFail = 0;
 function setBreadcrumbs(catfolder) {
     try {
         //$('#aboveImageContainerMessageArea').html('loading breadcrumbs');
@@ -179,57 +188,75 @@ function setBreadcrumbs(catfolder) {
         $.ajax({
             url: "php/yagdrasselFetchAll.php?query=Select * from VwDirTree",
             success: function (data) {
-                let dirTreeArray = JSON.parse(data);
-                let breadcrumbItem = dirTreeArray.filter(function (item) { return (item.Id === catfolder.Id) && (item.IsStepChild == 0); });
-                if (breadcrumbItem.length == 0) {
-                    $('#breadcrumbContainer').html("no good");
-                    return;
-                }
-
-                switch (catfolder.FolderType) {
-                    case "singleModel":
-                    case "singleParent":  // showFileDetailsDialog
-                        $('#breadcrumbContainer').html("<div class='inactiveBreadCrumb' " +
-                            "onclick='showFileDetailsDialog(" + catfolder.Id + ")'>" + breadcrumbItem[0].FolderName + "</div>");
-                        break;
-                    default: // showFolderInfoDialog
-                        $('#breadcrumbContainer').html("<div class='inactiveBreadCrumb' " +
-                            "onclick='showFolderInfoDialog(" + catfolder.Id + ")'>" + breadcrumbItem[0].FolderName + "</div>");
-                }
-
-                let parent = breadcrumbItem[0].Parent;
-
-                while (parent > 0) {
-                    breadcrumbItem = dirTreeArray.filter(function (item) { return (item.Id === parent) && (item.IsStepChild == 0); });
-                    if (isNullorUndefined(breadcrumbItem)) {
-                        parent = 99;
-                        $('#breadcrumbContainer').prepend("item: " + parent + " isNullorUndefined");
+                if (data == false) {
+                    if (++breadcrumbFetchFail > 5) {
+                        logOggleError("AJX", catfolder, "setBreadcrumbs data==false", "setBreadcrumbs");
+                        $('#breadcrumbContainer').html("setBreadcrumbs data==false");
                     }
-                    else {
-                        if (breadcrumbItem.length == 0) {
-                            $('#breadcrumbContainer').prepend("no good " + parent + " length == 0");
+                    else
+                        setBreadcrumbs(catfolder);
+                }
+                if (data.indexOf("Failed") > -1) {
+                    if (++breadcrumbFetchFail > 5) {
+                        $('#breadcrumbContainer').html("setBreadcrumbs failed to connect");
+                        logOggleError("AJX", catfolder, "setBreadcrumbs failed to connect", "setBreadcrumbs");
+                    }
+                    else
+                        setBreadcrumbs(catfolder);
+                }
+                else {
+                    let dirTreeArray = JSON.parse(data);
+                    let breadcrumbItem = dirTreeArray.filter(function (item) { return (item.Id === catfolder.Id) && (item.IsStepChild == 0); });
+                    if (breadcrumbItem.length == 0) {
+                        $('#breadcrumbContainer').html("no good");
+                        return;
+                    }
+
+                    switch (catfolder.FolderType) {
+                        case "singleModel":
+                        case "singleParent":  // showFileDetailsDialog
+                            $('#breadcrumbContainer').html("<div class='inactiveBreadCrumb' " +
+                                "onclick='showFileDetailsDialog(" + catfolder.Id + ")'>" + breadcrumbItem[0].FolderName + "</div>");
+                            break;
+                        default: // showFolderInfoDialog
+                            $('#breadcrumbContainer').html("<div class='inactiveBreadCrumb' " +
+                                "onclick='showFolderInfoDialog(" + catfolder.Id + ")'>" + breadcrumbItem[0].FolderName + "</div>");
+                    }
+
+                    let parent = breadcrumbItem[0].Parent;
+
+                    while (parent > 0) {
+                        breadcrumbItem = dirTreeArray.filter(function (item) { return (item.Id === parent) && (item.IsStepChild == 0); });
+                        if (isNullorUndefined(breadcrumbItem)) {
                             parent = 99;
+                            $('#breadcrumbContainer').prepend("item: " + parent + " isNullorUndefined");
                         }
                         else {
-                            //addBreadcrumb(parent, breadcrumbItem[0].FolderName, "activeBreadCrumb"));
-                            $('#breadcrumbContainer').prepend("<div class='activeBreadCrumb' " +
-                                "onclick='window.location.href=\"https://ogglebooble.com/album.html?folder=" +
-                                breadcrumbItem[0].Id + "\"'>" + breadcrumbItem[0].FolderName + "</div>");
-                            parent = breadcrumbItem[0].Parent;
+                            if (breadcrumbItem.length == 0) {
+                                $('#breadcrumbContainer').prepend("no good " + parent + " length == 0");
+                                parent = 99;
+                            }
+                            else {
+                                //addBreadcrumb(parent, breadcrumbItem[0].FolderName, "activeBreadCrumb"));
+                                $('#breadcrumbContainer').prepend("<div class='activeBreadCrumb' " +
+                                    "onclick='window.location.href=\"https://ogglebooble.com/album.html?folder=" +
+                                    breadcrumbItem[0].Id + "\"'>" + breadcrumbItem[0].FolderName + "</div>");
+                                parent = breadcrumbItem[0].Parent;
+                            }
                         }
                     }
-                }
 
-                switch (catfolder.RootFolder) {
-                    case "playboy":
-                    case "centerfold":
-                    case "cybergirl":
-                    case "magazine":
-                    case "muses":
-                    case "plus":
-                        $('.inactiveBreadCrumb').css({ "color": "wheat" });
-                        $('.activeBreadCrumb').css("color", "#f2e289");
-                        break;
+                    switch (catfolder.RootFolder) {
+                        case "playboy":
+                        case "centerfold":
+                        case "cybergirl":
+                        case "magazine":
+                        case "muses":
+                        case "plus":
+                            $('.inactiveBreadCrumb').css({ "color": "wheat" });
+                            $('.activeBreadCrumb').css("color", "#f2e289");
+                            break;
+                    }
                 }
             },
             error: function (jqXHR) {

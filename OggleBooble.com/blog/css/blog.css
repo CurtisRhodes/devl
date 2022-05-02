@@ -39,6 +39,10 @@
     min-height: 88px;
 }
 
+.blogListEditButton {
+    cursor: pointer;
+}
+
 .blogListAreaTitle {
     font-weight: bold;
     margin-left: 33px;
@@ -49,6 +53,10 @@
 .blogListRefDropDown {
     font-size: var(--normalFont);
     border-radius: 8px;
+}
+
+.blogItemContainer {
+    width: 100%;
 }
 
 .blogArticleItem {

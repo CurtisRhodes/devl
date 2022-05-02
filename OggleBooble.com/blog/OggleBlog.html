@@ -13,7 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
 
     <script src="https://common.ogglebooble.com/js/Common.js"></script>
-    <script src="js/Blog.js"></script>
+    <script src="js/blog.js"></script>
 
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
@@ -30,7 +30,7 @@
     <div id="visableArea" class="threeColumnLayout">
         <div id="leftColumnArea" class="leftColumn">
             <div class="vertMenu">
-                <div id='leftColumnList' class='blogEditButton' onclick='displayBlogList()'>Show Blog List</div>
+                <div id='leftColumnList' class='blogEditButton' onclick='showBlogListClick()'>Show Blog List</div>
                 <div id='leftColumnNew'  class='blogEditButton' onclick='displayNewEntryArea()'>New Entry</div>
                 <div id='leftColumnEdit' class='blogEditButton' onclick='displayEditArea()'>Edit</div>
                 <div id='leftColumnView' class='blogEditButton' onclick='displayViewArea()'>Show Page</div>
@@ -90,14 +90,9 @@
             </div>
 
             <div Id="blogListArea" class="blogSection">
-                <div id="blogTitle" class='blogListAreaTitle'>blog title</div>
                 <div class="blogTypeDDcontainer">comment type <select class="blogDropDown" id="blogListRefDropDown" title="blog comment types"></select></div>
-                <div class='blogSectionTitleRow flexContainer'>
-                    <div>
-                        <div id='blogArticleJogArea' class='blogItemContainer'></div>
-                        <div id='blogCategoryListArea' class='blogItemContainer'></div>
-                    </div>
-                    <div></div>
+                <div class='blogSectionTitleRow'>
+                    <div id='blogArticleJogArea' class='blogItemContainer'></div>
                 </div>
             </div>
 

@@ -22,11 +22,21 @@ function startOggleBlog() {
     $('#leftColumnNew').show();
     $('#leftColumnView').hide();
     $('#leftColumnEdit').hide();
+}
 
+function showBlogListClick() {
+    $('.blogSection').hide();
+    $('#blogListArea').show();
+    displayBlogList();
+    //alert("showBlogListClick: " + currentBlogObject.CommentType);
 }
 
 function displayBlogList() {
     try {
+
+        // <div id='blogCategoryListArea' class='blogItemContainer'></div>
+
+
         $.ajax({
             type: "GET",
             url: "php/getBlogItems.php?commentType=" + currentBlogObject.CommentType,
@@ -39,7 +49,7 @@ function displayBlogList() {
                     $.each(jData, function (idx, blogComment) {
                         $('#blogArticleJogArea').append(`
                             <div class="blogArticleItem">
-                                <div><img class="articleJogImage" src="` + blogComment.src + `"/></div>
+                                <div><img class="articleJogImage" src="` + blogComment.ImageLink + `"/></div>
                                 <div>
                                     <div class="blogListCommentTitle">` + blogComment.CommentTitle + `</div>
                                     <div class="blogListCommentSummary">` + blogComment.CommentText.substr(0,100) + `</div>
@@ -78,15 +88,15 @@ function displayEditArea(blogId) {
         $('#albumPageLoadingGif').show();
         $.ajax({
             type: "GET",
-            url: "php/getBlogItem.php?blogId=" + blogId,
+            url: "php/wysiwygFetch.php?query=select * from BlogComment where Id='" + blogId + "'",
             success: function (data) {
                 $('#albumPageLoadingGif').hide();
-                let blogComment = JSON.parse(data)[0];
-                $('#txtCommentTitle').val(blogComment.CommentTitle);
-                loadDropDown($('#selBlogEditCommentType'));
-                $('#txtPosted').val(blogComment.Created);
-                $('#summernoteContainer').summernote('code', blogComment.CommentText);
-                $('#imgBlogLink').attr("src", blogComment.JogImage);
+                let blogComment = JSON.parse(data);
+
+                $('#txtEntryTile').val(blogComment.CommentTitle);
+                $('#txtPosted').val(blogComment.Posted);
+                $('#summernoteBodyContainer').summernote('code', blogComment.CommentText);
+                $('#imgBlogLink').attr("src", blogComment.ImageLink);
             },
             error: function (jqXHR) {
                 logBlogError("XHR", -245223915, getXHRErrorDetails(jqXHR), "error blog list");
@@ -301,8 +311,6 @@ function loadDropDowns() {
                     displayBlogList();
                 }
             });
-
-
         },
         error: function (jqXHR) {
             logBlogError("XHR", -21544, getXHRErrorDetails(jqXHR), "blog load dropDowns");
