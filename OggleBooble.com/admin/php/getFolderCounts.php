@@ -10,11 +10,11 @@
         $Issues=0;
         $ChangesMade = 0;
         $FoldersProcessed = 0;
-        $LocalOffset = '../../danni/';
+        $LocalOffset == '../../../../ogglefiles.com/public_html/danni/';
 
         function updateFolder($pdo, $folderId, $folderPath, &$ChangesMade, &$FoldersProcessed, &$Issues)
         {
-            $LocalOffset = '../../danni/';
+            $LocalOffset = '../../../../ogglefiles.com/public_html/danni/';
 
             $dirfileCount = 0;
             $ScanFiles = scandir($folderPath);

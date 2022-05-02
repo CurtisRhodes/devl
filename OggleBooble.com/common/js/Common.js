@@ -244,11 +244,16 @@ function mailMe() {
                 $('#hdrBtmRowSec3').append(bannerLink('every playboy centerfold', 'https://ogglebooble.com/index.html?spa=playboy'));
                 $('#hdrBtmRowSec3').append(bannerLink('Oggle Porn', 'https://ogglebooble.com/index.html?spa=porn'));
                 break;
-            case "centerfold":
             case "cybergirl":
+                document.title = "Cybergirls : OggleBooble";
+                $('#fancyHeaderTitle').html("Every Playboy Centerfold");
+                break;
             case "muses":
-            case "playboyIndex":
+                document.title = "Playboy Muses : OggleBooble";
+                $('#fancyHeaderTitle').html("Every Playboy Centerfold");
+                break;
             case "playboy":
+            case "centerfold":
             case "playboyIndex":
                 document.title = "Every Playboy Centerfold : OggleBooble";
                 $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/playboyBallon.png");
@@ -360,7 +365,9 @@ function mailMe() {
                 $('#headerMessage').html("ranker");
                 break;
             }
-            case "none": break;
+            case "none":
+                $('#topRowLeftContainer').html("<a href='https://www.babepedia.com' onclick='javascript:window.open(''https://www.babepedia.com/''); return false;'>Babepedia</a>");
+                break;
             default:
                 console.log("headerContext " + headerContext + " not handled");
                 break;

@@ -1,4 +1,4 @@
-﻿const settingsImgRepo = 'https://ogglebooble.com/danni/';
+﻿const settingsImgRepo = 'https://ogglefiles.com/danni/';
 let slideshowVisible = false, imageViewerVisible = false;
 
 /*-- verify user -----------------------------------*/{

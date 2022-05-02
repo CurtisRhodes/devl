@@ -42,7 +42,7 @@
 
         $pdo = null;
 
-        $fullPath = '../../danni/'.$folderPath;
+        $fullPath = '../../../../ogglefiles.com/public_html/danni/'.$folderPath;
         $mkdirSuccess = mkdir($fullPath);
 
     }
