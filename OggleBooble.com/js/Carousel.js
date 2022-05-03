@@ -531,8 +531,8 @@ function resizeCarousel() {
             });
 
             $('#carouselControls').css({
-                "width": imageW - 100,
-                "left": marginOffsetWidth + 50
+                "width": imageW - 50,
+                "left": marginOffsetWidth + 100
             }).show();
         }
         else

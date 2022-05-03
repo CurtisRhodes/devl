@@ -5,7 +5,7 @@ let slideshowVisible = false, imageViewerVisible = false;
     function verifyUser(calledFrom) {
 
         if (isNullorUndefined(sessionStorage["VisitorIdVerified"])) {
-            //sessionStorage["VisitorIdVerified"] = "ok";
+            sessionStorage["VisitorIdVerified"] = "ok"; // this may only happen once per session
             let cookeiVisitorId = getCookieValue("VisitorId");
             if (cookeiVisitorId == "cookie not found") {
                 ipifyLookup("verify user");
@@ -17,9 +17,6 @@ let slideshowVisible = false, imageViewerVisible = false;
                 // new visitor comming in from an external link
             }
         }
-        if (isNullorUndefined(sessionStorage["VisitLogged"])) {
-            logVisit("verify");
-        }
     }
 
     function verifyVisitorId(visitorId) {
@@ -29,10 +26,13 @@ let slideshowVisible = false, imageViewerVisible = false;
                 url: "php/registroFetch.php?query=Select * from Visitor where VisitorId='" + visitorId + "'",
                 success: function (data) {
                     if (data == "false") {
-                        ipifyLookup("verify visitor Id");
+
+                        logOggleError("X33", -5903, "viz from cookie not found db", "verify VisitorId");
+
                     }
                     else {
                         sessionStorage["VisitorIdVerified"] = "ok";
+                        logVisit("verify");
                     }
                 },
                 error: function (jqXHR) {
@@ -63,7 +63,14 @@ let slideshowVisible = false, imageViewerVisible = false;
                             success: function (data) {
                                 if (data == "false") {
                                     // ipify IP not found.in Visitor table
+
+                                    ipifyLookup("verify user");
+                                    ipifyLookup("record hit source");
+
+
                                     performIpInfo(ipifyRtrnIP);
+
+
                                 }
                                 else {
                                     let visitorRow = JSON.parse(data);
@@ -117,7 +124,7 @@ let slideshowVisible = false, imageViewerVisible = false;
                     if (errMsg.indexOf("status: 0") > 0)
                         addBadVisitor(ipAddress);
                     else
-                        logOggleError("XHR", -67769, errMsg, "ip: " + ipAddress, "performIpInfo");
+                        logOggleError("IPX", -67769, errMsg, "ip: " + ipAddress, "perform IpInfo");
                 }
             });
         } catch (e) {
@@ -793,7 +800,7 @@ function displayFeedback() {
                     <div class='dialogButton' onClick='moveCopyImage("` + linkId + `","copy")'>copy</div>
                     <div class='dialogButton' onClick='moveCopyImage("` + linkId + `","move")'>move</div>
                     <div class='dialogButton' onClick='moveCopyImage("` + linkId + `","archive")'>archive</div>
-                    <div class='dialogButton' onClick='moveCopyImage("` + linkId + `","link")'>link</div>
+                    <div class='dialogButton' title='move but maintain model name' onClick='moveCopyImage("` + linkId + `","link")'>attribute</div>
                 </div>
                 <div id='fileImageSection' class='inline'>
                     <img id='modelDialogThumbNailImage' src='` + imgSrc + `' class='moveCopyDialogImage' />
@@ -810,10 +817,12 @@ function displayFeedback() {
     }
 
     function moveCopyImage(linkId, cMode) {
-        let newParent = 33;
+
+        alert(cMode + " image: " + linkId);
+
         switch (cMode) {
             case "soft":
-                let sql = "UPDATE ImageFile set FolderId=" + newParent + " where Id='" + linkId + "'";
+                //let sql = "UPDATE ImageFile set FolderId=" + newParent + " where Id='" + linkId + "'";
                 $.ajax({
                     url: "php/CopyMoveImage.php?mode=" + cMode + "imageId=" + linkId + "&destFolder=",
                     success: function () {
@@ -1016,8 +1025,8 @@ function displayFeedback() {
                     if (success.trim() == "ok") {
                         localStorage["VisitorId"] = visitorId;
                         setCookieValue("VisitorId", visitorId)
-                        logOggleActivity("IPX", -21277, "XHR error: unable to lookup ip: " + ipAddress);
-                        //logOggleError("XHR", -21277, errMsg, "perform IpLookup");
+                        // logOggleActivity("IPX", -21277, "XHR error: unable to lookup ip: " + ipAddress);
+                        // logOggleError("XHR", -21277, errMsg, "perform IpLookup");
                         logVisit("new visitor");
                     }
                     else {

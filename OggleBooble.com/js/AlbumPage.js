@@ -59,7 +59,7 @@ function loadaSingleImage(vLink, islargeLoad) {
             $('#imageContainer').append(`<div id='` + vLink.LinkId + `' class='intividualImageContainer'>
             <img class='thumbImage' src='` + imgSrc + `' onerror='imageError(` + vLink.FolderId + `,"` + vLink.LinkId + `","album")'
             oncontextmenu='oggleContextMenu("image","` + vLink.LinkId + `",` + vLink.FolderId + `,"` + imgSrc + `")'
-            onclick='viewImage("` + imgSrc + `","` + vLink.LinkId + `,` + islargeLoad + `")'/></div>`);
+            onclick='viewImage("` + imgSrc + `","` + vLink.LinkId + `",` + islargeLoad + `)'/></div>`);
             if (vLink.FolderId !== vLink.SrcId) {
                 $('#' + vLink.LinkId + '').append(`<div class='knownModelIndicator'>
                 <img src='https://common.ogglebooble.com/img/foh01.png' title='`+ vLink.SrcFolder + `' 

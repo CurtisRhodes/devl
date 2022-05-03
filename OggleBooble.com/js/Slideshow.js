@@ -76,10 +76,10 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                 imageArray = JSON.parse(data);
                 if (imageArray.length > 0) {
 
-                    //slide("next")
-                    imageViewerIndex = imageArray.findIndex(node => node.LinkId == startLink);
+                    imageViewerIndex = imageArray.findIndex(node => node.LinkId === startLink);
+
                     if (imageViewerIndex < 0) imageViewerIndex = 0;
-                    $('#slideshowMessageArea').html(imageArray[imageViewerIndex].srcfolder);
+                    $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
                     $('#sldeshownofn').html((imageViewerIndex + 1) + " / " + imageArray.length);
 
                     while (imageArray[imageViewerIndex].FileName.endsWith("mpg")
@@ -97,6 +97,7 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
 
                     let delta = (Date.now() - infoStart) / 1000;
                     console.log("getGalleyInfo took: " + delta.toFixed(3));
+                    toggleSlideshow();
                 }
                 else {
                     displayStatusMessage("warning", "no images found");

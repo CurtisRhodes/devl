@@ -9,6 +9,8 @@
     padding: 8px 20px;
     cursor: pointer;
     margin-bottom: 4px;
+    width: 100%;
+    padding-right: 15px;
 }
 .moveCopyDialogImage {
     height: 166px;
