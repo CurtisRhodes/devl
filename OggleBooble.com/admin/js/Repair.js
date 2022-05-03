@@ -115,13 +115,10 @@ async function processRemoveOrphans(folderId) {
                                 let imageFiles = JSON.parse(data);
                                 // 3.  get physcial files
                                 $.ajax({
-                                    url: "php/getOggleFolder.php?path=" + "../../danni/" + catFolder.FolderPath + "&folderId=" + folderId,
+                                    url: "php/getOggleFolder.php?path=" + settingsRepoPath + catFolder.FolderPath + "&folderId=" + folderId,
                                     success: function (data) {
                                         let jallFiles = JSON.parse(data);
                                         let physcialFiles = jallFiles.filter(node => node.type == "file");
-
-
-
 
                                         removeOrphanImageRows(physcialFiles, imageFiles, folderId);
 
@@ -180,7 +177,7 @@ async function processAddMissingImageRows(folderId) {
                             let imageFiles = JSON.parse(data);
                             // 3.  get physcial files
                             $.ajax({
-                                url: "php/getOggleFolder.php?path=" + "../../danni/" + catFolder.FolderPath + "&folderId=" + folderId,
+                                url: "php/getOggleFolder.php?path=" + settingsRepoPath + catFolder.FolderPath + "&folderId=" + folderId,
                                 success: function (data) {
                                     let jallFiles = JSON.parse(data);
                                     //let physcialDirFiles = jallFiles.filter(node => node.type == "dir");
@@ -242,7 +239,7 @@ async function processRenameImages(folderId) {
                             let imageFiles = JSON.parse(data);
                             // 3.  get physcial files
                             $.ajax({
-                                url: "php/getOggleFolder.php?path=" + "../../danni/" + catFolder.FolderPath + "&folderId=" + folderId,
+                                url: "php/getOggleFolder.php?path=" + settingsRepoPath + catFolder.FolderPath + "&folderId=" + folderId,
                                 success: function (data) {
                                     let jallFiles = JSON.parse(data);
                                     //let physcialDirFiles = jallFiles.filter(node => node.type == "dir");
@@ -336,7 +333,7 @@ async function renameImageFiles(catFolder, imageFiles, physcialFiles) {
     physcialFileNameOk = true;
     $.each(physcialFiles, function (idx, physcialFile) {
         if (abandon) return;
-        let ext = physcialFile.name.substring(physcialFile.name.length - 4);
+        let ext = physcialFile.name.substring(physcialFile.name.lastIndexOf("."));
         let physcialFilePrefix = physcialFile.name.substr(0, physcialFile.name.indexOf("_"));
         if (physcialFilePrefix != desiredFileNamePrefix)
             physcialFileNameOk = false;
@@ -352,7 +349,7 @@ async function renameImageFiles(catFolder, imageFiles, physcialFiles) {
             //console.log("good and valid");
             $.ajax({
                 async: false,
-                url: "php/renameFile.php?path=" + "../../danni/" + catFolder.FolderPath + "&oldFileName=" + physcialFile.name + "&newFileName=" + newFileName,
+                url: "php/renameFile.php?path=" + settingsRepoPath + catFolder.FolderPath + "&oldFileName=" + physcialFile.name + "&newFileName=" + newFileName,
                 // ? path = " + settingsImgRepo + catFolder.FolderPath + " & oldFileName=" + physcialFile.name + "& newFileName=" + newFileName,
                 success: function (success) {
                     if (success == "ok") {
@@ -425,11 +422,11 @@ async function addMissingImageFiles(catFolder, imageFiles, physcialFiles) {
                 //repairReport.errors.push("improper file name (" + catFolder.Id + ") " + physcialFile.name);
                 //showRepairReport();
             }
-            let ext = physcialFile.name.substring(physcialFile.name.length - 4);
+            let ext = physcialFile.name.substring(physcialFile.name.lastIndexOf("."));
             let newFileName = desiredFileNamePrefix + "_" + guidPart + ext;
             let data = {
                 Id: guidPart,
-                path: "../../danni/" + catFolder.FolderPath,
+                path: settingsRepoPath + catFolder.FolderPath,
                 oldFileName: physcialFile.name,
                 newFileName: newFileName,
                 folderId: catFolder.Id

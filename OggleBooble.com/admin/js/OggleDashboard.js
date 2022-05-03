@@ -1,4 +1,6 @@
-﻿const settingsImgRepo = 'https://ogglebooble.com/danni/';
+﻿const settingsImgRepo = 'https://ogglefiles.com/danni/';
+const settingsRepoPath = '../../../../ogglefiles.com/public_html/danni/';
+
 let startRoot = 10326;
 
 // LOAD DIR TREE
