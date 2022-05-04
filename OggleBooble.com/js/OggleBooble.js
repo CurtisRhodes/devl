@@ -111,12 +111,13 @@ let slideshowVisible = false, imageViewerVisible = false;
                 type: "GET",
                 url: "https://ipinfo.io/" + ipAddress + "?token=ac5da086206dc4",
                 success: function (ipResponse) {
-                    if (isNullorUndefined(ipResponse)) {
-                        logOggleActivity("IP4", -21264, ipAddress);  // IpInfo null response' where RefCode = 'IP4';
+                    if (isNullorUndefined(ipResponseObject)) {
+                        logOggleError("IPN", -21264, "null response","perform IpInfo")
+                        logOggleActivity("IP4", -21264, "ipAddress: " + ipAddress);
                     }
                     else {
-                        addVisitor(ipResponse);
-                        logOggleActivity("IP0", -21200, "success Ip: " + ipResponse.ip);
+                        addVisitor(ipResponseObject);
+                        logOggleActivity("IP0", -21200, "success Ip: " + ipResponseObject.ip);
                     }
                 },
                 error: function (jqXHR) {
@@ -140,16 +141,15 @@ let slideshowVisible = false, imageViewerVisible = false;
             url: "php/registroFetch.php?query=Select * from Visitor where VisitorId='" + currentlocalStorageVisitorId + "'",
             success: function (data) {
                 if (data == "false") {
-                    localStorage["VisitorId"] = ipVisitorId;
-                    rebuildCookie();
-                    logOggleError("BUG", -35400, "currentlocalStorage: " + currentlocalStorageVisitorId + " changed to: " + ipifyRtrnIP);
+                    logOggleError("V01", -354001, "localStorage VisitorId: " + currentlocalStorageVisitorId + " not found!!", "ipifyRtrnIP: " + ipifyRtrnIP);
+                    //  logOggleError("BUG", -35400, "currentlocalStorage: " + currentlocalStorageVisitorId + " changed to: " + ipifyRtrnIP, "check localStorage VisitorId");
                 }
                 else {
                     // localStorage["VisitorId"] ok
-                    let localStorageVisitorRow = JSON.parse(data);
-                    if (ipifyRtrnIP != localStorageVisitorRow.ipAddress) {
+                    // now 
+                    let jVisitorRow = JSON.parse(data);
+                    if (ipifyRtrnIP != jVisitorRow.ipAddress) {
                         logOggleError("BUG", -35421, "localStorage VisitorId(" + localStorage["VisitorId"] + ") has wrong Ip Address(" + localStorageVisitorRow.ipAddress + ")", "check localStorage VisitorId");
-
                     }
                 }
             },
