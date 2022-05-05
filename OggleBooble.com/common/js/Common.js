@@ -694,8 +694,6 @@ function mailMe() {
                 <div id='footerPagehit'>5</div>
              </div>
              <div id='footerCol6' class='footerCol'>
-                <div class='clickable' onclick='window.open("https://www.paypal.com/donate/?hosted_button_id=M5UE6B2RJ9NFY")'
-                    alt='paypal test'>make a donation</div>
              </div>
              <div id='footerCol7' class='footerCol rightMostfooterColumn'>
              </div>
@@ -707,6 +705,10 @@ function mailMe() {
                 <div class='inline clickable' onclick='window.open("https://ogglebooble.com/node/IntelDesign.html")'">Intelligent Design SoftWare</div>
             </div>
         </div>`);
+        // <div id='footerCol6' class='footerCol'>
+        //   <div class='clickable' onclick='window.open("https://www.paypal.com/donate/?hosted_button_id=M5UE6B2RJ9NFY")'
+        //       alt='paypal test'>make a donation</div>
+        // </div>
     }
 
     function displayFooter(footerContext) {

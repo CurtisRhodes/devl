@@ -66,7 +66,7 @@ function launchIndexPage(pageContext) {
                         $('#latestUpdatesContainer').append("<div class='latestContentBox'>" +
                             "<div class='latestContentBoxLabel'>" + jdata[i].FolderName + "</div>" +
                             "<img id='lt" + jdata[i].FolderId + "' class='latestContentBoxImage' alt='img/redballon.png' \nsrc='" + thisItemSrc + "' \n" +
-                            " onerror='imageError(\"" + jdata[i].FolderId + "\",\"" + thisItemSrc + "\",'LatestUpdatedGalleries'\")'\n" +
+                            " onerror='imageError(\"" + jdata[i].FolderId + "\",\"" + thisItemSrc + "\",\"LatestUpdatedGalleries\")'\n" +
                             "\nonclick='window.location.href=\"https://ogglebooble.com/album.html?folder=" + jdata[i].FolderId + "\" ' />" +
                             "<div class='latestContentBoxDateLabel'>updated: " + dateString2(jdata[i].Acquired) + "</span></div>" +
                             "</div>");

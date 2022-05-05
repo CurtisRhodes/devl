@@ -155,11 +155,12 @@ function intervalBody() {
                                         intervalReady = false;
                                 }, fadeInSpeed);
                             }  //  loadAcknowledged
-                        }).error(function () {
+                        })
+                        .error(function () {
                             $('#carouselImage1').attr('src', 'https://common.ogglebooble.com/img/ingranaggi3.gif');
                             $('#carouselImage1').css('opacity', 1);
                             intervalReady = true;
-                            logOggleError("ILF", carouselRows[imageIndex].FolderId, "z", "interval body");
+                            logOggleError("ILF", carouselRows[imageIndex].FolderId, settingsImgRepo + carouselRows[imageIndex].ImageFileName, "carousel");
                         });  // load
                 } catch (e) {
                     $('#indexPageLoadingGif').hide();
@@ -496,10 +497,6 @@ function imgErrorThrown() {
 
             $('#carouselImage1').attr('src', "https://common.ogglebooble.com/img/redballon.png");
             $('.carouselImage').css('height', window.innerHeight * .5);
-
-            //logOggleError("ILF", 11, carouselRows[imageIndex].ImageFileName + " not found", "carousel");
-            //logOggleError("ILF", 11, carouselRows[imageIndex].ImageFileName+ " not found", "carousel");
-
         }
     } catch (e) {
         console.error("Ouh");
