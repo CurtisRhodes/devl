@@ -365,16 +365,13 @@ function displayFeedback() {
 
     function imageError(folderId, linkId, calledFrom) {
         try {
-            //setTimeout(function () {
-            //    $('#' + linkId).attr('src', linkId);
-
-
-            //}, 300);
-
-            console.log("imageError: IMG. folder: " + folderId + ", linkId: " + linkId + ", calledFrom: " + calledFrom);
-            $('#' + linkId).attr('src', 'https://common.ogglebooble.com/img/redballon.png');
-            logOggleError("ILF", folderId, linkId, calledFrom);
-
+            setTimeout(function () {
+                if ($('#lt' + folderId).attr('src') == null) {
+                    $('#' + linkId).attr('src', 'https://common.ogglebooble.com/img/redballon.png');
+                    logOggleError("ILF", folderId, "Src: " + linkId, calledFrom);
+                    console.log("imageError: IMG. folder: " + folderId + ", linkId: " + linkId + ", calledFrom: " + calledFrom);
+                }
+            }, 600);
         } catch (e) {
             logOggleError("CAT", folderId, e, "image error")
         }
