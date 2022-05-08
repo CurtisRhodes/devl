@@ -75,6 +75,7 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
             success: function (data) {
                 imageArray = JSON.parse(data);
                 if (imageArray.length > 0) {
+                    $('#albumPageLoadingGif').hide();
 
                     imageViewerIndex = imageArray.findIndex(node => node.LinkId === startLink);
 
@@ -98,17 +99,21 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                     let delta = (Date.now() - infoStart) / 1000;
                     console.log("getGalleyInfo took: " + delta.toFixed(3));
                     toggleSlideshow();
+                    $('#albumPageLoadingGif').hide();
                 }
                 else {
+                    $('#albumPageLoadingGif').hide();
                     displayStatusMessage("warning", "no images found");
                     logOggleError("AJX", folderId, "no images found", "load slideshow items");
                 }
             },
             error: function (jqXHR) {
+                $('#albumPageLoadingGif').hide();
                 logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "load slideshow items");
             }
         });
     } catch (e) {
+        $('#albumPageLoadingGif').hide();
         logOggleError("CAT", folderId, e, "load slideshow items");
     }
 }

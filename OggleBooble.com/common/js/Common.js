@@ -22,6 +22,12 @@ let tanBlueMenuSnippet, bookPanelSnippet;
         });
     }
 
+    function isGuid(value) {
+        var regex = /[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}/i;
+        var match = regex.exec(value);
+        return match != null;
+    }
+
     function todayString() {
         let today = new Date();
         let dd = String(today.getDate()).padStart(2, '0');

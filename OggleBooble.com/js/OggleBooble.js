@@ -3,7 +3,6 @@ let slideshowVisible = false, imageViewerVisible = false;
 
 /*-- verify user -----------------------------------*/{
     function verifyUser(calledFrom) {
-
         if (isNullorUndefined(sessionStorage["VisitorIdVerified"])) {
             if (!window.sessionStorage) {
                 logOggleError("V30", -590301, "session storage not recognized for: " + getCookieValue("VisitorId"), "verify VisitorId");
@@ -90,13 +89,13 @@ let slideshowVisible = false, imageViewerVisible = false;
                 },
                 error: function (jqXHR) {
                     logOggleActivity("FYX", -720303, "ipify lookup fail");
-                    logOggleError("XHR", -67700, getXHRErrorDetails(jqXHR), "ipify lookup/" + calledFrom);
+                    logOggleError("IPF", -677001, getXHRErrorDetails(jqXHR), "ipify lookup/" + calledFrom);
                     addBadVisitor(null, "ipify fail");
                 }
             });
         }
         catch (e) {
-            logOggleError("CAT", -67700, e, "lookup Ip Address")
+            logOggleError("CAT", -677030, e, "lookup Ip Address")
         }
     }
 
@@ -365,11 +364,15 @@ function displayFeedback() {
 
     function imageError(folderId, linkId, calledFrom) {
         try {
+
+            // $('#' + vLink.LinkId + '').append(`<div class='knownModelIndicator'>
+
+
             setTimeout(function () {
-                if ($('#lt' + folderId).attr('src') == null) {
-                    $('#' + linkId).attr('src', 'https://common.ogglebooble.com/img/redballon.png');
+                if ($('#' + folderId).attr('src') == null) {
+                    $('#' + linkId + '').attr('src', 'https://common.ogglebooble.com/img/redballon.png');
                     logOggleError("ILF", folderId, "Src: " + linkId, calledFrom);
-                    console.log("imageError: IMG. folder: " + folderId + ", linkId: " + linkId + ", calledFrom: " + calledFrom);
+                    //console.log("imageError: IMG. folder: " + folderId + ", linkId: " + linkId + ", calledFrom: " + calledFrom);
                 }
             }, 600);
         } catch (e) {
@@ -865,6 +868,7 @@ function displayFeedback() {
                 }
             },
             error: function (jqXHR) {
+                $('#albumPageLoadingGif').hide();
                 let errMsg = getXHRErrorDetails(jqXHR);
                 displayStatusMessage("error", errMsg);
                 logOggleError("XHR", 3908, errMsg, "move to rejects");
@@ -942,7 +946,7 @@ function displayFeedback() {
                         }
                     }
                 },
-                error: function (jqXHR, exception) {
+                error: function (jqXHR) {
                     logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "log page hit");
                 }
             });
