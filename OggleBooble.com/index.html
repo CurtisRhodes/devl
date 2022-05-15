@@ -8,8 +8,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
     <script src="https://common.ogglebooble.com/js/Common.js"></script>
-    <script src="js/OggleBooble.js"></script>
     <script src="js/IndexPage.js"></script>
+    <script src="js/OggleBooble.js"></script>
     <script src="js/Carousel.js"></script>
 
     <link href="https://common.ogglebooble.com/css/Common.css" rel="stylesheet" />
@@ -69,6 +69,10 @@
 
             document.addEventListener('keydown', captureKeydownEvent);
 
+            if (typeof (isGuid) == "function") {
+                console.log("isGuid() != function");
+            }
+            verifyUser();
             launchIndexPage(pageContext);
 
             resizePage();

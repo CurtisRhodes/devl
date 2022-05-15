@@ -61,12 +61,10 @@ function showRepairDialog() {
     $('#dashboardDialogBox').draggable().fadeIn();
     $('body').keydown(function (event) {
         if (event.keyCode === 27) {
-            alert("escape key pressed");
             abandon = true;
         }
     });
 }
-
 async function performRepairLinks() {
     repairStartTime = Date.now();
     abandon = false;
@@ -85,8 +83,6 @@ async function performRepairLinks() {
     await processAddMissingImageRows(rootFolderId);
 
     await processRenameImages(rootFolderId);
-
-    // repairImagesRecurr(rootFolderId, recurr, addNew, removeOrphans);
 }
 
 async function processRemoveOrphans(folderId) {
@@ -575,16 +571,3 @@ function showRepairReport() {
         alert("problem displaying repair report: " + e);
     }
 }
-
-//async function processLinks(catFolder, subfolders, imageFiles, physcialFiles) {
-
-//    await removeOrphanImageRows(physcialFiles, imageFiles);
-
-//    await renameImageFiles(catFolder, physcialFiles);
-
-//    await addMissingImageFiles(catFolder, imageFiles, physcialFiles);
-
-//    subfolders.forEach(async (subfolder) => {
-//        await processFolder(subfolder.Id);
-//    });
-//}

@@ -37,9 +37,7 @@ function launchIndexPage(pageContext) {
     launchCarousel(pageContext);
     getRandomGalleries(pageContext);
     getLatestUpdatedGalleries(pageContext);
-
-    verifyUser("index page");
-
+    
     $('#betaMessage').html("promo")
         .css({ "top": 111, "left": 50 })
         .on("click", function () {
@@ -67,7 +65,7 @@ function launchIndexPage(pageContext) {
                             "<div class='latestContentBoxLabel'>" + jdata[i].FolderName + "</div>" +
                             "<img id='lt" + jdata[i].FolderId + "' class='latestContentBoxImage' alt='img/redballon.png' \nsrc='" + thisItemSrc + "' \n" +
                             " onerror='imageError(\"" + jdata[i].FolderId + "\",\"" + thisItemSrc + "\",\"LatestUpdatedGalleries\")'\n" +
-                            "\nonclick='window.location.href=\"https://ogglebooble.com/album.html?folder=" + jdata[i].FolderId + "\" ' />" +
+                            "\nonclick='latestUpdatesClick(" + jdata[i].FolderId + "\)'/>" +
                             "<div class='latestContentBoxDateLabel'>updated: " + dateString2(jdata[i].Acquired) + "</span></div>" +
                             "</div>");
                     }
@@ -76,7 +74,7 @@ function launchIndexPage(pageContext) {
                     $('#imgLatestUpdate').on("click", function () {
                         updatedGalleriesCount += 15;
                         getLatestUpdatedGalleries(currentPageContext);
-                        logOggleEvent("LUC", -7887, currentPageContext);
+                        logOggleEvent("LUC", 3908, currentPageContext);
                     }).show();
                 },
                 error: function (jqXHR) {
@@ -86,6 +84,11 @@ function launchIndexPage(pageContext) {
         } catch (e) {
             logOggleError("CAT", -518802, e, "get updated galleries");
         }
+    }
+
+    function latestUpdatesClick(folderId) {
+        logOggleEvent("LUP", folderId, currentPageContext);
+        window.location.href = "https://ogglebooble.com/album.html?folder=" + folderId;
     }
 
     function getRandomGalleries(pageContext) {
@@ -118,16 +121,9 @@ function launchIndexPage(pageContext) {
                         });
 
                         $('#imgRandomGalleries').on("click", function () {
-                            getRandomGalleries(pageContext);
-
-
-                            logOggleActivity("RRG",)
-
-
-
+                            getRandomGalleries(currentPageContext);
+                            logOggleEvent("RRG", 3908, currentPageContext);
                         }).show();
-
-
                     }
                 },
                 error: function (jqXHR) {
