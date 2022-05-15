@@ -252,7 +252,7 @@ function mailMe() {
                 break;
             case "cybergirl":
                 document.title = "Cybergirls : OggleBooble";
-                $('#fancyHeaderTitle').html("Every Playboy Centerfold");
+                $('#fancyHeaderTitle').html("Playboy Cybergirls");
                 break;
             case "muses":
                 document.title = "Playboy Muses : OggleBooble";
@@ -420,12 +420,21 @@ function mailMe() {
                     "<span onclick='headerMenuClick(\"soft\",411)'>naughty behaviour</span>\n");
                 break;
             }
+            case "cybergirl":
+                $('#topRowLeftContainer').html(
+                    "<span onclick='headerMenuClick(\"cybergirl\",1132)'>centerfolds, </span>\n" +
+                    "<span onclick='headerMenuClick(\"cybergirl\",6368)'>playboy plus, </span>\n" +
+                    "<span onclick='headerMenuClick(\"cybergirl\",6095)'>muses, </span>\n" +
+                    "<span onclick='headerMenuClick(\"cybergirl\",3128)'>international, </span>\n" +
+                    "<span onclick='headerMenuClick(\"cybergirl\",9306)'>more</span>\n"
+                );
+                break;
             case "playboy":
                 $('#topRowLeftContainer').html(
-                    "<span onclick='headerMenuClick(\"playboyIndex\",3796)'>cybergirls, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyIndex\",6368)'>playboy plus, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyIndex\",6095)'>muses, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyIndex\",3128)'>international, </span>\n" +
+                    "<span onclick='headerMenuClick(\"playboy\",3796)'>cybergirls, </span>\n" +
+                    "<span onclick='headerMenuClick(\"playboy\",6368)'>playboy plus, </span>\n" +
+                    "<span onclick='headerMenuClick(\"playboy\",6095)'>muses, </span>\n" +
+                    "<span onclick='headerMenuClick(\"playboy\",3128)'>international, </span>\n" +
                     //"<span onclick='headerMenuClick(\"playboyIndex\",6076)'>specials, </span>\n" +
                     //"<span onclick='headerMenuClick(\"playboyIndex\",3393)'>lingerie, </span>\n" +
                     "<span onclick='headerMenuClick(\"playboyIndex\",9306)'>more</span>\n"

@@ -274,7 +274,6 @@ function setColors(rootFolder, folderName) {
     switch (rootFolder) {
         case "playboy":
         case "centerfold":
-        case "cybergirl":
         case "magazine":
         case "muses":
         case "plus":
@@ -285,6 +284,14 @@ function setColors(rootFolder, folderName) {
             $('#topRowLeftContainer').css({ "color": "wheat" });
             $('#oggleHeader').css("background-color", "#ff6600");
             $('#carouselContainer').css("background-color", "#bdbeb8");
+            break;
+        case "cybergirl":
+            document.title = folderName + " : OggleBooble";
+            $('body').css({ "background-color": "rebeccapurple", "color": "#fff" });
+            $('.inactiveBreadCrumb').css({ "color": "wheat" });
+            $('.activeBreadCrumb').css("color", "#f2e289");
+            $('#topRowLeftContainer').css({ "color": "wheat" });
+            $('#oggleHeader').css("background-color", "purple");
             break;
         case "bond":
             document.title = folderName + " : OggleBooble";

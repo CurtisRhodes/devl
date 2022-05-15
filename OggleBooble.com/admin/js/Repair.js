@@ -61,7 +61,6 @@ function showRepairDialog() {
     $('#dashboardDialogBox').draggable().fadeIn();
     $('body').keydown(function (event) {
         if (event.keyCode === 27) {
-            alert("escape key pressed");
             abandon = true;
         }
     });

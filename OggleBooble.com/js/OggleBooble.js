@@ -2,10 +2,10 @@
 let slideshowVisible = false, imageViewerVisible = false;
 
 /*-- verify user -----------------------------------*/{
-    function verifyUser(calledFrom) {
+    function verifyUser() {
         if (isNullorUndefined(sessionStorage["VisitorIdVerified"])) {
             if (!window.sessionStorage) {
-                logOggleError("V30", -590301, "session storage not recognized for: " + getCookieValue("VisitorId"), "verify VisitorId");
+                logOggleError("V30", -590301, "session storage not recognized");
                 return;
             }
             // new session
@@ -70,7 +70,7 @@ let slideshowVisible = false, imageViewerVisible = false;
                                     logOggleActivity("FY2", -720302, ipifyRtrnIP + " not found");
                                     // ipify IP not found.in Visitor table
                                     // performIpInfo(ipifyRtrnIP);
-                                    addBadVisitor(ipifyRtrnIP, "IpInfo timeout");
+                                    addBadVisitor(create_UUID(), ipifyRtrnIP, "IpInfo timeout");
                                 }
                                 else {
                                     logOggleActivity("FY3", -720303, ipifyRtrnIP + "ipify lookup found ok");
@@ -90,7 +90,7 @@ let slideshowVisible = false, imageViewerVisible = false;
                 error: function (jqXHR) {
                     logOggleActivity("FYX", -720303, "ipify lookup fail");
                     logOggleError("IPF", -677001, getXHRErrorDetails(jqXHR), "ipify lookup/" + calledFrom);
-                    addBadVisitor(null, "ipify fail");
+                    addBadVisitor(create_UUID(), null, "ipify fail");
                 }
             });
         }
@@ -111,19 +111,20 @@ let slideshowVisible = false, imageViewerVisible = false;
                     }
                     else {
                         addVisitor(ipResponseObject);
-                        logOggleActivity("IP0", -21200, "success Ip: " + ipResponseObject.ip);
+                        logOggleActivity("IP0", -21200, "success Ip: " + ipAddress);
                     }
                 },
                 error: function (jqXHR) {
                     let errMsg = getXHRErrorDetails(jqXHR);
                     if (errMsg.indexOf("Rate limit exceeded") > 0) {
+                        logOggleActivity("429", -21200, "Ip: " + ipAddress);
                         //"status": 429, "title": "Rate limit exceeded",
                         //"message": "Upgrade to increase your usage limits at https://ipinfo.io/pricing, or contact us via https://ipinfo.io/contact"
-                        addBadVisitor(ipAddress, "Rate limit exceeded");
+                        addBadVisitor(create_UUID(), ipAddress, "Rate limit exceeded");
                     }
                     else {
                         logOggleError("IPX", -67769, errMsg, "ip: " + ipAddress, "perform IpInfo");
-                        addBadVisitor(ipAddress, "ipnfo burn");
+                        addBadVisitor(create_UUID(), ipAddress, "ipnfo burn");
                     }
                 }
             });
@@ -408,10 +409,10 @@ function displayFeedback() {
 
     function logOggleEvent(eventCode, folderId, calledFrom) {
         try {
-            visitorId = getCookieValue("VisitorId", "log Activity");
+            visitorId = getCookieValue("VisitorId");
             $.ajax({
                 type: "POST",
-                url: "php/logActivity.php",
+                url: "php/logEvent.php",
                 data: {
                     eventCode: eventCode,
                     folderId: folderId,
@@ -420,15 +421,15 @@ function displayFeedback() {
                 },
                 success: function (success) {
                     if (success.trim() == "ok") {
-                        console.log("activity logged.  VisitorId: " + visitorId + "  Code: " + eventCode + "  calledFrom: " + calledFrom);
+                        console.log("event logged.  VisitorId: " + visitorId + "  Code: " + eventCode + "  calledFrom: " + calledFrom);
                     }
                     else {
-                        console.log("log OggleActivity fail: " + success);
-                        logOggleError("AJX", folderId, success, "log OggleActivity");
+                        console.log("log Oggle event fail: " + success);
+                        logOggleError("AJX", folderId, success, "log event");
                     }
                 },
                 error: function (jqXHR) {
-                    logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "log OggleActivity")
+                    logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "log event")
                 }
             });
         } catch (e) {
@@ -917,16 +918,17 @@ function displayFeedback() {
 
     function logPageHit(folderId) {
         try {
-            //$('#footerMessage1').html("logging page hit");
-            visitorId = getCookieValue("VisitorId", "log pageHit");
+            let visitorId = getCookieValue("VisitorId");
             if (visitorId == "cookie not found") {
-                //  addBadVisitor
+
                 visitorId = create_UUID();
                 localStorage["VisitorId"] = visitorId;
-                setCookieValue("VisitorId", visitorId)
-                logOggleActivity("PHV", folderId, "log pageHit");
+                //setCookieValue("VisitorId", dummyVisitorId)
+                logOggleError("X11", folderId, "cookie not found", "log page hit");
+                addBadVisitor(visitorId, null, "log page hit");
                 //ipifyLookup("log pageHit");
             }
+
             $.ajax({
                 type: "POST",
                 url: "php/logPageHit.php",
@@ -950,6 +952,7 @@ function displayFeedback() {
                     logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "log page hit");
                 }
             });
+
         } catch (e) {
             logOggleError("CAT", folderId, e, "log page hit");
         }
@@ -977,7 +980,7 @@ function displayFeedback() {
                     else {
                         switch (success.trim()) {
                             case '23000':
-                                logOggleError("BPI", -36601, "Add Visitor Duplicate Ip: " + ipAddress);
+                                logOggleError("BVI", -36601, "Add Visitor Duplicate Ip: " + ipAddress);
                                 break;
                             case '42000':
                             default:
@@ -1007,19 +1010,17 @@ function displayFeedback() {
         }
     }
 
-    function addBadVisitor(ipAddress, failureMessage) {
-        try {
-            visitorId = create_UUID();
+    function addBadVisitor(dummyVisitorId, ipAddress, failureMessage) {
+        try {            
             if (isNullorUndefined(ipAddress)) {
-                ipAddress = visitorId;
+                ipAddress = dummyVisitorId;
             }
-
             visitorId = create_UUID();
             $.ajax({
                 type: "POST",
                 url: "php/addVisitor.php",
                 data: {
-                    visitorId: visitorId,
+                    visitorId: dummyVisitorId,
                     ip: ipAddress,
                     city: failureMessage,
                     region: "",
@@ -1028,8 +1029,8 @@ function displayFeedback() {
                 },
                 success: function (success) {
                     if (success.trim() == "ok") {
-                        localStorage["VisitorId"] = visitorId;
-                        setCookieValue("VisitorId", visitorId)
+                        localStorage["VisitorId"] = dummyVisitorId;
+                        setCookieValue("VisitorId", dummyVisitorId)
                         // logOggleActivity("IPX", -21277, "XHR error: unable to lookup ip: " + ipAddress);
                         // logOggleError("XHR", -21277, errMsg, "perform IpLookup");
                         logVisit("new visitor");
@@ -1037,7 +1038,7 @@ function displayFeedback() {
                     else {
                         switch (success.trim()) {
                             case '23000':
-                                logOggleError("BPI", -4251117, "Bad Visitor Duplicate Ip : " + ipAddress);
+                                logOggleError("BVI", -4251117, "Bad Visitor Duplicate Ip : " + ipAddress);
                                 break;
                             case '42000':
                             default:
