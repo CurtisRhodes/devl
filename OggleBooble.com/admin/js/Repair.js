@@ -80,7 +80,7 @@ async function performRepairLinks() {
     let rootFolderId = $('#txtActiveFolderId').val();
     dashboardDialogBoxClose("addNewImages");
 
-    await processRemoveOrphans(rootFolderId);
+    // await processRemoveOrphans(rootFolderId);
 
     await processAddMissingImageRows(rootFolderId);
 
@@ -387,8 +387,6 @@ async function renameImageFiles(catFolder, imageFiles, physcialFiles) {
         }
     });
 }
-
-
 async function addMissingImageFiles(catFolder, imageFiles, physcialFiles) {
     let desiredFileNamePrefix = catFolder.FolderName;
     if (catFolder.FolderType == "singleChild")

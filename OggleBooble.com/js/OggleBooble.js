@@ -69,11 +69,11 @@ let slideshowVisible = false, imageViewerVisible = false;
                                 if (data == "false") {
                                     logOggleActivity("FY2", -720302, ipifyRtrnIP + " not found");
                                     // ipify IP not found.in Visitor table
-                                    // performIpInfo(ipifyRtrnIP);
-                                    addBadVisitor(ipifyRtrnIP, "IpInfo timeout");
+                                    performIpInfo(ipifyRtrnIP);
+                                    //addBadVisitor(ipifyRtrnIP, "IpInfo timeout");
                                 }
                                 else {
-                                    logOggleActivity("FY3", -720303, ipifyRtrnIP + "ipify lookup found ok");
+                                    logOggleActivity("AV0", -720303, ipifyRtrnIP + "ipify lookup found ok");
                                     let visitorRow = JSON.parse(data);
                                     if (localStorage["VisitorId"] != visitorRow.VisitorId) {
                                         logOggleActivity("FY4", -720304, "local storage: " + localStorage["VisitorId"] + " does not match visitorRow.VisitorId: " + visitorRow.VisitorId);
@@ -101,22 +101,24 @@ let slideshowVisible = false, imageViewerVisible = false;
 
     function performIpInfo(ipAddress) {
         try {
+            logOggleActivity("IP0", -21200, "success Ip: " + ipAddress);
             $.ajax({
                 type: "GET",
                 url: "https://ipinfo.io/" + ipAddress + "?token=ac5da086206dc4",
                 success: function (ipResponseObject) {
                     if (isNullorUndefined(ipResponseObject)) {
                         logOggleError("IPN", -21264, "null response", "perform IpInfo")
-                        logOggleActivity("IP4", -21264, "ipAddress: " + ipAddress);
+                        logOggleActivity("IP4", -21264, "ipAddress: " + ipAddress); // IpInfo null response
                     }
                     else {
                         addVisitor(ipResponseObject);
-                        logOggleActivity("IP0", -21200, "success Ip: " + ipResponseObject.ip);
+                        logOggleActivity("IP1", -21200, "success Ip: " + ipAddress); // IpInfo success
                     }
                 },
                 error: function (jqXHR) {
                     let errMsg = getXHRErrorDetails(jqXHR);
                     if (errMsg.indexOf("Rate limit exceeded") > 0) {
+                        logOggleActivity("429", -21200, "success Ip: " + ipAddress); // Rate limit exceeded
                         //"status": 429, "title": "Rate limit exceeded",
                         //"message": "Upgrade to increase your usage limits at https://ipinfo.io/pricing, or contact us via https://ipinfo.io/contact"
                         addBadVisitor(ipAddress, "Rate limit exceeded");
@@ -283,7 +285,6 @@ function displayFeedback() {
 
     function performSearch(searchString) {
         if (searchString.length > 2) {
-
             let sql = "select f.Id, p.FolderName as ParentName, f.FolderName from CategoryFolder f join CategoryFolder p on f.Parent = p.Id " +
                 "where (f.FolderName like '`" + searchString + "`%') and (f.FolderType !='singleChild') union " +
                 "select f.Id, p.FolderName as ParentName, f.FolderName from CategoryFolder f join CategoryFolder p on f.Parent = p.Id " +
