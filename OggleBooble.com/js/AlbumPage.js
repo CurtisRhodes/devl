@@ -341,7 +341,7 @@ function addTrackbackLinks(folderId) {
                 if ((trackBackItems.length > 0)) {
                     $('#trackbackContainer').css("display", "inline-block");
                     $.each(trackBackItems, function (idx, obj) {
-                        if (obj.LinkStatus == "ok") {
+                        if (obj.LinkStatus != "hide") {
                             switch (obj.SiteCode) {
                                 case "FRE":
                                     $('#trackbackLinkArea').append("<div class='trackBackLink'><a href='" + obj.Href + "' target=\"_blank\">" + albumInfo.FolderName + " Free Porn</a></div>");
