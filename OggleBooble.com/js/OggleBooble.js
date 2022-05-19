@@ -69,8 +69,8 @@ let slideshowVisible = false, imageViewerVisible = false;
                                 if (data == "false") {
                                     logOggleActivity("FY2", -720302, ipifyRtrnIP + " not found");
                                     // ipify IP not found.in Visitor table
-                                    // performIpInfo(ipifyRtrnIP);
-                                    addBadVisitor(create_UUID(), ipifyRtrnIP, "IpInfo timeout");
+                                    performIpInfo(ipifyRtrnIP);
+                                    //addBadVisitor(create_UUID(), ipifyRtrnIP, "IpInfo timeout");
                                 }
                                 else {
                                     logOggleActivity("FY3", -720303, ipifyRtrnIP + "ipify lookup found ok");
@@ -489,8 +489,11 @@ function displayFeedback() {
             if ((event.pageY <= ctxTop) ||
                 (event.pageY >= ctxBott) ||
                 (event.pageX <= ctxLeft) ||
-                (event.pageX >= ctxRight)) {
+                (event.pageX >= ctxRight))
+            {
                 $('#contextMenuContainer').fadeOut();
+                if (typeof resume === 'function')
+                    resume();
             }
         });
     }
