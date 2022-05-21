@@ -48,7 +48,7 @@ function launchIndexPage(numericPageContext) {
 
 /*-- php -------------------------------------------*/{
 
-    function getLatestUpdatedGalleries(pageContext) {
+    function getLatestUpdatedGalleries(numericPageContext) {
         try {
             $.ajax({
                 type: "GET",

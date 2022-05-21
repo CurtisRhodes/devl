@@ -26,6 +26,15 @@ let slideshowVisible = false, imageViewerVisible = false;
 
     }
 
+
+    function verifyNewUser() {
+
+        logOggleActivity("NCF",)
+        ipifyLookup("session visitorId cookie not found");
+
+
+    }
+
     function verifyVisitorId(visitorId) {
         try {
             if (isGuid(visitorId)) {
