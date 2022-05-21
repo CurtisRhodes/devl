@@ -26,7 +26,6 @@ let slideshowVisible = false, imageViewerVisible = false;
 
     }
 
-
     function verifyVisitorId(visitorId) {
         try {
             if (isGuid(visitorId)) {

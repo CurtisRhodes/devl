@@ -7,6 +7,12 @@ function launchIndexPage(numericPageContext) {
     showLogin(false);
     currentNumericPageContext = numericPageContext;
 
+    let pageContext = "boobs";
+    if (numericPageContext == 72)
+        pageContext = "playboy";
+    if (numericPageContext == 3909)
+        pageContext = "porn";
+
     displayHeader(numericPageContext);
     displayFooter(numericPageContext);
     //promoMessagesContainer
@@ -31,7 +37,7 @@ function launchIndexPage(numericPageContext) {
 
     launchCarousel(numericPageContext);
     getRandomGalleries(numericPageContext);
-    getLatestUpdatedGalleries(numericPageContext);
+    getLatestUpdatedGalleries(pageContext);
     
     $('#betaMessage').html("promo")
         .css({ "top": 111, "left": 50 })
@@ -42,15 +48,8 @@ function launchIndexPage(numericPageContext) {
 
 /*-- php -------------------------------------------*/{
 
-    function getLatestUpdatedGalleries(numericPageContext) {
+    function getLatestUpdatedGalleries(pageContext) {
         try {
-            let pageContext = "boobs";
-            $('#latestUpdatesContainer').html('<img class="tinyloadingGif" src="https://common.ogglebooble.com/img/loader.gif"/>');
-            if (numericPageContext == 72)
-                pageContext = "playboy";
-            if (numericPageContext == 3909)
-                pageContext = "porn";
-
             $.ajax({
                 type: "GET",
                 url: "php/getLatestUpdated.php?spaType=" + pageContext + "&limit=" + updatedGalleriesCount,
