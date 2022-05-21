@@ -1,42 +1,37 @@
 const randomGalleriesCount = 11;
 let updatedGalleriesCount = 15;
-let indexPageId, currentPageContext;
+let currentNumericPageContext;
 
-function launchIndexPage(pageContext) {
+function launchIndexPage(numericPageContext) {
 
     showLogin(false);
-    currentPageContext = pageContext;
+    currentNumericPageContext = numericPageContext;
 
-    displayHeader(pageContext);
-    displayFooter(pageContext);
+    displayHeader(numericPageContext);
+    displayFooter(numericPageContext);
     //promoMessagesContainer
 
-    switch (pageContext) {
-        case "oggleIndex":
-            indexPageId = 3908;
-            break;
-        case "playboy":
+    switch (numericPageContext) {
+        case 72:
             $('body').css({ "background-color": "#bdbeb8", "color": "#fff" });
             $('#oggleHeader').css("background-color", "#000");
             $('#carouselContainer').css("background-color", "#bdbeb8");
             $('.hdrTopRowMenu').css("color", "#f2e289");
             $('#oggleHeader').css("color", "#f2e289");
-            indexPageId = 72;
             break;
-        case "porn":
+        case 3909:
             $('body').css({ "background-color": "darksalmon", "color": "#fff" });
             $('#carouselContainer').css("background-color", "darksalmon");
             $('#oggleHeader').css("background-color", "darkorange");
-            indexPageId = 3909;
             break;
         default:
     }
-    logPageHit(indexPageId);
-    showPageHits(indexPageId);
+    logPageHit(numericPageContext);
+    showPageHits(numericPageContext);
 
-    launchCarousel(pageContext);
-    getRandomGalleries(pageContext);
-    getLatestUpdatedGalleries(pageContext);
+    launchCarousel(numericPageContext);
+    getRandomGalleries(numericPageContext);
+    getLatestUpdatedGalleries(numericPageContext);
     
     $('#betaMessage').html("promo")
         .css({ "top": 111, "left": 50 })
@@ -47,11 +42,14 @@ function launchIndexPage(pageContext) {
 
 /*-- php -------------------------------------------*/{
 
-    function getLatestUpdatedGalleries(pageContext) {
+    function getLatestUpdatedGalleries(numericPageContext) {
         try {
+            let pageContext = "boobs";
             $('#latestUpdatesContainer').html('<img class="tinyloadingGif" src="https://common.ogglebooble.com/img/loader.gif"/>');
-            if (pageContext == "oggleIndex")
-                pageContext = "boobs";
+            if (numericPageContext == 72)
+                pageContext = "playboy";
+            if (numericPageContext == 3909)
+                pageContext = "porn";
 
             $.ajax({
                 type: "GET",
@@ -73,32 +71,32 @@ function launchIndexPage(pageContext) {
 
                     $('#imgLatestUpdate').on("click", function () {
                         updatedGalleriesCount += 15;
-                        getLatestUpdatedGalleries(currentPageContext);
-                        logOggleEvent("LUC", 3908, currentPageContext);
+                        getLatestUpdatedGalleries(currentNumericPageContext);
+                        logOggleEvent("LUC", currentNumericPageContext, "get updated galleries");
                     }).show();
                 },
                 error: function (jqXHR) {
-                    logOggleError("XHR", -518801, getXHRErrorDetails(jqXHR), "get updated galleries");
+                    logOggleError("XHR", numericPageContext, getXHRErrorDetails(jqXHR), "get updated galleries");
                 }
             });
         } catch (e) {
-            logOggleError("CAT", -518802, e, "get updated galleries");
+            logOggleError("CAT", numericPageContext, e, "get updated galleries");
         }
     }
 
     function latestUpdatesClick(folderId) {
-        logOggleEvent("LUP", folderId, currentPageContext);
+        logOggleEvent("LUP", folderId, "get updated galleries");
         window.location.href = "https://ogglebooble.com/album.html?folder=" + folderId;
     }
 
-    function getRandomGalleries(pageContext) {
+    function getRandomGalleries(numericPageContext) {
         try {
             let whereClause = "((f.RootFolder=\"boobs\") or (f.RootFolder=\"archive\") or (f.RootFolder=\"bond\") or (f.RootFolder=\"soft\"))";
 
-            if (pageContext == "porn")
+            if (numericPageContext == 3909)
                 whereClause = "((f.RootFolder='porn') or (f.RootFolder='sluts') or (f.RootFolder='soft'))";
 
-            if (pageContext == "playboy")
+            if (numericPageContext == 72)
                 whereClause = "((f.RootFolder='centerfold') or (f.RootFolder='cybergirl') or (f.RootFolder='muses') or (f.RootFolder='plus') or (f.RootFolder='bond'))";
 
             $.ajax({
@@ -121,8 +119,8 @@ function launchIndexPage(pageContext) {
                         });
 
                         $('#imgRandomGalleries').on("click", function () {
-                            getRandomGalleries(currentPageContext);
-                            logOggleEvent("RRG", 3908, currentPageContext);
+                            getRandomGalleries(currentNumericPageContext);
+                            logOggleEvent("RRG", 3908, currentNumericPageContext);
                         }).show();
                     }
                 },

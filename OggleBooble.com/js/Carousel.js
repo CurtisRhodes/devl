@@ -6,13 +6,15 @@ let carouselFooterHeight = 40, intervalReady = true, initialImageLoad = false, i
     jsCarouselSettings, arryItemsShownCount = 0, totalArryItemsShownCount = 0,
     cacheSize = 45, carouselRoot, imgIn = 0.0, imgOut = 1.0, fadeInSpeed = 135;
 
-function launchCarousel(pageContext) {
+function launchCarousel(numericPageContext) {
     try {
-        carouselRoot = pageContext;
-        if (pageContext == "oggleIndex")
+        carouselRoot = "boobs";
+        if (numericPageContext == 3908)
             carouselRoot = "boobs";
-        if (pageContext == "playboy")
+        if (numericPageContext == 72)
             carouselRoot = "centerfold";
+        if (numericPageContext == 3909)
+            carouselRoot = "porn";
 
         absolueStartTime = Date.now();
         window.addEventListener("resize", resizeCarousel);
@@ -24,7 +26,7 @@ function launchCarousel(pageContext) {
             resizeCarousel();
         });
     } catch (e) {
-        logOggleError("BUG", -35501, e, "launch carousel");
+        logOggleError("BUG", numericPageContext, e, "launch carousel");
     }
 }
 
