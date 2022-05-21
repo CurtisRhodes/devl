@@ -78,7 +78,7 @@ async function performRepairLinks() {
     let rootFolderId = $('#txtActiveFolderId').val();
     dashboardDialogBoxClose("addNewImages");
 
-    // await processRemoveOrphans(rootFolderId);
+    await processRemoveOrphans(rootFolderId);
 
     await processAddMissingImageRows(rootFolderId);
 

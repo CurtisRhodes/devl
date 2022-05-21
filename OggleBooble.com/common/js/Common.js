@@ -230,9 +230,8 @@ function mailMe() {
 /* -------- Header -----------------*/{
     // let hdrFolderId, hdrRootFolder;
 
-    function displayHeader(headerContext) {
+    function displayHeader(numericPageContext) {
         $('header').html(headerHtml());
-
         //changeFavoriteIcon("redBallon");
         //document.title = "document.title";
         $('#topRowLeftContainer').html("");
@@ -241,62 +240,78 @@ function mailMe() {
         $('#breadcrumbContainer').html("");
         $('#badgesContainer').html("");
         $('#hdrBtmRowSec3').html("");
-        switch (headerContext) {
-            case "oggleIndex":
-            case "archive":
+
+        //case "playboy": pageContext = 72; break;
+        //case "porn": pageContext = 3909; break;
+        //case "ranker": pageContext = 3907; break;
+        //case "blog": pageContext = 3911; break;
+        //case "dashboard": pageContext = 72; break;
+        //default: pageContext = 3908; break;
+
+        switch (numericPageContext) {
+            case 3908:
                 document.title = "OggleBooble : Home of the Big Naturals";
                 $('#fancyHeaderTitle').html("OggleBooble");
                 $('#topRowLeftContainer').html("Home of the Big Naturals");
                 $('#hdrBtmRowSec3').append(bannerLink('every playboy centerfold', 'https://ogglebooble.com/index.html?spa=playboy'));
                 $('#hdrBtmRowSec3').append(bannerLink('Oggle Porn', 'https://ogglebooble.com/index.html?spa=porn'));
+                $('#topRowLeftContainer').html(
+                    "<span class='bigTits' onclick='headerMenuClick(\"boobs\",3)'>BIG Naturals</span></a > organized by\n" +
+                    "<span onclick='headerMenuClick(\"boobs\",3916)'>poses, </span>\n" +
+                    "<span onclick='headerMenuClick(\"boobs\",136)'> positions,</span>\n" +
+                    "<span onclick='headerMenuClick(\"boobs\",159)'> topics,</span>\n" +
+                    "<span onclick='headerMenuClick(\"boobs\",199)'> shape,</span>\n" +
+                    "<span onclick='headerMenuClick(\"boobs\",241)'> size</span>\n");
+                //"<span onclick='headerMenuClick(\"boobs\",4010)'> tit play</span>\n");
                 break;
-            case "cybergirl":
-                document.title = "Cybergirls : OggleBooble";
-                $('#fancyHeaderTitle').html("Playboy Cybergirls");
-                break;
-            case "muses":
-                document.title = "Playboy Muses : OggleBooble";
-                $('#fancyHeaderTitle').html("Every Playboy Centerfold");
-                break;
-            case "playboy":
-            case "centerfold":
-            case "playboyIndex":
+            case 72:
                 document.title = "Every Playboy Centerfold : OggleBooble";
                 $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/playboyBallon.png");
                 $('#fancyHeaderTitle').html("Every Playboy Centerfold");
                 $('#hdrBtmRowSec3').append(bannerLink('back to OggleBooble', 'https://ogglebooble.com/index.html'));
-                $('#hdrBtmRowSec3').append(bannerLink('Bond Girls', 'https://ogglebooble.com/album.html?folder=10326'));
                 changeFavoriteIcon("playboy");
                 $('#fancyHeaderTitle').css("cursor", "pointer");
                 $('#fancyHeaderTitle').on("click", function () { window.location.href = "https://ogglebooble.com/album.html?folder=1132" });
+
+                $('#topRowLeftContainer').html(
+                    "<span onclick='headerMenuClick(\"playboy\",3796)'>cybergirls, </span>\n" +
+                    "<span onclick='headerMenuClick(\"playboy\",6368)'>playboy plus, </span>\n" +
+                    "<span onclick='headerMenuClick(\"playboy\",6095)'>muses, </span>\n" +
+                    "<span onclick='headerMenuClick(\"playboy\",3128)'>international, </span>\n" +
+                    //"<span onclick='headerMenuClick(\"playboyIndex\",6076)'>specials, </span>\n" +
+                    //"<span onclick='headerMenuClick(\"playboyIndex\",3393)'>lingerie, </span>\n" +
+                    "<span onclick='headerMenuClick(\"playboyIndex\",9306)'>more</span>\n"
+                    //"<span onclick='headerMenuClick(\"playboyIndex\",4015)'>pictorials, </span>\n" +
+                    //"<span onclick='headerMenuClick(\"playboyIndex\",6076)'>specials, </span>\n" +
+                    //"<span onclick='headerMenuClick(\"playboyIndex\",3393)'>lingerie, </span>\n" +
+                );
+                $('#breadcrumbContainer').html(
+                        "<span onclick='headerMenuClick(\"playboyIndex\",621)'>1950's, </span>\n" +
+                        "<span onclick='headerMenuClick(\"playboyIndex\",638)'>1960's, </span>\n" +
+                        "<span onclick='headerMenuClick(\"playboyIndex\",639)'>1970's, </span>\n" +
+                        "<span onclick='headerMenuClick(\"playboyIndex\",640)'>1980's, </span>\n" +
+                        "<span onclick='headerMenuClick(\"playboyIndex\",628)'>1990's, </span>\n" +
+                        "<span onclick='headerMenuClick(\"playboyIndex\",641)'>2000's, </span>\n" +
+                        "<span onclick='headerMenuClick(\"playboyIndex\",513)'>2010's, </span>\n" +
+                        "<span onclick='headerMenuClick(\"playboyIndex\",4128)'>2020's </span>\n");
                 break;
-            case "porn":
+            case 3909:
                 document.title = "OgglePorn : mostly blowjobs";
                 $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/csLips02.png");
                 $('#fancyHeaderTitle').html("Oggle Porn");
                 $('#hdrBtmRowSec3').append(bannerLink('back to OggleBooble', 'https://ogglebooble.com/index.html'));
                 $('#hdrBtmRowSec3').append(bannerLink('porn actress archive', 'https://ogglebooble.com/album.html?folder=440'));
                 changeFavoriteIcon("porn");
-                break;
-            case "sluts":
-                $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/csLips02.png");
-                $('#fancyHeaderTitle').html("sluts ");
-                $('#hdrBtmRowSec3').append(bannerLink('back to OgglePorn', 'https://ogglebooble.com/index.html?spa=porn'));
-                $('#hdrBtmRowSec3').append(bannerLink('back to OggleBooble', 'https://ogglebooble.com/index.html'));
-                changeFavoriteIcon("porn");
-                break;
-            case "bond":
-                $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/boogle007.png");
-                $('#fancyHeaderTitle').html("Bond Girls");
-                $('#topRowRightContainer').append(bannerLink('back to OggleBooble', 'https://ogglebooble.com/index.html'));
-                $('#topRowRightContainer').append(bannerLink('every playboy centerfold', 'https://ogglebooble.com/index.html?spa=playboy'));
-                changeFavoriteIcon("bond");
-                break;
-            case "soft":
-                $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/redwoman.png");
-                $('#fancyHeaderTitle').html("Oggle softcore");
-                $('#hdrBtmRowSec3').append(bannerLink('back to OggleBooble', 'https://ogglebooble.com'));
-                $('#hdrBtmRowSec3').append(bannerLink('OgglePorn', 'https://ogglebooble.com/index.html?spa=porn'));
+                $('#oggleHeader').css("background-color", "darkorange");
+                $('body').css({ "background-color": "darksalmon", "color": "#fff" });
+                $('#carouselContainer').css("background-color", "darksalmon");
+                $('#topRowLeftContainer').html(
+                    "<span onclick='headerMenuClick(\"porn\",243)'>cock suckers, </span>\n" +
+                    "<span onclick='headerMenuClick(\"porn\",460)'>titty fuck, </span>\n" +
+                    "<span onclick='headerMenuClick(\"porn\",426)'>penetration, </span>\n" +
+                    "<span onclick='headerMenuClick(\"porn\",357)'>cum shots, </span>\n" +
+                    "<span onclick='headerMenuClick(\"porn\",694)'>kinky, </span>\n" +
+                    "<span onclick='headerMenuClick(\"porn\",411)'>naughty behaviour</span>\n");
                 break;
             case "brucheum":
                 $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/house.gif");
@@ -375,138 +390,11 @@ function mailMe() {
                 $('#topRowLeftContainer').html("<a href='https://www.babepedia.com' onclick='javascript:window.open(''https://www.babepedia.com/''); return false;'>Babepedia</a>");
                 break;
             default:
-                console.log("headerContext " + headerContext + " not handled");
+                console.log("numericPageContext " + numericPageContext + " not handled");
                 break;
         }
-
-        setTopHeaderRow(headerContext);
-
         //mediaSavyHdrResize();
         //window.addEventListener("resize", mediaSavyHdrResize);
-    }
-
-    function setTopHeaderRow(headerContext) {
-        switch (headerContext) {
-            case "oggleIndex":
-            case "archive": {
-                $('#topRowLeftContainer').html(
-                    "<span class='bigTits' onclick='headerMenuClick(\"boobs\",3)'>BIG Naturals</span></a > organized by\n" +
-                    "<span onclick='headerMenuClick(\"boobs\",3916)'>poses, </span>\n" +
-                    "<span onclick='headerMenuClick(\"boobs\",136)'> positions,</span>\n" +
-                    "<span onclick='headerMenuClick(\"boobs\",159)'> topics,</span>\n" +
-                    "<span onclick='headerMenuClick(\"boobs\",199)'> shape,</span>\n" +
-                    "<span onclick='headerMenuClick(\"boobs\",241)'> size</span>\n");
-                    //"<span onclick='headerMenuClick(\"boobs\",4010)'> tit play</span>\n");
-                break;
-            }
-            case "OggleDashboard": {
-                $('#breadcrumbContainer').html("<a class='activeBreadCrumb' href=\"javascript:setLeftMenu('normal');showDefaultWorkArea()\">Add Images</a>");
-                $('#breadcrumbContainer').append("<a class='activeBreadCrumb' href=\"javascript:setLeftMenu('admin');showDefaultWorkArea()\">Admin</a>");
-                $('#breadcrumbContainer').append("<a class='activeBreadCrumb' href=\"javascript:showReportsSection();\">Reports</a>");
-                break;
-            }
-            case "admin":
-                //$('#breadcrumbContainer').html("<a class='activeBreadCrumb' href=\"javascript:setLeftMenu('normal');showDefaultWorkArea()\">Brucheum live page</a>");
-                //$('#breadcrumbContainer').append("<a class='activeBreadCrumb' href=\"javascript:setLeftMenu('admin');showDefaultWorkArea()\">OggleBooble</a>");
-                //$('#breadcrumbContainer').append("<a class='activeBreadCrumb' href=\"javascript:showReportsSection();\">Intelligent Design</a>");
-                break;
-            case "soft": {
-                $('#topRowLeftContainer').html(
-                    "<span onclick='headerMenuClick(\"soft\",379)'>pussy, </span>\n" +
-                    "<span onclick='headerMenuClick(\"soft\",420)'>boob suckers, </span>\n" +
-                    "<span onclick='headerMenuClick(\"soft\",498)'>big tit lezies, </span>\n" +
-                    "<span onclick='headerMenuClick(\"soft\",357)'>fondle, </span>\n" +
-                    "<span onclick='headerMenuClick(\"soft\",397)'>kinky, </span>\n" +
-                    "<span onclick='headerMenuClick(\"soft\",411)'>naughty behaviour</span>\n");
-                break;
-            }
-            case "cybergirl":
-                $('#topRowLeftContainer').html(
-                    "<span onclick='headerMenuClick(\"cybergirl\",1132)'>centerfolds, </span>\n" +
-                    "<span onclick='headerMenuClick(\"cybergirl\",6368)'>playboy plus, </span>\n" +
-                    "<span onclick='headerMenuClick(\"cybergirl\",6095)'>muses, </span>\n" +
-                    "<span onclick='headerMenuClick(\"cybergirl\",3128)'>international, </span>\n" +
-                    "<span onclick='headerMenuClick(\"cybergirl\",9306)'>more</span>\n"
-                );
-                break;
-            case "playboy":
-                $('#topRowLeftContainer').html(
-                    "<span onclick='headerMenuClick(\"playboy\",3796)'>cybergirls, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboy\",6368)'>playboy plus, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboy\",6095)'>muses, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboy\",3128)'>international, </span>\n" +
-                    //"<span onclick='headerMenuClick(\"playboyIndex\",6076)'>specials, </span>\n" +
-                    //"<span onclick='headerMenuClick(\"playboyIndex\",3393)'>lingerie, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyIndex\",9306)'>more</span>\n"
-                );
-                break;
-            case "playboyIndex":
-                $('#topRowLeftContainer').html(
-                    "<span onclick='headerMenuClick(\"playboyIndex\",3796)'>cybergirls, </span>\n" +
-                    //"<span onclick='headerMenuClick(\"playboyIndex\",4015)'>pictorials, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyIndex\",6368)'>playboy plus, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyIndex\",6095)'>muses, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyIndex\",3128)'>international, </span>\n" +
-                    //"<span onclick='headerMenuClick(\"playboyIndex\",6076)'>specials, </span>\n" +
-                    //"<span onclick='headerMenuClick(\"playboyIndex\",3393)'>lingerie, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyIndex\",9306)'>more</span>\n"
-                );
-                $('#breadcrumbContainer').html(
-                    "<span onclick='headerMenuClick(\"playboyIndex\",621)'>1950's, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyIndex\",638)'>1960's, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyIndex\",639)'>1970's, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyIndex\",640)'>1980's, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyIndex\",628)'>1990's, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyIndex\",641)'>2000's, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyIndex\",513)'>2010's, </span>\n" +
-                    "<span onclick='headerMenuClick(\"playboyIndex\",4128)'>2020's </span>\n"
-                );
-                //"<a href='javascript:rtpe(\"PBB\",72,\"magazine covers\",1986)'>magazine covers</a>,\n" +
-                //"<a href='javascript:rtpe(\"PBB\",72,\"Pmoy\",4013)'>Pmoy</a>,\n" +
-                //"<a href='javascript:rtpe(\"PBB\",72,\"Pmoy\",4932)'>just centerfolds</a>\n");
-                //$('#breadcrumbContainer').html(
-                //"<span onclick='headerMenuClick(\"centerfold\",3796)'>cybergirls, </span>\n"
-
-                //    "<span onclick='headerMenuClick('playboyCarousel',4015)'>pictorials, </span>\n" +
-                //    "<a href='javascript:rtpe(\"PYC\",72,\"Playboy\",472)'>Playboy</a>,\n" +
-                //    "<a href='javascript:rtpe(\"PYC\",72,\"1950\",621)'>1950's</a>,\n" +
-                //    "<a href='javascript:rtpe(\"PYC\",72,\"1960\",638)'>1960's</a>,\n" +
-                //    "<a href='javascript:rtpe(\"PYC\",72,\"1970\",639)'>1970's</a>,\n" +
-                //    "<a href='javascript:rtpe(\"PYC\",72,\"1980\",640)'>1980's</a>,\n" +
-                //    "<a href='javascript:rtpe(\"PYC\",72,\"1990\",628)'>1990's</a>,\n" +
-                //    "<a href='javascript:rtpe(\"PYC\",72,\"2000\",641)'>2000's</a>,\n" +
-                //    "<a href='javascript:rtpe(\"PYC\",72,\"2010\",513)'>2010's</a>,\n" +
-                //    "<a href='javascript:rtpe(\"PYC\",72,\"2020\",4128)'>2020's</a>\n");
-                // <div id='badgesContainer' class='badgesSection'></div>\n" +
-                // <div id='hdrBtmRowSec3' class='hdrBtmRowOverflow'></div>\n" +
-                break;
-            case "porn": {
-                $('#topRowLeftContainer').html(
-                    "<span onclick='headerMenuClick(\"porn\",243)'>cock suckers, </span>\n" +
-                    "<span onclick='headerMenuClick(\"porn\",460)'>titty fuck, </span>\n" +
-                    "<span onclick='headerMenuClick(\"porn\",426)'>penetration, </span>\n" +
-                    "<span onclick='headerMenuClick(\"porn\",357)'>cum shots, </span>\n" +
-                    "<span onclick='headerMenuClick(\"porn\",694)'>kinky, </span>\n" +
-                    "<span onclick='headerMenuClick(\"porn\",411)'>naughty behaviour</span>\n");
-                break;
-            }
-            case "sluts": {
-                $('#topRowLeftContainer').html(
-                    "<span onclick='headerMenuClick(\"porn\",1174)'>big titters gone bad, </span>\n" +
-                    "<span onclick='headerMenuClick(\"porn\",3728)'>blonde cocksuckers, </span>\n" +
-                    "<span onclick='headerMenuClick(\"porn\",4271)'>retro porn stars, </span>\n" +
-                    "<span onclick='headerMenuClick(\"porn\",3739)'>exploited teens<span>\n");
-                //"<a href='javascript:rtpe(\"TLM\"," + folderId + ",\"sluts\",2677)'>cocksucker lipps</a>,\n" +
-                //"<a href='javascript:rtpe(\"TLM\"," + folderId + ",\"sluts\",3730)'>amatures</a>,\n" +
-                //"<a href='javascript:rtpe(\"TLM\"," + folderId + ",\"sluts\",3731)'>sweet nasty girls</a>,\n" +
-                //"<a href='javascript:rtpe(\"TLM\"," + folderId + ",\"sluts\",4022)'>big girls</a>,\n" +
-                //"<a href='javascript:rtpe(\"TLM\"," + folderId + ",\"sluts\",4198)'>milf cocksuckers</a>,\n" +
-                break;
-            }
-            default: {
-                console.log("no top header row set for: " + headerContext);
-            }
-        }
     }
 
     function changeFavoriteIcon(headerContext) {
@@ -726,14 +614,28 @@ function mailMe() {
         // </div>
     }
 
+    function showHitStats() {
+        //<!--Histats.com  START(aync)-- >
+        var _Hasync = _Hasync || [];
+        _Hasync.push(['Histats.start', '1,4458214,4,30,130,80,00010101']);
+        _Hasync.push(['Histats.fasi', '1']);
+        _Hasync.push(['Histats.track_hits', '']);
+        (function () {
+            var hs = document.createElement('script'); hs.type = 'text/javascript'; hs.async = true;
+            hs.src = ('//s10.histats.com/js15_as.js');
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
+        })();
+    }
+
     function displayFooter(footerContext) {
         try {
             $('footer').html(footerHtml());
             switch (footerContext) {
+                case "oggleIndex":
+                    $('#footerCol6').append(showHitStats());
                 case "archive":
                 case "oggleAlbum":
                 case "gallery":
-                case "oggleIndex":
                 case "porn":
                 case "welcome":
                 case "blog":
@@ -746,8 +648,10 @@ function mailMe() {
                     $('#footerCol2').append(`
                         <div class='clickable' onclick='showCatListDialog(2)'>Category List</div>
                         <div class='clickable' onclick='showCatListDialog(3)'>Babes List</div>\n`);
+                    $('#footerCol6').append(showHitStats());
                     break;
                 }
+                case 72:
                 case "playboy":
                 case "centerfold":
                 case "cybergirl":

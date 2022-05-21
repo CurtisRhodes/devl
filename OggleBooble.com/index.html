@@ -26,8 +26,8 @@
             <img id="indexPageLoadingGif" class="loadingGif" title='loading gif' alt='' src="https://common.ogglebooble.com/img/loader.gif" />
             <div id="carouselContainer"></div>
             <div id="randomGalleriesSectionLabel" class="sectionLabel">
-                random galleries
-                <img id="imgRandomGalleries" class="refrehIcon" src="https://common.ogglebooble.com/img/refresh02.png" title="refresh random galleries" />
+                latest updates
+                <img id="imgLatestUpdate" class="refrehIcon" src="https://common.ogglebooble.com/img/refresh02.png" title="show more recently updated galleries" />
                 <div id="carouselControls" class='carouselControlsContainer'>
                     <img class='speedButton floatLeft' src='https://common.ogglebooble.com/img/speedDialSlower.png' title='slower' onclick='clickSpeed("slower")' />
                     <div id='pauseButton' class='pauseButtonArea' title="pause" onclick='togglePause()'>||</div>
@@ -36,12 +36,12 @@
                          onclick='showCarouelSettingsDialog()' />
                 </div>
             </div>
-            <div id="randomGalleriesContainer" class="indexPageContainer"></div>
-            <div class="sectionLabel">
-                latest updates
-                <img id="imgLatestUpdate" class="refrehIcon" src="https://common.ogglebooble.com/img/refresh02.png" title="show more recently updated galleries" />
-            </div>
             <div id="latestUpdatesContainer" class="indexPageContainer"></div>
+            <div class="sectionLabel">
+                random galleries
+                <img id="imgRandomGalleries" class="refrehIcon" src="https://common.ogglebooble.com/img/refresh02.png" title="refresh random galleries" />
+            </div>
+            <div id="randomGalleriesContainer" class="indexPageContainer"></div>
         </div>
         <div id="rightColumnArea" class="rightColumn"></div>
     </div>
@@ -60,11 +60,19 @@
 
     <script>
         $(document).ready(function () {
-            let pageContext = "oggleIndex";
+            let pageContext = 3908; // "oggleIndex";
             let params = getParams();
             if (!isNullorUndefined(params.spa)) {
                 console.log("params.spa: " + params.spa);
                 pageContext = params.spa;
+                switch (params.spa) {
+                    case "playboy": pageContext = 72; break;
+                    case "porn": pageContext = 3909; break;
+                    case "ranker": pageContext = 3907; break;
+                    case "blog": pageContext = 3911; break;
+                    case "dashboard": pageContext = 72; break;
+                    default: pageContext = 3908; break;
+                }
             }
 
             document.addEventListener('keydown', captureKeydownEvent);
@@ -72,7 +80,7 @@
             if (typeof (isGuid) == "function") {
                 console.log("isGuid() != function");
             }
-            verifyUser();
+            verifyUser(pageContext);
             launchIndexPage(pageContext);
 
             resizePage();

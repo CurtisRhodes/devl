@@ -12,11 +12,20 @@ let slideshowVisible = false, imageViewerVisible = false;
             sessionStorage["VisitorIdVerified"] = "ok";
             let visitorId = getCookieValue("VisitorId");
             if (visitorId == "cookie not found")
-                ipifyLookup("session visitorId cookie not found");
+                verifyNewUser();
             else
                 verifyVisitorId(visitorId);
         }
     }
+
+    function verifyNewUser() {
+
+        logOggleActivity("NCF",)
+        ipifyLookup("session visitorId cookie not found");
+
+
+    }
+
 
     function verifyVisitorId(visitorId) {
         try {
@@ -1062,8 +1071,7 @@ function displayFeedback() {
                 url: "php/registroFetch.php?query=select count(*) as Hits from PageHit where PageId=" + folderId,
                 success: function (data) {
                     let pgHits = JSON.parse(data);
-                    //let pgHits = JSON.parse(data);
-                    $('#footerPagehit').html("page hits: " + pgHits.Hits);
+                    $('#footerPagehit').html("page hits: " + pgHits.Hits.toLocaleString());
                 },
                 error: function (jqXHR) {
                     logOggleError("CAT", folderId, getXHRErrorDetails(jqXHR), "verify VisitorId")
