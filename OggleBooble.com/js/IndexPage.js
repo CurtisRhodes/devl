@@ -27,7 +27,7 @@ function launchIndexPage(pageContext, numericPageContext) {
         default:
     }
 
-    verifyUser(numericPageContext);
+    verifyUser(numericPageContext, null);
     logPageHit(numericPageContext);
     showPageHits(numericPageContext);
 

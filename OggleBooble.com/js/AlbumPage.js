@@ -1,11 +1,12 @@
-let currentFolderId, currentImagelinkId;
+let currentFolderId, currentImagelinkId, currentIsLargeLoad;
 const posterFolder = 'https://ogglebooble.com/danni/posters/';
 
-function loadAlbumPage(folderId, islargeLoad) {
+function loadAlbumPage(folderId, islargeLoad, calledFrom) {
     currentFolderId = folderId;
+    currentIsLargeLoad = islargeLoad;
     getAlbumImages(folderId, islargeLoad);
     getAlbumPageInfo(folderId, islargeLoad);
-    verifyUser(folderId);
+    verifyUser(folderId, calledFrom);
 }
 
 /*-- php -----------------------------------*/

@@ -105,16 +105,14 @@
 
             let params = getParams();
             if (isNullorUndefined(params.folder)) {
+                logOggleError("ANF", 0, "albumpage called with no folderId", "album.html");
                 window.location.href = "index.html";
             }
             else {
                 albumParamFolderId = params.folder;
             }
-            if (!isNullorUndefined(params.calledFrom)) {
-                recordHitSource(params.calledFrom, params.folder);
-            }
 
-            loadAlbumPage(albumParamFolderId, false);
+            loadAlbumPage(albumParamFolderId, false, params.calledFrom);
 
             window.addEventListener("resize", callResizeAlbumPage);
             resizeAlbumPage();

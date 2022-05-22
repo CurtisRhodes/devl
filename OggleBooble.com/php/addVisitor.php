@@ -11,10 +11,10 @@
         $country = $_POST['country'];
         $loc = $_POST['loc'];
         $initialVisit = date('Y-m-d H:i:s');
-        $initialPage = 0;			
+        $initialPage = $_POST['initialPage'];
 
         $sql = "insert into Visitor (VisitorId, IpAddress, City, Region, Country, GeoCode, InitialVisit, InitialPage) ".
-            "values ('".$visitorId."','".$ip."','".$city."','".$region."','".$country."','".$loc."','".$initialVisit."',0)";
+            "values ('".$visitorId."','".$ip."','".$city."','".$region."','".$country."','".$loc."','".$initialVisit."',".$initialPage)";
 
         $stmt1 = $pdo->prepare($sql);
         $stmt1->execute();
