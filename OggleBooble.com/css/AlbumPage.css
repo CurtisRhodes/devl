@@ -13,11 +13,12 @@
 }
 
 .subFolderContainer {
+    display: inline-block;
+    cursor: pointer;
     background-color: #b3d9ca;
     border: solid 5px #b3d9ca;
     border-radius: 4px;
     margin: 1px;
-    display: inline-block;
 }
 .intividualImageContainer {
     background-color: var(--thumbnailBorderColor);

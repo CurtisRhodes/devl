@@ -651,7 +651,6 @@ function mailMe() {
                     $('#footerCol6').append(showHitStats());
                     break;
                 }
-                case 72:
                 case "playboy":
                 case "centerfold":
                 case "cybergirl":

@@ -2,30 +2,25 @@ const randomGalleriesCount = 11;
 let updatedGalleriesCount = 15;
 let currentNumericPageContext;
 
-function launchIndexPage(numericPageContext) {
+function launchIndexPage(pageContext, numericPageContext) {
 
     showLogin(false);
     currentNumericPageContext = numericPageContext;
 
-    let pageContext = "boobs";
-    if (numericPageContext == 72)
-        pageContext = "playboy";
-    if (numericPageContext == 3909)
-        pageContext = "porn";
-
     displayHeader(numericPageContext);
-    displayFooter(numericPageContext);
+    displayFooter(pageContext);
     //promoMessagesContainer
+    verifyUser(pageContext);
 
     switch (numericPageContext) {
-        case 72:
+        case 72:  // playboy
             $('body').css({ "background-color": "#bdbeb8", "color": "#fff" });
             $('#oggleHeader').css("background-color", "#000");
             $('#carouselContainer').css("background-color", "#bdbeb8");
             $('.hdrTopRowMenu').css("color", "#f2e289");
             $('#oggleHeader').css("color", "#f2e289");
             break;
-        case 3909:
+        case 3909:  // porn
             $('body').css({ "background-color": "darksalmon", "color": "#fff" });
             $('#carouselContainer').css("background-color", "darksalmon");
             $('#oggleHeader').css("background-color", "darkorange");

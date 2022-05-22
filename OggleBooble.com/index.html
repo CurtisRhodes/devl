@@ -60,29 +60,33 @@
 
     <script>
         $(document).ready(function () {
-            let pageContext = 3908; // "oggleIndex";
+            let numericPageContext = 3908; // "oggleIndex";
             let params = getParams();
             if (!isNullorUndefined(params.spa)) {
                 console.log("params.spa: " + params.spa);
                 pageContext = params.spa;
                 switch (params.spa) {
-                    case "playboy": pageContext = 72; break;
-                    case "porn": pageContext = 3909; break;
-                    case "ranker": pageContext = 3907; break;
-                    case "blog": pageContext = 3911; break;
-                    case "dashboard": pageContext = 72; break;
-                    default: pageContext = 3908; break;
+                    case "playboy":
+                        numericPageContext = 72;
+                        break;
+                    case "porn":
+                        numericPageContext = 3909;
+                        break;
+                    case "ranker":
+                        numericPageContext = 3907;
+                        break;
+                    case "blog":
+                        numericPageContext = 3911;
+                        break;
+                    case "dashboard":
+                        numericPageContext = 72;
+                        break;
                 }
             }
 
+            launchIndexPage(pageContext, numericPageContext);
+
             document.addEventListener('keydown', captureKeydownEvent);
-
-            if (typeof (isGuid) == "function") {
-                console.log("isGuid() != function");
-            }
-            verifyUser(pageContext);
-            launchIndexPage(pageContext);
-
             resizePage();
             $(window).resize(function () {
                 resizePage();

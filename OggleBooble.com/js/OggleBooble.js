@@ -2,53 +2,41 @@
 let slideshowVisible = false, imageViewerVisible = false;
 
 /*-- verify user -----------------------------------*/{
-    function verifyUser() {
+    function verifyUser(folderId) {
         if (isNullorUndefined(sessionStorage["VisitorIdVerified"])) {
             if (!window.sessionStorage) {
-                logOggleError("V30", -590301, "session storage not recognized");
+                logOggleError("V30", folderId, "session storage not recognized");
                 return;
             }
-            // new session
-            sessionStorage["VisitorIdVerified"] = "ok";
             let visitorId = getCookieValue("VisitorId");
-            if (visitorId == "cookie not found")
-                verifyNewUser();
-            else
-                verifyVisitorId(visitorId);
+            if (visitorId == "cookie not found") {
+                logOggleActivity("CNF", folderId, "verifyNewUser");  // new visitor cookie not found
+                ipifyLookup(folderId, "CNF");
+            }
+            else {
+                // happy path
+                // new session
+                sessionStorage["VisitorIdVerified"] = "ok";
+                verifyVisitorId(folderId, visitorId);
+                logOggleActivity("NSS", folderId, "verifyNewUser") // new session started
+            }
         }
     }
 
-    function verifyNewUser() {
-
-        logOggleActivity("NCF",)
-        ipifyLookup("session visitorId cookie not found");
-
-
-    }
-
-
-    function verifyNewUser() {
-
-        logOggleActivity("NCF",)
-        ipifyLookup("session visitorId cookie not found");
-
-
-    }
-
-    function verifyVisitorId(visitorId) {
+    function verifyVisitorId(folderId, visitorId) {
         try {
             if (isGuid(visitorId)) {
                 $.ajax({
                     type: "GET",
                     url: "php/registroFetch.php?query=Select * from Visitor where VisitorId='" + visitorId + "'",
                     success: function (data) {
+                        sessionStorage["VisitorIdVerified"] = "ok";
                         if (data == "false") {
-                            logOggleError("X33", -590301, "viz from cookie not found db", "verify VisitorId");
+                            logOggleError("X33", folderId, "visitorId from cookie not found in db?", "verify VisitorId");
                             ipifyLookup("session verify");
                         }
                         else {
-                            sessionStorage["VisitorIdVerified"] = "ok";
-                            logOggleActivity("SOK", -590300, "verify VisitorId: " + visitorId); // new session verified ok
+                            logOggleActivity("SOK", folderId, "verify VisitorId: " + visitorId); // new session verified ok
                             logVisit("verify");
                         }
                     },
@@ -58,61 +46,63 @@ let slideshowVisible = false, imageViewerVisible = false;
                 });
             }
             else {
-                logOggleError("V34", -590302, "wierd visitorId")
-                ipifyLookup("wierd visitorId");
+                logOggleError("V34", folderId, "wierd visitorId")
+                // ipifyLookup("wierd visitorId");
             }
         } catch (e) {
-            logOggleError("CAT", -590303, e, "verify VisitorId")
+            logOggleError("CAT", folderId, e, "verify VisitorId")
         }
     }
 
-    function ipifyLookup(calledFrom) {
-        logOggleActivity("FY0", -720300, "calling", "ipify lookup");
+    function ipifyLookup(folderId, calledFrom) {
+        // logOggleActivity("FY0", folderId, "calling", "ipify lookup");
         try {
             $.ajax({
                 type: "GET",
                 url: "https://api.ipify.org",
                 success: function (ipifyRtrnIP) {
                     if (isNullorUndefined(ipifyRtrnIP)) {
-                        logOggleActivity("FYE", -720302, "fail", "ipify lookup");
-                        logOggleError("XHR", -88817, "ipify empty response", "ipify lookup")
+                        logOggleActivity("FYE", folderId, "fail", "ipify lookup");
+                        logOggleError("XHR", folderId, "ipify empty response", "ipify lookup");
                     }
                     else {
-                        logOggleActivity("FY1", -720301, "success", "ipify lookup");
+                        // logOggleActivity("FY1", folderId, "success", "ipify lookup");
                         $.ajax({
                             type: "GET",
                             url: "php/registroFetch.php?query=Select * from Visitor where IpAddress='" + ipifyRtrnIP + "'",
-                            success: function (data) {
-                                if (data == "false") {
-                                    logOggleActivity("FY2", -720302, ipifyRtrnIP + " not found");
-                                    // ipify IP not found.in Visitor table
-                                    // performIpInfo(ipifyRtrnIP);
-                                    addBadVisitor(create_UUID(), ipifyRtrnIP, "IpInfo timeout");
+                            success: function (data)
+                            {
+                                if (data == "false") { // ipify IP not found.in Visitor table                                    
+                                    if (calledFrom == "CNF") {
+                                        performIpInfo(ipifyRtrnIP);
+                                        // logOggleActivity("FY2", folderId, ipifyRtrnIP + " not found");
+                                    }
                                 }
-                                else {
-                                    logOggleActivity("FY3", -720303, ipifyRtrnIP + "ipify lookup found ok");
+                                else
+                                {
+                                    logOggleActivity("FY3", folderId, ipifyRtrnIP + "ipify lookup found ok");
                                     let visitorRow = JSON.parse(data);
                                     if (localStorage["VisitorId"] != visitorRow.VisitorId) {
-                                        logOggleActivity("FY4", -720304, "local storage: " + localStorage["VisitorId"] + " does not match visitorRow.VisitorId: " + visitorRow.VisitorId);
-                                        //logOggleError("BUG", -67736, "just told cookie not found", "ipify lookup/" + calledFrom);
+                                        logOggleActivity("FY4", folderId, "local storage: " + localStorage["VisitorId"] + " does not match visitorRow.VisitorId: " + visitorRow.VisitorId);
+                                        // logOggleError("BUG", -67736, "just told cookie not found", "ipify lookup/" + calledFrom);
                                     }
                                 }
                             },
                             error: function (jqXHR) {
-                                logOggleError("XHR", -67769, getXHRErrorDetails(jqXHR), "ipify lookup/fetch Visitor")
+                                logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "ipify lookup/fetch Visitor")
                             }
                         });
                     }
                 },
                 error: function (jqXHR) {
-                    logOggleActivity("FYX", -720303, "ipify lookup fail");
-                    logOggleError("IPF", -677001, getXHRErrorDetails(jqXHR), "ipify lookup/" + calledFrom);
+                    logOggleActivity("FYX", folderId, "ipify lookup fail");
+                    logOggleError("IPF", folderId, getXHRErrorDetails(jqXHR), "ipify lookup/" + calledFrom);
                     addBadVisitor(create_UUID(), null, "ipify fail");
                 }
             });
         }
         catch (e) {
-            logOggleError("CAT", -677030, e, "lookup Ip Address")
+            logOggleError("CAT", folderId, e, "lookup Ip Address")
         }
     }
 
