@@ -3,6 +3,7 @@ let slideshowVisible = false, imageViewerVisible = false;
 
 /*-- verify user -----------------------------------*/{
     function verifyUser(folderId) {
+
         if (isNullorUndefined(sessionStorage["VisitorIdVerified"])) {
             if (!window.sessionStorage) {
                 logOggleError("V30", folderId, "session storage not recognized");

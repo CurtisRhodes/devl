@@ -8,25 +8,26 @@ function launchIndexPage(pageContext, numericPageContext) {
     currentNumericPageContext = numericPageContext;
 
     displayHeader(numericPageContext);
-    displayFooter(pageContext);
+    displayFooter(numericPageContext);
     //promoMessagesContainer
-    verifyUser(pageContext);
 
     switch (numericPageContext) {
-        case 72:  // playboy
+        case 72:
             $('body').css({ "background-color": "#bdbeb8", "color": "#fff" });
             $('#oggleHeader').css("background-color", "#000");
             $('#carouselContainer').css("background-color", "#bdbeb8");
             $('.hdrTopRowMenu').css("color", "#f2e289");
             $('#oggleHeader').css("color", "#f2e289");
-            break;
-        case 3909:  // porn
+            break; 
+        case 3909:
             $('body').css({ "background-color": "darksalmon", "color": "#fff" });
             $('#carouselContainer').css("background-color", "darksalmon");
             $('#oggleHeader').css("background-color", "darkorange");
             break;
         default:
     }
+
+    verifyUser(numericPageContext);
     logPageHit(numericPageContext);
     showPageHits(numericPageContext);
 
@@ -43,7 +44,7 @@ function launchIndexPage(pageContext, numericPageContext) {
 
 /*-- php -------------------------------------------*/{
 
-    function getLatestUpdatedGalleries(numericPageContext) {
+    function getLatestUpdatedGalleries(pageContext) {
         try {
             $.ajax({
                 type: "GET",
