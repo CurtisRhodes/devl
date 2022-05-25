@@ -14,8 +14,12 @@
         
         // Display data
         
-        print_r($json_data);
+        $obj = json_decode($data); 
 
+        // display the name of the first person
+        echo $obj[0]->name;        
+        
+        print_r($json_data);
 
         //$myfile = fopen($fileName, "w") or die("Unable to open file!");
         //fwrite($myfile, $text);

@@ -9,7 +9,6 @@ function launchIndexPage(pageContext, numericPageContext) {
 
     displayHeader(numericPageContext);
     displayFooter(numericPageContext);
-    //promoMessagesContainer
 
     switch (numericPageContext) {
         case 72:
@@ -35,11 +34,12 @@ function launchIndexPage(pageContext, numericPageContext) {
     getRandomGalleries(numericPageContext);
     getLatestUpdatedGalleries(pageContext);
     
+    //promoMessagesContainer
     $('#betaMessage').html("promo")
         .css({ "top": 111, "left": 50 })
         .on("click", function () {
             showMessageContainer()
-        }).show();
+        });
 }
 
 /*-- php -------------------------------------------*/{
