@@ -1,4 +1,4 @@
-let currentFolderId, currentImagelinkId, currentIsLargeLoad;
+ let currentFolderId, currentImagelinkId, currentIsLargeLoad;
 const posterFolder = 'https://ogglebooble.com/danni/posters/';
 
 function loadAlbumPage(folderId, islargeLoad, calledFrom) {
