@@ -7,19 +7,88 @@ function launchIndexPage(pageContext, numericPageContext) {
     showLogin(false);
     currentNumericPageContext = numericPageContext;
 
-    displayHeader(numericPageContext);
+    //displayHeader(numericPageContext);
+    $('header').html(headerHtml());
     displayFooter(numericPageContext);
     //promoMessagesContainer
 
     switch (numericPageContext) {
+        case 3908:   // index page
+            document.title = "OggleBooble : Home of the Big Naturals";
+            $('#fancyHeaderTitle').html("OggleBooble");
+            $('#topRowLeftContainer').html("Home of the Big Naturals");
+
+            $('#hdrBtmRowSec3').append(bannerLink('every playboy centerfold', 'https://ogglebooble.com/index.html?spa=playboy'));
+            $('#hdrBtmRowSec3').append(bannerLink('Oggle softcore', 'https://ogglebooble.com/album.html?folder=5233'));
+            $('#hdrBtmRowSec3').append(bannerLink('Oggle Porn', 'https://ogglebooble.com/index.html?spa=porn'));
+
+            $('#topRowLeftContainer').html(
+                "<span class='bigTits' onclick='headerMenuClick(\"boobs\",3)'>BIG Naturals</span></a > organized by\n" +
+                "<span onclick='headerMenuClick(\"boobs\",3916)'>poses, </span>\n" +
+                "<span onclick='headerMenuClick(\"boobs\",136)'> positions,</span>\n" +
+                "<span onclick='headerMenuClick(\"boobs\",159)'> topics,</span>\n" +
+                "<span onclick='headerMenuClick(\"boobs\",199)'> shape,</span>\n" +
+                "<span onclick='headerMenuClick(\"boobs\",241)'> size</span>\n");
+            //"<span onclick='headerMenuClick(\"boobs\",4010)'> tit play</span>\n");
+            break;
         case 72:
+            changeFavoriteIcon("playboy");
+            document.title = "Every Playboy Centerfold : OggleBooble";
+            $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/playboyBallon.png");
+            $('#fancyHeaderTitle').html("Every Playboy Centerfold");
+
+            $('#hdrBtmRowSec3').append(bannerLink('back to OggleBooble', 'https://ogglebooble.com/index.html'));
+            $('#hdrBtmRowSec3').append(bannerLink('Bond girls', 'https://ogglebooble.com/album.html?folder=10326'));
+
             $('body').css({ "background-color": "#bdbeb8", "color": "#fff" });
             $('#oggleHeader').css("background-color", "#000");
             $('#carouselContainer').css("background-color", "#bdbeb8");
             $('.hdrTopRowMenu').css("color", "#f2e289");
             $('#oggleHeader').css("color", "#f2e289");
-            break; 
+
+            $('#fancyHeaderTitle').css("cursor", "pointer");
+            $('#fancyHeaderTitle').on("click", function () { window.location.href = "https://ogglebooble.com/album.html?folder=1132" });
+
+            $('#topRowLeftContainer').html(
+                "<span onclick='headerMenuClick(\"playboy\",3796)'>cybergirls, </span>\n" +
+                "<span onclick='headerMenuClick(\"playboy\",6368)'>playboy plus, </span>\n" +
+                "<span onclick='headerMenuClick(\"playboy\",6095)'>muses, </span>\n" +
+                "<span onclick='headerMenuClick(\"playboy\",3128)'>international, </span>\n" +
+                //"<span onclick='headerMenuClick(\"playboyIndex\",6076)'>specials, </span>\n" +
+                //"<span onclick='headerMenuClick(\"playboyIndex\",3393)'>lingerie, </span>\n" +
+                "<span onclick='headerMenuClick(\"playboyIndex\",9306)'>more</span>\n"
+                //"<span onclick='headerMenuClick(\"playboyIndex\",4015)'>pictorials, </span>\n" +
+                //"<span onclick='headerMenuClick(\"playboyIndex\",6076)'>specials, </span>\n" +
+                //"<span onclick='headerMenuClick(\"playboyIndex\",3393)'>lingerie, </span>\n" +
+            );
+            $('#breadcrumbContainer').html(
+                "<span onclick='headerMenuClick(\"playboyIndex\",621)'>1950's, </span>\n" +
+                "<span onclick='headerMenuClick(\"playboyIndex\",638)'>1960's, </span>\n" +
+                "<span onclick='headerMenuClick(\"playboyIndex\",639)'>1970's, </span>\n" +
+                "<span onclick='headerMenuClick(\"playboyIndex\",640)'>1980's, </span>\n" +
+                "<span onclick='headerMenuClick(\"playboyIndex\",628)'>1990's, </span>\n" +
+                "<span onclick='headerMenuClick(\"playboyIndex\",641)'>2000's, </span>\n" +
+                "<span onclick='headerMenuClick(\"playboyIndex\",513)'>2010's, </span>\n" +
+                "<span onclick='headerMenuClick(\"playboyIndex\",4128)'>2020's </span>\n");
+            break;
         case 3909:
+            changeFavoriteIcon("porn");
+            document.title = "OgglePorn : mostly blowjobs";
+            $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/csLips02.png");
+            $('#fancyHeaderTitle').html("Oggle Porn");
+
+            $('#hdrBtmRowSec3').append(bannerLink('back to OggleBooble', 'https://ogglebooble.com/index.html'));
+            $('#hdrBtmRowSec3').append(bannerLink('porn actress archive', 'https://ogglebooble.com/album.html?folder=440'));
+            $('#hdrBtmRowSec3').append(bannerLink('Oggle softcore', 'https://ogglebooble.com/album.html?folder=5233'));
+
+            $('#topRowLeftContainer').html(
+                "<span onclick='headerMenuClick(\"porn\",243)'>cock suckers, </span>\n" +
+                "<span onclick='headerMenuClick(\"porn\",460)'>titty fuck, </span>\n" +
+                "<span onclick='headerMenuClick(\"porn\",426)'>penetration, </span>\n" +
+                "<span onclick='headerMenuClick(\"porn\",357)'>cum shots, </span>\n" +
+                "<span onclick='headerMenuClick(\"porn\",694)'>kinky, </span>\n" +
+                "<span onclick='headerMenuClick(\"porn\",411)'>naughty behaviour</span>\n");
+
             $('body').css({ "background-color": "darksalmon", "color": "#fff" });
             $('#carouselContainer').css("background-color", "darksalmon");
             $('#oggleHeader').css("background-color", "darkorange");

@@ -78,9 +78,11 @@ function getSubFolders(folderId) {
             " order by SortOrder,FolderName", function (data) {
                 $.each(data, function (index, obj) {
                     let randomId = create_UUID();
+
+
                     let folderCounts = "(" + Number(obj.FileCount).toLocaleString() + ")";
                     if (obj.SubFolderCount > 0)
-                        folderCounts = "(" + obj.SubFolderCount + "/" + Number(obj.FileCount + obj.TotalChildFiles).toLocaleString() + ")";
+                        folderCounts = "(" + obj.SubFolderCount + "/" + (Number(obj.FileCount) + Number(obj.TotalChildFiles)).toLocaleString() + ")";
 
                     let imgSrc = 'https://common.ogglebooble.com/img/RenStimpy8.jpg'
                     if (!isNullorUndefined(obj.FolderImage))
@@ -89,7 +91,7 @@ function getSubFolders(folderId) {
                         oncontextmenu='oggleContextMenu("subfolder","","` + obj.Id + `","` + imgSrc + `")'
                         onclick='folderClick(` + obj.Id + `,` + obj.IsStepChild + `)'>
                         <img id='` + randomId + `' class='folderImage' alt='' src='` + imgSrc + `' onerror=
-                            'imageError(` + folderId + `,"` + obj.linkId + `","` + imgSrc + `","subFolder")'/>
+                        'imageError(` + folderId + `,"` + obj.linkId + `","` + imgSrc + `","subFolder")'/>
                         <div class='defaultSubFolderImage'>` + obj.FolderName + `</div>
                         <span Id='fc` + obj.FolderId + `'>` + folderCounts + `</span></div>`);
                 });
@@ -118,27 +120,8 @@ async function getAlbumPageInfo(folderId, islargeLoad) {
                 $('#albumTopRow').show();
                 $('#seoPageName').html(catfolder.FolderName);
 
-                let numericPageContext = 3908;
-                switch (catfolder.RootFolder) {
-                    case "archive":
-                    case "boobs":
-                        numericPageContext = 3908;
-                        break;
-                    case "playboy":
-                    case "centerfold":
-                    case "cybergirl":
-                    case "plus":
-                        numericPageContext = 72;
-                        break;
-                    case "sluts":
-                    case "porn":
-                    case "soft":
-                        numericPageContext = 3909;
-                        break;
-                    default: numericPageContext = 3908;
-                }
-
-                displayHeader(numericPageContext);
+                //displayHeader(numericPageContext);
+                $('header').html(headerHtml());
                 displayFooter(catfolder.RootFolder);
 
                 setColors(catfolder.RootFolder, catfolder.FolderName);
@@ -151,26 +134,7 @@ async function getAlbumPageInfo(folderId, islargeLoad) {
 
                 $('#footerPageType').html(catfolder.FolderType);
 
-                // BottomfileCount
-                switch (catfolder.FolderType) {
-                    case "multiFolder":
-                    case "singleParent":
-                        $('#slideShowClick').hide();
-                        $('#largeLoadButton').show();
-                        $('#deepSlideshowButton').show();
-                        if (catfolder.Files > 0)
-                            $('#albumBottomfileCount').html("{" + catfolder.Files + "}" + catfolder.SubFolders + "/" + Number(catfolder.TotalChildFiles).toLocaleString());
-                        else
-                            $('#albumBottomfileCount').html(catfolder.SubFolders + "/" + Number(catfolder.TotalChildFiles).toLocaleString());
-                        break;
-                    case "singleModel":
-                    case "multiModel":
-                    case "singleChild":
-                        $('#largeLoadButton').hide();
-                        $('#deepSlideshowButton').hide();
-                        $('#albumBottomfileCount').html(catfolder.Files);
-                        break;
-                }
+                showBottomFileCounts(catfolder.FolderType, catfolder.Files, catfolder.SubFolders, catfolder.TotalChildFiles);
 
                 if (islargeLoad) {
                     $('#largeLoadButton').hide();
@@ -270,12 +234,14 @@ function setBreadcrumbs(catfolder) {
                     switch (catfolder.RootFolder) {
                         case "playboy":
                         case "centerfold":
-                        case "cybergirl":
                         case "magazine":
                         case "muses":
                         case "plus":
                             $('.inactiveBreadCrumb').css({ "color": "wheat" });
                             $('.activeBreadCrumb').css("color", "#f2e289");
+                            break;
+                        case "cybergirl":
+                            $('.inactiveBreadCrumb').css({ "color": "#000" });
                             break;
                     }
                 }
@@ -374,27 +340,30 @@ function setColors(rootFolder, folderName) {
     switch (rootFolder) {
         case "playboy":
         case "centerfold":
-        case "plus":
-            document.title = folderName + " : OggleBooble";
-            $('body').css({ "background-color": "#bdbeb8", "color": "#fff" });
-            $('.inactiveBreadCrumb').css({ "color": "wheat" });
-            $('.activeBreadCrumb').css("color", "#f2e289");
-            $('#topRowLeftContainer').css({ "color": "wheat" });
-            $('#oggleHeader').css("background-color", "#ff6600");
-            $('#carouselContainer').css("background-color", "#bdbeb8");
         case "magazine":
+            document.title = folderName + " : Playboy Centerfolds : OggleBooble";
+            $('body').css({ "background-color": "#538DA1", "color": "#fff" });
+            $('#topRowLeftContainer').css({ "color": "wheat" });
+            $('#oggleHeader').css("background-color", "#3F8293");
+            $('#carouselContainer').css("background-color", "#bdbeb8");
+            break;
+        case "plus":
+            document.title = folderName + " : Playboy Plus : OggleBooble";
+            $('body').css({ "background-color": "#99cc00", "color": "#fff" });
+            $('#oggleHeader').css("background-color", "#d2ff4d");
             break;
         case "muses":
-            document.title = "Playboy Muses : OggleBooble";
+            document.title = folderName + " : Playboy Muses : OggleBooble";
             $('#fancyHeaderTitle').html("Every Playboy Centerfold");
             break;
         case "cybergirl":
-            document.title = "Cybergirls : OggleBooble";
+            document.title = folderName + " : Cybergirls : OggleBooble";
             $('#fancyHeaderTitle').html("Playboy Cybergirls");
-            $('body').css({ "background-color": "rebeccapurple", "color": "#fff" });
-            $('#oggleHeader').css("background-color", "purple");
+            $('body').css({ "background-color": "#E18C2F", "color": "#fff" });
+            $('#oggleHeader').css("background-color", "#F0B76A");
             break;
         case "bond":
+            document.title = folderName + " : Bond Girls : OggleBooble";
             $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/boogle007.png");
             $('#fancyHeaderTitle').html("Bond Girls");
             $('#topRowRightContainer').append(bannerLink('back to OggleBooble', 'https://ogglebooble.com/index.html'));
@@ -441,6 +410,28 @@ function setColors(rootFolder, folderName) {
             break;
         default:
             document.title = folderName + " : OggleBooble";
+    }
+}
+
+function showBottomFileCounts(folderType, fileCount, subfolderCount, childFilesCount) {
+    switch (folderType) {
+        case "multiFolder":
+        case "singleParent":
+            $('#slideShowClick').hide();
+            $('#largeLoadButton').show();
+            $('#deepSlideshowButton').show();
+            if (fileCount > 0)
+                $('#albumBottomfileCount').html("{" + fileCount + "}  " + subfolderCount + "/" + Number(childFilesCount).toLocaleString());
+            else
+                $('#albumBottomfileCount').html(subfolderCount + "/" + Number(childFilesCount).toLocaleString());
+            break;
+        case "singleModel":
+        case "multiModel":
+        case "singleChild":
+            $('#largeLoadButton').hide();
+            $('#deepSlideshowButton').hide();
+            $('#albumBottomfileCount').html(fileCount);
+            break;
     }
 }
 
