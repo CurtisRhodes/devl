@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head lang="en">
+<head lang="en">
     <meta charset="utf-8" />
     <title>Oggle Metrics</title>
     <meta name="viewport" content="width=device-width, initial-scale=0.75">
@@ -11,15 +11,15 @@
     <script src="js/OggleMetrics.js"></script>
 
     <link href="https://common.ogglebooble.com/css/Common.css" rel="stylesheet" />
-    <link href="css/OggleDashboard.css" rel="stylesheet">
-  </head>
+    <link href="css/OggleReports.css" rel="stylesheet">
+</head>
   <body>
       <header class="stickyHeader"></header>
       <div id="visableArea" class="threeColumnLayout">
           <img id='oggleMetricsGif' alt="spinner" title="loading" class='loadingGif' src='https://common.ogglebooble.com/img/loader.gif' />
           <div class="leftColumn dashboardLeftColumn">
               <div class="vertMenu">
-                  <div onclick='showPageHitsReport()'>Performance Metrics</div>
+                  <div onclick='MetricsReport()'>Performance Metrics</div>
                   <div onclick='showPageHitsReport()'>Page Hit Reports</div>
                   <div onclick='showDailyErrorReport()'>Error Reports</div>
                   <div onclick='showActivityReport()'>Activity Reports</div>
@@ -28,38 +28,37 @@
           </div>
           <div class="middleColumn">
 
-              <div id='reportsHeader' class='workAreaHeader'>
-                  <div class="flexContainer">
-                      <div class='workAreaHeaderArea'>
-                          <div id='reportsHeaderTitle' class='workAreaHeaderTitle'>Reports</div>
-                          <div class='reportsHeaderDetailRow'></div>
-                      </div>
-                      <div class='workAreaCloseButton'>
-                          <img style='height:25px' src='https://common.ogglebooble.com/img/close.png' onclick='closeAllReports()'>
+              <div id='pageHitReports' class='fullScreenSection'>
+                  <div id='reportsHeader' class='workAreaHeader'>
+                      <div class="flexContainer">
+                          <div class='workAreaHeaderArea'>
+                              <div id='reportsHeaderTitle' class='workAreaHeaderTitle'>Reports</div>
+                              <div class='reportsHeaderDetailRow'></div>
+                          </div>
+                          <div class='workAreaCloseButton'>
+                              <img style='height:25px' src='https://common.ogglebooble.com/img/close.png' onclick='closeAllReports()'>
+                          </div>
                       </div>
                   </div>
-              </div>
-
-              <div id='pageHitReports' class='fullScreenSection'>
-                  <div id="pageHitSummaryReport" class="reportSection"></div>
-                  <div id="pageHitByPageReport" class="reportSection"></div>
-                  <div id="pageHitPageDetailReport" class="reportSection"></div>
+                  <div id="reportBody" class="reportSection"></div>
                   <div id='pageHitsFooter' class='workareaFooter'></div>
               </div>
 
-              <div id='errorReports' class='fullScreenSection'>
-                  <div id="errorSummaryReport" class="reportSection"></div>
-                  <div id="errorDetailReport" class="reportSection"></div>
-                  <div id="errorreportFooter" class='workareaFooter'></div>
-              </div>
+              <!--<div id='errorReports' class='fullScreenSection'>
+        <div id="pageHitByPageReport" class="reportSection"></div>
+        <div id="pageHitPageDetailReport" class="reportSection"></div>
+        <div id="errorSummaryReport" class="reportSection"></div>
+        <div id="errorDetailReport" class="reportSection"></div>
+        <div id="errorreportFooter" class='workareaFooter'></div>
+    </div>
 
-              <div id='ActivityReports' class='fullScreenSection'>
-                  <div class="reportSection"></div>
-                  <div class="reportSection"></div>
-                  <div class="reportSection"></div>
-                  <div class="reportSection"></div>
-                  <div class="reportSection"></div>
-              </div>
+    <div id='ActivityReports' class='fullScreenSection'>
+        <div class="reportSection"></div>
+        <div class="reportSection"></div>
+        <div class="reportSection"></div>
+        <div class="reportSection"></div>
+        <div class="reportSection"></div>
+    </div>-->
 
               <div id="dataifyInfo" class="infoLine" onclick='$("#dataifyInfo").hide()'></div>
           </div>

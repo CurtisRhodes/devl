@@ -120,7 +120,7 @@ let slideshowVisible = false, imageViewerVisible = false;
                 },
                 error: function (jqXHR) {
                     logOggleActivity("FYX", folderId, "ipify lookup fail");
-                    logOggleError("FYF", folderId, getXHRErrorDetails(jqXHR), "ipify lookup/" + calledFrom);
+                    logOggleError("IFY", folderId, getXHRErrorDetails(jqXHR), "ipify lookup/" + calledFrom);
                     addBadVisitor(create_UUID(), folderId, null, "ipify fail");
                 }
             });
@@ -135,7 +135,7 @@ let slideshowVisible = false, imageViewerVisible = false;
             logOggleActivity("IP0", folderId, "Ip: " + ipAddress);
             $.ajax({
                 type: "GET",
-                url: "https://ipinfo.io/" + ipAddress + "?token=ac5da086206dc4",
+                url: "https://ipinfo.io/" + ipAddress + "?token=e66f93d609e1d8",                
                 success: function (ipResponseObject) {
                     if (isNullorUndefined(ipResponseObject)) {
                         logOggleError("IPN", folderId, "null response", "perform IpInfo")
@@ -150,10 +150,11 @@ let slideshowVisible = false, imageViewerVisible = false;
                     let errMsg = getXHRErrorDetails(jqXHR);
                     if (errMsg.indexOf("Rate limit exceeded") > 0) {
                         logOggleActivity("IP5", folderId, "Ip: " + ipAddress); // "rate limit exceeded"
+                        //tryAlternativeLookupServices(folderId, ipAddress);
                         addBadVisitor(visitorId, folderId, ipAddress, "Rate limit exceeded");
                     }
                     else {
-                        logOggleError("IPX", folderId, errMsg, "ip: " + ipAddress, "perform IpInfo");
+                        logOggleError("IPX", folderId, errMsg, "ip: " + ipAddress);
                         addBadVisitor(visitorId, folderId, ipAddress, "ipnfo burn");
                     }
                 }
@@ -163,6 +164,27 @@ let slideshowVisible = false, imageViewerVisible = false;
             logOggleError("CAT", folderId, e, "perform IpLookup");
         }
     }
+
+    function tryAlternativeLookupServices(folderId, ipAddress) {
+
+        logOggleActivity("IP6", folderId, "try Alternative Lookup Services"); // trying getmyipinfo
+        $.ajax({
+            url: "http://ip-api.com/php/ipAddress",
+            // url: "http:/ /getmyipinfo.com?i=1628e640fc6c81",
+            success: function (getmyipinfoResponse) {
+                if (!isNullorUndefined(getmyipinfoResponse)) {
+                    logOggleActivity("IP7", folderId, "ipAddress: " + ipAddress); // getmyipinfo worked
+                }
+                else {
+                    logOggleActivity("IP8", folderId, "Ip: " + ipAddress); // get MyIpinfo null
+                }
+            },
+            error: function (jqXHR) {
+                logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "try Alternative Lookup Services");
+            }
+        });
+
+        }
 
     function recordHitSource(siteCode, folderId) {
         try {
@@ -333,35 +355,42 @@ function displayFeedback() {
     }
 }
 /*-- log error -----------------------------------------*/{
+    let errorActive = false;
     function logOggleError(errorCode, folderId, errorMessage, calledFrom) {
         try {
-            let visitorId = getCookieValue("VisitorId");
-            $.ajax({
-                type: "POST",
-                url: "php/logError.php",
-                data: {
-                    ErrorCode: errorCode,
-                    FolderId: folderId,
-                    VisitorId: visitorId,
-                    CalledFrom: calledFrom,
-                    ErrorMessage: errorMessage
-                },
-                success: function (success) {
-                    if (success.trim() == "ok") {
-                        console.log(errorCode + " error from: " + calledFrom + " error: " + errorMessage);
+            if (!errorActive) {
+                errorActive = true;
+                let visitorId = getCookieValue("VisitorId");
+                $.ajax({
+                    type: "POST",
+                    url: "php/logError.php",
+                    data: {
+                        ErrorCode: errorCode,
+                        FolderId: folderId,
+                        VisitorId: visitorId,
+                        CalledFrom: calledFrom,
+                        ErrorMessage: errorMessage
+                    },
+                    success: function (success) {
+                        errorActive = false;
+                        if (success.trim() == "ok") {
+                            console.log(errorCode + " error from: " + calledFrom + " error: " + errorMessage);
+                        }
+                        else {
+                            if (!success.trim().startsWith("2300"))
+                                console.log("log oggle error fail: " + success);
+                        }
+                    },
+                    error: function (jqXHR) {
+                        let errMsg = getXHRErrorDetails(jqXHR);
+                        console.log("Error log error: " + errMsg);
+                        errorActive = false;
                     }
-                    else {
-                        if (!success.trim().startsWith("2300"))
-                            console.log("log oggleerror fail: " + success);
-                    }
-                },
-                error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    console.log("Error log error: " + errMsg);
-                }
-            });
+                });
+            }
         } catch (e) {
             console.log("logOggle error not working: " + e);
+            errorActive = false;
         }
     }
 
@@ -933,7 +962,7 @@ function displayFeedback() {
                 localStorage["VisitorId"] = visitorId;
                 ipifyLookup(folderId, "log pageHit");
             }
-
+             
             $.ajax({
                 type: "POST",
                 url: "php/logPageHit.php",

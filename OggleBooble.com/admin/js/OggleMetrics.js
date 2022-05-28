@@ -1,3 +1,33 @@
+function MetricsReport() {
+    closeAllReports();
+    $('#reportsHeader').show();
+    $('#reportsHeaderTitle').html("Metrics Matrix");
+    $('#pageHitReports').show();
+
+    $.ajax({
+        url: "php/registroFetchAll.php?query=select * from MetricsMatrix where Occured > current_date()-11 order by Occured desc",
+        success: function (response) {
+            let metricsRows = JSON.parse(response);
+            $('#reportBody').html("")
+            //$('#reportBody').append("<div>")
+            let tableKlude = "<table><th><tr><td>day</td><td>hits</td><td>new visitors</td><td>visits</td><tr></th><tbody>";
+            $.each(metricsRows, function (idx, obj) {
+                tableKlude += "<tr><td class='clickable underline' onclick='hitsByPageReport(\"" + obj.Occured + "\")'>" + obj.Occured + "</td>";
+                tableKlude += "<td>" + Number(obj.Hits).toLocaleString() + "</td>";
+                tableKlude += "<td>" + Number(obj.NewVisitors).toLocaleString() + "</td>";
+                tableKlude += "<td>" + Number(obj.Visits).toLocaleString() + "</td></tr>";
+            });
+            tableKlude += "</tr></tbody><table>"
+            $('#reportBody').html(tableKlude).show();
+        },
+        error: function (jqXHR) {
+            let errMsg = getXHRErrorDetails(jqXHR);
+            alert("pageHitSummaryReport: " + errMsg);
+        }
+    });
+}
+
+
 
 function showPageHitsReport() {
     closeAllReports();

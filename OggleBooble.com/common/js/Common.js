@@ -65,7 +65,7 @@ let tanBlueMenuSnippet, bookPanelSnippet;
         var msg = '';
         if (jqXHR.status === 0) {
             //msg = 'Not connect.\n Verify Network.';
-            msg = 'jqXHR.status: ' + jqXHR.status + ", responseText: " + jqXHR.responseText;
+            msg = 'jqXHR.status: ' + jqXHR.status + ", responseText: " + jqXHR.statusText;
         } else if (jqXHR.status === 404) {
             msg = 'Requested page not found. [404]';
         } else if (jqXHR.status === 500) {
@@ -261,6 +261,7 @@ function mailMe() {
                     "<span onclick='headerMenuClick(\"boobs\",136)'> positions,</span>\n" +
                     "<span onclick='headerMenuClick(\"boobs\",159)'> topics,</span>\n" +
                     "<span onclick='headerMenuClick(\"boobs\",199)'> shape,</span>\n" +
+                    "<span onclick='tryAlternativeLookupServices(111, \"174.215.118.65\")'> collection,</span>\n" +
                     "<span onclick='headerMenuClick(\"boobs\",241)'> size</span>\n");
                 //"<span onclick='headerMenuClick(\"boobs\",4010)'> tit play</span>\n");
                 break;
@@ -438,8 +439,7 @@ function mailMe() {
     }
 
     function headerMenuClick(calledFrom, folderId) {
-        //alert("headerMenuClick folderId: " + folderId);
-        //logEvent("TMC", folderId, calledFrom);
+        logOggleEvent("HMC", folderId, calledFrom);
         location.href = "album.html?folder=" + folderId;
     }
 
