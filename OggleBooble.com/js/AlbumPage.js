@@ -78,9 +78,11 @@ function getSubFolders(folderId) {
             " order by SortOrder,FolderName", function (data) {
                 $.each(data, function (index, obj) {
                     let randomId = create_UUID();
+
+
                     let folderCounts = "(" + Number(obj.FileCount).toLocaleString() + ")";
                     if (obj.SubFolderCount > 0)
-                        folderCounts = "(" + obj.SubFolderCount + "/" + Number(obj.FileCount + obj.TotalChildFiles).toLocaleString() + ")";
+                        folderCounts = "(" + obj.SubFolderCount + "/" + (Number(obj.FileCount) + Number(obj.TotalChildFiles)).toLocaleString() + ")";
 
                     let imgSrc = 'https://common.ogglebooble.com/img/RenStimpy8.jpg'
                     if (!isNullorUndefined(obj.FolderImage))
@@ -89,7 +91,7 @@ function getSubFolders(folderId) {
                         oncontextmenu='oggleContextMenu("subfolder","","` + obj.Id + `","` + imgSrc + `")'
                         onclick='folderClick(` + obj.Id + `,` + obj.IsStepChild + `)'>
                         <img id='` + randomId + `' class='folderImage' alt='' src='` + imgSrc + `' onerror=
-                            'imageError(` + folderId + `,"` + obj.linkId + `","` + imgSrc + `","subFolder")'/>
+                        'imageError(` + folderId + `,"` + obj.linkId + `","` + imgSrc + `","subFolder")'/>
                         <div class='defaultSubFolderImage'>` + obj.FolderName + `</div>
                         <span Id='fc` + obj.FolderId + `'>` + folderCounts + `</span></div>`);
                 });
@@ -132,26 +134,7 @@ async function getAlbumPageInfo(folderId, islargeLoad) {
 
                 $('#footerPageType').html(catfolder.FolderType);
 
-                // BottomfileCount
-                switch (catfolder.FolderType) {
-                    case "multiFolder":
-                    case "singleParent":
-                        $('#slideShowClick').hide();
-                        $('#largeLoadButton').show();
-                        $('#deepSlideshowButton').show();
-                        if (catfolder.Files > 0)
-                            $('#albumBottomfileCount').html("{" + catfolder.Files + "}" + catfolder.SubFolders + "/" + Number(catfolder.TotalChildFiles).toLocaleString());
-                        else
-                            $('#albumBottomfileCount').html(catfolder.SubFolders + "/" + Number(catfolder.TotalChildFiles).toLocaleString());
-                        break;
-                    case "singleModel":
-                    case "multiModel":
-                    case "singleChild":
-                        $('#largeLoadButton').hide();
-                        $('#deepSlideshowButton').hide();
-                        $('#albumBottomfileCount').html(catfolder.Files);
-                        break;
-                }
+                showBottomFileCounts(catfolder.FolderType, catfolder.Files, catfolder.SubFolders, catfolder.TotalChildFiles);
 
                 if (islargeLoad) {
                     $('#largeLoadButton').hide();
@@ -427,6 +410,28 @@ function setColors(rootFolder, folderName) {
             break;
         default:
             document.title = folderName + " : OggleBooble";
+    }
+}
+
+function showBottomFileCounts(folderType, fileCount, subfolderCount, childFilesCount) {
+    switch (folderType) {
+        case "multiFolder":
+        case "singleParent":
+            $('#slideShowClick').hide();
+            $('#largeLoadButton').show();
+            $('#deepSlideshowButton').show();
+            if (fileCount > 0)
+                $('#albumBottomfileCount').html("{" + fileCount + "}  " + subfolderCount + "/" + Number(childFilesCount).toLocaleString());
+            else
+                $('#albumBottomfileCount').html(subfolderCount + "/" + Number(childFilesCount).toLocaleString());
+            break;
+        case "singleModel":
+        case "multiModel":
+        case "singleChild":
+            $('#largeLoadButton').hide();
+            $('#deepSlideshowButton').hide();
+            $('#albumBottomfileCount').html(fileCount);
+            break;
     }
 }
 
