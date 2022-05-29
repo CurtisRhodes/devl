@@ -18,7 +18,9 @@ function getAlbumImages(folderId, islargeLoad) {
         $('#imageContainer').html("");
         let sql = "select * from VwLinks where FolderId=" + folderId + " order by SortOrder";
         if (islargeLoad)
-            sql = "select * from VwLinks where FolderId in (select Id from CategoryFolder where Parent=" + folderId + ")";
+            sql = `select * from VwLinks where FolderId = ` + folderId + ` union
+                   select * from VwLinks where Parent = ` + folderId + ` union
+                   select * from VwLinks where gParent = ` + folderId;
 
         $.getJSON('php/yagdrasselFetchAll.php?query=' + sql,
             function (data) {
@@ -140,7 +142,7 @@ async function getAlbumPageInfo(folderId, islargeLoad) {
                     $('#largeLoadButton').hide();
                 }
 
-                $('#largeLoadButton').on("click", function () { getAlbumImages(folderId, true) });
+                $('#largeLoadButton').on("click", function () { loadAlbumPage(folderId, true, "self") });
                 $('#deepSlideshowButton').on("click", function () { showSlideshowViewer(folderId, 0, true) });
                 $('#slideShowClick').on("click", function () { showSlideshowViewer(folderId, 0, false) });
 
@@ -197,17 +199,22 @@ function setBreadcrumbs(catfolder) {
                         return;
                     }
 
-                    switch (catfolder.FolderType) {
-                        case "singleModel":
-                        case "singleParent":  // showFileDetailsDialog
-                            $('#breadcrumbContainer').html("<div class='inactiveBreadCrumb' " +
-                                "onclick='showFileDetailsDialog(" + catfolder.Id + ")'>" + breadcrumbItem[0].FolderName + "</div>");
-                            break;
-                        default: // showFolderInfoDialog
-                            $('#breadcrumbContainer').html("<div class='inactiveBreadCrumb' " +
-                                "onclick='showFolderInfoDialog(" + catfolder.Id + ")'>" + breadcrumbItem[0].FolderName + "</div>");
+                    if (currentIsLargeLoad) {
+                        $('#breadcrumbContainer').html("<div class='inactiveBreadCrumb' " +
+                            "onclick='loadAlbumPage(" + catfolder.Id + ",false,\"self\")'>return to " + breadcrumbItem[0].FolderName + "</div>");
                     }
-
+                    else {
+                        switch (catfolder.FolderType) {
+                            case "singleModel":
+                            case "singleParent":  // showFileDetailsDialog
+                                $('#breadcrumbContainer').html("<div class='inactiveBreadCrumb' " +
+                                    "onclick='showFileDetailsDialog(" + catfolder.Id + ")'>" + breadcrumbItem[0].FolderName + "</div>");
+                                break;
+                            default: // showFolderInfoDialog
+                                $('#breadcrumbContainer').html("<div class='inactiveBreadCrumb' " +
+                                    "onclick='showFolderInfoDialog(" + catfolder.Id + ")'>" + breadcrumbItem[0].FolderName + "</div>");
+                        }
+                    }
                     let parent = breadcrumbItem[0].Parent;
 
                     while (parent > 0) {
@@ -338,10 +345,17 @@ function setTopHeaderRow(pageContext) {
 
 function setColors(rootFolder, folderName) {
     switch (rootFolder) {
+        case "archive":
+            document.title = folderName + " : OggleBooble";
+            $('#fancyHeaderTitle').html("OggleBooble");
+            $('#topRowLeftContainer').html("Home of the Big Naturals");
+            $('#topRowRightContainer').append(bannerLink('every playboy centerfold', 'https://ogglebooble.com/index.html?spa=playboy'));
+            break;
         case "playboy":
         case "centerfold":
         case "magazine":
             document.title = folderName + " : Playboy Centerfolds : OggleBooble";
+            $('#fancyHeaderTitle').html("Every Playboy Centerfold");
             $('body').css({ "background-color": "#538DA1", "color": "#fff" });
             $('#topRowLeftContainer').css({ "color": "wheat" });
             $('#oggleHeader').css("background-color", "#3F8293");

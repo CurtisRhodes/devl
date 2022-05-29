@@ -1,13 +1,15 @@
 const slideSpeed = 33, slideIncrement = 88;
 
-let slideShowSpeed = 5000, imageArray = [], imageViewerIndex = 0, spSessionCount = 0, tempImgSrc = new Image(),
-    isPaused = false, imageViewerIntervalTimer = null, slideshowParentName, isSiding = false;
+let slideShowSpeed = 5000, imageArray = [], imageViewerIndex = 0, spSessionCount = 0, tempImgSrc = new Image(), folderId,
+    isPaused = false, imageViewerIntervalTimer = null, slideshowFolderName, isSiding = false, largeLoad = false;
 
-function showSlideshowViewer(folderId, startLink, isLargeLoad) {
+function showSlideshowViewer(ssfolderId, startLink, isLargeLoad) {
     slideshowVisible = true;
+    folderId = ssfolderId;
+    largeLoad = isLargeLoad;
     displayFooter("slideshow");
-    showSlideshowHeader();
-    getFolderDetails(folderId);
+    showSlideshowHeader(folderId);
+    //getFolderDetails(folderId);
 
     $('#albumContentArea').fadeOut();        
     $('#slideshowContent').show();
@@ -63,12 +65,15 @@ function toggleSlideshow() {
 
 function loadSlideshowItems(folderId, startLink, isLargeLoad) {
     try {
+        $('.slideshowNavgArrows').css('visibility', 'hidden');
         let infoStart = Date.now();
         $('#albumPageLoadingGif').show();
         $('#slideshowMessageArea').html('loading');
-        let sql = "select * from VwLinks where FolderId=" + folderId + " order by SortOrder";
+        let sql = "select * from VwLinks where FolderId=" + folderId;
         if (isLargeLoad) {
-            sql = "select * from VwLinks where FolderId in (select Id from CategoryFolder where Parent=" + folderId + ")";
+            sql = `select * from VwLinks where FolderId = ` + folderId + ` union
+                   select * from VwLinks where Parent = ` + folderId + ` union
+                   select * from VwLinks where gParent = ` + folderId +` order by LinkId`;
         }
         $.ajax({
             url: "php/yagdrasselFetchAll.php?query=" + sql,
@@ -76,13 +81,10 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                 imageArray = JSON.parse(data);
                 if (imageArray.length > 0) {
                     $('#albumPageLoadingGif').hide();
-
+                    getFolderDetails(folderId);
                     imageViewerIndex = imageArray.findIndex(node => node.LinkId === startLink);
 
                     if (imageViewerIndex < 0) imageViewerIndex = 0;
-                    $('#slideshowMessageArea').html(imageArray[imageViewerIndex].SrcFolder);
-                    $('#sldeshownofn').html((imageViewerIndex + 1) + " / " + imageArray.length);
-
                     while (imageArray[imageViewerIndex].FileName.endsWith("mpg")
                         || imageArray[imageViewerIndex].FileName.endsWith("mp4")) {
                         imageViewerIndex++;
@@ -122,24 +124,28 @@ function getFolderDetails(folderId) {
     try {
 
         $.ajax({
-            url: 'php/yagdrasselFetch.php?query=select f.FolderName, p.FolderName as ParentName ' +
-                ' from CategoryFolder f join CategoryFolder p on f.Parent = p.Id where f.Id=' + folderId,
+            url: 'php/yagdrasselFetch.php?query=select f.*, p.FolderName ParentFolderName from CategoryFolder f join CategoryFolder p on f.Parent = p.Id where f.Id=' + folderId,
             success: function (data) {
                 if (data == false) {
                     logOggleError("AJX", folderId, "folder not found?", "get folder details");
                 }
                 else {
                     let thisCatFolder = JSON.parse(data);
-
-                    $('#slideshowMessageArea').html("<span sytle='font-size:19px'>" + thisCatFolder.ParentName +
-                        "/" + thisCatFolder.FolderName + "</span>");
-
+                    if (largeLoad) {
+                        $('#slideshowMessageArea').html("<span sytle='font-size:19px'>loading</span>");
+                        slideshowFolderName = thisCatFolder.FolderName;
+                    }
+                    else {
+                        slideshowFolderName = thisCatFolder.ParentFolderName + "/" + thisCatFolder.FolderName;
+                        $('#slideshowMessageArea').html("<span sytle='font-size:19px'>" + slideshowFolderName + "</span>");
+                    }
                     $('#leftClickArea').on("click", function () {
                         if (isNullorUndefined(imageViewerIntervalTimer))
                             slide("prev", folderId);
                         else
                             toggleSlideshow();
                     });
+                    //$('#topRowMiddleContainer').html("<div class='activeBreadCrumb' " + "onclick='closeSlideshow()'>" + slideshowFolderName + "</div>");
 
                     $('#rightClickArea').on("click", function () { slide("next", folderId) });
                     $('.hiddenClickArea').on("dblclick", function () { toggleSlideshow(); });
@@ -241,18 +247,16 @@ function slide(direction) {
                                 resizeSlideshow();
                                 $('.slideshowNavgArrows').css('visibility', 'visible').fadeIn();
 
-                                if (imageArray[imageViewerIndex].FolderId != imageArray[imageViewerIndex].SrcId) {
-                                    // we have a link
-                                    $('#slideshowImageLabel').html(imageArray[imageViewerIndex].SrdFolder).fadeIn()
-                                        .on("click", window.location.href = 'album.html?folderId="+imageArray[imageViewerIndex].SrcId,"_blank"');
-                                }
-                                if (isNullorUndefined(slideshowParentName))
-                                    $('#slideshowMessageArea').html(imageArray[imageViewerIndex].ImageFolderName).fadeIn();
-                                else
-                                    $('#slideshowMessageArea').html(slideshowParentName + "/" + imageArray[imageViewerIndex].ImageFolderName).fadeIn();
+                                //if (imageArray[imageViewerIndex].FolderId != imageArray[imageViewerIndex].SrcId) {
+                                //    // we have a link
+                                //    $('#slideshowImageLabel').html(imageArray[imageViewerIndex].SrdFolder).fadeIn()
+                                //        .on("click", window.location.href = 'album.html?folderId="+imageArray[imageViewerIndex].SrcId,"_blank"');
+                                //}
+                                if (largeLoad)
+                                    $('#slideshowMessageArea').html(slideshowFolderName + "/" + imageArray[imageViewerIndex].SrcFolder).fadeIn();
 
                                 spSessionCount++;
-                                $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + imageArray.length);
+                                $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + Number(imageArray.length).toLocaleString());
                                 $('#txtSlideshow').focus();
                                 $('#footerMessage').html("image: " + imageViewerIndex + " of: " + imageArray.length);
                                 isSiding = false;
@@ -356,22 +360,23 @@ function resumeSlideshow() {
 function closeSlideshow() {
     $('#slideshowContent').fadeOut();
     $('#albumContentArea').fadeIn();
-    displayHeader("oggleIndex");
+    loadAlbumPage(folderId, false, "self");
+    //displayHeader("oggleIndex");
     displayFooter("oggleAlbum");
     slideshowVisible = false;
 }
 
 function showSlideshowHeader() {
-    let tempd = document.createElement('div');
-    tempd.innerHTML = $('#breadcrumbContainer').html();
 
     displayHeader("slideshow");
-    $('#topRowMiddleContainer').html(tempd.innerHTML);
+
+    //let tempd = document.createElement('div');
+    //tempd.innerHTML = $('#breadcrumbContainer').html();
 
     $('#headerBottomRow').html(`
       <div class="fullWidthFlexContainer">
         <div id='sldeshowNofN' class='sldeshowHeaderTextContainer'></div>
-        <div id='slideshowMessageArea' class='inline wideCententer'></div>
+        <div id='slideshowMessageArea' class='inline wideCententer' onclick='closeSlideshow()'></div>
         <div class='flexContainer'>
             <div class='inline clickable' onclick='adjustSlideshowSpeed("faster")'>
                 <img id='fasterSlideshow' class='slideshowHeaderButton' title='faster'
@@ -388,7 +393,7 @@ function showSlideshowHeader() {
             <img id='btnExplodeImage' class='slideshowHeaderButton' title='explode image' onclick='explodeCarouselImage()'
                 src='https://common.ogglebooble.com/img/expand02.png'/>
         </div>
-        <div class='slideshowHeaderButtonContainer' onclick='closeSlideshow();'>
+        <div class='slideshowHeaderButtonContainer' onclick='closeSlideshow()'>
             <img class='slideshowHeaderButton' title='you may use the {esc} key'
                     src='https://common.ogglebooble.com/img/close.png' />
         </div>
