@@ -9,15 +9,14 @@ let slideshowVisible = false, imageViewerVisible = false;
                 logOggleError("V30", folderId, "session storage not recognized");
                 return;
             }
+            sessionStorage["VisitorIdVerified"] = "ok";
             let visitorId = getCookieValue("VisitorId");
             if (visitorId == "cookie not found") {
                 logOggleActivity("CNF", folderId, "verifyNewUser");  // new visitor cookie not found
-                ipifyLookup(folderId, "CNF");
+                ipifyLookup(folderId, "session verify");
             }
             else {
                 // happy path
-                // new session
-                sessionStorage["VisitorIdVerified"] = "ok";
                 if (!isNullorUndefined(calledFrom)) {
                     recordHitSource(calledFrom, folderId);
                 }
@@ -34,7 +33,6 @@ let slideshowVisible = false, imageViewerVisible = false;
                     type: "GET",
                     url: "php/registroFetch.php?query=Select * from Visitor where VisitorId='" + visitorId + "'",
                     success: function (data) {
-                        sessionStorage["VisitorIdVerified"] = "ok";
                         if (data == "false") {
                             logOggleError("X33", folderId, "visitorId: " + visitorId + " from cookie not found in db ? ", "verify VisitorId");
                             //ipifyLookup(folderId, "session verify");
@@ -70,25 +68,18 @@ let slideshowVisible = false, imageViewerVisible = false;
                         logOggleError("XHR", folderId, "ipify empty response", "ipify lookup");
                     }
                     else {
-                        if (calledFrom == "session verify") {
-                            // 
-                        }
+
                         if (calledFrom == "log pageHit") {
                             let visitorId = getCookieValue("VisitorId");
                             if (visitorId == "cookie not found") {
                                 logOggleError("DBF", folderId, "double cookie not found", "ipify lookup / log pageHit");
                             }
                             else {
-                                // happy path
                                 performIpInfo(ipifyRtrnIP);
-                                sessionStorage["VisitorIdVerified"] = "ok";
-                                verifyVisitorId(folderId, visitorId);
-                                logOggleActivity("NSS", folderId, "verifyNewUser") // new session started
                             }
-
                         }
                         // logOggleActivity("FY1", folderId, "success", "ipify lookup");
-                        if (calledFrom == "CNF") {
+                        if (calledFrom == "session verify") {
                             $.ajax({
                                 type: "GET",
                                 url: "php/registroFetch.php?query=Select * from Visitor where IpAddress='" + ipifyRtrnIP + "'",
@@ -96,17 +87,24 @@ let slideshowVisible = false, imageViewerVisible = false;
                                     if (data == "false") { // ipify IP not found.in Visitor table                                    
                                         let visitorId = create_UUID();
                                         performIpInfo(folderId, ipifyRtrnIP, visitorId);
-                                        if (!isNullorUndefined(calledFrom)) {
-                                            recordHitSource(calledFrom, folderId);
-                                        }
+                                        //if (!isNullorUndefined(calledFrom)) {
+                                        //    recordHitSource(calledFrom, folderId);
+                                        //}
                                         // logOggleActivity("FY2", folderId, ipifyRtrnIP + " not found");
-
                                     }
                                     else {
-                                        logOggleActivity("FY3", folderId, ipifyRtrnIP + "ipify lookup found ok");
+                                        // ip in visitor table but cookie not found
+                                        logOggleActivity("FY3", folderId, ipifyRtrnIP); //  + "ipify lookup found ok"
+
                                         let visitorRow = JSON.parse(data);
-                                        if (localStorage["VisitorId"] != visitorRow.VisitorId) {
-                                            logOggleActivity("FY4", folderId, "local storage: " + localStorage["VisitorId"] + " does not match visitorRow.VisitorId: " + visitorRow.VisitorId);
+                                        if (!isNullorUndefined(localStorage["VisitorId"])) {
+                                            if (localStorage["VisitorId"] != visitorRow.VisitorId) {
+                                                logOggleActivity("FY4", folderId, visitorRow.VisitorId);
+                                                    //"local storage: " + localStorage["VisitorId"] + " does not match visitorRow.VisitorId: " + visitorRow.VisitorId);
+                                            }
+                                        }
+                                            
+
                                             // logOggleError("BUG", -67736, "just told cookie not found", "ipify lookup/" + calledFrom);
                                         }
                                     }
@@ -121,7 +119,7 @@ let slideshowVisible = false, imageViewerVisible = false;
                 error: function (jqXHR) {
                     logOggleActivity("FYX", folderId, "ipify lookup fail");
                     logOggleError("IFY", folderId, getXHRErrorDetails(jqXHR), "ipify lookup/" + calledFrom);
-                    addBadVisitor(create_UUID(), folderId, null, "ipify fail");
+                    //addBadVisitor(create_UUID(), folderId, null, "ipify fail");
                 }
             });
         }
