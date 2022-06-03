@@ -312,7 +312,7 @@ body {
         display: inline-block;
         font-size: 14px;
         padding-left: 11px;
-        color: var(--oggleTitleColor);
+        /* color: var(--oggleTitleColor);*/
     }
 
 .activeBreadCrumb {
@@ -324,7 +324,6 @@ body {
 
 .inactiveBreadCrumb {
     margin-left: 20px;
-    color: #000;
     font-weight: bold;
     cursor: pointer;
     float: left;

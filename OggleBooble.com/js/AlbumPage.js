@@ -347,6 +347,7 @@ function setColors(rootFolder, folderName) {
     switch (rootFolder) {
         case "archive":
             document.title = folderName + " : OggleBooble";
+            //changeFavoriteIcon("redBallon");
             $('#fancyHeaderTitle').html("OggleBooble");
             $('#topRowLeftContainer').html("Home of the Big Naturals");
             $('#topRowRightContainer').append(bannerLink('every playboy centerfold', 'https://ogglebooble.com/index.html?spa=playboy'));
@@ -355,6 +356,8 @@ function setColors(rootFolder, folderName) {
         case "centerfold":
         case "magazine":
             document.title = folderName + " : Playboy Centerfolds : OggleBooble";
+            $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/playboyBallon.png");
+            changeFavoriteIcon("playboy");
             $('#fancyHeaderTitle').html("Every Playboy Centerfold");
             $('body').css({ "background-color": "#538DA1", "color": "#fff" });
             $('#topRowLeftContainer').css({ "color": "wheat" });
@@ -363,15 +366,21 @@ function setColors(rootFolder, folderName) {
             break;
         case "plus":
             document.title = folderName + " : Playboy Plus : OggleBooble";
+            $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/playboyBallon.png");
+            changeFavoriteIcon("playboy");
             $('body').css({ "background-color": "#99cc00", "color": "#fff" });
             $('#oggleHeader').css("background-color", "#d2ff4d");
             break;
         case "muses":
             document.title = folderName + " : Playboy Muses : OggleBooble";
-            $('#fancyHeaderTitle').html("Every Playboy Centerfold");
+            $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/playboyBallon.png");
+            changeFavoriteIcon("playboy");
+            $('#fancyHeaderTitle').html("Playboy Muses");
             break;
         case "cybergirl":
             document.title = folderName + " : Cybergirls : OggleBooble";
+            $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/playboyBallon.png");
+            changeFavoriteIcon("playboy");
             $('#fancyHeaderTitle').html("Playboy Cybergirls");
             $('body').css({ "background-color": "#E18C2F", "color": "#fff" });
             $('#oggleHeader').css("background-color", "#F0B76A");
@@ -386,12 +395,26 @@ function setColors(rootFolder, folderName) {
             $('#oggleHeader').css("background-color", "#ffcc66");
             $('body').css({ "background-color": "#000", "color": "#fff" });
             break;
+        case "porn":
+            document.title = folderName + " : OgglePorn";
+            $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/csLips02.png");
+            $('#fancyHeaderTitle').html("Oggle Porn");
+            $('#topRowRightContainer').append(bannerLink('back to OggleBooble', 'https://ogglebooble.com/index.html'));
+            $('#topRowRightContainer').append(bannerLink('every playboy centerfold', 'https://ogglebooble.com/index.html?spa=playboy'));
+            changeFavoriteIcon("porn");
+
+            $('body').css({ "background-color": "#bdbeb8", "color": "#fff" });
+            $('#oggleHeader').css("background-color", "#000");
+            $('#carouselContainer').css("background-color", "#bdbeb8");
+            $('.hdrTopRowMenu').css("color", "#f2e289");
+            $('#oggleHeader').css("color", "#f2e289");
+            break;
         case "sluts":
             document.title = folderName + " : OggleSluts";
+            $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/csLips02.png");
             $('#fancyHeaderTitle').html("sluts ");
             $('#oggleHeader').css("background-color", "deeppink");
             $('body').css("background-color", "palevioletred");
-            $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/csLips02.png");
             $('#hdrBtmRowSec3').append(bannerLink('back to OgglePorn', 'https://ogglebooble.com/index.html?spa=porn'));
             $('#hdrBtmRowSec3').append(bannerLink('back to OggleBooble', 'https://ogglebooble.com/index.html'));
             changeFavoriteIcon("porn");

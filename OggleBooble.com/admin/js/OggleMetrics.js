@@ -11,12 +11,20 @@ function MetricsReport() {
             $('#reportBody').html("")
             //$('#reportBody').append("<div>")
             let tableKlude = "<table><th><tr><td>day</td><td>hits</td><td>new visitors</td><td>visits</td><tr></th><tbody>";
+
+            // memorial day pivot table
+
+
             $.each(metricsRows, function (idx, obj) {
+
+
                 tableKlude += "<tr><td class='clickable underline' onclick='hitsByPageReport(\"" + obj.Occured + "\")'>" + obj.Occured + "</td>";
                 tableKlude += "<td>" + Number(obj.Hits).toLocaleString() + "</td>";
                 tableKlude += "<td>" + Number(obj.NewVisitors).toLocaleString() + "</td>";
                 tableKlude += "<td>" + Number(obj.Visits).toLocaleString() + "</td></tr>";
             });
+
+
             tableKlude += "</tr></tbody><table>"
             $('#reportBody').html(tableKlude).show();
         },
