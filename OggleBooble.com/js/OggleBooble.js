@@ -6,13 +6,13 @@ let slideshowVisible = false, imageViewerVisible = false;
 
         if (isNullorUndefined(sessionStorage["VisitorIdVerified"])) {
             if (!window.sessionStorage) {
-                logOggleError("V30", folderId, "session storage not recognized");
+                logOggleError("V30", folderId, "session storage not recognized", "verify user");
                 return;
             }
             sessionStorage["VisitorIdVerified"] = "ok";
             let visitorId = getCookieValue("VisitorId");
             if (visitorId == "cookie not found") {
-                logOggleActivity("CNF", folderId, "verifyNewUser");  // new visitor cookie not found
+                logOggleActivity("CNF", folderId, "verify user");  // new visitor cookie not found
                 ipifyLookup(folderId, "session verify");
             }
             else {
@@ -20,13 +20,13 @@ let slideshowVisible = false, imageViewerVisible = false;
                 if (!isNullorUndefined(calledFrom)) {
                     recordHitSource(calledFrom, folderId);
                 }
-                verifyVisitorId(folderId, visitorId);
+                verifyVisitorId(folderId, visitorId, "verify user");
                 logOggleActivity("NSS", folderId, "verifyNewUser") // new session started
             }
         }
     }
 
-    function verifyVisitorId(folderId, visitorId) {
+    function verifyVisitorId(folderId, visitorId, calledFrom) {
         try {
             if (isGuid(visitorId)) {
                 $.ajax({
@@ -34,12 +34,24 @@ let slideshowVisible = false, imageViewerVisible = false;
                     url: "php/registroFetch.php?query=Select * from Visitor where VisitorId='" + visitorId + "'",
                     success: function (data) {
                         if (data == "false") {
-                            logOggleError("X33", folderId, "visitorId: " + visitorId + " from cookie not found in db ? ", "verify VisitorId");
-                            //ipifyLookup(folderId, "session verify");
+                            if (calledFrom = "verify user") {
+                                logOggleActivity("VV3", folderId, visitorId);  //  visitorId from cookie not found in db
+                            }
+                            if (calledFrom = "log pageHit") {
+                                logOggleActivity("VV1", folderId, visitorId);  //  log page hit visitorId not found in db
+                                ipifyLookup(folderId, "log pageHit");
+                            }
                         }
                         else {
-                            logOggleActivity("SOK", folderId, "verify VisitorId: " + visitorId); // new session verified ok
-                            logVisit("visitor verified");
+                            if (calledFrom = "verify user") {
+                                logOggleActivity("VV0", folderId, "verify Visitor"); // new session verified ok
+                                logVisit("visitor verified");
+                            }
+                            if (calledFrom = "log pageHit") {
+                                if (data.Country == "ZZ") {
+                                    logOggleActivity("VV2", folderId, "verify Visitor"); // new session verified ok
+                                }
+                            }
                         }
                     },
                     error: function (jqXHR) {
@@ -64,18 +76,18 @@ let slideshowVisible = false, imageViewerVisible = false;
                 url: "https://api.ipify.org",
                 success: function (ipifyRtrnIP) {
                     if (isNullorUndefined(ipifyRtrnIP)) {
-                        logOggleActivity("FYE", folderId, "fail", "ipify lookup");
-                        logOggleError("XHR", folderId, "ipify empty response", "ipify lookup");
+                        logOggleActivity("FYE", folderId, "ipify lookup");  // ipify empty response
+                        // logOggleError("XHR", folderId, "ipify empty response", "ipify lookup");
                     }
                     else {
-
                         if (calledFrom == "log pageHit") {
                             let visitorId = getCookieValue("VisitorId");
                             if (visitorId == "cookie not found") {
                                 logOggleError("DBF", folderId, "double cookie not found", "ipify lookup / log pageHit");
                             }
                             else {
-                                performIpInfo(ipifyRtrnIP);
+                                logOggleActivity("FY5", folderId, "ipify lookup"); // calling perform IpInfo from log pageHit
+                                performIpInfo(folderId, ipifyRtrnIP, visitorId);
                             }
                         }
                         // logOggleActivity("FY1", folderId, "success", "ipify lookup");
@@ -84,28 +96,30 @@ let slideshowVisible = false, imageViewerVisible = false;
                                 type: "GET",
                                 url: "php/registroFetch.php?query=Select * from Visitor where IpAddress='" + ipifyRtrnIP + "'",
                                 success: function (data) {
-                                    if (data == "false") { // ipify IP not found.in Visitor table                                    
+                                    if (data == "false") { 
                                         let visitorId = create_UUID();
+                                        localStorage["VisitorId"] = visitorId;
+                                        logOggleActivity("FY2", folderId, ipifyRtrnIP);  // ipify IP not in Visitor table
+
                                         performIpInfo(folderId, ipifyRtrnIP, visitorId);
-                                        //if (!isNullorUndefined(calledFrom)) {
-                                        //    recordHitSource(calledFrom, folderId);
-                                        //}
-                                        // logOggleActivity("FY2", folderId, ipifyRtrnIP + " not found");
+
+                                        if (!isNullorUndefined(calledFrom)) {
+                                            recordHitSource(calledFrom, folderId);
+                                        }
                                     }
                                     else {
-                                        // ip in visitor table but cookie not found
-                                        logOggleActivity("FY3", folderId, ipifyRtrnIP); //  + "ipify lookup found ok"
-
                                         let visitorRow = JSON.parse(data);
                                         if (!isNullorUndefined(localStorage["VisitorId"])) {
                                             if (localStorage["VisitorId"] != visitorRow.VisitorId) {
-                                                logOggleActivity("FY4", folderId, visitorRow.VisitorId);
-                                                    //"local storage: " + localStorage["VisitorId"] + " does not match visitorRow.VisitorId: " + visitorRow.VisitorId);
+                                                logOggleActivity("FY4", folderId, visitorRow.VisitorId);  //  visitorId mismatch
+                                                logOggleError("FY4", folderId,
+                                                    "local storage: " + localStorage["VisitorId"] + " does not match visitorRow.VisitorId: " + visitorRow.VisitorId,
+                                                    "session verify/ipify lookup");
                                             }
                                         }
-                                            
-
-                                            // logOggleError("BUG", -67736, "just told cookie not found", "ipify lookup/" + calledFrom);
+                                        else {
+                                            logOggleActivity("FY3", folderId, ipifyRtrnIP); // ip in visitor table but cookie not found
+                                            localStorage["VisitorId"] = visitorRow.VisitorId;
                                         }
                                     }
                                 },
@@ -960,6 +974,8 @@ function displayFeedback() {
                 localStorage["VisitorId"] = visitorId;
                 ipifyLookup(folderId, "log pageHit");
             }
+            else
+                verifyVisitorId(folderId, visitorId, "log pageHit");
              
             $.ajax({
                 type: "POST",
@@ -969,22 +985,21 @@ function displayFeedback() {
                     pageId: folderId
                 },
                 success: function (success) {
-                    if (success.trim() != "ok") {
-                        switch (success.trim()) {
-                            case '23000':
-                                //logOggleError("",);  // duplicate page hit
-                                break;
-                            case '42000':
-                            default:
-                                logOggleError("AJX", folderId, "php code: " + success.trim(), "log page hit");
-                        }
+                    switch (success.trim()) {
+                        case "ok":
+                            break;
+                        case '23000':
+                            //logOggleError("",);  // duplicate page hit
+                            break;
+                        case '42000':
+                        default:
+                            logOggleError("AJX", folderId, "php code: " + success.trim(), "log page hit");
                     }
                 },
                 error: function (jqXHR) {
                     logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "log page hit");
                 }
             });
-
         } catch (e) {
             logOggleError("CAT", folderId, e, "log page hit");
         }

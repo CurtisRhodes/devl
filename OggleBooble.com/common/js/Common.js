@@ -638,7 +638,7 @@ function mailMe() {
                     $('#footerCol6').html(showHitStats());
                 case "archive":
                 case "oggleAlbum":
-                case "gallery":
+                case "sluts":
                 case "porn":
                 case "welcome":
                 case "blog":
