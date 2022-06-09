@@ -343,14 +343,11 @@ function incrementIndex(direction) {
 
 function slideshowContextMenu() {
     isPaused = true;
-    pos = {};
-    pos.x = event.clientX;
-    pos.y = event.clientY;
-    oggleContextMenu("slideshow", pos,
-        settingsImgRepo + imageArray[imageViewerIndex].FileName,
-        imageArray[imageViewerIndex].LinkId,
-        imageArray[imageViewerIndex].FolderId,
-        imageArray[imageViewerIndex].FolderName);
+    //pos = {};
+    //pos.x = event.clientX;
+    //pos.y = event.clientY;
+    oggleContextMenu("slideshow", imageArray[imageViewerIndex].LinkId, imageArray[imageViewerIndex].FolderId, settingsImgRepo + imageArray[imageViewerIndex].FileName);
+        //imageArray[imageViewerIndex].FolderName);
 }
 
 function resumeSlideshow() {
