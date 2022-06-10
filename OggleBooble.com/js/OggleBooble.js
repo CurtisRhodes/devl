@@ -857,7 +857,8 @@ function displayFeedback() {
                 </div>
             </div>
             <div id='copyDialogDirTreeContainer' class='folderDialogFooter'>
-            <div id='showCopyDialogFooter' class='folderDialogFooter'>
+                <div id='showCopyDialogFooter' class='folderDialogFooter'>destination
+                    <input id="txtDestFolder"/>
             </div>
         </div>`);
         // $('#copyDialogDirTreeContainer').html("<div class='roundendButton' onclick='perfomCopyLink(\"" + linkId + "\")'>Caterogize</div>");
@@ -867,14 +868,60 @@ function displayFeedback() {
     }
 
     function moveCopyImage(linkId, cMode) {
-
-        alert(cMode + " image: " + linkId);
-
+        let destFolder = $('#txtDestFolder').val();
+        // alert(cMode + " image: " + linkId);
+        //alert(cMode + " folderId: " + folderId);
         switch (cMode) {
-            case "soft":
+            case "copy":
+                $.ajax({
+                    type: "POST",
+                    url: "php/addLink.php",
+                    data: {
+                        FolderId: destFolder,
+                        LinkId: linkId
+                    },
+                    success: function (success) {
+                        $('#contextMenuContainer').fadeOut();
+                        $('#albumPageLoadingGif').hide();
+                        if (success.trim() == "ok") {
+                            displayStatusMessage("ok", "image copied to " + destFolder);
+                            logOggleEvent("CPL", destFolder, linkId);
+                            // reload page
+                            loadAlbumPage(pfolderId, currentIsLargeLoad, null);
+                        }
+                        else {
+                            displayStatusMessage("error", success.trim());
+                            logOggleError("AJX", pfolderId, success.trim(), "copy image");
+                        }
+                    },
+                    error: function (jqXHR) {
+                        $('#contextMenuContainer').fadeOut();
+                        $('#albumPageLoadingGif').hide();
+                        let errMsg = getXHRErrorDetails(jqXHR);
+                        displayStatusMessage("error", errMsg);
+                        logOggleError("XHR", pfolderId, errMsg, "copy image");
+                    }
+                });
+                break;
+            case "move":
                 //let sql = "UPDATE ImageFile set FolderId=" + newParent + " where Id='" + linkId + "'";
                 $.ajax({
-                    url: "php/CopyMoveImage.php?mode=" + cMode + "imageId=" + linkId + "&destFolder=",
+                    type: "POST",
+                    url: "php/moveLink.php",
+                    data: {
+                        SourceFolder: sourceFolder,
+                        DestFolder: destFolder,
+                        LinkId: linkId
+                    },
+                    success: function () {
+                    },
+                    error: function () {
+                    }
+                });
+                break;
+            case "mush":
+                $.ajax({
+                    url: "php/physciallyMoveImage.php?imageId=" + linkId + "&destFolder=",
                     success: function () {
                     },
                     error: function () {
@@ -882,17 +929,6 @@ function displayFeedback() {
                 });
                 break;
             default:
-        }
-        if (cMode == "soft") {
-        }
-        else {
-            $.ajax({
-                url: "php/physciallyMoveImage.php?imageId=" + linkId + "&destFolder=",
-                success: function () {
-                },
-                error: function () {
-                }
-            });
         }
     }
 

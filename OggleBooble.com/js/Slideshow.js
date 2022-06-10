@@ -1,14 +1,14 @@
 const slideSpeed = 33, slideIncrement = 88;
 
-let slideShowSpeed = 5000, imageArray = [], imageViewerIndex = 0, spSessionCount = 0, tempImgSrc = new Image(), folderId,
+let slideShowSpeed = 5000, imageArray = [], imageViewerIndex = 0, spSessionCount = 0, tempImgSrc = new Image(), ssfolderId,
     isPaused = false, imageViewerIntervalTimer = null, slideshowFolderName, isSiding = false, largeLoad = false;
 
-function showSlideshowViewer(ssfolderId, startLink, isLargeLoad) {
+function showSlideshowViewer(folderId, startLink, isLargeLoad) {
     slideshowVisible = true;
-    folderId = ssfolderId;
+    ssfolderId = folderId;
     largeLoad = isLargeLoad;
     displayFooter("slideshow");
-    showSlideshowHeader(folderId);
+    showSlideshowHeader(ssfolderId);
     //getFolderDetails(folderId);
 
     $('#albumContentArea').fadeOut();        
@@ -17,7 +17,7 @@ function showSlideshowViewer(ssfolderId, startLink, isLargeLoad) {
     $("#vailShell").hide();
     $('#slideshowContent').css('opacity', 1);
     spSessionCount = 0;
-    loadSlideshowItems(folderId, startLink, isLargeLoad);
+    loadSlideshowItems(ssfolderId, startLink, isLargeLoad);
     resizeSlideshow();
 }
 
@@ -63,17 +63,17 @@ function toggleSlideshow() {
     }
 }
 
-function loadSlideshowItems(folderId, startLink, isLargeLoad) {
+function loadSlideshowItems(ssfolderId, startLink, isLargeLoad) {
     try {
         $('.slideshowNavgArrows').css('visibility', 'hidden');
         let infoStart = Date.now();
         $('#albumPageLoadingGif').show();
         $('#slideshowMessageArea').html('loading');
-        let sql = "select * from VwLinks where FolderId=" + folderId;
+        let sql = "select * from VwLinks where FolderId=" + ssfolderId;
         if (isLargeLoad) {
-            sql = `select * from VwLinks where FolderId = ` + folderId + ` union
-                   select * from VwLinks where Parent = ` + folderId + ` union
-                   select * from VwLinks where gParent = ` + folderId +` order by LinkId`;
+            sql = `select * from VwLinks where FolderId = ` + ssfolderId + ` union
+                   select * from VwLinks where Parent = ` + ssfolderId + ` union
+                   select * from VwLinks where gParent = ` + ssfolderId +` order by LinkId`;
         }
         $.ajax({
             url: "php/yagdrasselFetchAll.php?query=" + sql,
@@ -81,7 +81,7 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                 imageArray = JSON.parse(data);
                 if (imageArray.length > 0) {
                     $('#albumPageLoadingGif').hide();
-                    getFolderDetails(folderId);
+                    getFolderDetails(ssfolderId);
                     imageViewerIndex = imageArray.findIndex(node => node.LinkId === startLink);
 
                     if (imageViewerIndex < 0) imageViewerIndex = 0;
@@ -106,28 +106,28 @@ function loadSlideshowItems(folderId, startLink, isLargeLoad) {
                 else {
                     $('#albumPageLoadingGif').hide();
                     displayStatusMessage("warning", "no images found");
-                    logOggleError("AJX", folderId, "no images found", "load slideshow items");
+                    logOggleError("AJX", ssfolderId, "no images found", "load slideshow items");
                 }
             },
             error: function (jqXHR) {
                 $('#albumPageLoadingGif').hide();
-                logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "load slideshow items");
+                logOggleError("XHR", ssfolderId, getXHRErrorDetails(jqXHR), "load slideshow items");
             }
         });
     } catch (e) {
         $('#albumPageLoadingGif').hide();
-        logOggleError("CAT", folderId, e, "load slideshow items");
+        logOggleError("CAT", ssfolderId, e, "load slideshow items");
     }
 }
 
-function getFolderDetails(folderId) {
+function getFolderDetails() {
     try {
 
         $.ajax({
-            url: 'php/yagdrasselFetch.php?query=select f.*, p.FolderName ParentFolderName from CategoryFolder f join CategoryFolder p on f.Parent = p.Id where f.Id=' + folderId,
+            url: 'php/yagdrasselFetch.php?query=select f.*, p.FolderName ParentFolderName from CategoryFolder f join CategoryFolder p on f.Parent = p.Id where f.Id=' + ssfolderId,
             success: function (data) {
                 if (data == false) {
-                    logOggleError("AJX", folderId, "folder not found?", "get folder details");
+                    logOggleError("AJX", ssfolderId, "folder not found?", "get folder details");
                 }
                 else {
                     let thisCatFolder = JSON.parse(data);
@@ -141,23 +141,23 @@ function getFolderDetails(folderId) {
                     }
                     $('#leftClickArea').on("click", function () {
                         if (isNullorUndefined(imageViewerIntervalTimer))
-                            slide("prev", folderId);
+                            slide("prev", ssfolderId);
                         else
                             toggleSlideshow();
                     });
                     //$('#topRowMiddleContainer').html("<div class='activeBreadCrumb' " + "onclick='closeSlideshow()'>" + slideshowFolderName + "</div>");
 
-                    $('#rightClickArea').on("click", function () { slide("next", folderId) });
+                    $('#rightClickArea').on("click", function () { slide("next", ssfolderId) });
                     $('.hiddenClickArea').on("dblclick", function () { toggleSlideshow(); });
                     $('.hiddenClickArea').on("contextmenu", function () { slideshowContextMenu() });
                 }
             },
             error: function (jqXHR) {
-                logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "get folder details");
+                logOggleError("XHR", ssfolderId, getXHRErrorDetails(jqXHR), "get folder details");
             }
         });
     } catch (e) {
-        logOggleError("CAT", folderId, e, "get folder details");
+        logOggleError("CAT", ssfolderId, e, "get folder details");
     }
 }
 
@@ -360,7 +360,7 @@ function resumeSlideshow() {
 function closeSlideshow() {
     $('#slideshowContent').fadeOut();
     $('#albumContentArea').fadeIn();
-    loadAlbumPage(folderId, false, "self");
+    loadAlbumPage(ssfolderId, false, "self");
     //displayHeader("oggleIndex");
     displayFooter("oggleAlbum");
     slideshowVisible = false;
