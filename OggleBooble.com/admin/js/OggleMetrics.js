@@ -35,7 +35,64 @@ function MetricsReport() {
     });
 }
 
+function MetricsReport_try1() {
+    closeAllReports();
+    $('#reportsHeader').show();
+    $('#reportsHeaderTitle').html("Metrics Matrix");
+    $('#pageHitReports').show();
 
+    $.ajax({
+        url: "php/registroFetchAll.php?query=select * from MetricsMatrix where Occured > current_date()-11 order by Occured desc",
+        success: function (response) {
+            let metricsRows = JSON.parse(response);
+            $('#reportBody').html("")
+            //$('#reportBody').append("<div>")
+            let tableKlude = "<table><th><tr><td>day</td><td>hits</td><td>new visitors</td><td>visits</td><tr></th><tbody>";
+
+
+
+
+            // memorial day pivot table
+            //        --report time update
+
+            //select date_format(Occured, '%W, %M %D %Y') 'day', format(Hits, 0) 'page hits', format(NewVisitors, 0) 'new visitors', format(Visits, 0) 'Visits'
+            //from oggleboo_registo.MetricsMatrix where Occured > current_date() - 15 order by Occured desc; --0.046;
+
+
+            $.each(metricsRows, function (idx, obj) {
+
+
+                tableKlude += "<tr><td class='clickable underline' onclick='hitsByPageReport(\"" + obj.Occured + "\")'>" + obj.Occured + "</td>";
+                tableKlude += "<td>" + Number(obj.Hits).toLocaleString() + "</td>";
+                tableKlude += "<td>" + Number(obj.NewVisitors).toLocaleString() + "</td>";
+                tableKlude += "<td>" + Number(obj.Visits).toLocaleString() + "</td></tr>";
+            });
+
+
+            tableKlude += "</tr></tbody><table>"
+            $('#reportBody').html(tableKlude).show();
+        },
+        error: function (jqXHR) {
+            let errMsg = getXHRErrorDetails(jqXHR);
+            alert("pageHitSummaryReport: " + errMsg);
+        }
+    });
+}
+
+function updateStats() {
+    $.ajax({
+        url: "php/updateStats.php",
+        success: function (response) {
+
+            alert(response);
+
+        },
+        error: function (jqXHR) {
+            let errMsg = getXHRErrorDetails(jqXHR);
+            alert("pageHitSummaryReport: " + errMsg);
+        }
+    });
+}
 
 function showPageHitsReport() {
     closeAllReports();

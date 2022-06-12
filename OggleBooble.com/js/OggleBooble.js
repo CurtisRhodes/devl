@@ -304,7 +304,7 @@ let slideshowVisible = false, imageViewerVisible = false;
                     if (success.trim() != "ok") {
                         switch (success.trim()) {
                             case '23000':
-                                logOggleError("230", folderId, "duplicate page hit", "log page hit");  // duplicate page hit
+                                // logOggleError("230", folderId, "duplicate page hit", "log page hit");  // duplicate page hit
                                 break;
                             case '42000':
                                 logOggleError("420", folderId, "4200", "log page hit");  // 

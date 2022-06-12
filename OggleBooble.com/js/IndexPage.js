@@ -1,11 +1,12 @@
 const randomGalleriesCount = 11;
 let updatedGalleriesCount = 15;
-let currentNumericPageContext;
+let currentPageContext, currentNumericPageContext;
 
 function launchIndexPage(pageContext, numericPageContext) {
 
     showLogin(false);
     currentNumericPageContext = numericPageContext;
+    currentPageContext = pageContext;
 
     //displayHeader(numericPageContext);
     $('header').html(headerHtml());
@@ -101,7 +102,7 @@ function launchIndexPage(pageContext, numericPageContext) {
 
     launchCarousel(numericPageContext);
     getRandomGalleries(numericPageContext);
-    getLatestUpdatedGalleries(pageContext);
+    getLatestUpdatedGalleries();
     
     //promoMessagesContainer
     $('#betaMessage').html("promo")
@@ -113,11 +114,11 @@ function launchIndexPage(pageContext, numericPageContext) {
 
 /*-- php -------------------------------------------*/{
 
-    function getLatestUpdatedGalleries(pageContext) {
+    function getLatestUpdatedGalleries() {
         try {
             $.ajax({
                 type: "GET",
-                url: "php/getLatestUpdated.php?spaType=" + pageContext + "&limit=" + updatedGalleriesCount,
+                url: "php/getLatestUpdated.php?spaType=" + currentPageContext + "&limit=" + updatedGalleriesCount,
                 success: function (data) {
                     $('#latestUpdatesContainer').html('');
                     let jdata = JSON.parse(data);
@@ -135,7 +136,7 @@ function launchIndexPage(pageContext, numericPageContext) {
 
                     $('#imgLatestUpdate').on("click", function () {
                         updatedGalleriesCount += 15;
-                        getLatestUpdatedGalleries(currentNumericPageContext);
+                        getLatestUpdatedGalleries();
                         logOggleEvent("LUC", currentNumericPageContext, "get updated galleries");
                     }).show();
                 },
