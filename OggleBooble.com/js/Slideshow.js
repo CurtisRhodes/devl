@@ -9,7 +9,8 @@ function showSlideshowViewer(folderId, startLink, isLargeLoad) {
     ssfolderId = folderId;
     largeLoad = isLargeLoad;
     displayFooter("slideshow");
-    showSlideshowHeader(ssfolderId);
+    displayHeader("slideshow");
+    showSlideshowHeader();
     //getFolderDetails(folderId);
 
     $('#albumContentArea').fadeOut();        
@@ -132,6 +133,9 @@ function getFolderDetails() {
                 }
                 else {
                     let thisCatFolder = JSON.parse(data);
+
+                    setSlideshowTopHeader(thisCatFolder.FolderType);
+
                     if (largeLoad) {
                         $('#slideshowMessageArea').html("<span sytle='font-size:19px'>loading</span>");
                         slideshowFolderName = thisCatFolder.FolderName;
@@ -189,9 +193,16 @@ function slide(direction) {
                     $('#slideshowLoadingGif').show()
             }, 250);
             incrementIndex(direction);
-            tempImgSrc.src = settingsImgRepo + imageArray[imageViewerIndex].FileName;
 
-            // tempImgSrc.onerror( ){ };
+            let url = settingsImgRepo + imageArray[imageViewerIndex].FileName;
+            tempImgSrc.src = url;
+
+            tempImgSrc.onerror = function() {
+                //console.log(errorMsg);
+                console.log("image not found: " + url);
+                logOggleError("ILF", ssfolderId, "tempImgSrc.onerror", "slidesow");
+                return;
+            };
 
             tempImgSrc.onload = function () {
                 showLoadingGif = false;
@@ -366,13 +377,75 @@ function closeSlideshow() {
     slideshowVisible = false;
 }
 
+function setSlideshowTopHeader(folderType) {
+    try {
+        $('#topRowMiddleContainer').html('loading breadcrumbs');
+        $('#topRowMiddleContainer').html("<img style='height:27px' src='https://common.ogglebooble.com/img/loader.gif'/>");
+        $.ajax({
+            url: "php/yagdrasselFetchAll.php?query=Select * from VwDirTree",
+            success: function (data) {
+                if (data == false) {
+                    $('#topRowMiddleContainer').html('buggers');
+                }
+                else {
+                    let dirTreeArray = JSON.parse(data);
+                    let breadcrumbItem = dirTreeArray.filter(function (item) { return (item.Id === ssfolderId) && (item.IsStepChild == 0); });
+                    if (breadcrumbItem.length == 0) {
+                        $('#topRowMiddleContainer').html("no good");
+                        return;
+                    }
+                    if (currentIsLargeLoad) {
+                        $('#topRowMiddleContainer').html("<div class='inactiveBreadCrumb' " +
+                            "onclick='loadAlbumPage(" + ssfolderId + ",false,\"self\")'>return to " + breadcrumbItem[0].FolderName + "</div>");
+                    }
+                    else {
+                        switch (folderType) {
+                            case "singleModel":
+                            case "singleParent":  // showFileDetailsDialog
+                                $('#topRowMiddleContainer').html("<div class='inactiveBreadCrumb' " +
+                                    "onclick='showFileDetailsDialog(" + ssfolderId + ")'>" + breadcrumbItem[0].FolderName + "</div>");
+                                break;
+                            default: // showFolderInfoDialog
+                                $('#topRowMiddleContainer').html("<div class='inactiveBreadCrumb' " +
+                                    "onclick='showFolderInfoDialog(" + ssfolderId + ")'>" + breadcrumbItem[0].FolderName + "</div>");
+                        }
+                    }
+                    let parent = breadcrumbItem[0].Parent;
+
+                    while (parent > 1) {
+                        breadcrumbItem = dirTreeArray.filter(function (item) { return (item.Id === parent) && (item.IsStepChild == 0); });
+                        if (isNullorUndefined(breadcrumbItem)) {
+                            parent = 99;
+                            $('#topRowMiddleContainer').prepend("item: " + parent + " isNullorUndefined");
+                        }
+                        else {
+                            if (breadcrumbItem.length == 0) {
+                                $('#topRowMiddleContainer').prepend("no good " + parent + " length == 0");
+                                parent = 99;
+                            }
+                            else {
+                                //addBreadcrumb(parent, breadcrumbItem[0].FolderName, "activeBreadCrumb"));
+                                $('#topRowMiddleContainer').prepend("<div class='activeBreadCrumb' " +
+                                    "onclick='window.location.href=\"https://ogglebooble.com/album.html?folder=" +
+                                    breadcrumbItem[0].Id + "\"'>" + breadcrumbItem[0].FolderName + "</div>");
+                                parent = breadcrumbItem[0].Parent;
+                            }
+                        }
+                    }
+               }
+            },
+            error: function (jqXHR) {
+                $('#albumPageLoadingGif').hide();
+                let errMsg = getXHRErrorDetails(jqXHR);
+                $('#topRowMiddleContainer').html(errMsg);
+            }
+        });
+    } catch (e) {
+        logOggleError("CAT", folderId, e, "set breadcrumbs");
+    }
+}
+
 function showSlideshowHeader() {
-
-    displayHeader("slideshow");
-
-    //let tempd = document.createElement('div');
-    //tempd.innerHTML = $('#breadcrumbContainer').html();
-
     $('#headerBottomRow').html(`
       <div class="fullWidthFlexContainer">
         <div id='sldeshowNofN' class='sldeshowHeaderTextContainer'></div>
