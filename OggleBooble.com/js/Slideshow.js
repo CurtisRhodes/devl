@@ -2,6 +2,7 @@ const slideSpeed = 33, slideIncrement = 88;
 
 let slideShowSpeed = 5000, imageArray = [], imageViewerIndex = 0, spSessionCount = 0, tempImgSrc = new Image(), ssfolderId,
     isPaused = false, imageViewerIntervalTimer = null, slideshowFolderName, isSiding = false, largeLoad = false;
+let imagePos, slideshowImageZeroPos, slidingDone;
 
 function showSlideshowViewer(folderId, startLink, isLargeLoad) {
     slideshowVisible = true;
@@ -177,7 +178,6 @@ function adjustSlideshowSpeed(action) {
     }
 }
 
-let imagePos, slideshowImageZeroPos, slidingDone;
 function slide(direction) {
     if (isPaused) return;
     try {
@@ -190,6 +190,9 @@ function slide(direction) {
             }, 250);
             incrementIndex(direction);
             tempImgSrc.src = settingsImgRepo + imageArray[imageViewerIndex].FileName;
+
+            // tempImgSrc.onerror( ){ };
+
             tempImgSrc.onload = function () {
                 showLoadingGif = false;
                 $('#slideshowLoadingGif').hide();
