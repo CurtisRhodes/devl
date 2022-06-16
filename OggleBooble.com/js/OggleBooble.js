@@ -281,18 +281,13 @@ let slideshowVisible = false, imageViewerVisible = false;
     }
 
     function logPageHit(folderId) {
+        let visitorId = getCookieValue("VisitorId");
         try {
-            try {
-                let visitorId = getCookieValue("VisitorId");
-                if (visitorId == "cookie not found") {
-                    visitorId = create_UUID();
-                    localStorage["VisitorId"] = visitorId;
-                    ipifyLookup(folderId, "log pageHit");
-                }
-            } catch (e) {
-                logOggleError("CAT", folderId, e, "log page hit 1");
+            if (visitorId == "cookie not found") {
+                visitorId = create_UUID();
+                localStorage["VisitorId"] = visitorId;
+                ipifyLookup(folderId, "log pageHit");
             }
-
             $.ajax({
                 type: "POST",
                 url: "php/logPageHit.php",
@@ -318,7 +313,7 @@ let slideshowVisible = false, imageViewerVisible = false;
                 }
             });
         } catch (e) {
-            logOggleError("CAT", folderId, e, "log page hit 2");
+            logOggleError("CAT", folderId, e, "log page hit 0");
         }
     }
 

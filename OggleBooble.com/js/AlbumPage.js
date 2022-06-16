@@ -217,7 +217,7 @@ function setBreadcrumbs(catfolder) {
                     }
                     let parent = breadcrumbItem[0].Parent;
 
-                    while (parent > 0) {
+                    while (parent > 1) {
                         breadcrumbItem = dirTreeArray.filter(function (item) { return (item.Id === parent) && (item.IsStepChild == 0); });
                         if (isNullorUndefined(breadcrumbItem)) {
                             parent = 99;
