@@ -193,9 +193,16 @@ function slide(direction) {
                     $('#slideshowLoadingGif').show()
             }, 250);
             incrementIndex(direction);
-            tempImgSrc.src = settingsImgRepo + imageArray[imageViewerIndex].FileName;
 
-            // tempImgSrc.onerror( ){ };
+            let url = settingsImgRepo + imageArray[imageViewerIndex].FileName;
+            tempImgSrc.src = url;
+
+            tempImgSrc.onerror = function() {
+                //console.log(errorMsg);
+                console.log("image not found: " + url);
+                logOggleError("ILF", ssfolderId, "tempImgSrc.onerror", "slidesow");
+                return;
+            };
 
             tempImgSrc.onload = function () {
                 showLoadingGif = false;

@@ -1,12 +1,12 @@
 ﻿const settingsImgRepo = 'https://ogglefiles.com/danni/';
 let slideshowVisible = false, imageViewerVisible = false;
 
-/*-- verify user -----------------------------------*/{
+/*-- verify user ---------------------------------------*/{
     function verifyUser(folderId, calledFrom) {
         try {
             if (isNullorUndefined(sessionStorage["VisitorIdVerified"])) {
                 sessionStorage["VisitorIdVerified"] = "ok";
-                logOggleActivity("VU0", folderId, "verify user"); // undefined session verified
+                // logOggleActivity("VU0", folderId, "verify user"); // undefined session verified
 
                 let visitorId = getCookieValue("VisitorId");
                 if (visitorId == "cookie not found") {
@@ -22,11 +22,9 @@ let slideshowVisible = false, imageViewerVisible = false;
                     logOggleActivity("NSS", folderId, "verify user") // new session started
                 }
             }
-            else {
-                logOggleActivity("VUH", folderId, "verify user");  // yes, some pages are getting through
-            }
+            // else   logOggleActivity("VUH", folderId, "verify user");  // yes, some pages are getting through                 
         } catch (e) {
-            logOggleError("CAT", folderId, "this better not be looping", "verify user");
+            logOggleError("CAT", folderId, e, "verify user");
         }
     }
 
@@ -240,7 +238,6 @@ let slideshowVisible = false, imageViewerVisible = false;
         }
     }
 }
-
 /*-- hit Counter ---------------------------------------*/{
     function logVisit(calledFrom) {
         try {
@@ -309,7 +306,8 @@ let slideshowVisible = false, imageViewerVisible = false;
                     }
                 },
                 error: function (jqXHR) {
-                    logOggleError("XHR", folderId, getXHRErrorDetails(jqXHR), "log page hit");
+                    let errMsg = getXHRErrorDetails(jqXHR);
+                    logOggleError("XHR", folderId, errMsg, "log page hit");
                 }
             });
         } catch (e) {
@@ -431,25 +429,40 @@ let slideshowVisible = false, imageViewerVisible = false;
         }
     }
 }
-
-/*-- click events -----------------------------------*/
-function addRankerButton(rankerType, labelText) {
-    return "<div class='headerBannerButton'>\n" +
-        "<div class='clickable' onclick='location.href=\"index.html?spa=3907&bp=" + rankerType + "\"'" +
-        "title='Spin through the links to land on random portrait images.'>" + labelText + "</div>" +
-        "</div>\n";
+/*-- click events --------------------------------------*/{
+    function addRankerButton(rankerType, labelText) {
+        return "<div class='headerBannerButton'>\n" +
+            "<div class='clickable' onclick='location.href=\"index.html?spa=3907&bp=" + rankerType + "\"'" +
+            "title='Spin through the links to land on random portrait images.'>" + labelText + "</div>" +
+            "</div>\n";
+    }
+    function addPgLinkButton(folderId, labelText) {
+        return "<div class='headerBannerButton'>" +
+            //"   <div class='clickable' onclick='location.href=\"album.html?folder=" + folderId + "\"'>" + labelText + "</div>" +
+            "   <div class='clickable' onclick='rtpe(\"HB2\",\"" + hdrRootFolder + "\"," + hdrFolderId + "," + folderId + ")'>" + labelText + "</div>" +
+            "</div>\n";
+    }
+    function displayFeedback() {
+        alert("displayFeedback");
+        //\"FLC\",\"feedback\", rootFolder + "\", folderId + "
+    }
+    function captureKeydownEvent(event) {
+        if (slideshowVisible)
+            doSlideShowKdownEvents(event);
+        else
+            if (imageViewerVisible) {
+                if (event.keyCode === 27)
+                    closeImageViewer();
+            }
+            else
+                if (document.activeElement.id == "txtSearch")
+                    searchBoxKeyDown(event);
+        //            else {
+        //                let activeElement = document.activeElement.id;
+        //                $('#topRowRightContainer').html("activeElement: " + activeElement);
+        //            }
+    }
 }
-function addPgLinkButton(folderId, labelText) {
-    return "<div class='headerBannerButton'>" +
-        //"   <div class='clickable' onclick='location.href=\"album.html?folder=" + folderId + "\"'>" + labelText + "</div>" +
-        "   <div class='clickable' onclick='rtpe(\"HB2\",\"" + hdrRootFolder + "\"," + hdrFolderId + "," + folderId + ")'>" + labelText + "</div>" +
-        "</div>\n";
-}
-function displayFeedback() {
-    alert("displayFeedback");
-    //\"FLC\",\"feedback\", rootFolder + "\", folderId + "
-}
-
 /*-- search --------------------------------------------*/{
     let searchString = "", itemIndex = -1;
 
@@ -1287,7 +1300,7 @@ function displayFeedback() {
         $("#vailShell").hide();
     }
 }
-/*-- dialog windows --------------------------------------*/{
+/*-- dialog windows ------------------------------------*/{
     function showFileDetailsDialog(folderId) {
         try {
             if (typeof pause === 'function') pause();
@@ -1660,23 +1673,6 @@ function displayFeedback() {
             "</form>");
         $('#centeredDialogContainer').draggable().fadeIn();
     }
-}
-
-function captureKeydownEvent(event) {
-    if (slideshowVisible)
-        doSlideShowKdownEvents(event);
-    else
-        if (imageViewerVisible) {
-            if (event.keyCode === 27)
-                closeImageViewer();
-        }
-        else
-            if (document.activeElement.id == "txtSearch")
-                searchBoxKeyDown(event);
-    //            else {
-    //                let activeElement = document.activeElement.id;
-    //                $('#topRowRightContainer').html("activeElement: " + activeElement);
-    //            }
 }
 
 /*--   zzzdialog windows --------------------------------------
