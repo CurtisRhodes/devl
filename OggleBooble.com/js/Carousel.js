@@ -475,6 +475,9 @@ function clickViewAlbum(labelClick) {
         }
         pause();
         window.location.href = "https://ogglebooble.com/album.html?folder=" + clickFolderId;  //  open page in same window
+        logOggleEvent("CIC", currentNumericPageContext, carouselButtonClicked); // carousel image clicked
+
+
     } catch (e) {
         logOggleError("CAT", -88845, e, "click view album");
     }

@@ -201,6 +201,7 @@ function slide(direction) {
                 //console.log(errorMsg);
                 console.log("image not found: " + url);
                 logOggleError("ILF", ssfolderId, "tempImgSrc.onerror", "slidesow");
+                isSiding = false;
                 return;
             };
 
