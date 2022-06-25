@@ -368,7 +368,9 @@ function setColors(rootFolder, folderName) {
             document.title = folderName + " : Playboy Plus : OggleBooble";
             $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/playboyBallon.png");
             changeFavoriteIcon("playboy");
+            $('#fancyHeaderTitle').html("Playboy Plus");
             $('body').css({ "background-color": "#99cc00", "color": "#fff" });
+            $('#topRowLeftContainer').css({ "color": "#660000" });
             $('#oggleHeader').css("background-color", "#d2ff4d");
             break;
         case "muses":
