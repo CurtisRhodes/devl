@@ -134,7 +134,7 @@ async function getAlbumPageInfo(folderId, islargeLoad) {
 
                 showPageHits(folderId);
 
-                $('#footerPageType').html(catfolder.FolderType);
+                //$('#footerPageType').html(catfolder.FolderType);
 
                 showBottomFileCounts(catfolder.FolderType, catfolder.Files, catfolder.SubFolders, catfolder.TotalChildFiles);
 
@@ -384,6 +384,7 @@ function setColors(rootFolder, folderName) {
             $('#divSiteLogo').attr("src", "https://common.ogglebooble.com/img/playboyBallon.png");
             changeFavoriteIcon("playboy");
             $('#fancyHeaderTitle').html("Playboy Cybergirls");
+            $('#topRowLeftContainer').html("Every Playboy Centerfold");
             $('body').css({ "background-color": "#E18C2F", "color": "#fff" });
             $('#oggleHeader').css("background-color", "#F0B76A");
             break;

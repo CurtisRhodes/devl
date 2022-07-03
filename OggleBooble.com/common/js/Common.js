@@ -234,7 +234,7 @@ function mailMe() {
         $('header').html(headerHtml());
         //changeFavoriteIcon("redBallon");
         //document.title = "document.title";
-        $('#topRowLeftContainer').html("");
+        $('#topRowLeftContainer').html("?");
         $('#headerMessage').html("");
         $('#topRowRightContainer').html("");
         $('#breadcrumbContainer').html("");
@@ -387,10 +387,8 @@ function mailMe() {
                 $('#headerMessage').html("ranker");
                 break;
             }
-            case "none":
-                $('#topRowLeftContainer').html("<a href='https://www.babepedia.com' onclick='javascript:window.open(''https://www.babepedia.com/''); return false;'>Babepedia</a>");
-                break;
             default:
+                $('#topRowLeftContainer').html(numericPageContext);
                 console.log("numericPageContext " + numericPageContext + " not handled");
                 break;
         }
@@ -633,6 +631,8 @@ function mailMe() {
     function displayFooter(footerContext) {
         try {
             $('footer').html(footerHtml());
+            $('#footerPageType').html(footerContext);
+
             switch (footerContext) {
                 case 3908:
                     $('#footerCol6').html(showHitStats());
