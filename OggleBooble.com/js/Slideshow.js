@@ -267,9 +267,10 @@ function slide(direction) {
                                 //    $('#slideshowImageLabel').html(imageArray[imageViewerIndex].SrdFolder).fadeIn()
                                 //        .on("click", window.location.href = 'album.html?folderId="+imageArray[imageViewerIndex].SrcId,"_blank"');
                                 //}
-                                if (largeLoad)
-                                    $('#slideshowMessageArea').html(slideshowFolderName + "/" + imageArray[imageViewerIndex].SrcFolder).fadeIn();
-
+                                if (largeLoad) {
+                                    //$('#slideshowMessageArea').html(imageArray[imageViewerIndex]. + "/" + imageArray[imageViewerIndex].SrcFolder).fadeIn();
+                                    $('#slideshowMessageArea').html(imageArray[imageViewerIndex].LargeFileName).fadeIn();
+                                }
                                 spSessionCount++;
                                 $('#sldeshowNofN').html((imageViewerIndex + 1) + " / " + Number(imageArray.length).toLocaleString());
                                 $('#txtSlideshow').focus();

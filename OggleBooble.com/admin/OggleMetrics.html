@@ -20,9 +20,7 @@
           <div class="leftColumn dashboardLeftColumn">
               <div class="vertMenu">
                   <div onclick='MetricsReport()'>Performance Metrics</div>
-
-                  <div onclick='updateStats()'>updateStats()</div>
-
+                  <div onclick='impactReport()'>Impact Report</div>
                   <div onclick='showPageHitsReport()'>Page Hit Reports</div>
                   <div onclick='showDailyErrorReport()'>Error Reports</div>
                   <div onclick='showActivityReport()'>Activity Reports</div>
@@ -30,7 +28,7 @@
               </div>
           </div>
           <div class="middleColumn">
-               
+
               <div id='pageHitReports' class='fullScreenSection'>
                   <div id='reportsHeader' class='workAreaHeader'>
                       <div class="flexContainer">
@@ -83,11 +81,6 @@
                   resizeOggleMetricsPage();
               });
           });
-
-          function launchPage() {
-              let folderId = Number($('#txtActiveFolderId').val());
-              window.open("https://Ogglebooble.com/album.html?folder=" + folderId);
-          }
 
           function resizeOggleMetricsPage() {
               $('#visableArea').css('min-height', $(window).height() - $('header').height());

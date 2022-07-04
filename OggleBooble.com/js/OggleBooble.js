@@ -278,41 +278,50 @@ let slideshowVisible = false, imageViewerVisible = false;
     }
 
     function logPageHit(folderId) {
-        let visitorId = getCookieValue("VisitorId");
-        try {
-            if (visitorId == "cookie not found") {
-                visitorId = create_UUID();
-                localStorage["VisitorId"] = visitorId;
-                ipifyLookup(folderId, "log pageHit");
-            }
-            $.ajax({
-                type: "POST",
-                url: "php/logPageHit.php",
-                data: {
-                    visitorId: visitorId,
-                    pageId: folderId
-                },
-                success: function (success) {
-                    if (success.trim() != "ok") {
-                        switch (success.trim()) {
-                            case '23000':
-                                // logOggleError("230", folderId, "duplicate page hit", "log page hit");  // duplicate page hit
-                                break;
-                            case '42000':
-                                logOggleError("420", folderId, "4200", "log page hit");  // 
-                            default:
-                                logOggleError("AJX", folderId, "php code: " + success.trim(), "log page hit");
-                        }
-                    }
-                },
-                error: function (jqXHR) {
-                    let errMsg = getXHRErrorDetails(jqXHR);
-                    logOggleError("XHR", folderId, errMsg, "log page hit");
+        let logPageHitVisitorId = getCookieValue("VisitorId");
+        // give getCookieValue a moment to return
+        setTimeout(function () {
+            try {
+                if (logPageHitVisitorId === "cookie not found") {
+                    visitorId = create_UUID();
+                    localStorage["VisitorId"] = visitorId;
+                    ipifyLookup(folderId, "log pageHit");
                 }
-            });
-        } catch (e) {
-            logOggleError("CAT", folderId, e, "log page hit 0");
-        }
+
+                if (logPageHitVisitorId !== "cookie not found") {
+                    $.ajax({
+                        type: "POST",
+                        url: "php/logPageHit.php",
+                        data: {
+                            visitorId: logPageHitVisitorId,
+                            pageId: folderId
+                        },
+                        success: function (success) {
+                            if (success.trim() != "ok") {
+                                switch (success.trim()) {
+                                    case '23000':
+                                        // logOggleError("230", folderId, "duplicate page hit", "log page hit");  // duplicate page hit
+                                        break;
+                                    case '42000':
+                                        logOggleError("420", folderId, "4200", "log page hit");  // 
+                                    default:
+                                        logOggleError("AJX", folderId, "php code: " + success.trim(), "log page hit");
+                                }
+                            }
+                        },
+                        error: function (jqXHR) {
+                            let errMsg = getXHRErrorDetails(jqXHR);
+                            logOggleError("XHR", folderId, errMsg, "log page hit");
+                        }
+                    });
+                }
+                else {
+                    logOggleError("LP2", folderId, e, "log page hit");
+                }
+            } catch (e) {
+                logOggleError("CAT", folderId, e, "log page hit");
+            }
+        }, 500);
     }
 
     function addVisitor(folderId, visitorId, ipResponse) {

@@ -1,3 +1,4 @@
+
 function MetricsReport() {
     closeAllReports();
     $('#reportsHeader').show();
@@ -5,7 +6,7 @@ function MetricsReport() {
     $('#pageHitReports').show();
 
     $.ajax({
-        url: "php/registroFetchAll.php?query=select * from MetricsMatrix where Occured > current_date()-11 order by Occured desc",
+        url: "php/registroFetchAll.php?query=select * from vwMetricsMatrix",
         success: function (response) {
             let metricsRows = JSON.parse(response);
             $('#reportBody').html("")
@@ -13,11 +14,7 @@ function MetricsReport() {
             let tableKlude = "<table><th><tr><td>day</td><td>hits</td><td>new visitors</td><td>visits</td><tr></th><tbody>";
 
             // memorial day pivot table
-
-
             $.each(metricsRows, function (idx, obj) {
-
-
                 tableKlude += "<tr><td class='clickable underline' onclick='hitsByPageReport(\"" + obj.Occured + "\")'>" + obj.Occured + "</td>";
                 tableKlude += "<td>" + Number(obj.Hits).toLocaleString() + "</td>";
                 tableKlude += "<td>" + Number(obj.NewVisitors).toLocaleString() + "</td>";
@@ -86,6 +83,36 @@ function updateStats() {
 
             alert(response);
 
+        },
+        error: function (jqXHR) {
+            let errMsg = getXHRErrorDetails(jqXHR);
+            alert("pageHitSummaryReport: " + errMsg);
+        }
+    });
+}
+
+function impactReport() {
+
+    $('#reportsHeaderTitle').html("Imapact Report");
+    $.ajax({
+        url: "php/registroFetchAll.php?query=select * from oggleboo_registo.vwImpact",
+        success: function (response) {
+            let reportData = JSON.parse(response);
+            $('#pageHitSummaryReport').html("<div  class='reportBodyTitle'>PageHit Summary</div>")
+            let tableKlude = "<table>";  
+            tableKlude += "<th><tr><td>id</td><td>folder</td><td>occured</td><td>pre update</td><td>impact</td><td>clicks</td><td>total</td><tr></th>";
+            tableKlude += "<tbody>";
+            $.each(reportData, function (idx, obj) {
+                tableKlude += "<tr><td>" + obj.Id + "</td>";
+                tableKlude += "<td class='clickable underline' onclick='window.open(\"https://Ogglebooble.com/album.html?folder=\" + " + obj.Id + ")'>" + obj.FolderName + "</td>";
+                tableKlude += "<td>" + obj.Occured + "</td>";
+                tableKlude += "<td>" + obj.preupdate + "</td>";
+                tableKlude += "<td>" + obj.impacto + "</td>";
+                tableKlude += "<td>" + obj.clicks + "</td>";
+                tableKlude += "<td>" + obj.total + "</td></tr>";
+            });
+            tableKlude += "</tbody><table>"
+            $('#reportBody').append(tableKlude).show();
         },
         error: function (jqXHR) {
             let errMsg = getXHRErrorDetails(jqXHR);
@@ -163,7 +190,6 @@ function metricsReport() {
 //    group by date(InitialVisit);
 }
 
-
 function pageHitPageDetailReport(pageId, pageHitDate) {
     
     let sql = `select f.FolderName, h.VisitorId, concat(City,', ',Region,' ',Country) as Location,
@@ -195,7 +221,6 @@ function pageHitPageDetailReport(pageId, pageHitDate) {
     });
 
 }
-
 
 /*--------------------------------------------------*/
 function showDailyErrorReport() {

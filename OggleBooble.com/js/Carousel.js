@@ -381,6 +381,8 @@ function withinLast100() {
     try {
         if (!isNullorUndefined(imageHistory.find(h => h == imageIndex))) {
             alreadyShow = true;
+            console.log("adding more images");
+            loadImages(true);
         }
 
     } catch (e) {
