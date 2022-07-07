@@ -19,7 +19,7 @@ function launchIndexPage(pageContext, numericPageContext) {
             $('#topRowLeftContainer').html("Home of the Big Naturals");
 
             $('#hdrBtmRowSec3').append(bannerLink('every playboy centerfold', 'https://ogglebooble.com/index.html?spa=playboy'));
-            $('#hdrBtmRowSec3').append(bannerLink('Oggle softcore', 'https://ogglebooble.com/album.html?folder=5233'));
+            // $('#hdrBtmRowSec3').append(bannerLink('Oggle softcore', 'https://ogglebooble.com/album.html?folder=5233'));
             $('#hdrBtmRowSec3').append(bannerLink('Oggle Porn', 'https://ogglebooble.com/index.html?spa=porn'));
 
             $('#topRowLeftContainer').html(
@@ -113,38 +113,45 @@ function launchIndexPage(pageContext, numericPageContext) {
 }
 
 /*-- php -------------------------------------------*/{
-
+    let gettingLatestUpdatedGalleries = false;
     function getLatestUpdatedGalleries() {
         try {
-            $.ajax({
-                type: "GET",
-                url: "php/getLatestUpdated.php?spaType=" + currentPageContext + "&limit=" + updatedGalleriesCount,
-                success: function (data) {
-                    $('#latestUpdatesContainer').html('');
-                    let jdata = JSON.parse(data);
-                    for (i = 0; i < updatedGalleriesCount; i++) {
-                        let thisItemSrc = settingsImgRepo + jdata[i].ImageFile;
-                        $('#latestUpdatesContainer').append("<div class='latestContentBox'>" +
-                            "<div class='latestContentBoxLabel'>" + jdata[i].FolderName + "</div>" +
-                            "<img id='lt" + jdata[i].FolderId + "' class='latestContentBoxImage' alt='img/redballon.png' \nsrc='" + thisItemSrc + "' \n" +
-                            " onerror='imageError(\"" + jdata[i].FolderId + "\",\"" + thisItemSrc + "\",\"LatestUpdatedGalleries\")'\n" +
-                            "\nonclick='latestUpdatesClick(" + jdata[i].FolderId + "\)'/>" +
-                            "<div class='latestContentBoxDateLabel'>updated: " + dateString2(jdata[i].Acquired) + "</span></div>" +
-                            "</div>");
-                    }
-                    $('#imgLatestUpdate').show();
+            if (!gettingLatestUpdatedGalleries) {
+                gettingLatestUpdatedGalleries = true;
+                $.ajax({
+                    type: "GET",
+                    url: "php/getLatestUpdated.php?spaType=" + currentPageContext + "&limit=" + updatedGalleriesCount,
+                    success: function (data) {
 
-                    $('#imgLatestUpdate').on("click", function () {
-                        updatedGalleriesCount += 15;
-                        getLatestUpdatedGalleries();
-                        logOggleEvent("LUC", currentNumericPageContext, "get updated galleries");
-                    }).show();
-                },
-                error: function (jqXHR) {
-                    logOggleError("XHR", numericPageContext, getXHRErrorDetails(jqXHR), "get updated galleries");
-                }
-            });
+                        $('#latestUpdatesContainer').html('');
+                        let jdata = JSON.parse(data);
+                        for (i = 0; i < updatedGalleriesCount; i++) {
+                            let thisItemSrc = settingsImgRepo + jdata[i].ImageFile;
+                            $('#latestUpdatesContainer').append("<div class='latestContentBox'>" +
+                                "<div class='latestContentBoxLabel'>" + jdata[i].FolderName + "</div>" +
+                                "<img id='lt" + jdata[i].FolderId + "' class='latestContentBoxImage' alt='img/redballon.png' \nsrc='" + thisItemSrc + "' \n" +
+                                " onerror='imageError(\"" + jdata[i].FolderId + "\",\"" + thisItemSrc + "\",\"LatestUpdatedGalleries\")'\n" +
+                                "\nonclick='latestUpdatesClick(" + jdata[i].FolderId + "\)'/>" +
+                                "<div class='latestContentBoxDateLabel'>updated: " + dateString2(jdata[i].Acquired) + "</span></div>" +
+                                "</div>");
+                        }
+                        $('#imgLatestUpdate').show();
+                        gettingLatestUpdatedGalleries = false;
+
+                        $('#imgLatestUpdate').on("click", function () {
+                            updatedGalleriesCount += 15;
+                            getLatestUpdatedGalleries();
+                            logOggleEvent("LUC", currentNumericPageContext, "get updated galleries");
+                        }).show();
+                    },
+                    error: function (jqXHR) {
+                        gettingLatestUpdatedGalleries = false;
+                        logOggleError("XHR", numericPageContext, getXHRErrorDetails(jqXHR), "get updated galleries");
+                    }
+                });
+            }
         } catch (e) {
+            gettingLatestUpdatedGalleries = false;
             logOggleError("CAT", numericPageContext, e, "get updated galleries");
         }
     }
