@@ -180,9 +180,9 @@ function showAlbumDialog(catfolder) {
                 <div>
                     <textarea id='singleChildComment' class='singleChildComment resizable'></textarea>
                 </div>
-                <div class='folderDialogFooter'>
+                <div class='dialogFooter'>
                     <div id='btnSingleChildDialogSave' class='dialogButton' onclick="saveFolderDialogInfo()">Save</div>
-                    <div class='dialogButton' onclick='hideElement(ele("standardDialogBox"));dialogBoxOpen = false;'>Cancel</div>
+                    <div class='dialogButton' onclick='hideElement(ele("standardDialogBox"));dialogBoxOpen = false;'>Cancel</div>.
                 </div>
             </div>`);
 

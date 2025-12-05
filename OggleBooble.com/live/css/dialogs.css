@@ -28,6 +28,11 @@
     padding: 6px;
 }
 
+.dialogFooter {
+    display: inline-block;
+    border: dashed .5px #f7cc54;
+}
+
 .fantasyImage {
     height: 423px;
 }
@@ -35,7 +40,7 @@
 .folderDialogOuterContainer {
 }
 
-dialogImageContainer {
+.dialogImageContainer {
     border: solid thin red;
     text-align: center;
 }
