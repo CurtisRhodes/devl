@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>OggleBooble</title>
+    <link id="favIcon" rel='icon' href='img/redBalloon.ico' type='image/x-icon' />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="ogglebooble is a large database of babes, models and pornstars. " />
+    <meta name="keywords" content="porn, sex, porno, porn pics, sex pics, free porn pics, sex pictures" />
+
+
+    <script src="js/commonHeader.js"></script>
+    <script src="js/commonFunctions.js"></script>
+    <script src="js/validateUser.js"></script>
+    <script src="js/oggleBooble.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/viewer.js"></script>
+    <script src="js/slideshow.js"></script>
+    <script src="js/fileMaintenance.js"></script>
+    <script src="js/contextMenus.js"></script>
+    <script src="js/albumPageInfo.js"></script>
+    <script src="js/albumPage.js"></script>
+    <script src="js/dialogBoxes.js"></script>
+    <script src="js/folderInfoDialog.js"></script>
+    <script src="js/userStats.js"></script>
+    <script src="js/login.js"></script>
+    <script src="js/logging.js"></script>
+    <script src="js/messages.js"></script>
+    <script src="js/sortAlbum.js"></script>
+
+    <link href="css/common.css" rel="stylesheet">
+    <link href="css/commonHeader.css" rel="stylesheet">
+    <link href="css/standard.css" rel="stylesheet" />
+    <link href="css/albumPage.css" rel="stylesheet" />
+    <link href="css/slideshow.css" rel="stylesheet" />
+    <link href="css/dialogs.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div id="stdHeader" class="stickyHeader flexContainer"></div>
+    <div id="visibleArea" class="threeColumnLayout">
+        <div id="leftColumnArea" class="leftColumn">
+            <img id='folderUpButton' class='fixedNavgLeft' style="top:115px" title='back to parent' src='img/up.png' />
+            <img id='folderCommentButton' class='fixedNavgLeft' style="top:165px" title='folder comment' src='img/comment.png' />
+            <img id='backButton' class='fixedNavgLeft' style="top:210px" title='go to previous album (ctrl-right)' src='img/back.png' />
+            <div id="promoMessagesContainer" class="promoBox"></div>
+            <div id="commentsContainer" class="floatingDialogContainer displayHidden"></div>
+        </div>
+        <div class="middleColumn">
+            <div id="divStatusMessage"></div>
+            <div id="dots"></div>
+            <img id="loadingGif" class='loadingGif' alt='loading' src="https://common.ogglebooble.com/img/loader.gif" />
+            <div id="albumContentArea" class="unfloatable">
+                <div id="albumTopRow" class="aboveImageContainerDiv">
+                    <div id='seoPageName' class="xxalbumPageMetaTitle"></div>
+                    <div id="slideShowClick" class="slideShowClickStyle">slideshow</div>
+                    <div id="aboveImageContainerMessageArea" class="flexboxMiddleSection"></div>
+                    <div id="largeLoadButton" class='albumMsgLink' title='album page with all child folder images'>load images from all folders</div>
+                    <div id="deepSlideshowButton" class='albumMsgLink' title='slideshow includes all child folders'>album slideshow</div>
+                </div>
+                <div id="imageContainer" class="xxalbumContainer"></div>
+                <div id="albumBottomContainer" class="albumBottomContainer">
+                    <div id="albumBottomfileCount" class="albumBottomContainerRightMostDiv"></div>
+                    <div id="trackbackContainer" class="trackbackLinkContainer">
+                        <div>trackback links</div>
+                        <div id="trackbackLinkArea" class="trackbackArea"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="slideshowContentArea" class="displayHidden">
+                <div id='leftClickArea' class='hiddenClickArea'></div>
+                <div id='rightClickArea' class='hiddenClickArea'></div>
+                <div id="slideShowCenteringOuterShell" class='centeringOuterShell'>
+                    <div class='centeringInnerShell'>
+                        <div id='slideshowImageContainer' class='moveableflexContainer'>
+                            <div class='slideshowNavgArrows'><img src='img/leftArrowOpaque02.png' alt='previous' /></div>
+                            <img id='slideshowImage' class='slideshowImage' alt='' />
+                            <div class='slideshowNavgArrows'><img src='img/rightArrowOpaque02.png' alt='next image' /></div>
+                        </div>
+                    </div>
+                </div>
+                <div id='slideShowInstructions' class='slideShowVail'></div>
+                <div id='slideshowImageLabel' class='slideshowImageLabel displayHidden' onclick='alert("go")'></div>
+            </div>
+            <div id="sortToolArea" class="displayHidden">
+                <div class='sortToolHeader'>
+                    <div id='sortTableHeader' class='sortToolTitle'></div>
+                    <div class='dialogCloseButton'>
+                        <img style='height:25px' src='https://common.ogglebooble.com/img/close.png' alt='close' onclick='closeSortTool()'>
+                    </div>
+                </div>
+                <div id='sortToolImageArea' class='sortToolDisplayContainer'></div>
+                <div class='sortToolFooter'>
+                    <button class="roundendButton" onclick='updateSortOrder()'>ReSort</button>
+                    <button class="roundendButton" onclick='autoIncrimentSortOrder()'>AutoIncriment</button>
+                    <button class="roundendButton" onclick='saveNewSortOrder()'>Save</button>
+                </div>
+            </div>
+        </div>
+        <div id="rightColumnArea" class="rightColumn">
+            <img id='nextButton' class='fixedNavgNext' title='go to next gallery (ctrl-right)' src='img/next.png' alt='next' />
+            <div id="btnFeedback" class="fixedFeedback" onclick="showOggleFeedbackDialog()">feedback</div>
+        </div>
+    </div>
+    <div id="dataifyInfo" class="infoLine"></div>
+    <footer id="albumPageFooter" style="display: none;">
+        <div class='flexContainer'>
+            <div id='footerCol1' class='footerCol'></div>
+            <div id='footerCol2' class='footerCol'>
+                <div class='clickable' onclick='window.location.href="mailto:curtishrhodes@hotmail.com"'>email site developer</div>
+            </div>
+            <div id='footerCol3' class='footerCol'></div>
+            <div id='footerCol4' class='footerCol'></div>
+            <div id='footerCol5' class='footerCol'></div>
+            <div id='footerCol6' class='footerCol'>
+                <div id='footerSortItem' class='clickable'>sort</div>`
+            </div>
+            <div id='footerCol7' class='footerCol rightMostfooterColumn'></div>
+        </div>
+        <div class='footerFooter'>
+            <div class='footerFooterMessage' id='footerMessage1'></div>
+            <div class='footerFooterMessage' id='footerMessage2'></div>
+            <div class='forceRight'>
+                <div>
+                    Copyright &copy; 2024
+                    <div class='inline clickable' onclick='callIntelDesign()' ">Intelligent Design SoftWare</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="imageViewerContainer" class="explodingImageContainer">
+        <img id='backImageArrow' class='singleImageBoxArrow singleImageBoxArrowLeft' title='previous image (you may use arrow keys)' alt='back' src='https://common.ogglebooble.com/img/backfull.png' />
+        <div id="divSlideshowButton" class="slideshowButton" onclick="showSlideshow()">slideshow</div>
+        <img id='viewerImage' class='explodeCusor viewerImage' alt='viewer image' />
+        <img id='viewerCloseButton' class='floatingCloseButton'
+             src="https://common.ogglebooble.com/img/close.png" onclick="closeImageViewer()" title='close viewer' alt='close' />
+        <img id='nextImageArrow' class='singleImageBoxArrow' title='next image (you may use arrow keys)' alt='next' src='https://common.ogglebooble.com/img/nextfull.png' />
+    </div>
+
+    <div>
+        <img id="playboyLogo" class="" />
+    </div>
+    
+    
+    <script>
+        let params = getParams();
+        if (isNullorUndefined(params.folder)) {
+            logOggleError("ANF", 0, "albumpage called with no folderId", "album.html");
+            window.location.href = "index.html";
+        }
+        albumParamFolderId = params.folder;
+        if (!isNullorUndefined(params.calledFrom)) {
+            recordHitSource(params.calledFrom, params.folder);
+        }
+        loadAlbumPage(params.folder, false);
+    </script>
+</body>
+
+
+
+
+
+</html>

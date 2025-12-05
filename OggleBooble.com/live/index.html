@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>OggleBooble : Home of Big Naturals</title>
+    <link id="favIcon" rel='icon' href='https://common.ogglebooble.com/img/redBalloon.ico' type='image/x-icon' />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="https://www.ogglebooble.com.com/" />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap/sitemap.xml">
+    <meta name="description" content="ogglebooble is a large database of babes, models and pornstars. You'll find bio info, photos, free galleries and videos." />
+    <meta name="keywords" content="ogglebooble, pornstars, babes, models, photos, videos, free galleries, pics" />
+
+    <script src="js/commonHeader.js"></script>
+    <script src="js/commonFunctions.js"></script>
+    <script src="js/validateUser.js"></script>
+    <script src="js/oggleBooble.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/contextMenus.js"></script>
+    <script src="js/dialogBoxes.js"></script>
+    <script src="js/userStats.js"></script>
+    <script src="js/login.js"></script>
+    <script src="js/logging.js"></script>
+    <script src="js/messages.js"></script>
+    <script src="js/indexPageWidgets.js"></script>
+    <script src="js/indexPage.js"></script>
+    <script src="js/carousel.js"></script>
+
+    <link href="css/common.css" rel="stylesheet">
+    <link href="css/commonHeader.css" rel="stylesheet">
+    <link href="css/standard.css" rel="stylesheet" />
+    <link href="css/indexPage.css" rel="stylesheet" />
+    <link href="css/carousel.css" rel="stylesheet" />
+    <link href="css/dialogs.css" rel="stylesheet" />
+
+</head>
+ <body>
+    <div id="stdHeader"></div>
+    <div id="visableArea" class="threeColumnLayout">
+        <div id="leftColumnArea" class="leftColumn"></div>
+        <div class="middleColumn">
+            <div id="divStatusMessage"></div>
+            <div id="aboveImageContainerMessageArea" class="flexboxMiddleSection"></div>
+            <div id="dots"></div>
+            <img id="loadingGif" class="loadingGif" title='loading gif' alt='' src="https://common.ogglebooble.com/img/loader.gif" />
+            <div id="carouselOuterContainer" class="carouselContainer">
+                <div id="carouselContainer">
+                    <div class='flexContainer'>
+                        <div id='knownModelLabel' class='categoryTitleLabel' onclick='clickViewAlbum(3)'></div>
+                        <div id='imageTopLabel' class='categoryTitleLabel' onclick='clickViewAlbum(2)'></div>
+                        <div id='carouselFooterLabel' class='categoryTitleLabel' onclick='clickViewAlbum(4)'></div>
+                        <img class='assuranceArrows' alt='next' tabindex='-1' onclick='assuranceArrowClick(\"back\")' src='/img/leftArrowOpaque02.png' />
+                        <div Id='carouselImageOuterContainer'>
+                            <div Id='carouselImageDoubleContainer' class='carouselImageContainer'>
+                                <img id="image0" class="carouselImage">
+                                <img id="image1" class="carouselImage">
+                            </div>
+                        </div>
+                        <img class='assuranceArrows' alt='previous' tabindex='-1' onclick='assuranceArrowClick(\"foward\")' src='/img/rightArrowOpaque02.png' />
+                    </div>
+                </div>
+                <div id="carouselControls" class='carouselControlsContainer'>
+                    <div class="flexContainer">
+                        <img class='speedButton floatLeft' src='img/speedDialSlower.png' title='slower' onclick='clickCarouselSpeed("slower")' />
+                        <div id='carouselPauseButton' class='pauseButtonArea' title="pause" onclick='toggleCarouselPause()'>||</div>
+                        <img class='speedButton floatRight' src='img/speedDialFaster.png' title='faster' onclick='clickSpeed("faster\\")' />
+                        <img class='speedButton floatRight' src='img/settings.png' title='carousel settings' onclick='showCarouelSettingsDialog()' />
+                    </div>
+                </div>
+            </div>
+
+            <div id="latestUpdates" class="sectionLabel">
+                <div class="flexContainer">
+                    <span>latest updates</span>
+                    <img id="imgLatestUpdated" class="refreshIcon" onclick="refreshLatestUpdated()" src="img/refresh02.png" title="show more recently updated galleries" />
+                </div>
+            </div>
+            <div id="latestUpdatesContainer" class="indexPageContainer">
+                <img id="latestUpdatesLoadingGif" class="loadingGif" title='loading' alt='' src="https://common.ogglebooble.com/img/loader.gif" />
+            </div>
+
+            <div Id="randomGalleries" class="sectionLabel">
+                <div class="flexContainer">
+                    <span> random galleries</span>
+                    <img id="imgRandomGalleries" class="refreshIcon" onclick="reloadRandomGalleries()" src="img/refresh02.png" title="refresh random galleries" />
+                </div>
+            </div>
+            <div id="randomGalleriesContainer" class="indexPageContainer"></div>
+
+            <div id="promoMessagesContainer" class="leftSideSlider">
+                <div id="promoMessageHeader" class="floatingDialogHeader">
+                    <div id="promoMessageTitle" class="floatingDialogTitle"></div>
+                    <div id='centeredDialogCloseButton' class='dialogCloseButton'>
+                        <img src='https://common.ogglebooble.com/img/close.png' onclick='promoMessageClose()' />
+                    </div>
+                </div>
+                <div id="promoMessagesContents" class="redSlideOutContents"></div>
+            </div>
+
+            <div id="slidingCommentBox" class="leftSideCommentBox"></div>
+
+            <div id="betaMessage" class="floatingButton"></div>
+
+        </div>
+        <div id="rightColumnArea" class="rightColumn">
+            <div id="btnFeedback" class="fixedFeedback" onclick="showOggleFeedbackDialog()">feedback</div>
+        </div>
+    </div>
+    <footer id="indexPageFooter" class="ogglefooter">
+        <div class='flexContainer'>
+            <div id='footerCol1' class='footerCol'></div>
+            <div id='footerCol2' class='footerCol'>
+                <div class='clickable' onclick='window.location.href="mailto:curtishrhodes@hotmail.com"'>email site developer</div>
+            </div>
+            <div id='footerCol3' class='footerCol'>
+                <div class='clickable' onclick='showOggleFeedbackDialog(`+ folderId + `)'>Feedback</div>
+            </div>
+            <div id='footerCol4' class='footerCol'></div>
+            <div id='footerCol5' class='footerCol'></div>
+            <div id='footerCol6' class='footerCol'></div>
+            <div id='footerCol7' class='footerCol rightMostfooterColumn'></div>
+        </div>
+        <div class='footerFooter'>
+            <div class='footerFooterMessage' id='footerMessage1'></div>
+            <div class='footerFooterMessage' id='footerMessage2'></div>
+            <div class='forceRight'>
+                <div>
+                    Copyright &copy; 2024
+                    <div class='inline clickable' onclick='callIntelDesign()' ">Intelligent Design SoftWare</div>
+                </div>
+            </div>
+            ();
+        if (!isNullorUndefined(params.spa)) {
+            console.log("params.spa: " + params.spa);
+            spaContext = params.spa;
+        }
+        launchIndexPage(spaContext);
+
+  </script>
+ </body>
+</html>
