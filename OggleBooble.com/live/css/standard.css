@@ -1,0 +1,117 @@
+
+.editorTextbox {
+    width: 333px;
+    height: 333px;
+}
+
+.fixedFeedback {
+    position: fixed;
+    right: -23px;
+    bottom: 90px;
+    border: solid thin gold;
+    padding: 5px;
+    background-color: var(--buttonBackgroundColor);
+    border-radius: 5px;
+    transform: rotate(90deg);
+    text-orientation: sideways;
+    color: black;
+    cursor: pointer;
+}
+
+.dataArea {
+    border: solid thin #40767d;
+    min-height: 100px;
+}
+
+.pornBodyColors {
+    background-color: #ffcccc;
+}
+
+.centeringOuterShell {
+    position: absolute;
+    left: 50%;
+    margin: 0;
+}
+
+.centeringInnerShell {
+    position: relative;
+    left: -50%;
+    margin: 0;
+}
+
+/*-- context menu -----------------------------------*/
+
+.ctxloadingGif {
+    height: 27px;
+}
+
+.ogContextMenuFocusShell {
+    position: absolute;
+    padding: 22px;
+    display: none;
+    cursor: move;
+    background-color: #f1d8c573;
+}
+ 
+.ogContextMenu {
+    background-color: #e2d79d;
+    border: solid 2px var(--borderColor);
+    padding: 4px;
+}
+.ctxMenuItem {
+    color: #000;
+    padding: 4px;
+    cursor: pointer;
+}
+    .ctxMenuItem:hover {
+        text-decoration: underline;
+        color: blue;
+    }
+
+.contextMenuInnerContainer div {
+    margin-left: 22px;
+}
+
+.contextMenuInnerContainer {
+    display: none;
+}
+
+.ctxDialogImage {
+    height: 200px;
+}
+
+
+.ctxInfoValue {
+    background-color: #f3f3f3;
+    color: #000;
+    border: solid 0.3px #e6d990;
+    font-size: 13px;
+    max-width: 200px;
+    overflow-x: auto;
+}
+
+
+
+.ogContextMenuHeader {
+    cursor: move;
+    padding: 6px;
+    border: solid 2px var(--borderColor);
+    background: #becebe;
+}
+
+.ogContextSubMenu {
+    display: none;
+    margin: 8px;
+    border: solid thin black;
+}
+    .ogContextSubMenu label {
+        color: black;
+        text-decoration: none;
+        padding: 8px;
+        margin: 2px;
+        cursor: default;
+    }
+    .ogContextSubMenu span {
+        font-size: 12px;
+    }
+

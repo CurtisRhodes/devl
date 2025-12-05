@@ -1,0 +1,99 @@
+
+
+.carouselContainer {
+    display: inline-block;
+}
+.carouselImageContainer {
+    text-align: center;
+}
+
+.carouselImage {
+    border: solid 3px #8d38b1;
+    margin-top: 4px;
+    position: absolute;
+    cursor: pointer;
+    align-content: center;
+}
+
+.carouselSettingsDialog {
+    position: absolute;
+    z-index: 25;
+    border: solid 2px var(--oggleBorderColor);
+    background-color: var(--oggleBackgroundColor);
+    display: none;
+}
+
+.assuranceArrows {
+    display: none;
+    cursor: pointer;
+    width: 50px;
+    height: 100%;
+}
+
+.categoryTitleLabel {
+    position: absolute;
+    display: none;
+    color: #fff;
+    background-color: var(--opaqueImageLabel);
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 15px;
+    white-space: nowrap;
+    cursor: pointer;
+    z-index: 2;
+}
+.carouselControlsContainer {
+    position: absolute;
+    display: none;
+}
+    .carouselControlsContainer img {
+        height: 24px;
+    }
+
+.speedButton {
+    z-index: 1;
+    height: 25px;
+    margin: 2px 5px 3px 0px;
+    cursor: pointer;
+}
+
+.pauseButtonArea {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    font-size: 20px;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.carouselCategoryLabel {
+    position: relative;
+    cursor: pointer;
+    font-size: 17px;
+    margin-bottom: 4px;
+    color: #b200ff;
+}
+
+.carouselFooterStyle {
+    display: inline-block;
+    border: dashed .5px #f7cc54;
+}
+
+/*-- unverified -----------------------------------*/
+.animatedGears {
+    height: 300px;
+}
+
+.imgBottom {
+    background-color: #efeacb;
+    text-align: center;
+}
+
+.randomImageContainer {
+    top: 135px;
+}
+
+.loadingGif img {
+    height: 15px;
+}

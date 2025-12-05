@@ -1,0 +1,126 @@
+
+.resizable {
+    resize: both;
+    overflow: scroll;
+    border: 1px solid black;
+}
+
+
+.albumCommentsTextbox {
+    height: 180px;
+    width: 388px;
+    overflow-y: scroll;
+    border: solid red 1px;
+    padding: 6px;
+}
+.albumDetailsSection label {
+    display: inline-block;
+    width: 99px;
+    font-weight: bold;
+    margin-left: 7px;
+}
+
+.singleChildComment {
+    height: 180px;
+    width: 388px;
+    overflow-y: scroll;
+    border: solid red 1px;
+    padding: 6px;
+}
+
+.fantasyImage {
+    height: 423px;
+}
+
+.folderDialogOuterContainer {
+}
+
+dialogImageContainer {
+    border: solid thin red;
+    text-align: center;
+}
+.fileImageSection {
+    display:inline;
+    padding-left: 8px;
+}
+.albumDialogImage {
+    width: 110px;
+    object-fit: cover;
+}
+
+.centeredDialogTitle {
+    text-align: center;
+    font-weight: bold;
+}
+
+.dialogButton {
+    display: inline-block;
+    text-align: center;
+    background: var(--brucheumBlue);
+    color: #000;
+    border-radius: 6px;
+    padding: 8px 20px;
+    cursor: pointer;
+    margin-bottom: 4px;
+}
+.moveCopyDialogImage {
+    height: 166px;
+}
+
+.userStatsDialog {
+    background-color: #76bdd0;
+    padding: 22px;
+}
+
+.usrStatsTable th {
+    padding-left: 8px;
+    padding-right: 8px;
+    text-align: center;
+}
+.usrStatsTable td {
+    border: solid thin black;
+    text-align: center;
+    background-color: #fff;
+}
+
+.errorMsg {
+    color: #cc2525;
+}
+
+.fileDetailsSection {
+padding: 2px;
+    border:dashed thin violet;
+}
+    .fileDetailsSection div {
+        display:inline;
+        font-weight: 600;
+        width: 615px;
+    }
+
+.folderDialogTopSection {
+    border: solid thin blue;
+    display: flex;
+}
+.fileDialogTopSection div {
+    display: inline-block;
+    border: solid thin #00ff21;
+    color: #000;
+}
+
+.feedbackEditBox {
+    height: 145px;
+    width: 430px;
+}
+
+.bannerButton {
+    font-size: 15px;
+    display: block;
+    border: solid 2px #000;
+    border-radius: 10px;
+    padding: 2.5px;
+    color: #fff;
+    background-color: #4195a0;
+    margin: 4px;
+    cursor: pointer;
+    text-align: center;
+}

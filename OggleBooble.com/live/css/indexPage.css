@@ -1,0 +1,114 @@
+
+.indexPageContainer {
+/*    border: solid .02px #d1cccc;*/
+    min-height: 100px;
+    overflow-x: auto;
+    text-align: center;
+}
+
+.latestContentBox {
+    display: inline-block;
+    margin: 2px;
+    background-color: #3b0e56;
+}
+
+.leftSideSlider {
+    display: none;
+}
+
+.sectionLabel {    
+    font-size: 16px;
+    padding: 4px;
+    margin-left: 11px;
+}
+
+.latestContentBoxLabel {
+    color: #f2e289;
+    text-align: center;
+}
+
+.latestContentBoxImage {
+    height: 172px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.latestContentBoxDateLabel {
+    position: relative;
+    bottom: 2px;
+    color: #d6fcfa;
+    background-color: #686666;
+}
+
+.refreshIcon {
+    height: 20px;
+    padding-top: 2px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.boobsHeader {
+    background: var(--brucheumBlue);
+}
+
+.playboyShell {
+    background-color: #000;
+    margin: 10px;
+    border: solid gold 4px;
+    border-radius: 20px;
+}
+.playboyHeader {
+    background-color: #000;
+    color: #bbbd1d;
+    border-top: #40767d 3px solid;
+    border-bottom: #decd6f 11px solid;
+}
+    .playboyHeader .inactiveBreadCrumb {
+        color: #d47979;
+    }
+    .playboyHeader .hdrTopRowLeft {
+        color: #bbbd1d;
+    }
+.playboySectionLabel {
+    font-size: 16px;
+    padding: 4px;
+    color: gold;
+}
+
+.pornHeader {
+    background-color: #cab37e;
+    border-top: #40767d 3px solid;
+    border-bottom: #decd6f 11px solid;
+}
+
+.oggleSoft {
+    background-color: #cc7d5f; /*orangy*/
+    border-top: #40767d 3px solid;
+    border-bottom: #407d6e 5px solid;
+}
+
+.badgeImage {
+    height: 31px;
+    margin-left: 9px;
+    float: left;
+    font-size: 16px;
+    margin-bottom: 3px;
+    cursor: pointer;
+}
+
+.blackCenterfoldsBanner {
+    border: solid 2px red;
+    border-radius: 10px;
+    padding: 3px;
+    white-space: nowrap;
+    text-decoration: none;
+    background-color: #407d6e;
+}
+
+    .blackCenterfoldsBanner a {
+        color: yellow;
+    }
+
+.folderDetailsDialogImage {
+    height: 300px;
+}

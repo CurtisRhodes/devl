@@ -1,0 +1,350 @@
+﻿body {
+    background-color: var(--oggleBackgroundColor);
+    margin: 0;
+}
+
+.albumContentArea {
+    display: block;
+}
+
+.albumContainer {
+    display: flex;
+    text-align: center;
+    flex-wrap: wrap;
+}
+.albumfooter {
+    display: none;
+    margin-top: 55px;
+    display: block;
+    width: 100%;
+}
+
+.subFolderContainer {
+    display: inline-block;
+    cursor: pointer;
+    color: black;
+    background-color: #569bb1;
+    border: solid 5px #569bb1;
+    border-radius: 4px;
+    margin: 1px;
+}
+.stepChildContainer {
+    display: inline-block;
+    cursor: pointer;
+    background-color: #e69edc;
+    border: solid 5px #e69edc;
+    border-radius: 4px;
+    margin: 1px;
+}
+.intividualImageContainer {
+    background-color: var(--thumbnailBorderColor);
+    border: solid 5px var(--thumbnailBorderColor);
+    border-radius: 4px;
+    margin: 1px;
+    display: inline-block;
+}
+.aboveImageContainerDiv {
+    display: flex;
+    /*border: solid thin red;*/
+    padding: 2px;
+    overflow: auto;
+}
+
+.thumbImage {
+    height: 180px;
+    cursor: pointer;
+}
+
+.albumPageMetaTitle {
+    display: inline-block;
+    white-space: nowrap;    
+}
+.slideShowClickStyle {
+    display: none;
+    white-space: nowrap;
+    cursor: pointer;
+    margin-left: 55px;
+    text-decoration: underline;
+}
+.back2gallery {
+    font-size: 19px;
+    padding-left: 16px;
+    margin-top: 6px;
+}
+
+.knownModelIndicator {
+    display: inline;
+    position: relative;
+    right: 24px;
+    cursor: pointer;
+    margin-right: -20px;
+}
+
+    .knownModelIndicator img {
+        height: 20px;
+    }
+
+.flexboxMiddleSection {
+    display: inline-block;
+    position: relative;    
+    width: 63%;
+    font-size: large;
+    text-align: center;
+}
+
+
+.fixedNavgNext {
+    position: fixed;
+    right: 20px;
+    top: 120px;
+    height: 31px;
+    cursor: pointer;
+}
+
+.fixedNavgLeft {
+    position: fixed;
+    left: 12px;
+    top: 120px;
+    height: 31px;
+    cursor: pointer;
+}
+
+.folderCommentButton {
+    display: block;
+    margin-top: 29px;
+    height: 31px;
+    cursor: pointer;
+}
+
+.albumMsgLink {    
+    display: none;
+    float: right;
+    cursor: pointer;
+    /*    color: var(--oggleTitleColor);*/
+    white-space: nowrap;
+    margin-right: 38px;
+}
+
+    .albumMsgLink:hover {
+        text-decoration: underline;
+    }
+
+.explodingImageContainer {
+    position: absolute;
+    display: none;
+    z-index: 21;
+    border: solid 2px var(--borderColor); /* #f5d82c;*/
+}
+
+    .explodingImageContainer viewerImage {
+        z-index: 21;
+    }
+
+.floatingCloseButton {
+    height: 55px;
+    position: absolute;
+    z-index: 21;
+    right: 7px;
+    cursor: pointer;
+    z-index: 21;
+}
+
+.moreButton {
+    position: absolute;
+    z-index: 21;
+    height: 45px;
+    cursor: pointer;
+}
+
+
+
+.modalVail {
+    display: none; /*Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 19; /* Sit on top */
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.singleImageBoxArrow {
+    position: absolute;
+    z-index: 211;
+    height: 333px;
+    width: 88px;
+    top: 150px;
+    cursor: pointer;
+}
+
+.singleImageBoxArrowLeft {
+    left: -90px;
+}
+
+.floatRightLabel {
+    float: right;
+}
+
+.selectedSearchItem {
+    background-color: var(--thumbnailBorderColor);
+}
+
+.adminRow div {
+    margin: 3px;
+}
+
+.defaultImageFrame {
+    margin: 4.5px;
+}
+
+.multiLinkImageFrame {
+    margin: 2px;
+    border: dashed 3px #08fb08;
+}
+
+.nonLocalImageFrame {
+    padding: 1px;
+    margin: 1px;
+    border: dashed 3px #988470;
+}
+
+.noLinksImageFrame {
+    margin: 1px;
+    padding: 1px;
+    margin-bottom: 4px;
+    border: dashed 2px #d19154;
+}
+
+/*border: solid 6px */
+
+.pornFolderImageOutterFrame {
+    background-color: #333;
+    border: solid 6px #966211;
+    border-radius: 4px;
+    margin: 4px;
+}
+
+.folderImageOutterFrame {
+    background-color: var(--thumbnailBorderColor);
+    border: solid 6px var(--thumbnailBorderColor);
+    border-radius: 4px;
+    margin: 4px;
+}
+
+.defaultSubFolderImage {
+    color: #490157;
+    display: inline-block;
+    text-align: center;
+    margin-right: 4px;
+}
+
+.pornSubDirLabel {
+    text-align: center;
+    background-color: #966211;
+    color: #ececec;
+}
+
+.folderImageFrameName {
+    text-align: center;
+    background-color: orangered; /*#ffcccc;*/
+}
+
+.pornFolderImageFrame {
+    text-align: center;
+    background-color: #ffcccc;
+}
+
+.nonLocalIndicator {
+    border-right: dotted 24px #ff00dc;
+}
+
+.folderImage {
+    height: 200px;
+    cursor: pointer;
+    display: block;
+    margin: auto;
+    background-image: url("https://ogglebooble.com/img/redBalloon.png");
+}
+
+.centerfold {
+    height: 500px;
+    cursor: pointer;
+}
+
+.albumImage {
+    height: 180px;
+    cursor: pointer;
+}
+
+:after {
+    border: solid 1px #ff00dc;
+    margin: 2px;
+}
+
+.albumBottomContainer {
+    display: inline-block;
+    width: 100%;
+    padding-bottom: 10px;
+}
+.albumBottomContainerRightMostDiv {
+    float: right;
+    margin-right: 74px;
+}
+
+.viewerImageNav {
+    float: left;
+    cursor: pointer;
+}
+
+.closeButton {
+    margin-top: -5px;
+    margin-right: -5px;
+    padding-left: 10px;
+}
+
+.trackbackLinkContainer {
+    margin-top: 3px;
+    display: none;
+}
+
+.trackbackArea {
+    margin-top: 3px;
+}
+    .trackbackArea div {
+        display: inline;
+        padding: 2px;
+        margin-left: 8px;
+        color: #000;
+        background-color: var(--oggleBackgroundColor);
+        border: solid .5px yellow;
+        border-radius: 4px;
+    }
+
+/*---  comments --------------------------------------------------------------*/
+
+.commentsTextArea {
+    border: solid thin black;
+    height: fit-content;
+    width: 311px;
+    border-radius: 10px;
+}
+.historyCommentsBody {
+    display: inline-block;
+    width: 311px;
+    margin-left: 20px;
+    padding-left: 10px;
+    color: #000;
+    background-color: #ececec;
+}
+.commentsInfo {
+    padding-left: 33px;
+}
+
+.commentsContainerReplyTree {
+    margin: 11px;
+    border: solid thin black;
+    height: fit-content;    
+    border-radius: 10px;
+}
+
